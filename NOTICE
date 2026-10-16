@@ -12,6 +12,9 @@ Third-party components (not part of this repository's source):
   licenses; see each image's package manifest.
 - llama.cpp (MIT License, Copyright (c) the ggml authors), built from
   a pinned upstream commit by build/scripts/build-llama.sh.
+- whisper.cpp (MIT License, Copyright (c) the ggml authors), built from a
+  pinned upstream commit by build/scripts/build-whisper.sh; its sample
+  test-jfk.wav (a 1961 public-domain recording) is used by the boot test.
 - lxqt-panel plugin interface headers (LGPL-2.1-or-later, the LXQt team), used
   at build time by apps/dai-panel-plugin.
 - Language models downloaded by the user with dai-models keep their own

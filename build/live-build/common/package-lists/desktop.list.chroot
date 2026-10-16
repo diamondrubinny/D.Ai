@@ -41,12 +41,16 @@ breeze-cursor-theme
 
 # D.Ai applications
 python3-pyqt6
+# Qt SVG rendering (D.Ai diamond, SVG icons)
+libqt6svg6
 wl-clipboard
 wtype
 libnotify-bin
 
 # Audio
 pipewire
+# pw-record for D.Ai Voice
+pipewire-bin
 pipewire-pulse
 pipewire-alsa
 wireplumber

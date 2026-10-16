@@ -100,7 +100,9 @@ class ModelTests(EnvTestCase):
         shipped = Path(__file__).resolve().parents[1] / "data" / "models.json"
         catalog = models.load_catalog(shipped)
         self.assertIn("qwen2.5-0.5b", catalog)
-        self.assertTrue(all(m.license == "Apache-2.0" for m in catalog.values()))
+        self.assertTrue(all(m.license in ("Apache-2.0", "MIT") for m in catalog.values()))
+        speech = [m for m in catalog.values() if "speech" in m.tasks]
+        self.assertTrue(speech and all(m.file.endswith(".bin") and m.tasks == ("speech",) for m in speech))
 
 
 class DaidTests(EnvTestCase):
@@ -169,4 +171,27 @@ class TaskTests(EnvTestCase):
         self.assertEqual(daid.validate_request({**base, "task": "code"})["task"], "code")
         with self.assertRaises(ValueError):
             daid.validate_request({**base, "task": "root"})
+
+    def test_speech_models_are_separate(self):
+        shipped = Path(__file__).resolve().parents[1] / "data" / "models.json"
+        catalog = models.load_catalog(shipped)
+        whisper = catalog["whisper-base"]
+        whisper.path.parent.mkdir(parents=True, exist_ok=True)
+        whisper.path.write_bytes(b"x")
+        self.assertIsNone(models.default_model_id(catalog))  # never used for chat
+        self.assertEqual(models.default_model_id(catalog, "speech"), "whisper-base")
+        catalog["whisper-small"].path.write_bytes(b"x")
+        self.assertEqual(models.default_model_id(catalog, "speech"), "whisper-base")  # smallest by default
+        models.set_default("whisper-small", "speech_model")
+        self.assertEqual(models.default_model_id(catalog, "speech"), "whisper-small")
+        models.set_default("qwen2.5-0.5b")  # chat choice kept separately
+        self.assertEqual(models.default_model_id(catalog, "speech"), "whisper-small")
+
+    def test_speech_file_suffix(self):
+        path = Path(self.tmp.name) / "catalog.json"
+        entry = {"id": "voice", "name": "x", "url": "https://huggingface.co/a.gguf", "file": "a.gguf", "sha256": "",
+                 "size": 1, "license": "MIT", "ram_mb": 1, "purpose": "x", "tasks": ["speech"]}
+        path.write_text(json.dumps({"models": [entry]}))
+        with self.assertRaises(models.ModelError):
+            models.load_catalog(path)
 

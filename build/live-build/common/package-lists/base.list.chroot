@@ -59,3 +59,5 @@ curl
 pciutils
 usbutils
 efibootmgr
+# OpenMP runtime for whisper.cpp / llama.cpp CPU backends
+libgomp1

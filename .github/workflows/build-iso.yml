@@ -41,8 +41,8 @@ jobs:
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models \
-            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui
-          shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh
+            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice
+          shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh build/scripts/build-whisper.sh
 
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
@@ -59,6 +59,12 @@ jobs:
         run: |
           sudo apt-get install -y -qq bubblewrap python3-pyqt6 >/dev/null || true
           python3 -m unittest discover -s apps/dai-forge/tests -t apps/dai-forge -v
+
+      - name: Unit tests (dai-voice)
+        env:
+          PYTHONPATH: apps/dai-ai
+          QT_QPA_PLATFORM: offscreen
+        run: python3 -m unittest discover -s apps/dai-voice/tests -t apps/dai-voice -v
 
       - name: Unit tests (dai-command)
         env:
@@ -91,6 +97,32 @@ jobs:
           path: llama-dist.tar.gz
           retention-days: 3
 
+  whisper:
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache whisper.cpp build
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: whisper-dist
+          key: whisper-${{ hashFiles('build/scripts/build-whisper.sh') }}
+      - name: Build whisper.cpp (Debian trixie container)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src debian:trixie \
+            bash build/scripts/build-whisper.sh /src/whisper-dist
+          sudo chown -R "$(id -u):$(id -g)" whisper-dist
+      - name: Pack (keeps symlinks and permissions)
+        run: tar -czf whisper-dist.tar.gz -C whisper-dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: whisper-dist
+          path: whisper-dist.tar.gz
+          retention-days: 3
+
   panel-plugin:
     needs: lint
     runs-on: ubuntu-24.04
@@ -109,7 +141,7 @@ jobs:
           retention-days: 3
 
   build:
-    needs: [lint, llama, panel-plugin]
+    needs: [lint, llama, whisper, panel-plugin]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -130,6 +162,10 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
+          name: whisper-dist
+
+      - uses: actions/download-artifact@v4
+        with:
           name: panel-plugin
           path: panel-plugin
 
@@ -137,9 +173,11 @@ jobs:
         timeout-minutes: 40
         run: |
           mkdir -p llama-dist && tar -xzf llama-dist.tar.gz -C llama-dist
+          mkdir -p whisper-dist && tar -xzf whisper-dist.tar.gz -C whisper-dist
           docker run --rm --privileged \
             -e DAI_VERSION="0.1.0-alpha+${GITHUB_SHA::7}" \
             -e DAI_LLAMA_DIST=/src/llama-dist \
+            -e DAI_WHISPER_DIST=/src/whisper-dist \
             -e DAI_PANEL_PLUGIN=/src/panel-plugin \
             -e SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)" \
             -v "$PWD:/src" -w /src \

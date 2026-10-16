@@ -98,6 +98,12 @@ configure() {
   cp -a "$LB_SRC/common/." config/
   cp -a "$LB_SRC/editions/$EDITION/." config/
   chmod 0755 config/hooks/normal/*.hook.chroot
+  # Qt draws SVG files (the D.Ai diamond on Start, in D.Ai Command and Forge)
+  # through its SVG plugins. Newer Debian Qt packages ship them separately
+  # from libqt6svg6; recommends are not installed, so add them explicitly.
+  if apt-cache show qt6-svg-plugins >/dev/null 2>&1; then
+    printf '%s\n' '# Qt SVG image/icon plugins (added by build-iso.sh)' qt6-svg-plugins >config/package-lists/dai-qt-svg.list.chroot
+  fi
   stage_apps config/includes.chroot_after_packages
 }
 
@@ -146,6 +152,19 @@ stage_apps() {
   install -m 0644 "$forge"/data/recipes/*.json "$root/usr/share/dai/forge/recipes/"
   install -m 0644 "$forge"/examples/* "$root/usr/share/dai/forge/examples/"
   install -m 0644 "$forge/data/forge.json" "$root/etc/dai/forge.json"
+
+  # D.Ai Voice: push-to-talk dictation and voice commands (local Whisper).
+  local voice="$REPO_ROOT/apps/dai-voice"
+  cp -r "$voice/dai_voice" "$root/usr/lib/dai/"
+  find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
+  install -m 0755 "$voice/data/dai-voice" "$root/usr/bin/dai-voice"
+  if [[ -n "${DAI_WHISPER_DIST:-}" ]]; then
+    [[ -x "$DAI_WHISPER_DIST/whisper-cli" ]] || die "DAI_WHISPER_DIST has no whisper-cli: $DAI_WHISPER_DIST"
+    install -d "$root/opt/dai/whisper"
+    cp -a "$DAI_WHISPER_DIST/." "$root/opt/dai/whisper/"
+  else
+    log "warning: DAI_WHISPER_DIST not set; the image will not include speech recognition"
+  fi
 
   # Command field in the panel (build-panel-plugin.sh). Without it, fall back
   # to the button that opens D.Ai Command.

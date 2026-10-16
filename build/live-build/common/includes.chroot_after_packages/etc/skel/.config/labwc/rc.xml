@@ -25,6 +25,9 @@
     <numlock>on</numlock>
     <keybind key="W-space"><action name="Execute" command="dai-command" /></keybind>
     <keybind key="W-b"><action name="Execute" command="dai-forge-gui" /></keybind>
+    <!-- D.Ai Voice: press once to talk, again to finish (local Whisper) -->
+    <keybind key="W-h"><action name="Execute" command="dai-voice toggle --to type" /></keybind>
+    <keybind key="W-S-space"><action name="Execute" command="dai-voice toggle --to command" /></keybind>
     <!-- Fix selected text typed in the wrong layout (akuo -> שלום) -->
     <!-- Switch keyboard layout (on release, so Alt+Shift+X shortcuts still work) -->
     <keybind key="A-Shift_L" onRelease="yes"><action name="Execute" command="dai-lang toggle" /></keybind>
