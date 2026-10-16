@@ -76,7 +76,7 @@ def launch_apps_command() -> str:
     return (
         "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
         'export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; '
-        "export QT_QPA_PLATFORM=wayland QT_QPA_PLATFORMTHEME=lxqt XDG_CURRENT_DESKTOP=labwc:wlroots; "
+        "export QT_QPA_PLATFORM=wayland QT_QPA_PLATFORMTHEME=lxqt XDG_CURRENT_DESKTOP=LXQt:labwc:wlroots; "
         f"printf '{sample}' > ~/hello-he.txt; "
         "setsid -f qterminal >/dev/null 2>&1; "
         "setsid -f pcmanfm-qt ~ >/dev/null 2>&1; "
@@ -114,7 +114,9 @@ def main() -> int:
         ("graphical target", "systemctl get-default", True, lambda o: "graphical.target" in o),
         ("display manager", "systemctl is-active sddm", True, lambda o: o.splitlines()[-1:] == ["active"]),
         ("labwc compositor", "pgrep -a -x labwc", True, lambda o: "labwc" in o),
+        ("lxqt session", "pgrep -a -x lxqt-session", True, lambda o: "lxqt-session" in o),
         ("lxqt panel", "pgrep -a -x lxqt-panel", True, lambda o: "lxqt-panel" in o),
+        ("desktop", "pgrep -a -f 'pcmanfm-qt --desktop'", True, lambda o: "--desktop" in o),
         ("pipewire", "pgrep -a -x pipewire", False, lambda o: "pipewire" in o),
         ("network manager", "systemctl is-active NetworkManager", True, lambda o: o.splitlines()[-1:] == ["active"]),
         ("firewall loaded", "sudo nft list tables", True, lambda o: "dai_filter" in o),
@@ -133,7 +135,10 @@ def main() -> int:
         ("login sessions", "loginctl list-sessions --no-legend"),
         ("session processes", "ps -eo user,args | grep -Ei 'sddm|xorg|labwc|lxqt|pcmanfm' | grep -v grep"),
         ("sddm journal", "sudo journalctl -b -u sddm --no-pager -o cat | tail -n 40"),
-        ("wayland session log", "tail -n 40 ~/.local/share/sddm/wayland-session.log"),
+        ("wayland session log", "tail -n 60 ~/.local/share/sddm/wayland-session.log"),
+        ("panel environment", "tr '\\0' '\\n' < /proc/$(pgrep -x lxqt-panel | head -n1)/environ | grep -E '^(WAYLAND_DISPLAY|DISPLAY|QT_QPA|XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE)='"),
+        ("panel layer-shell", "grep -oE '[^ ]*(LayerShell|layer-shell|wayland)[^ ]*' /proc/$(pgrep -x lxqt-panel | head -n1)/maps | sort -u"),
+        ("layer-shell packages", "dpkg -l | grep -Ei 'layer-?shell' | cut -c1-80"),
     ]
 
     failed_required = 0

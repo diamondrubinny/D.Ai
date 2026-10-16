@@ -32,6 +32,7 @@ jobs:
           shellcheck build/scripts/*.sh tests/boot/*.sh \
             build/live-build/common/hooks/normal/*.hook.chroot \
             build/live-build/common/includes.chroot_after_packages/usr/lib/live/config/*
+          shellcheck -s sh build/live-build/common/includes.chroot_after_packages/etc/skel/.config/labwc/autostart
 
   build:
     needs: lint

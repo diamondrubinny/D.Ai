@@ -1,0 +1,9 @@
+# D.Ai OS labwc autostart (LXQt Wayland session).
+# Panel, desktop, notifications and the polkit agent are started by
+# lxqt-session; only Wayland-specific helpers belong here.
+
+# Make the Wayland display available to D-Bus activated services.
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP >/dev/null 2>&1 &
+
+# Lock the screen after 10 minutes of inactivity and before sleep.
+swayidle -w timeout 600 'swaylock -f' before-sleep 'swaylock -f' >/dev/null 2>&1 &
