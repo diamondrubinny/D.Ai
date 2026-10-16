@@ -108,6 +108,9 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   D.Ai Command, and the 🎙 buttons in D.Ai Command and D.Ai Forge fill the request field. Recording only starts on
   an explicit press, a notification is shown the whole time, audio lives in tmpfs and is deleted right after
   transcription, which runs in a bubblewrap sandbox without network. Models: `dai-models install whisper-small`.
+- **Installer with full-disk encryption** ([docs/INSTALL.md](docs/INSTALL.md)): Calamares with Debian's tested
+  settings (LUKS via `cryptsetup`), D.Ai branding and a Hebrew slideshow; the live user and the installer are
+  removed from the installed system. Start it from the desktop icon, the 💎 menu or by typing "install".
 - **D.Ai Night** theme: dark, high-contrast (WCAG AA) palette with a violet→cyan accent, custom wallpaper,
   matching window decorations. Design system: [docs/DESIGN.md](docs/DESIGN.md).
 

@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# live-config: put "Install D.Ai OS" on the live user's desktop (live session only).
+set -eu
+user="$(getent passwd 1000 | cut -d: -f1)"
+[ -n "$user" ] || exit 0
+home="$(getent passwd "$user" | cut -d: -f6)"
+[ -f /usr/share/applications/dai-install.desktop ] || exit 0
+install -d -o "$user" -g "$user" "$home/Desktop"
+install -m 0755 -o "$user" -g "$user" /usr/share/applications/dai-install.desktop "$home/Desktop/dai-install.desktop"

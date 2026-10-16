@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Start the D.Ai OS installer (Calamares) from the live session.
+# The live user may use sudo without a password; the installed system has no
+# live user and no installer.
+if [ ! -d /run/live/medium ]; then
+	echo "dai-install: only available in the live session" >&2
+	exit 1
+fi
+exec sudo -E env QT_QPA_PLATFORM=wayland calamares "$@"
