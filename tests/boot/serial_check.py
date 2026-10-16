@@ -169,6 +169,19 @@ def main() -> int:
         ("ai: daid status", "dai-ai status", True, lambda o: "model:" in o),
         ("ai: daid has no network", "systemctl --user show dai-daid.service -p RestrictAddressFamilies", True,
          lambda o: "AF_UNIX" in o and "AF_INET" not in o),
+        # Command field plugin: actually loaded into the running panel process.
+        ("panel: lxqt-panel version", "dpkg-query -W -f='${Version}' lxqt-panel", False, lambda o: o.strip().startswith("2.1.4")),
+        ("panel: command field loaded", "grep -c libdaicommand.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps", True,
+         lambda o: o.strip().splitlines()[-1:] != ["0"] and o.strip().splitlines()[-1:] != []),
+        # Local AI end to end: download with SHA-256 check, then inference.
+        ("ai: install model (verified)", "dai-models install qwen2.5-0.5b 2>&1 | tail -n 2", True,
+         lambda o: "installed and verified" in o, 600),
+        ("ai: answer", "dai-ai 'What is 2+2? Reply with only the number.'", True, lambda o: "4" in o, 300),
+        ("ai: tune interpretation", "dai-tune --dry-run --ai 'make sure nobody can plug in a flash drive'", False,
+         lambda o: "USB" in o, 300),
+        # Keyboard layout switching with a known state (panel indicator).
+        ("lang: switch", WAYLAND_ENV + "dai-lang --label; dai-lang toggle; dai-lang --label; dai-lang toggle; dai-lang --label", True,
+         lambda o: o.strip().splitlines()[-3:] == ["EN", "HE", "EN"]),
         # Global wrong-layout fixer: real Wayland primary selection round trip.
         ("fixlayout: selection", WAYLAND_ENV + "printf akuo | wl-copy --primary && dai-fixlayout --print", True,
          lambda o: o.strip().splitlines()[-1:] == ["שלום"]),
@@ -189,9 +202,11 @@ def main() -> int:
 
     failed_required = 0
     lines = []
-    for name, command, required, ok in checks:
+    for check in checks:
+        name, command, required, ok = check[:4]
+        timeout = check[4] if len(check) > 4 else 30
         try:
-            output = serial.run(command)
+            output = serial.run(command, timeout=timeout)
             passed = ok(output)
         except (TimeoutError, OSError) as exc:
             output, passed = f"<error: {exc}>", False

@@ -23,6 +23,9 @@
     <numlock>on</numlock>
     <keybind key="W-space"><action name="Execute" command="dai-command" /></keybind>
     <!-- Fix selected text typed in the wrong layout (akuo -> שלום) -->
+    <!-- Switch keyboard layout (on release, so Alt+Shift+X shortcuts still work) -->
+    <keybind key="A-Shift_L" onRelease="yes"><action name="Execute" command="dai-lang toggle" /></keybind>
+    <keybind key="S-Alt_L" onRelease="yes"><action name="Execute" command="dai-lang toggle" /></keybind>
     <keybind key="Pause"><action name="Execute" command="dai-fixlayout" /></keybind>
     <keybind key="W-A-l"><action name="Execute" command="dai-fixlayout" /></keybind>
     <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>

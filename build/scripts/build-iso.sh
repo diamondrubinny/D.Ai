@@ -12,6 +12,7 @@
 #   WORK_DIR           live-build working directory (default: <repo>/.work/<edition>)
 #   DEBIAN_MIRROR      Optional Debian mirror URL override
 #   DAI_LLAMA_DIST     Directory produced by build-llama.sh (local AI runtime)
+#   DAI_PANEL_PLUGIN   Directory produced by build-panel-plugin.sh (panel command field)
 set -euo pipefail
 
 readonly EDITION="${1:-}"
@@ -107,6 +108,7 @@ stage_apps() {
   find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
   install -m 0755 "$cmd/data/dai-command" "$root/usr/bin/dai-command"
   install -m 0755 "$cmd/data/dai-fixlayout" "$root/usr/bin/dai-fixlayout"
+  install -m 0755 "$cmd/data/dai-lang" "$root/usr/bin/dai-lang"
   install -m 0644 "$cmd/data/dai-command.desktop" "$root/usr/share/applications/dai-command.desktop"
 
   local tune="$REPO_ROOT/apps/dai-tune"
@@ -130,6 +132,17 @@ stage_apps() {
   install -m 0644 "$ai/data/dai-daid.socket" "$ai/data/dai-daid.service" "$root/usr/lib/systemd/user/"
   # Same as "systemctl --global enable dai-daid.socket".
   ln -sf /usr/lib/systemd/user/dai-daid.socket "$root/etc/systemd/user/sockets.target.wants/dai-daid.socket"
+
+  # Command field in the panel (build-panel-plugin.sh). Without it, fall back
+  # to the button that opens D.Ai Command.
+  if [[ -n "${DAI_PANEL_PLUGIN:-}" && -f "$DAI_PANEL_PLUGIN/libdaicommand.so" ]]; then
+    install -d "$root/usr/lib/x86_64-linux-gnu/lxqt-panel" "$root/usr/share/lxqt/lxqt-panel"
+    install -m 0644 "$DAI_PANEL_PLUGIN/libdaicommand.so" "$root/usr/lib/x86_64-linux-gnu/lxqt-panel/libdaicommand.so"
+    install -m 0644 "$DAI_PANEL_PLUGIN/daicommand.desktop" "$root/usr/share/lxqt/lxqt-panel/daicommand.desktop"
+  else
+    log "warning: DAI_PANEL_PLUGIN not set; using the command button instead of the panel field"
+    sed -i 's/^plugins=fancymenu,daicommand,/plugins=fancymenu,command,/' "$root/etc/xdg/lxqt/panel.conf"
+  fi
 
   # llama.cpp runtime, built separately by build-llama.sh (optional for local builds).
   if [[ -n "${DAI_LLAMA_DIST:-}" ]]; then

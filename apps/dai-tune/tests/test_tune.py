@@ -247,7 +247,8 @@ class ExecutorTests(TuneTestCase):
         self.assertEqual(stat.S_IMODE(os.stat(env).st_mode), 0o600)
         self.assertEqual(self.spawned[-1][:4], ["swayidle", "-w", "timeout", "300"])
         labwc = (self.home / ".config/labwc/environment").read_text()
-        self.assertIn("XKB_DEFAULT_LAYOUT=il,us", labwc)
+        self.assertIn("DAI_LAYOUTS=il,us", labwc)
+        self.assertIn("XKB_DEFAULT_LAYOUT=il", (self.home / ".config/labwc/environment.d/50-dai-lang.env").read_text())
         journal_file = journal.path
         self.assertEqual(stat.S_IMODE(os.stat(journal_file).st_mode), 0o600)
         executor.undo_entry(entry, self.ctx, journal)
