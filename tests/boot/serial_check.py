@@ -66,13 +66,21 @@ class Serial:
         return "\n".join(body).strip()
 
 
+HEBREW_TUNE = "חסום דיסק און קי ונעל מסך אחרי 5 דקות"
+
+
+def _hex(text: str) -> str:
+    """\\xNN escapes so only ASCII crosses the serial line."""
+    return "".join(f"\\x{b:02x}" for b in text.encode("utf-8"))
+
+
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
 
 def launch_apps_command() -> str:
     """Shell command that opens demo windows in the user's Wayland session."""
     # Encode the sample as \xNN escapes so only ASCII crosses the serial line.
-    sample = "".join(f"\\x{b:02x}" for b in HEBREW_SAMPLE.encode("utf-8"))
+    sample = _hex(HEBREW_SAMPLE)
     return (
         "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
         'export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; '
@@ -131,6 +139,25 @@ def main() -> int:
         ("dai-command", "dai-command --version", True, lambda o: "dai-command" in o),
         ("zram swap", "cat /proc/swaps", False, lambda o: "zram" in o),
         ("failed units", "systemctl --failed --no-legend --plain", False, lambda o: o.strip() == ""),
+        # D.Ai Tune end to end: parse -> plan -> helper (as root) -> journal -> undo.
+        ("tune: version", "dai-tune --version", True, lambda o: "dai-tune" in o),
+        ("tune: polkit action", "pkaction --action-id io.github.diamondrubinny.dai.tune.apply", True,
+         lambda o: "io.github.diamondrubinny.dai.tune.apply" in o),
+        ("tune: hebrew dry run", f"LANG=he_IL.UTF-8 dai-tune --dry-run \"$(printf '{_hex(HEBREW_TUNE)}')\"", True,
+         lambda o: "הרצת ניסיון" in o and "נעילת מסך אחרי 5 דקות" in o),
+        ("tune: block usb", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'block usb storage' && cat /etc/modprobe.d/dai-tune-usb_storage.conf", True,
+         lambda o: "install usb_storage /bin/false" in o),
+        ("tune: undo usb", "DAI_TUNE_ELEVATE=sudo dai-tune undo && test ! -e /etc/modprobe.d/dai-tune-usb_storage.conf && echo UNDONE", True,
+         lambda o: "UNDONE" in o),
+        ("tune: refuse --yes when weakening", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'open port 8080'; echo rc=$?", True,
+         lambda o: "rc=1" in o),
+        ("tune: open port (confirmed)", "echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'open port 8080' && sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
+         lambda o: o.strip().splitlines()[-1:] == ["2"]),
+        ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
+         lambda o: o.strip().splitlines()[-1:] == ["0"]),
+        ("tune: injection refused", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'install vlc; rm -rf /tmp/x'; echo rc=$?", True,
+         lambda o: "rc=2" in o),
+        ("tune: security score", "dai-tune status", True, lambda o: "Security score" in o),
     ]
 
     # Always printed, never judged: context for diagnosing failures.
@@ -159,7 +186,7 @@ def main() -> int:
             failed_required += 1
         lines.append(f"[{status}] {name}: {command}")
         if output:
-            lines.extend(f"        {line}" for line in output.splitlines()[:20])
+            lines.extend(f"        {line}" for line in output.splitlines()[:30])
 
     for name, command in diagnostics:
         try:

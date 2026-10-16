@@ -38,6 +38,9 @@ unattended-upgrades
 apt-listchanges
 sudo
 polkitd
+pkexec
+rfkill
+kmod
 ca-certificates
 
 # Networking and Bluetooth
