@@ -1,15 +1,24 @@
 #!/bin/sh
 # Live session only: log the live user straight into the labwc session.
-# live-config runs this at boot when booted with boot=live; an installed
-# system does not run live-config, so this never applies after install.
+#
+# live-config runs the scripts in this directory in order at boot when booted
+# with boot=live. Its own sddm script writes /etc/sddm.conf (which overrides
+# /etc/sddm.conf.d) and picks the first X11 session it finds, so this script
+# runs later and rewrites that file. An installed system does not run
+# live-config, so none of this applies after installation.
 set -e
 
-LIVE_USERNAME="${LIVE_USERNAME:-dai}"
+# user-setup (run earlier by live-config) creates the live user as UID 1000.
+live_user="$(getent passwd 1000 | cut -d: -f1)"
+if [ -z "$live_user" ]; then
+	echo "dai-sddm-autologin: no live user (UID 1000) found, skipping" >&2
+	exit 0
+fi
 
-mkdir -p /etc/sddm.conf.d
-cat >/etc/sddm.conf.d/90-dai-live-autologin.conf <<CONF
+cat >/etc/sddm.conf <<CONF
+# Written at boot by /usr/lib/live/config/9000-dai-sddm-autologin (live session only)
 [Autologin]
-User=${LIVE_USERNAME}
+User=${live_user}
 Session=labwc.desktop
 Relogin=false
 CONF
