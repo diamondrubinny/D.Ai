@@ -67,7 +67,8 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
 
 *Screenshots are captured automatically by CI from the live ISO booted in QEMU.*
 
-- **Taskbar** with a **Start** menu and, right next to it, the **D.Ai Command** bar.
+- **Taskbar** with a **Start** menu and, right next to it, a real **text field** (lxqt-panel plugin,
+  `apps/dai-panel-plugin`) that opens D.Ai Command as you type; an **HE/EN indicator** (`dai-lang`, `Alt+Shift`).
 - **D.Ai Command** (`apps/dai-command`): one bar to launch apps (also by Hebrew name), run commands
   (`>` in a terminal, `$` in the background), calculate (`2*(3+4)`, `15% of 80`) and **fix text typed in
   the wrong keyboard layout** (`akuo` → `שלום`). `?` will ask the local AI (Phase 3).

@@ -9,6 +9,7 @@ Uses wl-clipboard (wl-paste/wl-copy) and wtype on Wayland.
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import sys
@@ -51,6 +52,9 @@ def main(argv: list[str]) -> int:
     _run(["wl-copy"], fixed)
     # Replace the still-selected text by pasting over it.
     _run(["wtype", "-M", "ctrl", "v", "-m", "ctrl"])
+    # Keep typing in the language that was meant.
+    if shutil.which("dai-lang"):
+        _run(["dai-lang", "set", "il" if re.search(r"[\u05d0-\u05ea]", fixed) else "us"])
     _notify("תוקן: " + fixed if he else "Fixed: " + fixed)
     return 0
 

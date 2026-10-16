@@ -628,11 +628,17 @@ def _layouts_validate(params: Params, ctx: Context) -> Params:
     return {"layouts": clean}
 
 
+LANG_STATE = ".config/labwc/environment.d/50-dai-lang.env"
+
+
 def _layouts_apply(params: Params, ctx: Context) -> None:
+    # dai-lang switches between DAI_LAYOUTS with Alt+Shift; start on the first.
+    first = params["layouts"][0]
     update_env_file(ctx.user_path(LABWC_ENV), {
-        "XKB_DEFAULT_LAYOUT": ",".join(params["layouts"]),
-        "XKB_DEFAULT_OPTIONS": "grp:alt_shift_toggle",
+        "DAI_LAYOUTS": ",".join(params["layouts"]),
+        "XKB_DEFAULT_LAYOUT": first,
     })
+    write_file(ctx.user_path(LANG_STATE), f"XKB_DEFAULT_LAYOUT={first}\n", mode=0o600)
     _reconfigure_labwc(ctx)
 
 
@@ -648,6 +654,6 @@ register(ActionSpec(
     risk=lambda p: "low",
     effect=lambda p: "neutral",
     summary=lambda p, lang: _t(lang, "Keyboard layouts: ", "שפות מקלדת: ") + ", ".join(p["layouts"]) + " (Alt+Shift)",
-    files=lambda p, c: [c.user_path(LABWC_ENV)],
+    files=lambda p, c: [c.user_path(LABWC_ENV), c.user_path(LANG_STATE)],
     restore=lambda p, c, e: _reconfigure_labwc(c),
 ))

@@ -52,17 +52,19 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Send one command to the QEMU human monitor.
+# Send commands to the QEMU human monitor over one connection.
 monitor() {
-  python3 - "$MONITOR_SOCK" "$1" <<'PY'
+  python3 - "$MONITOR_SOCK" "$@" <<'PY'
 import socket, sys, time
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 sock.settimeout(10)
 sock.connect(sys.argv[1])
 time.sleep(0.5)
 sock.recv(65536)
-sock.sendall((sys.argv[2] + "\n").encode())
-time.sleep(2)
+for command in sys.argv[2:]:
+    sock.sendall((command + "\n").encode())
+    time.sleep(0.15)
+time.sleep(1.5)
 sock.close()
 PY
 }
@@ -89,7 +91,7 @@ readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_U
 : >"$SERIAL_LOG"
 qemu-system-x86_64 \
   "${ACCEL[@]}" \
-  -m 4096 -smp 2 \
+  -m 6144 -smp 2 \
   -cdrom "$ISO" \
   -kernel "$KERNEL" -initrd "$INITRD" -append "$CMDLINE" \
   -vga std -display none \
@@ -97,6 +99,7 @@ qemu-system-x86_64 \
   -serial chardev:ser0 \
   -monitor "unix:$MONITOR_SOCK,server,nowait" \
   -nic user,model=virtio-net-pci \
+  -usb -device usb-tablet \
   -no-reboot &
 QEMU_PID=$!
 
@@ -134,6 +137,33 @@ log "waiting ${APPS_WAIT}s for demo apps, then capturing a second screenshot"
 sleep "$APPS_WAIT"
 monitor "screendump $ARTIFACT_DIR/apps.png -f png" || log "warning: screenshot failed"
 [[ -s "$ARTIFACT_DIR/apps.png" ]] && log "screenshot: $ARTIFACT_DIR/apps.png"
+
+# Interactive checks driven through the QEMU monitor (real keyboard/mouse).
+# usb-tablet gives absolute coordinates: 0..32767 across the 1280x800 screen.
+click() { # click <x> <y> in screen pixels
+  monitor "mouse_move $(($1 * 32767 / 1280)) $(($2 * 32767 / 800))" "mouse_button 1" "mouse_button 0"
+}
+type_keys() {
+  local key commands=()
+  for key in "$@"; do commands+=("sendkey $key"); done
+  monitor "${commands[@]}"
+}
+
+log "interactive: type into the panel command field"
+type_keys esc
+click 210 777
+sleep 1
+type_keys a k u o
+sleep 3
+monitor "screendump $ARTIFACT_DIR/panel-field.png -f png" || log "warning: screenshot failed"
+
+log "interactive: ask the local AI from D.Ai Command"
+type_keys esc
+type_keys meta_l-spc
+sleep 2
+type_keys shift-slash w h a t spc i s spc l i n u x shift-slash ret
+sleep "${AI_WAIT:-45}"
+monitor "screendump $ARTIFACT_DIR/ai-answer.png -f png" || log "warning: screenshot failed"
 
 if ((checks_ok == 0)); then
   log "last serial console lines:"

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=LXQtPanel/Plugin
+Name=D.Ai Command field
+Name[he]=שדה שורת הפקודות D.Ai
+Comment=Type a command next to the Start menu
+Comment[he]=הקלדת פקודה ליד תפריט התחל
+Icon=dai-command

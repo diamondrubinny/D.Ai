@@ -5,8 +5,8 @@
       "name": "Qwen2.5 0.5B Instruct (Q4_K_M)",
       "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
       "file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
-      "sha256": "",
-      "size": 0,
+      "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+      "size": 491400032,
       "license": "Apache-2.0",
       "ram_mb": 1024,
       "purpose": "general assistant (fast)"
@@ -16,8 +16,8 @@
       "name": "Qwen2.5 Coder 1.5B Instruct (Q4_K_M)",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",
       "file": "qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",
-      "sha256": "",
-      "size": 0,
+      "sha256": "cc324af070c2ecbfd324a30884d2f951a7ff756aba85cb811a6ec436933bb046",
+      "size": 1117320768,
       "license": "Apache-2.0",
       "ram_mb": 2048,
       "purpose": "coding assistant"

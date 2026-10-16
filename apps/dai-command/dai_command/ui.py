@@ -367,6 +367,17 @@ class CommandWindow(QWidget):
 
     # -- window behaviour --------------------------------------------------
 
+    def show_query(self, text: str) -> None:
+        """Open with text typed elsewhere (the panel field) and keep typing here."""
+        if not self.isVisible():
+            self.apps = load_apps()
+            self.show()
+        self.raise_()
+        self.activateWindow()
+        self.query.setText(text)
+        self.query.setFocus()
+        self.query.end(False)
+
     def toggle(self) -> None:
         if self.isVisible():
             self.hide()
@@ -424,7 +435,11 @@ def main(argv: list[str]) -> int:
     app = QApplication(argv)
     app.setApplicationName("D.Ai Command")
 
-    if _send_to_running(b"quit" if "--quit" in argv else b"toggle"):
+    initial = None
+    if "--query" in argv and argv.index("--query") + 1 < len(argv):
+        initial = argv[argv.index("--query") + 1]
+    message = b"quit" if "--quit" in argv else (b"query:" + initial.encode("utf-8") if initial is not None else b"toggle")
+    if _send_to_running(message):
         return 0
     if "--quit" in argv:
         return 0
@@ -442,9 +457,11 @@ def main(argv: list[str]) -> int:
             return
 
         def on_ready() -> None:
-            data = bytes(conn.readAll())
+            data = bytes(conn.readAll())[:4096]
             if data == b"quit":
                 app.quit()
+            elif data.startswith(b"query:"):
+                window.show_query(data[6:].decode("utf-8", "replace"))
             else:
                 window.toggle()
 
@@ -458,6 +475,8 @@ def main(argv: list[str]) -> int:
     palette.setColor(QPalette.ColorRole.PlaceholderText, QColor(MUTED))
     app.setPalette(palette)
 
-    if "--background" not in argv:
+    if initial is not None:
+        window.show_query(initial)
+    elif "--background" not in argv:
         window.toggle()
     return app.exec()

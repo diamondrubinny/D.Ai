@@ -36,10 +36,10 @@ jobs:
             build/live-build/common/includes.chroot_after_packages/usr/lib/live/config/*
           shellcheck -s sh build/live-build/common/includes.chroot_after_packages/etc/skel/.config/labwc/autostart \
             build/live-build/common/includes.chroot_after_packages/usr/bin/startdai-wayland \
-            apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout \
+            apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models
-          shellcheck build/scripts/build-llama.sh
+          shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh
 
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
@@ -80,8 +80,25 @@ jobs:
           path: llama-dist.tar.gz
           retention-days: 3
 
+  panel-plugin:
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build lxqt-panel plugin (Debian trixie container)
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src debian:trixie \
+            bash build/scripts/build-panel-plugin.sh /src/panel-plugin
+          sudo chown -R "$(id -u):$(id -g)" panel-plugin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: panel-plugin
+          path: panel-plugin/
+          retention-days: 3
+
   build:
-    needs: [lint, llama]
+    needs: [lint, llama, panel-plugin]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -100,6 +117,11 @@ jobs:
         with:
           name: llama-dist
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: panel-plugin
+          path: panel-plugin
+
       - name: Build ISO (Debian trixie container)
         timeout-minutes: 40
         run: |
@@ -107,6 +129,7 @@ jobs:
           docker run --rm --privileged \
             -e DAI_VERSION="0.1.0-alpha+${GITHUB_SHA::7}" \
             -e DAI_LLAMA_DIST=/src/llama-dist \
+            -e DAI_PANEL_PLUGIN=/src/panel-plugin \
             -e SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)" \
             -v "$PWD:/src" -w /src \
             debian:trixie \
@@ -177,7 +200,7 @@ jobs:
           set -euo pipefail
           mkdir -p publish
           for edition in user dev; do
-            for file in desktop.png apps.png system-checks.txt; do
+            for file in desktop.png apps.png panel-field.png ai-answer.png system-checks.txt; do
               src="shots/boot-$edition/$file"
               if [ -f "$src" ]; then cp "$src" "publish/$edition-$file"; fi
             done
