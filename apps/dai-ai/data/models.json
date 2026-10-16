@@ -9,7 +9,10 @@
       "size": 491400032,
       "license": "Apache-2.0",
       "ram_mb": 1024,
-      "purpose": "general assistant (fast)"
+      "purpose": "general assistant (fast)",
+      "tasks": [
+        "general"
+      ]
     },
     {
       "id": "qwen2.5-coder-1.5b",
@@ -20,7 +23,11 @@
       "size": 1117320768,
       "license": "Apache-2.0",
       "ram_mb": 2048,
-      "purpose": "coding assistant"
+      "purpose": "coding assistant",
+      "tasks": [
+        "general",
+        "code"
+      ]
     }
   ]
 }

@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "id": "flathub",
+  "name": {
+    "en": "Flathub app store",
+    "he": "חנות האפליקציות Flathub"
+  },
+  "description": {
+    "en": "Adds Flathub, the largest store of sandboxed Linux apps.",
+    "he": "מוסיף את Flathub, החנות הגדולה של אפליקציות לינוקס בארגז חול."
+  },
+  "match": {
+    "en": [
+      "flathub",
+      "flatpak",
+      "app store"
+    ],
+    "he": [
+      "חנות אפליקציות",
+      "חנות האפליקציות",
+      "פלאטהאב"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

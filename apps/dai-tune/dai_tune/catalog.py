@@ -659,3 +659,304 @@ register(ActionSpec(
     files=lambda p, c: [c.user_path(LABWC_ENV), c.user_path(LANG_STATE)],
     restore=lambda p, c, e: _reconfigure_labwc(c),
 ))
+
+
+# --------------------------------------------------------------------------
+# Services (used by D.Ai Forge recipes)
+# --------------------------------------------------------------------------
+
+UNIT_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{0,80}(?:@[a-z0-9._-]{1,40})?\.(?:service|timer|socket|path)$")
+# Core units a recipe may never switch: the firewall, confinement, the
+# session, authentication and the network. SSH has its own action.
+PROTECTED_UNITS = re.compile(
+    r"^(?:nftables|apparmor|systemd-.*|sddm|display-manager|dbus.*|polkit.*|NetworkManager.*|networkmanager.*|"
+    r"ssh|sshd|ssh@.*|getty@.*|serial-getty@.*|user@.*|unattended-upgrades|apt-daily.*|dai-.*|cron|rsyslog|"
+    r"auditd|zramswap|udisks2|accounts-daemon|rtkit-daemon)\.(?:service|timer|socket|path)$"
+)
+SYSTEM_UNIT_DIRS = ("/etc/systemd/system", "/usr/lib/systemd/system", "/lib/systemd/system")
+USER_UNIT_DIRS = ("/usr/lib/systemd/user", "/lib/systemd/user")
+
+
+def _unit_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"unit", "enabled"})
+    unit = params.get("unit")
+    if not isinstance(unit, str) or not UNIT_RE.match(unit):
+        raise ValidationError(f"invalid unit name: {unit!r}")
+    if PROTECTED_UNITS.match(unit):
+        raise ValidationError(f"refusing to change protected unit: {unit}")
+    # Existence is checked when applying: the unit usually comes from a
+    # package installed by an earlier step of the same plan.
+    return {"unit": unit, "enabled": _bool(params.get("enabled"))}
+
+
+def _unit_installed(ctx: Context, unit: str, dirs: tuple[str, ...]) -> bool:
+    template = re.sub(r"@[^.]+\.", "@.", unit)
+    return any(ctx.path(f"{d}/{name}").exists() for d in dirs for name in {unit, template})
+
+
+def _systemctl(user: bool) -> list[str]:
+    return ["systemctl", "--user"] if user else ["systemctl"]
+
+
+def _unit_state(ctx: Context, unit: str, user: bool) -> dict:
+    out = ctx.run([*_systemctl(user), "is-enabled", unit], check=False).stdout.strip()
+    return {"was_enabled": out in ("enabled", "enabled-runtime", "static", "alias")}
+
+
+def _unit_apply(params: Params, ctx: Context, user: bool) -> None:
+    dirs = USER_UNIT_DIRS if user else SYSTEM_UNIT_DIRS
+    if not _unit_installed(ctx, params["unit"], dirs):
+        raise ActionError(f"{params['unit']} is not installed")
+    verb = "enable" if params["enabled"] else "disable"
+    ctx.run([*_systemctl(user), verb, "--now", params["unit"]])
+
+
+def _unit_restore(params: Params, ctx: Context, extra: dict, user: bool) -> None:
+    if "was_enabled" not in extra:
+        return
+    verb = "enable" if extra["was_enabled"] else "disable"
+    ctx.run([*_systemctl(user), verb, "--now", params["unit"]], check=False)
+
+
+def _unit_summary(params: Params, lang: str, user: bool) -> str:
+    where = _t(lang, " (your session)", " (בסשן שלך)") if user else ""
+    if params["enabled"]:
+        return _t(lang, f"Start and enable {params['unit']}", f"הפעלת השירות {params['unit']}") + where
+    return _t(lang, f"Stop and disable {params['unit']}", f"כיבוי השירות {params['unit']}") + where
+
+
+register(ActionSpec(
+    id="service.unit",
+    scope="system",
+    validate=_unit_validate,
+    apply=lambda p, c: _unit_apply(p, c, user=False),
+    risk=lambda p: "medium",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _unit_summary(p, lang, user=False),
+    capture=lambda p, c: _unit_state(c, p["unit"], user=False),
+    restore=lambda p, c, e: _unit_restore(p, c, e, user=False),
+))
+
+register(ActionSpec(
+    id="service.user_unit",
+    scope="user",
+    validate=_unit_validate,
+    apply=lambda p, c: _unit_apply(p, c, user=True),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _unit_summary(p, lang, user=True),
+    capture=lambda p, c: _unit_state(c, p["unit"], user=True),
+    restore=lambda p, c, e: _unit_restore(p, c, e, user=True),
+))
+
+
+# --------------------------------------------------------------------------
+# Flatpak (Flathub only; the remote URL is fixed here, never taken from input)
+# --------------------------------------------------------------------------
+
+FLATPAK_REMOTES = {"flathub": "https://dl.flathub.org/repo/flathub.flatpakrepo"}
+FLATPAK_APP_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+){2,6}$")
+MAX_FLATPAKS = 5
+
+
+def _flatpak_remotes(ctx: Context) -> list[str]:
+    out = ctx.run(["flatpak", "remotes", "--system", "--columns=name"], check=False).stdout
+    return [line.strip() for line in out.splitlines() if line.strip()]
+
+
+def _flatpak_apps_installed(ctx: Context, apps: list[str]) -> list[str]:
+    out = ctx.run(["flatpak", "list", "--system", "--app", "--columns=application"], check=False).stdout
+    present = {line.strip() for line in out.splitlines()}
+    return [app for app in apps if app in present]
+
+
+def _remote_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"name"})
+    return {"name": _choice(params.get("name", "flathub"), tuple(FLATPAK_REMOTES), "remote")}
+
+
+def _remote_apply(params: Params, ctx: Context) -> None:
+    name = params["name"]
+    ctx.run(["flatpak", "remote-add", "--system", "--if-not-exists", name, FLATPAK_REMOTES[name]])
+
+
+def _remote_restore(params: Params, ctx: Context, extra: dict) -> None:
+    if extra.get("existed") is False:
+        ctx.run(["flatpak", "remote-delete", "--system", "--force", params["name"]], check=False)
+
+
+register(ActionSpec(
+    id="flatpak.remote",
+    scope="system",
+    validate=_remote_validate,
+    apply=_remote_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Add the Flathub app store", "הוספת חנות האפליקציות Flathub"),
+    capture=lambda p, c: {"existed": p["name"] in _flatpak_remotes(c)},
+    restore=_remote_restore,
+    note=lambda p, lang: _t(lang, "Flathub apps run sandboxed and update through Flatpak.",
+                            "אפליקציות Flathub רצות בארגז חול ומתעדכנות דרך Flatpak."),
+))
+
+
+def _flatpak_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"apps", "remote"})
+    apps = params.get("apps")
+    if not isinstance(apps, list) or not 1 <= len(apps) <= MAX_FLATPAKS:
+        raise ValidationError(f"apps: 1-{MAX_FLATPAKS} Flatpak application ids")
+    clean: list[str] = []
+    for app in apps:
+        if not isinstance(app, str) or not FLATPAK_APP_RE.match(app):
+            raise ValidationError(f"invalid Flatpak id: {app!r}")
+        if app not in clean:
+            clean.append(app)
+    return {"apps": clean, "remote": _choice(params.get("remote", "flathub"), tuple(FLATPAK_REMOTES), "remote")}
+
+
+def _flatpak_install_restore(params: Params, ctx: Context, extra: dict) -> None:
+    added = [a for a in params["apps"] if a not in extra.get("preinstalled", [])]
+    if added:
+        ctx.run(["flatpak", "uninstall", "--system", "-y", "--noninteractive", *added], check=False)
+
+
+def _flatpak_remove_restore(params: Params, ctx: Context, extra: dict) -> None:
+    if extra.get("preinstalled"):
+        ctx.run(["flatpak", "install", "--system", "-y", "--noninteractive", params["remote"], *extra["preinstalled"]],
+                check=False)
+
+
+register(ActionSpec(
+    id="flatpak.install",
+    scope="system",
+    validate=_flatpak_validate,
+    apply=lambda p, c: c.run(["flatpak", "install", "--system", "-y", "--noninteractive", p["remote"], *p["apps"]]),
+    risk=lambda p: "medium",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Install from Flathub: ", "התקנה מ־Flathub: ") + ", ".join(p["apps"]),
+    capture=lambda p, c: {"preinstalled": _flatpak_apps_installed(c, p["apps"])},
+    restore=_flatpak_install_restore,
+))
+
+register(ActionSpec(
+    id="flatpak.remove",
+    scope="system",
+    validate=_flatpak_validate,
+    apply=lambda p, c: c.run(["flatpak", "uninstall", "--system", "-y", "--noninteractive", *p["apps"]]),
+    risk=lambda p: "medium",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Remove Flatpak apps: ", "הסרת אפליקציות Flatpak: ") + ", ".join(p["apps"]),
+    capture=lambda p, c: {"preinstalled": _flatpak_apps_installed(c, p["apps"])},
+    restore=_flatpak_remove_restore,
+))
+
+
+# --------------------------------------------------------------------------
+# Antivirus: scheduled ClamAV scan of /home with quarantine
+# --------------------------------------------------------------------------
+
+AV_SERVICE = "/etc/systemd/system/dai-av-scan.service"
+AV_TIMER = "/etc/systemd/system/dai-av-scan.timer"
+AV_QUARANTINE = "/var/lib/dai/quarantine"
+AV_LOG = "/var/log/dai-av-scan.log"
+
+
+def render_av_service() -> str:
+    return (
+        "# Managed by dai-tune (D.Ai Forge antivirus recipe). Undo with: dai-tune undo\n"
+        "[Unit]\n"
+        "Description=D.Ai antivirus scan of /home (ClamAV)\n"
+        "Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/FORGE.md\n"
+        "After=clamav-freshclam.service\n\n"
+        "[Service]\n"
+        "Type=oneshot\n"
+        f"ExecStart=/usr/bin/clamscan --recursive --infected --move={AV_QUARANTINE} "
+        f"--exclude-dir=^{AV_QUARANTINE} --log={AV_LOG} /home\n"
+        "# clamscan exits 1 when it found (and quarantined) infected files.\n"
+        "SuccessExitStatus=1\n"
+        "Nice=19\n"
+        "IOSchedulingClass=idle\n"
+        "CPUSchedulingPolicy=idle\n"
+        "NoNewPrivileges=yes\n"
+        "PrivateNetwork=yes\n"
+        "PrivateTmp=yes\n"
+        "PrivateDevices=yes\n"
+        "ProtectSystem=strict\n"
+        f"ReadWritePaths=/home {AV_QUARANTINE} /var/log\n"
+        "ProtectKernelTunables=yes\n"
+        "ProtectKernelModules=yes\n"
+        "ProtectControlGroups=yes\n"
+        "RestrictRealtime=yes\n"
+        "LockPersonality=yes\n"
+    )
+
+
+def render_av_timer(frequency: str) -> str:
+    return (
+        "# Managed by dai-tune (D.Ai Forge antivirus recipe). Undo with: dai-tune undo\n"
+        "[Unit]\n"
+        "Description=Scheduled D.Ai antivirus scan\n\n"
+        "[Timer]\n"
+        f"OnCalendar={frequency}\n"
+        "Persistent=true\n"
+        "RandomizedDelaySec=30min\n\n"
+        "[Install]\n"
+        "WantedBy=timers.target\n"
+    )
+
+
+def _av_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"enabled", "frequency"})
+    return {
+        "enabled": _bool(params.get("enabled", True)),
+        "frequency": _choice(params.get("frequency", "daily"), ("daily", "weekly"), "frequency"),
+    }
+
+
+def _av_apply(params: Params, ctx: Context) -> None:
+    if params["enabled"]:
+        if not ctx.path("/usr/bin/clamscan").exists():
+            raise ActionError("ClamAV is not installed (clamscan missing)")
+        quarantine = ctx.path(AV_QUARANTINE)
+        quarantine.mkdir(parents=True, exist_ok=True)
+        quarantine.chmod(0o700)
+        write_file(ctx.path(AV_SERVICE), render_av_service())
+        write_file(ctx.path(AV_TIMER), render_av_timer(params["frequency"]))
+        ctx.run(["systemctl", "daemon-reload"])
+        ctx.run(["systemctl", "enable", "--now", "dai-av-scan.timer"])
+    else:
+        ctx.run(["systemctl", "disable", "--now", "dai-av-scan.timer"], check=False)
+        for name in (AV_TIMER, AV_SERVICE):
+            path = ctx.path(name)
+            if path.exists():
+                path.unlink()
+        ctx.run(["systemctl", "daemon-reload"], check=False)
+
+
+def _av_restore(params: Params, ctx: Context, extra: dict) -> None:
+    # Unit files were already restored from the snapshot.
+    ctx.run(["systemctl", "daemon-reload"], check=False)
+    verb = "enable" if extra.get("was_enabled") else "disable"
+    if extra.get("was_enabled") or params["enabled"]:
+        ctx.run(["systemctl", verb, "--now", "dai-av-scan.timer"], check=False)
+
+
+register(ActionSpec(
+    id="antivirus.schedule",
+    scope="system",
+    validate=_av_validate,
+    apply=_av_apply,
+    risk=lambda p: "low" if p["enabled"] else "medium",
+    effect=lambda p: "hardens" if p["enabled"] else "weakens",
+    summary=lambda p, lang: (
+        _t(lang, f"Scan /home for viruses ({p['frequency']}) and quarantine infected files",
+           f"סריקת וירוסים ל־/home ({'יומית' if p['frequency'] == 'daily' else 'שבועית'}) והעברת קבצים נגועים להסגר")
+        if p["enabled"] else
+        _t(lang, "Stop scheduled virus scans", "הפסקת סריקות וירוסים מתוזמנות")
+    ),
+    files=lambda p, c: [c.path(AV_SERVICE), c.path(AV_TIMER)],
+    capture=lambda p, c: _unit_state(c, "dai-av-scan.timer", user=False),
+    restore=_av_restore,
+    note=lambda p, lang: _t(lang, f"Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}",
+                            f"הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}") if p["enabled"] else "",
+))

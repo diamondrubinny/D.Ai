@@ -57,8 +57,9 @@ def describe(plan: Plan, lang: str) -> list[dict[str, Any]]:
     return rows
 
 
-def print_plan(plan: Plan, lang: str) -> None:
-    print(_color(_l(lang, f"D.Ai Tune — change plan  #{plan.hash}", f"D.Ai Tune — תוכנית שינויים  #{plan.hash}"), "1"))
+def print_plan(plan: Plan, lang: str, heading: str = "") -> None:
+    heading = heading or _l(lang, "D.Ai Tune — change plan", "D.Ai Tune — תוכנית שינויים")
+    print(_color(f"{heading}  #{plan.hash}", "1"))
     for index, row in enumerate(describe(plan, lang), 1):
         tags = " · ".join([
             _label("scope", row["scope"], lang), _label("risk", row["risk"], lang), _label("effect", row["effect"], lang)
@@ -151,7 +152,25 @@ def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes:
             "unknown": plan.unknown, "errors": plan.errors, "steps": describe(plan, lang),
         }, ensure_ascii=False, indent=2))
         return 0 if plan.ok else 2
-    print_plan(plan, lang)
+    return execute_plan(plan, ctx, dry_run=dry_run, assume_yes=assume_yes, from_ai=from_ai)
+
+
+def execute_plan(
+    plan: Plan,
+    ctx: Context,
+    *,
+    dry_run: bool = False,
+    assume_yes: bool = False,
+    from_ai: bool = False,
+    heading: str = "",
+    label: str = "",
+) -> int:
+    """Show a plan, confirm it, apply system steps through the helper, then user steps.
+
+    Shared by dai-tune and D.Ai Forge so every change follows the same rules.
+    """
+    lang = ctx.lang
+    print_plan(plan, lang, heading)
     if not plan.ok:
         if not plan.steps and not plan.errors:
             print(_l(lang, 'Nothing was changed. See what you can ask: dai-tune help',
@@ -184,6 +203,8 @@ def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes:
 
     journal = Journal.for_user(ctx)
     summaries = [row["summary"] for row in describe(plan, lang)]
+    if label:  # e.g. the Forge recipe name, shown first in history
+        summaries.insert(0, label)
     try:
         apply_steps(plan.scoped("user"), ctx, journal, actor=str(os.getuid()), scope="user",
                     extra={"system_entry": system_id, "summary": summaries})

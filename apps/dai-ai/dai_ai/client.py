@@ -40,8 +40,11 @@ def status() -> dict[str, Any]:
     return next(_request({"op": "status"}, timeout=5))
 
 
-def chat(messages: list[dict[str, str]], schema: dict | None = None, max_tokens: int = 512) -> Iterator[str]:
-    for message in _request({"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens}):
+def chat(
+    messages: list[dict[str, str]], schema: dict | None = None, max_tokens: int = 512, task: str = "general"
+) -> Iterator[str]:
+    payload = {"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens, "task": task}
+    for message in _request(payload):
         if message.get("done"):
             return
         if "delta" in message:

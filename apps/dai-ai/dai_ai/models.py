@@ -24,6 +24,7 @@ ALLOWED_DOMAINS = ("huggingface.co", "hf.co")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9.-]{1,48}$")
 CHUNK = 1024 * 1024
+TASKS = ("general", "code")
 
 
 class ModelError(RuntimeError):
@@ -47,6 +48,7 @@ class Model:
     license: str
     ram_mb: int
     purpose: str
+    tasks: tuple[str, ...] = ("general",)
 
     @property
     def path(self) -> Path:
@@ -65,7 +67,9 @@ def load_catalog(path: Path = CATALOG) -> dict[str, Model]:
     data = json.loads(path.read_text(encoding="utf-8"))
     models: dict[str, Model] = {}
     for raw in data["models"]:
-        model = Model(**raw)
+        if not isinstance(raw.get("tasks", []), list) or not all(t in TASKS for t in raw.get("tasks", [])):
+            raise ModelError(f"invalid tasks in catalog entry: {raw.get('id')}")
+        model = Model(**{**raw, "tasks": tuple(raw.get("tasks", ["general"]))})
         if not ID_RE.match(model.id) or "/" in model.file or not model.file.endswith(".gguf"):
             raise ModelError(f"invalid catalog entry: {model.id}")
         if urllib.parse.urlparse(model.url).scheme != "https":
@@ -131,7 +135,12 @@ def install(model: Model, progress: Callable[[int, int], None] | None = None, op
     return target
 
 
-def default_model_id(models: dict[str, Model]) -> str | None:
+def default_model_id(models: dict[str, Model], task: str = "general") -> str | None:
+    if task != "general":
+        # Prefer a model made for the task (e.g. the coder model for apps).
+        suited = [m for m in models.values() if m.installed and task in m.tasks]
+        if suited:
+            return min(suited, key=lambda m: m.ram_mb).id
     try:
         chosen = json.loads(config_file().read_text(encoding="utf-8")).get("model")
         if chosen in models and models[chosen].installed:

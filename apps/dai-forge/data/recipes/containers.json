@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "id": "containers",
+  "name": {
+    "en": "Containers (Podman, rootless)",
+    "he": "קונטיינרים (Podman, בלי root)"
+  },
+  "description": {
+    "en": "Run OCI/Docker containers without a root daemon.",
+    "he": "הרצת קונטיינרים (OCI/Docker) בלי שירות שרץ כ־root."
+  },
+  "match": {
+    "en": [
+      "podman",
+      "docker",
+      "containers",
+      "container"
+    ],
+    "he": [
+      "קונטיינרים",
+      "קונטיינר",
+      "דוקר",
+      "מכולות"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "podman"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

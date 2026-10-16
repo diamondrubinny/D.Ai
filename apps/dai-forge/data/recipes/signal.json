@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "id": "signal",
+  "name": {
+    "en": "Signal messenger",
+    "he": "Signal"
+  },
+  "description": {
+    "en": "Signal Desktop from Flathub (sandboxed).",
+    "he": "Signal למחשב מ־Flathub (בארגז חול)."
+  },
+  "match": {
+    "en": [
+      "signal messenger",
+      "signal desktop"
+    ],
+    "he": [
+      "סיגנל"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "org.signal.Signal"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "id": "syncthing",
+  "name": {
+    "en": "File sync between my computers (Syncthing)",
+    "he": "סנכרון קבצים בין המחשבים שלי (Syncthing)"
+  },
+  "description": {
+    "en": "Encrypted peer-to-peer file sync, no cloud. Reachable from the local network only.",
+    "he": "סנכרון קבצים מוצפן ישירות בין מחשבים, בלי ענן. נגיש מהרשת המקומית בלבד."
+  },
+  "match": {
+    "en": [
+      "syncthing",
+      "file sync",
+      "sync files",
+      "sync my files"
+    ],
+    "he": [
+      "סנכרון קבצים",
+      "לסנכרן קבצים",
+      "סנכרון בין מחשבים",
+      "סינכרון קבצים"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "syncthing"
+        ]
+      }
+    },
+    {
+      "action": "service.user_unit",
+      "params": {
+        "unit": "syncthing.service",
+        "enabled": true
+      }
+    },
+    {
+      "action": "firewall.open_port",
+      "params": {
+        "port": 22000,
+        "proto": "tcp",
+        "source": "lan"
+      }
+    },
+    {
+      "action": "firewall.open_port",
+      "params": {
+        "port": 22000,
+        "proto": "udp",
+        "source": "lan"
+      }
+    },
+    {
+      "action": "firewall.open_port",
+      "params": {
+        "port": 21027,
+        "proto": "udp",
+        "source": "lan"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

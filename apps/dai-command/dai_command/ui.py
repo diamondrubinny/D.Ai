@@ -314,6 +314,13 @@ class CommandWindow(QWidget):
             command = ["dai-tune", request] if request else ["dai-tune", "help"]
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-tune "$@"; echo; read -r -p "Enter ↵" _', "dai-tune", *command[1:]])
             remembered = f"!{request}" if request else ""
+        elif action.kind == "forge":
+            # Review, permissions and authorization happen in dai-forge.
+            request = str(action.payload)
+            args = [request] if request else ["help"]
+            self._spawn(["x-terminal-emulator", "-e", "bash", "-c",
+                         'dai-forge "$@"; echo; read -r -p "Enter ↵" _', "dai-forge", *args])
+            remembered = f"+{request}" if request else ""
         elif action.kind == "ai":
             self.ask_ai(str(action.payload))
             return

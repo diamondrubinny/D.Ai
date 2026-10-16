@@ -27,6 +27,7 @@ build/assets/                Wallpaper generator
 apps/dai-command/            D.Ai Command (PyQt6) + unit tests
 apps/dai-tune/               D.Ai Tune: text-driven configuration, root helper, polkit policy + unit tests
 apps/dai-ai/                 Local AI: daid service, model manager, client + unit tests
+apps/dai-forge/              D.Ai Forge: recipes, AI app builder, bubblewrap sandbox + unit tests
 tests/boot/                  Headless QEMU boot test
 docs/                        Specification, architecture, threat model
 ```
@@ -85,6 +86,16 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
   Models are downloaded on demand with `dai-models install qwen2.5-0.5b` and verified against a pinned SHA-256.
   Ask with `?` in D.Ai Command or `dai-ai "question"`; D.Ai Tune can ask it to interpret free-form requests,
   constrained to the action catalog and always confirmed by the user.
+- **D.Ai Forge** (`apps/dai-forge`, [docs/FORGE.md](docs/FORGE.md)): an administrator types `+` in the command
+  line next to Start and writes what the computer should be able to do — `+ תתקין אנטי וירוס`,
+  `+ add file sync between my computers`, `+ תבנה אפליקציה לרשימת קניות`.
+  *Recipes* (antivirus with ClamAV and quarantine, Syncthing, Flathub, Podman, WireGuard, Nextcloud, VS Code,
+  Telegram, Signal) become D.Ai Tune plans: reviewed, authorized by polkit, journaled and undoable. When no recipe
+  exists, the local AI writes one from catalog actions only, for review, and it can be saved and shared.
+  The local AI can also **build apps** (Qt, web or terminal) that appear in the Start menu and run in a
+  **bubblewrap sandbox**: no network, no access to the rest of your files, read-only system — unless you approve
+  a permission. Every change keeps the previous version. Capabilities are data the user owns, so they do not
+  wait for a D.Ai release.
 - **D.Ai Night** theme: dark, high-contrast (WCAG AA) palette with a violet→cyan accent, custom wallpaper,
   matching window decorations. Design system: [docs/DESIGN.md](docs/DESIGN.md).
 
