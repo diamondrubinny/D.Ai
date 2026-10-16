@@ -16,7 +16,7 @@ import time
 
 LIVE_USER = "dai"
 LIVE_PASSWORD = "live"  # live-config default; live session only
-SHELL_PROMPT = re.compile(rb"[$#] $")
+LOGIN_FAILED = re.compile(rb"Login incorrect")
 
 
 class Serial:
@@ -43,7 +43,8 @@ class Serial:
             if not chunk:
                 break
             self.buf += chunk
-        raise TimeoutError(f"pattern {pattern.pattern!r} not seen within {timeout}s")
+        tail = self.buf[-800:].decode(errors="replace")
+        raise TimeoutError(f"pattern {pattern.pattern!r} not seen within {timeout}s; console tail:\n{tail}")
 
     def run(self, command: str, timeout: float = 30) -> str:
         """Run a shell command and return its output between unique markers."""
@@ -72,7 +73,13 @@ def main() -> int:
     serial.send(f"{LIVE_USER}\n")
     serial.expect(re.compile(rb"Password: ?$", re.M), 30)
     serial.send(f"{LIVE_PASSWORD}\n")
-    serial.expect(SHELL_PROMPT, 60)
+    time.sleep(5)
+    if LOGIN_FAILED.search(serial.buf):
+        print("login as the live user failed", file=sys.stderr)
+        return 1
+    # Wait for an interactive shell by round-tripping a marker; this does not
+    # depend on the prompt format or terminal escape sequences.
+    serial.run("true", timeout=60)
     # Quiet the console: no kernel messages, no colors, fixed width.
     serial.run("sudo dmesg -n 1; export TERM=dumb PAGER=cat SYSTEMD_PAGER=cat SYSTEMD_COLORS=0")
 

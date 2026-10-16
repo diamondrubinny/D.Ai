@@ -125,6 +125,10 @@ monitor "screendump $ARTIFACT_DIR/desktop.png -f png" || log "warning: screensho
 [[ -s "$ARTIFACT_DIR/desktop.png" ]] && log "screenshot: $ARTIFACT_DIR/desktop.png"
 
 log "running in-guest system checks over the serial console"
-python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" || die "system checks failed (see $REPORT)"
+if ! python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT"; then
+  log "last serial console lines:"
+  tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2
+  die "system checks failed (see $REPORT)"
+fi
 
 log "PASS"
