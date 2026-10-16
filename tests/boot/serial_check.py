@@ -16,6 +16,7 @@ import time
 
 LIVE_USER = "dai"
 LIVE_PASSWORD = "live"  # live-config default; live session only
+MARKER_PREFIX = "__DAI_"
 LOGIN_FAILED = re.compile(rb"Login incorrect")
 SHELL_PROMPT_OR_FAILURE = re.compile(rb"[$#] $|Login incorrect")
 
@@ -49,16 +50,16 @@ class Serial:
 
     def run(self, command: str, timeout: float = 30) -> str:
         """Run a shell command and return its output between unique markers."""
-        marker = f"__DAI_{time.monotonic_ns()}__"
+        marker = f"{MARKER_PREFIX}{time.monotonic_ns()}__"
         self.buf = b""
         # The echo splits the marker so the terminal echo of the command
         # line never matches the end pattern.
         self.send(f"{command} 2>&1; echo {marker[:6]}''{marker[6:]}\n")
         out = self.expect(re.compile(re.escape(marker.encode()) + rb"\r?\n"), timeout)
         text = out.decode(errors="replace").replace("\r", "")
-        lines = text.split("\n")
-        # Drop the echoed command line and the end marker.
-        body = [line for line in lines[1:] if marker not in line]
+        # Drop terminal echoes of the command line (which may be wrapped or
+        # repeated) and the end marker; all of them contain the marker prefix.
+        body = [line for line in text.split("\n") if MARKER_PREFIX not in line]
         return "\n".join(body).strip()
 
 
@@ -101,6 +102,16 @@ def main() -> int:
         ("failed units", "systemctl --failed --no-legend --plain", False, lambda o: o.strip() == ""),
     ]
 
+    # Always printed, never judged: context for diagnosing failures.
+    diagnostics = [
+        ("sddm config", "cat /etc/sddm.conf.d/*.conf"),
+        ("session files", "ls /usr/share/wayland-sessions /usr/share/xsessions"),
+        ("login sessions", "loginctl list-sessions --no-legend"),
+        ("session processes", "ps -eo user,args | grep -Ei 'sddm|xorg|labwc|lxqt|pcmanfm' | grep -v grep"),
+        ("sddm journal", "sudo journalctl -b -u sddm --no-pager -o cat | tail -n 40"),
+        ("wayland session log", "tail -n 40 ~/.local/share/sddm/wayland-session.log"),
+    ]
+
     failed_required = 0
     lines = []
     for name, command, required, ok in checks:
@@ -115,6 +126,14 @@ def main() -> int:
         lines.append(f"[{status}] {name}: {command}")
         if output:
             lines.extend(f"        {line}" for line in output.splitlines()[:20])
+
+    for name, command in diagnostics:
+        try:
+            output = serial.run(command)
+        except (TimeoutError, OSError) as exc:
+            output = f"<error: {exc}>"
+        lines.append(f"[INFO] {name}: {command}")
+        lines.extend(f"        {line}" for line in output.splitlines()[:40])
 
     serial.send("exit\n")
     report = "\n".join(lines) + "\n"
