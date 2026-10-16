@@ -201,10 +201,13 @@ def main() -> int:
          lambda o: "USB" in o, 300),
         # D.Ai Forge: recipes become Tune plans; apps run in the bubblewrap sandbox.
         ("forge: version", "dai-forge --version", True, lambda o: "Diamond Rubinny (d.Ai)" in o),
+        ("forge: window installed", "dai-forge-gui --version; test -f /usr/share/applications/dai-forge.desktop && echo IN_MENU; "
+         "grep -c 'ownIcon=true' /etc/xdg/lxqt/panel.conf; test -f /etc/swaylock/config && echo LOCK_THEMED", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "IN_MENU" in o and "LOCK_THEMED" in o),
         ("forge: recipes", "dai-forge recipe list", True,
          lambda o: all(r in o for r in ("antivirus", "syncthing", "flathub")) and "!" not in o),
         ("forge: hebrew plan", f"LANG=he_IL.UTF-8 dai-forge --dry-run \"$(printf '{_hex(HEBREW_FORGE)}')\"", True,
-         lambda o: "ClamAV" in o and "dai-av-scan" not in o and "clamav-freshclam" in o),
+         lambda o: "ClamAV" in o and "clamav-freshclam" in o and "/var/lib/dai/quarantine" in o),
         ("forge: install antivirus", "DAI_TUNE_ELEVATE=sudo dai-forge --yes 'install antivirus' </dev/null 2>&1 | tail -n 3; "
          "systemctl is-enabled dai-av-scan.timer; systemctl show -p ExecStart dai-av-scan.service | grep -o 'move=[^ ]*'; "
          "test -x /usr/bin/clamscan && echo CLAMSCAN_OK", True,

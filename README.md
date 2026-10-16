@@ -66,9 +66,15 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
 
 ![D.Ai Command open over the file manager](docs/screenshots/command-bar.png)
 
+D.Ai Forge (rendered from the real window code; in-VM screenshots are published by CI):
+
+| Ask | Review the plan | The local AI writes the app |
+|-----|-----------------|-----------------------------|
+| ![D.Ai Forge home: request field, ideas and ready recipes](docs/screenshots/forge-home.png) | ![Plan cards for file sync: weakening steps need a typed confirmation](docs/screenshots/forge-plan.png) | ![Live code while the local AI writes a shopping-list app](docs/screenshots/forge-building.png) |
+
 *Screenshots are captured automatically by CI from the live ISO booted in QEMU.*
 
-- **Taskbar** with a **Start** menu and, right next to it, a real **text field** (lxqt-panel plugin,
+- **Taskbar** with the **D.Ai diamond as the Start button** and, right next to it, a real **text field** (lxqt-panel plugin,
   `apps/dai-panel-plugin`) that opens D.Ai Command as you type; an **HE/EN indicator** (`dai-lang`, `Alt+Shift`).
 - **D.Ai Command** (`apps/dai-command`): one bar to launch apps (also by Hebrew name), run commands
   (`>` in a terminal, `$` in the background), calculate (`2*(3+4)`, `15% of 80`) and **fix text typed in
@@ -86,8 +92,8 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
   Models are downloaded on demand with `dai-models install qwen2.5-0.5b` and verified against a pinned SHA-256.
   Ask with `?` in D.Ai Command or `dai-ai "question"`; D.Ai Tune can ask it to interpret free-form requests,
   constrained to the action catalog and always confirmed by the user.
-- **D.Ai Forge** (`apps/dai-forge`, [docs/FORGE.md](docs/FORGE.md)): an administrator types `+` in the command
-  line next to Start and writes what the computer should be able to do — `+ תתקין אנטי וירוס`,
+- **D.Ai Forge** (`apps/dai-forge`, [docs/FORGE.md](docs/FORGE.md)): a window (`Super+B`, or `+` in the command
+  line next to the diamond Start button) where an administrator writes what the computer should be able to do — `+ תתקין אנטי וירוס`,
   `+ add file sync between my computers`, `+ תבנה אפליקציה לרשימת קניות`.
   *Recipes* (antivirus with ClamAV and quarantine, Syncthing, Flathub, Podman, WireGuard, Nextcloud, VS Code,
   Telegram, Signal) become D.Ai Tune plans: reviewed, authorized by polkit, journaled and undoable. When no recipe

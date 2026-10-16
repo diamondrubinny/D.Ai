@@ -34,6 +34,7 @@ from . import __author__, __version__
 from .core import Action, History, build_actions, load_apps, tr
 
 APP_ID = "dai-command"
+LOGO = Path(os.environ.get("DAI_BRANDING_DIR", "/usr/share/dai/branding")) / "dai-logo.svg"
 ACTION_ROLE = Qt.ItemDataRole.UserRole + 1
 MAX_ROWS = 8
 
@@ -207,6 +208,8 @@ class CommandWindow(QWidget):
 
         row = QHBoxLayout()
         logo = QLabel("◆", objectName="Logo")
+        if LOGO.is_file():  # the faceted D.Ai diamond; the glyph is the fallback
+            logo.setPixmap(QIcon(str(LOGO)).pixmap(QSize(34, 34)))
         logo.setAccessibleName("D.Ai")
         self.query = QLineEdit(objectName="Query")
         self.query.setPlaceholderText(tr("placeholder"))
@@ -315,11 +318,9 @@ class CommandWindow(QWidget):
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-tune "$@"; echo; read -r -p "Enter ↵" _', "dai-tune", *command[1:]])
             remembered = f"!{request}" if request else ""
         elif action.kind == "forge":
-            # Review, permissions and authorization happen in dai-forge.
+            # Review, permissions and authorization happen in the D.Ai Forge window.
             request = str(action.payload)
-            args = [request] if request else ["help"]
-            self._spawn(["x-terminal-emulator", "-e", "bash", "-c",
-                         'dai-forge "$@"; echo; read -r -p "Enter ↵" _', "dai-forge", *args])
+            self._spawn(["dai-forge-gui", *([request] if request else [])])
             remembered = f"+{request}" if request else ""
         elif action.kind == "ai":
             self.ask_ai(str(action.payload))

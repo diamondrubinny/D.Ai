@@ -41,7 +41,7 @@ jobs:
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models \
-            apps/dai-forge/data/dai-forge
+            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui
           shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh
 
       - name: Unit tests (dai-ai)
@@ -55,8 +55,9 @@ jobs:
       - name: Unit tests (dai-forge, with a real bubblewrap sandbox when available)
         env:
           PYTHONPATH: apps/dai-tune:apps/dai-ai
+          QT_QPA_PLATFORM: offscreen
         run: |
-          sudo apt-get install -y -qq bubblewrap >/dev/null || true
+          sudo apt-get install -y -qq bubblewrap python3-pyqt6 >/dev/null || true
           python3 -m unittest discover -s apps/dai-forge/tests -t apps/dai-forge -v
 
       - name: Unit tests (dai-command)
@@ -210,7 +211,7 @@ jobs:
           set -euo pipefail
           mkdir -p publish
           for edition in user dev; do
-            for file in desktop.png apps.png panel-field.png ai-answer.png forge-preview.png forge-app.png system-checks.txt; do
+            for file in desktop.png apps.png panel-field.png ai-answer.png start-menu.png forge-preview.png forge-window.png forge-app.png system-checks.txt; do
               src="shots/boot-$edition/$file"
               if [ -f "$src" ]; then cp "$src" "publish/$edition-$file"; fi
             done

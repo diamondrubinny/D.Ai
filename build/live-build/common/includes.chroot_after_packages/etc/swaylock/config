@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Night lock screen (system-wide swaylock defaults; ~/.config/swaylock/config overrides).
+image=/usr/share/dai/branding/wallpaper-night.jpg
+scaling=fill
+color=0B1020
+font=Noto Sans
+font-size=22
+indicator-radius=92
+indicator-thickness=9
+indicator-idle-visible
+show-failed-attempts
+ignore-empty-password
+inside-color=0B1020CC
+inside-clear-color=0B1020CC
+inside-ver-color=1C2547E6
+inside-wrong-color=3A1020E6
+ring-color=7C5CFF
+ring-clear-color=22D3EE
+ring-ver-color=22D3EE
+ring-wrong-color=F87171
+key-hl-color=22D3EE
+bs-hl-color=F87171
+line-color=00000000
+line-clear-color=00000000
+line-ver-color=00000000
+line-wrong-color=00000000
+separator-color=00000000
+text-color=E6E9F5
+text-clear-color=E6E9F5
+text-ver-color=E6E9F5
+text-wrong-color=F87171
+layout-bg-color=1C2547E6
+layout-border-color=2A3563
+layout-text-color=E6E9F5

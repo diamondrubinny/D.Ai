@@ -140,6 +140,8 @@ stage_apps() {
   cp -r "$forge/dai_forge" "$root/usr/lib/dai/"
   find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
   install -m 0755 "$forge/data/dai-forge" "$root/usr/bin/dai-forge"
+  install -m 0755 "$forge/data/dai-forge-gui" "$root/usr/bin/dai-forge-gui"
+  install -m 0644 "$forge/data/dai-forge.desktop" "$root/usr/share/applications/dai-forge.desktop"
   install -d "$root/usr/share/dai/forge/recipes" "$root/usr/share/dai/forge/examples" "$root/etc/dai/forge/recipes"
   install -m 0644 "$forge"/data/recipes/*.json "$root/usr/share/dai/forge/recipes/"
   install -m 0644 "$forge"/examples/* "$root/usr/share/dai/forge/examples/"

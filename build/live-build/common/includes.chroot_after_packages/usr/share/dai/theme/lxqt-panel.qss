@@ -33,20 +33,26 @@ LXQtPanelPlugin > QToolButton:hover {
     background: rgba(124, 92, 255, 22%);
 }
 
-/* Start button */
+/* Start button: the D.Ai diamond (panel.conf: ownIcon). A soft violet glow
+ * on hover, a cyan ring when focused from the keyboard. */
 #FancyMenu {
-    margin: 5px 4px 5px 6px;
-    padding: 2px 14px;
-    border: none;
-    border-radius: 10px;
-    color: #FFFFFF;
-    font-weight: bold;
-    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #6447F0, stop: 1 #5B3FD6);
+    margin: 4px 4px 4px 8px;
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
     qproperty-icon: url(mainmenu.svg);
 }
 #FancyMenu:hover {
-    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #7C5CFF, stop: 1 #6447F0);
+    border: 1px solid rgba(124, 92, 255, 70%);
+    background: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.7, fx: 0.5, fy: 0.5,
+                                stop: 0 rgba(124, 92, 255, 55%), stop: 1 rgba(34, 211, 238, 10%));
 }
+#FancyMenu:pressed, #FancyMenu:checked {
+    background: rgba(91, 63, 214, 80%);
+    border: 1px solid #7C5CFF;
+}
+#FancyMenu:focus { border: 2px solid #22D3EE; }
 
 /* Start menu window */
 #FancyMenu QLineEdit {
