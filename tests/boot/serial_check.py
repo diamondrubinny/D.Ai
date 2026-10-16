@@ -257,10 +257,12 @@ def main() -> int:
          lambda o: "Diamond Rubinny (d.Ai)" in o and "COPIED" in o and "JUNK_SKIPPED" in o),
         # Organization policies: a root-owned file in /etc/dai/policy.d is applied by itself.
         ("policy: applied on drop", "dai-tune policy; printf '%s' '{\"format\": 1, \"name\": \"CI\", "
-         "\"apply\": [\"block usb storage\"]}' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/90-ci.json; "
+         "\"apply\": [\"block usb storage\", \"lock the screen after 5 minutes\"]}' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/90-ci.json; "
          "sleep 8; dai-tune policy; test -f /etc/modprobe.d/dai-tune-usb_storage.conf && echo POLICY_APPLIED; "
-         "sudo rm -f /etc/dai/policy.d/90-ci.json /etc/modprobe.d/dai-tune-usb_storage.conf", True,
-         lambda o: "POLICY_APPLIED" in o and "applied" in o, 120),
+         "cat /etc/dai/policy-session.env; dai-tune --dry-run 'never lock the screen' </dev/null; "
+         "sudo rm -f /etc/dai/policy.d/90-ci.json /etc/modprobe.d/dai-tune-usb_storage.conf /etc/dai/policy-session.env", True,
+         lambda o: "POLICY_APPLIED" in o and "applied" in o and "DAI_LOCK_MAX_SECONDS=300" in o
+         and "at most 5 minutes" in o, 120),
         ("office and edition", ". /etc/dai-release; echo EDITION=$EDITION; command -v libreoffice >/dev/null && echo OFFICE; "
          "if [ \"$EDITION\" = edu ]; then for app in gcompris-qt tuxpaint stellarium; do command -v $app >/dev/null && echo EDU_$app; done; fi",
          True, lambda o: "OFFICE" in o and ("EDITION=edu" not in o or o.count("EDU_") >= 2)),
