@@ -4,6 +4,7 @@
   "apply": [
     "block usb storage",
     "turn off bluetooth",
+    "lock the screen after 5 minutes",
     "enable automatic updates",
     "install gcompris-qt tuxpaint"
   ]

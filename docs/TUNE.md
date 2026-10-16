@@ -84,7 +84,8 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `packages.install` / `packages.remove` | "התקן vlc gimp", "הסר vlc" | מערכת | ניטרלי |
 | `system.timezone` | "אזור זמן ירושלים" | מערכת | ניטרלי |
 | `system.hostname` | "שנה שם מחשב ל־office-pc" | מערכת | ניטרלי |
-| `session.lock` | "נעל מסך אחרי 5 דקות" | משתמש | מחזק / מחליש |
+| `session.lock` | "נעל מסך אחרי 5 דקות" (לא יותר ממה שמדיניות ארגונית מתירה) | משתמש | מחזק / מחליש |
+| `session.lock_max` | רק ממדיניות ארגונית: "lock the screen after 5 minutes" לכל המשתמשים ([EDU.md](EDU.md) §2.1) | מערכת | מחזק / ניטרלי |
 | `keyboard.layouts` | "מקלדת עברית אנגלית רוסית" | משתמש | ניטרלי |
 | `preset.public` | "מצב ציבורי" (Bluetooth כבוי, נעילה 3 דק', סגירת פורטים פתוחים לעולם) | שניהם | מחזק |
 | `preset.privacy` | "מצב פרטיות" (מצלמה ו־Bluetooth חסומים) | מערכת | מחזק |

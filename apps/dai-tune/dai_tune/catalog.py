@@ -554,7 +554,7 @@ SESSION_ENV = ".config/dai/session.env"
 LABWC_ENV = ".config/labwc/environment"
 
 
-def update_env_file(path: Path, updates: dict[str, str]) -> None:
+def update_env_file(path: Path, updates: dict[str, str], mode: int = 0o600) -> None:
     """Set KEY=VALUE lines, keeping every other line as it was."""
     lines = read_text(path).splitlines()
     pending = dict(updates)
@@ -563,16 +563,44 @@ def update_env_file(path: Path, updates: dict[str, str]) -> None:
         if key in pending:
             lines[index] = f"{key}={pending.pop(key)}"
     lines += [f"{key}={value}" for key, value in pending.items()]
-    write_file(path, "\n".join(lines) + "\n", mode=0o600)
+    write_file(path, "\n".join(lines) + "\n", mode=mode)
 
 
-def lock_timeout_seconds(ctx: Context) -> int:
-    for line in read_text(ctx.user_path(SESSION_ENV)).splitlines():
-        if line.startswith("DAI_LOCK_TIMEOUT_SECONDS="):
+def _env_seconds(path: Path, key: str) -> int | None:
+    for line in read_text(path).splitlines():
+        if line.startswith(f"{key}="):
             value = line.split("=", 1)[1].strip()
             if value.isdigit():
                 return int(value)
-    return 600  # default in /etc/skel autostart
+    return None
+
+
+# Set by an organization policy for every user (docs/EDU.md §2); read by the labwc autostart.
+POLICY_SESSION_ENV = "/etc/dai/policy-session.env"
+
+
+def policy_lock_max_seconds(ctx: Context) -> int:
+    """The longest screen-lock delay a policy allows (0: no policy)."""
+    return _env_seconds(ctx.path(POLICY_SESSION_ENV), "DAI_LOCK_MAX_SECONDS") or 0
+
+
+def lock_timeout_seconds(ctx: Context) -> int:
+    """The delay the session really uses: the user's choice, capped by a policy (as in the autostart)."""
+    seconds = _env_seconds(ctx.user_path(SESSION_ENV), "DAI_LOCK_TIMEOUT_SECONDS")
+    seconds = 600 if seconds is None else seconds  # default in /etc/skel autostart
+    limit = policy_lock_max_seconds(ctx)
+    if limit and (seconds == 0 or seconds > limit):
+        return limit
+    return seconds
+
+
+def _lock_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"minutes"})
+    minutes = _int(params.get("minutes"), 0, 120, "minutes")
+    limit = policy_lock_max_seconds(ctx)
+    if limit and (minutes == 0 or minutes * 60 > limit):
+        raise ValidationError(f"your organization's policy locks the screen after at most {limit // 60} minutes")
+    return {"minutes": minutes}
 
 
 def _lock_apply(params: Params, ctx: Context) -> None:
@@ -604,7 +632,7 @@ def _lock_effect(params: Params) -> str:
 register(ActionSpec(
     id="session.lock",
     scope="user",
-    validate=lambda p, c: (_only_keys(p, {"minutes"}), {"minutes": _int(p.get("minutes"), 0, 120, "minutes")})[1],
+    validate=_lock_validate,
     apply=_lock_apply,
     risk=lambda p: "medium" if p["minutes"] == 0 else "low",
     effect=_lock_effect,
@@ -614,6 +642,35 @@ register(ActionSpec(
     ),
     files=lambda p, c: [c.user_path(SESSION_ENV)],
     restore=lambda p, c, e: _restart_idle(c, lock_timeout_seconds(c)),
+))
+
+
+def _lock_max_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"minutes"})
+    minutes = _int(params.get("minutes"), 0, 120, "minutes")
+    if minutes == 0:
+        raise ValidationError("a policy can require a screen lock, not turn it off")
+    return {"minutes": minutes}
+
+
+def _lock_max_apply(params: Params, ctx: Context) -> None:
+    # Readable by every user's session (0644); only root can change it.
+    update_env_file(ctx.path(POLICY_SESSION_ENV), {"DAI_LOCK_MAX_SECONDS": str(params["minutes"] * 60)}, mode=0o644)
+
+
+# Not parsed from text: an organization policy turns "lock the screen after N minutes" into this.
+register(ActionSpec(
+    id="session.lock_max",
+    scope="system",
+    validate=_lock_max_validate,
+    apply=_lock_max_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "hardens" if p["minutes"] <= 10 else "neutral",
+    summary=lambda p, lang: _t(lang, f"Every user: the screen locks after at most {p['minutes']} minutes",
+                               f"לכל המשתמשים: המסך ננעל אחרי {p['minutes']} דקות לכל היותר"),
+    files=lambda p, c: [c.path(POLICY_SESSION_ENV)],
+    note=lambda p, lang: _t(lang, "Takes effect at each user's next login. Users can choose a shorter time, not a longer one.",
+                            "חל מהכניסה הבאה של כל משתמש. משתמשים יכולים לבחור זמן קצר יותר, לא ארוך יותר."),
 ))
 
 

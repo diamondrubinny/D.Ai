@@ -539,7 +539,7 @@ class PolicyTests(TuneTestCase):
     def test_untrusted_or_invalid_policies_are_rejected(self):
         from dai_tune import policy
         self.write("20-writable.json", {"format": 1, "apply": ["block usb storage"]}, mode=0o666)
-        self.write("30-user-setting.json", {"format": 1, "apply": ["lock the screen after 5 minutes"]})
+        self.write("30-user-setting.json", {"format": 1, "apply": ["keyboard english hebrew"]})
         self.write("40-gibberish.json", {"format": 1, "apply": ["make it faster please"]})
         self.write("50-bad.json", "{not json")
         self.write("60-shape.json", {"format": 2, "apply": "block usb"})
@@ -555,6 +555,37 @@ class PolicyTests(TuneTestCase):
         self.assertEqual(rows["70-target.json"]["state"], "pending")
         results = policy.apply_all(self.ctx, executor.Journal.for_system(self.ctx))
         self.assertEqual([r["file"] for r in results if r["ok"]], ["70-target.json"])
+
+    def test_screen_lock_for_every_user(self):
+        from dai_tune import policy
+        from dai_tune.catalog import lock_timeout_seconds
+        self.write("10-lock.json", {"format": 1, "name": "School", "apply": ["lock the screen after 5 minutes"]})
+        self.write("20-never.json", {"format": 1, "apply": ["never lock the screen"]})
+        rows = {row["file"]: row for row in policy.status(self.ctx)}
+        self.assertEqual(rows["10-lock.json"]["steps"], ["session.lock_max"])
+        self.assertEqual(rows["20-never.json"]["state"], "rejected")
+        journal = executor.Journal.for_system(self.ctx)
+        results = {r["file"]: r for r in policy.apply_all(self.ctx, journal)}
+        self.assertTrue(results["10-lock.json"]["ok"], results)
+        env = self.root / "etc/dai/policy-session.env"
+        self.assertEqual(env.read_text(), "DAI_LOCK_MAX_SECONDS=300\n")
+        self.assertEqual(stat.S_IMODE(env.stat().st_mode), 0o644)  # every session reads it
+        # The user may lock sooner, not later and not never; the effective delay is capped.
+        self.assertTrue(self.plan("lock the screen after 2 minutes").ok)
+        for text in ("lock the screen after 30 minutes", "never lock the screen"):
+            plan = self.plan(text)
+            self.assertFalse(plan.ok, text)
+            self.assertIn("at most 5 minutes", plan.errors[0])
+        self.assertEqual(lock_timeout_seconds(self.ctx), 300)  # user default 600, capped
+        # Raising the policy limit later works, although the old limit is stricter.
+        self.write("10-lock.json", {"format": 1, "name": "School", "apply": ["lock the screen after 10 minutes"]})
+        self.assertTrue({r["file"]: r for r in policy.apply_all(self.ctx, journal)}["10-lock.json"]["ok"])
+        self.assertEqual(env.read_text(), "DAI_LOCK_MAX_SECONDS=600\n")
+        # Undo restores the previous limit, and then no limit.
+        executor.undo_entry(journal.entries()[-1], self.ctx, journal)
+        self.assertEqual(env.read_text(), "DAI_LOCK_MAX_SECONDS=300\n")
+        executor.undo_entry(journal.entries()[0], self.ctx, journal)
+        self.assertFalse(env.exists())
 
     def test_must_be_owned_by_root_on_a_real_system(self):
         from dai_tune import policy

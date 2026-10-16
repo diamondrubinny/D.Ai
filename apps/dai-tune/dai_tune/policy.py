@@ -8,6 +8,10 @@ folder changes, the root helper applies each policy whose plan changed:
 
   {"format": 1, "name": "School computers", "apply": ["block usb storage", "turn off bluetooth"]}
 
+"Lock the screen after N minutes" becomes a limit for every user's session
+(/etc/dai/policy-session.env): users may choose a shorter time, not a longer
+one, and not "never". Other per-user settings are rejected.
+
 A policy file is ignored unless it is owned by root, not writable by group
 or others, not a symlink and at most 64 KB. Only system-scope steps are
 allowed, every step goes through the closed catalog, and everything is
@@ -21,13 +25,17 @@ import stat
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .catalog import CATALOG, ValidationError
 from .context import Context, write_file
-from .planner import Plan, plan_from_text
+from .parser import Request, parse
+from .planner import Plan, Step, build_plan
 
 POLICY_DIR = "/etc/dai/policy.d"
 STATE_FILE = "/var/lib/dai/policy-state.json"  # hashes only, readable for `dai-tune policy`
 MAX_SIZE = 64 * 1024
 MAX_SENTENCES = 50
+# User settings a policy sets for every user, as a limit the user cannot loosen.
+FOR_EVERY_USER = {"session.lock": "session.lock_max"}
 
 
 @dataclass
@@ -78,9 +86,16 @@ def load(ctx: Context) -> list[Policy]:
             policy.problems.append('expected {"format": 1, "name": "...", "apply": ["sentence", ...]}')
             continue
         policy.name = str(data.get("name", path.stem))[:80]
-        plan = plan_from_text(", ".join(sentences), ctx)
+        # Mapped before validation: the user-level check would compare against the policy being replaced.
+        parsed = parse(", ".join(sentences))
+        requests = [Request(FOR_EVERY_USER.get(r.action, r.action), r.params, r.source) for r in parsed.requests]
+        plan = build_plan(requests, ctx, parsed.unknown)
         if not plan.ok:
             policy.problems += plan.errors + [f"not understood: {u}" for u in plan.unknown]
+            continue
+        plan.steps, problems = _for_every_user(plan.steps, ctx)
+        if problems:
+            policy.problems += problems
             continue
         user_steps = [s.action for s in plan.steps if s.scope != "system"]
         if user_steps:
@@ -88,6 +103,23 @@ def load(ctx: Context) -> list[Policy]:
             continue
         policy.plan = plan
     return policies
+
+
+def _for_every_user(steps: list[Step], ctx: Context) -> tuple[list[Step], list[str]]:
+    converted, problems = [], []
+    for step in steps:
+        target = FOR_EVERY_USER.get(step.action) if step.scope == "user" else None
+        if target is None:
+            converted.append(step)
+            continue
+        spec = CATALOG[target]
+        try:
+            params = spec.validate(dict(step.params), ctx)
+        except ValidationError as exc:
+            problems.append(f"{step.source or step.action}: {exc}")
+            continue
+        converted.append(Step(target, params, spec.scope, spec.risk(params), spec.effect(params), step.source))
+    return converted, problems
 
 
 def _state(ctx: Context) -> dict[str, str]:

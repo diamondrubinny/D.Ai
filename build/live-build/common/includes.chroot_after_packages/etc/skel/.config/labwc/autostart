@@ -17,6 +17,18 @@ fi
 case "$DAI_LOCK_TIMEOUT_SECONDS" in
 	'' | *[!0-9]*) DAI_LOCK_TIMEOUT_SECONDS=600 ;;
 esac
+# Organization policy (docs/EDU.md §2): the longest delay allowed, set by root.
+# Parsed, not sourced, and not taken from the user's file.
+DAI_LOCK_MAX_SECONDS=0
+if [ -r /etc/dai/policy-session.env ]; then
+	DAI_LOCK_MAX_SECONDS=$(sed -n 's/^DAI_LOCK_MAX_SECONDS=\([0-9][0-9]*\)$/\1/p' /etc/dai/policy-session.env | tail -n 1)
+fi
+case "$DAI_LOCK_MAX_SECONDS" in
+	'' | *[!0-9]*) DAI_LOCK_MAX_SECONDS=0 ;;
+esac
+if [ "$DAI_LOCK_MAX_SECONDS" -gt 0 ] && { [ "$DAI_LOCK_TIMEOUT_SECONDS" -eq 0 ] || [ "$DAI_LOCK_TIMEOUT_SECONDS" -gt "$DAI_LOCK_MAX_SECONDS" ]; }; then
+	DAI_LOCK_TIMEOUT_SECONDS=$DAI_LOCK_MAX_SECONDS
+fi
 if [ "$DAI_LOCK_TIMEOUT_SECONDS" -gt 0 ]; then
 	swayidle -w timeout "$DAI_LOCK_TIMEOUT_SECONDS" 'swaylock -f' before-sleep 'swaylock -f' >/dev/null 2>&1 &
 fi
