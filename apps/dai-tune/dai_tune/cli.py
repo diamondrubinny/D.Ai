@@ -125,8 +125,14 @@ def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes:
     plan = plan_from_text(text, ctx)
     from_ai = False
     if plan.unknown and not as_json:
+        from .ai import model_installed
+
+        # Only offer the AI interactively, never under --yes, and only when a
+        # model is installed: otherwise the question is a dead end.
         wants_ai = use_ai or (
-            sys.stdin.isatty()
+            not assume_yes
+            and sys.stdin.isatty()
+            and model_installed()
             and input(_l(lang, "Not understood by the rules. Ask the local AI to interpret? [y/N] ",
                          "הכללים לא הבינו. לבקש פרשנות מה־AI המקומי? [כ/ל] ")).strip().casefold() in ("y", "yes", "כ", "כן")
         )

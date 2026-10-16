@@ -8,6 +8,7 @@ import tempfile
 import threading
 import time
 import unittest
+import urllib.request
 from pathlib import Path
 from unittest import mock
 
@@ -65,6 +66,24 @@ class ModelTests(EnvTestCase):
     def test_only_https_on_allowed_hosts(self):
         with self.assertRaises(models.ModelError):
             models._open("https://evil.example.com/model.gguf")
+        with self.assertRaises(models.ModelError):
+            models._open("http://huggingface.co/model.gguf")
+
+    def test_host_allowlist_matches_whole_domains(self):
+        for host in ["huggingface.co", "cdn-lfs.hf.co", "us.aws.cdn.hf.co", "cas-bridge.xethub.hf.co", "HF.CO."]:
+            self.assertTrue(models.host_allowed(host), host)
+        for host in ["evilhf.co", "huggingface.co.evil.com", "nothuggingface.co", "hf.co.example", "", None]:
+            self.assertFalse(models.host_allowed(host), host)
+
+    def test_redirect_policy(self):
+        handler = models._HttpsOnlyRedirects()
+        request = urllib.request.Request("https://huggingface.co/a.gguf")
+        with self.assertRaises(models.ModelError):
+            handler.redirect_request(request, None, 302, "Found", {}, "https://evilhf.co/a.gguf")
+        with self.assertRaises(models.ModelError):
+            handler.redirect_request(request, None, 302, "Found", {}, "http://us.aws.cdn.hf.co/a.gguf")
+        follow = handler.redirect_request(request, None, 302, "Found", {}, "https://us.aws.cdn.hf.co/a.gguf")
+        self.assertEqual(follow.full_url, "https://us.aws.cdn.hf.co/a.gguf")
 
     def test_catalog_validation(self):
         path = Path(self.tmp.name) / "catalog.json"

@@ -358,3 +358,22 @@ class AITests(TuneTestCase):
 
         self.assertEqual(ai.requests_from_reply("not json", "x"), [])
         self.assertEqual(ai.requests_from_reply('{"requests": "x"}', "x"), [])
+
+    def test_ai_not_offered_without_model_or_under_yes(self):
+        from unittest import mock
+
+        from dai_tune import ai, cli
+
+        with tempfile.TemporaryDirectory() as data, mock.patch.dict(os.environ, {"XDG_DATA_HOME": data}):
+            self.assertFalse(ai.model_installed())
+            with mock.patch("sys.stdin.isatty", return_value=True), \
+                    mock.patch("builtins.input", side_effect=AssertionError("must not prompt")), \
+                    mock.patch("sys.stdout"):
+                # No model installed: no question, even interactively.
+                self.assertEqual(cli.cmd_apply("make it nice", self.ctx, True, False, False), 2)
+                models = Path(data) / "dai" / "models"
+                models.mkdir(parents=True)
+                (models / "m.gguf").write_bytes(b"x")
+                self.assertTrue(ai.model_installed())
+                # --yes never stops to ask.
+                self.assertEqual(cli.cmd_apply("make it nice", self.ctx, True, False, True), 2)
