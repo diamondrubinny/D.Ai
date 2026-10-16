@@ -3,7 +3,8 @@
 #
 # Boots the ISO's live kernel in QEMU with a serial console and passes when
 # the system reaches a login prompt. Also captures a screenshot of the
-# graphical session for manual review.
+# graphical session and logs in over serial to verify desktop, firewall and
+# hardening (tests/boot/serial_check.py).
 #
 # Usage: boot-test.sh <path-to-iso> [artifact-dir]
 #
@@ -30,6 +31,10 @@ done
 mkdir -p "$ARTIFACT_DIR"
 readonly SERIAL_LOG="$ARTIFACT_DIR/serial.log"
 readonly MONITOR_SOCK="$ARTIFACT_DIR/qemu-monitor.sock"
+readonly SERIAL_SOCK="$ARTIFACT_DIR/qemu-serial.sock"
+readonly REPORT="$ARTIFACT_DIR/system-checks.txt"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 EXTRACT_DIR="$(mktemp -d)"
 readonly ARTIFACT_DIR EXTRACT_DIR
 QEMU_PID=""
@@ -39,7 +44,9 @@ cleanup() {
     kill "$QEMU_PID" 2>/dev/null || true
     wait "$QEMU_PID" 2>/dev/null || true
   fi
-  rm -rf -- "$EXTRACT_DIR" "$MONITOR_SOCK"
+  # xorriso extracts ISO files and directories read-only.
+  chmod -R u+w -- "$EXTRACT_DIR" 2>/dev/null || true
+  rm -rf -- "$EXTRACT_DIR" "$MONITOR_SOCK" "$SERIAL_SOCK" || true
 }
 trap cleanup EXIT
 
@@ -84,7 +91,8 @@ qemu-system-x86_64 \
   -cdrom "$ISO" \
   -kernel "$KERNEL" -initrd "$INITRD" -append "$CMDLINE" \
   -vga std -display none \
-  -serial "file:$SERIAL_LOG" \
+  -chardev "socket,id=ser0,path=$SERIAL_SOCK,server=on,wait=off,logfile=$SERIAL_LOG" \
+  -serial chardev:ser0 \
   -monitor "unix:$MONITOR_SOCK,server,nowait" \
   -nic user,model=virtio-net-pci \
   -no-reboot &
@@ -110,9 +118,13 @@ if grep -q 'FAILED' "$SERIAL_LOG"; then
   grep 'FAILED' "$SERIAL_LOG" | sed 's/^/  /' >&2
 fi
 
-log "waiting ${DESKTOP_WAIT}s for the graphical session, then capturing a screenshot"
+log "waiting ${DESKTOP_WAIT}s for the graphical session"
 sleep "$DESKTOP_WAIT"
+
 monitor "screendump $ARTIFACT_DIR/desktop.png -f png" || log "warning: screenshot failed"
 [[ -s "$ARTIFACT_DIR/desktop.png" ]] && log "screenshot: $ARTIFACT_DIR/desktop.png"
+
+log "running in-guest system checks over the serial console"
+python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" || die "system checks failed (see $REPORT)"
 
 log "PASS"
