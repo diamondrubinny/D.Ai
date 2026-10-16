@@ -12,6 +12,8 @@ on:
       - "apps/**"
       - "tests/boot/**"
       - "tests/apt/**"
+      - "site/**"
+      - "tests/site/**"
       - ".github/workflows/build-iso.yml"
   pull_request:
     paths:
@@ -19,6 +21,8 @@ on:
       - "apps/**"
       - "tests/boot/**"
       - "tests/apt/**"
+      - "site/**"
+      - "tests/site/**"
       - ".github/workflows/build-iso.yml"
   workflow_dispatch:
 
@@ -51,6 +55,9 @@ jobs:
 
       - name: Packages and update repository (signature, redirect, pinning; Debian trixie container)
         run: docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie bash tests/apt/apt-repo-test.sh
+
+      - name: Website (Hebrew RTL, AA contrast, no trackers, links)
+        run: python3 -m unittest tests/site/test_site.py -v
 
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
