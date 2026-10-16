@@ -5,6 +5,8 @@ linux-image-amd64
 live-boot
 live-config
 live-config-systemd
+# Creates the live user (a Recommends of live-config; recommends are off)
+user-setup
 systemd-sysv
 systemd-timesyncd
 systemd-zram-generator
