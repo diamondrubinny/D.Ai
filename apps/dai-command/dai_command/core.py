@@ -305,6 +305,24 @@ def fix_layout(text: str) -> tuple[str, str] | None:
     return None
 
 
+def convert_layout(text: str) -> str | None:
+    """Convert a whole selection to the other layout (for the global fixer).
+
+    Unlike fix_layout() this accepts mixed text: the direction follows the
+    majority script, and characters without a mapping are kept as they are.
+    Returns None when there is nothing to convert.
+    """
+    he = len(_HEBREW_LETTER.findall(text))
+    en = len(_LATIN_LETTER.findall(text))
+    if he == en == 0:
+        return None
+    if en >= he:
+        converted = "".join(US_TO_HE.get(ch.lower(), ch) if _LATIN_LETTER.match(ch) or ch in ";',./" else ch for ch in text)
+    else:
+        converted = "".join(HE_TO_US.get(ch, ch) for ch in text)
+    return converted if converted != text else None
+
+
 # --------------------------------------------------------------------------
 # Command history (local file, 0600, ignore-space like bash)
 # --------------------------------------------------------------------------
@@ -348,7 +366,10 @@ class History:
 _STRINGS = {
     "history": ("From history", "מההיסטוריה"),
     "ask": ("Ask D.Ai…", "שאלו את D.Ai…"),
-    "ai_soon": ("Local AI arrives in Phase 3", "AI מקומי יגיע בשלב 3"),
+    "ai_soon": ("Local AI · Enter to ask (runs on this computer)", "AI מקומי · Enter לשאלה (רץ במחשב הזה)"),
+    "ai_missing": ("Local AI is not ready. Install a model: dai-models install qwen2.5-0.5b",
+                   "ה־AI המקומי לא מוכן. התקינו מודל: dai-models install qwen2.5-0.5b"),
+    "ai_thinking": ("Thinking…", "חושב…"),
     "terminal": ("Run in terminal", "הרצה בטרמינל"),
     "background": ("Run in background", "הרצה ברקע"),
     "copy": ("Enter to copy", "Enter להעתקה"),

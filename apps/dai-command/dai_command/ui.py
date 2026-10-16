@@ -8,8 +8,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PyQt6.QtCore import QEvent, QModelIndex, QRect, QSize, Qt, QTimer
-from PyQt6.QtGui import QColor, QFont, QGuiApplication, QIcon, QKeyEvent, QPainter, QPalette
+from PyQt6.QtCore import QEvent, QModelIndex, QObject, QRect, QSize, Qt, QThread, QTimer, pyqtSignal
+from PyQt6.QtGui import QColor, QFont, QGuiApplication, QIcon, QKeyEvent, QPainter, QPalette, QTextOption
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtWidgets import (
     QApplication,
@@ -21,6 +21,7 @@ from PyQt6.QtWidgets import (
     QListWidgetItem,
     QStyle,
     QStyledItemDelegate,
+    QTextBrowser,
     QStyleOptionViewItem,
     QToolButton,
     QVBoxLayout,
@@ -77,6 +78,15 @@ STYLE = f"""
     outline: none;
 }}
 #Hints {{ color: {MUTED}; font-size: 9pt; padding: 2px 6px; }}
+#Answer {{
+    background: {SURFACE};
+    color: {TEXT};
+    border: 1px solid {BORDER};
+    border-left: 3px solid {ACCENT_2};
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 11pt;
+}}
 #Mic:disabled {{ background: {SURFACE}; }}
 QToolTip {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; }}
 """
@@ -146,6 +156,32 @@ class ResultDelegate(QStyledItemDelegate):
         painter.restore()
 
 
+class AskWorker(QObject):
+    """Streams an answer from the local AI service (daid) off the UI thread."""
+
+    delta = pyqtSignal(str)
+    failed = pyqtSignal(str)
+    finished = pyqtSignal()
+
+    def __init__(self, question: str) -> None:
+        super().__init__()
+        self.question = question
+
+    def run(self) -> None:
+        try:
+            from dai_ai.client import AIUnavailable, ask  # installed in /usr/lib/dai
+        except ImportError:
+            self.failed.emit(tr("ai_missing"))
+            self.finished.emit()
+            return
+        try:
+            for piece in ask(self.question):
+                self.delta.emit(piece)
+        except AIUnavailable as exc:
+            self.failed.emit(f"{tr('ai_missing')}\n{exc}")
+        self.finished.emit()
+
+
 class CommandWindow(QWidget):
     def __init__(self) -> None:
         super().__init__()
@@ -194,6 +230,14 @@ class CommandWindow(QWidget):
         self.results.itemClicked.connect(lambda _item: self.activate_current())
         layout.addWidget(self.results)
 
+        self.answer = QTextBrowser(objectName="Answer")
+        self.answer.setAccessibleName("D.Ai")
+        self.answer.setOpenLinks(False)
+        self.answer.setMinimumHeight(140)
+        self.answer.setVisible(False)
+        layout.addWidget(self.answer)
+        self._thread: QThread | None = None
+
         footer = QHBoxLayout()
         footer.addWidget(QLabel(tr("hints"), objectName="Hints"), 1)
         footer.addWidget(QLabel(f"D.Ai Command {__version__}", objectName="Hints"))
@@ -207,6 +251,8 @@ class CommandWindow(QWidget):
 
     def refresh(self, text: str) -> None:
         self.results.clear()
+        if not text.startswith("?"):
+            self.answer.setVisible(False)
         for action in build_actions(text, self.apps, self.history.load())[:MAX_ROWS]:
             item = QListWidgetItem(action.title)
             item.setData(ACTION_ROLE, action)
@@ -266,11 +312,44 @@ class CommandWindow(QWidget):
             command = ["dai-tune", request] if request else ["dai-tune", "help"]
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-tune "$@"; echo; read -r -p "Enter ↵" _', "dai-tune", *command[1:]])
             remembered = f"!{request}" if request else ""
+        elif action.kind == "ai":
+            self.ask_ai(str(action.payload))
+            return
         else:
-            return  # AI rows are informational until Phase 3
+            return
         if remembered and not private:
             self.history.add(remembered)
         self.hide()
+
+    def ask_ai(self, question: str) -> None:
+        if not question or (self._thread and self._thread.isRunning()):
+            return
+        self.answer.clear()
+        self.answer.setVisible(True)
+        self.answer.setPlaceholderText(tr("ai_thinking"))
+        self._thread = QThread(self)
+        self._worker = AskWorker(question)
+        self._worker.moveToThread(self._thread)
+        self._thread.started.connect(self._worker.run)
+        self._worker.delta.connect(self._append_answer)
+        self._worker.failed.connect(lambda text: (self.answer.setPlainText(text), self._orient_answer()))
+        self._worker.finished.connect(self._thread.quit)
+        self._thread.start()
+        QTimer.singleShot(0, self._fit_to_content)
+
+    def _append_answer(self, text: str) -> None:
+        self.answer.moveCursor(self.answer.textCursor().MoveOperation.End)
+        self.answer.insertPlainText(text)
+        self._orient_answer()
+
+    def _orient_answer(self) -> None:
+        """Right-to-left when most letters are Hebrew, even if it starts with "TCP"."""
+        text = self.answer.toPlainText()
+        rtl = len(_HEBREW.findall(text)) > len(re.findall(r"[A-Za-z]", text))
+        option = QTextOption(Qt.AlignmentFlag.AlignRight if rtl else Qt.AlignmentFlag.AlignLeft)
+        option.setTextDirection(Qt.LayoutDirection.RightToLeft if rtl else Qt.LayoutDirection.LeftToRight)
+        option.setWrapMode(QTextOption.WrapMode.WordWrap)
+        self.answer.document().setDefaultTextOption(option)
 
     @staticmethod
     def _spawn(argv: list[str]) -> None:

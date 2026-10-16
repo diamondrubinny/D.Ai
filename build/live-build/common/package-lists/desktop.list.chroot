@@ -39,6 +39,9 @@ breeze-cursor-theme
 
 # D.Ai applications
 python3-pyqt6
+wl-clipboard
+wtype
+libnotify-bin
 
 # Audio
 pipewire

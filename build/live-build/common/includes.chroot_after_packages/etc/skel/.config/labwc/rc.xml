@@ -22,6 +22,9 @@
     <default />
     <numlock>on</numlock>
     <keybind key="W-space"><action name="Execute" command="dai-command" /></keybind>
+    <!-- Fix selected text typed in the wrong layout (akuo -> שלום) -->
+    <keybind key="Pause"><action name="Execute" command="dai-fixlayout" /></keybind>
+    <keybind key="W-A-l"><action name="Execute" command="dai-fixlayout" /></keybind>
     <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
     <keybind key="W-e"><action name="Execute" command="pcmanfm-qt" /></keybind>
     <keybind key="W-l"><action name="Execute" command="lxqt-leave --lockscreen" /></keybind>
