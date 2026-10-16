@@ -1,0 +1,58 @@
+# D.Ai OS — Wayland desktop (labwc compositor + LXQt components)
+
+# Session and login
+labwc
+xwayland
+sddm
+xserver-xorg-core
+xserver-xorg-input-libinput
+swaylock
+swayidle
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-lxqt
+xdg-utils
+qt6-wayland
+qtwayland5
+
+# LXQt desktop components
+lxqt-panel
+lxqt-config
+lxqt-notificationd
+lxqt-policykit
+lxqt-qtplugin
+lxqt-themes
+lxqt-archiver
+pcmanfm-qt
+qterminal
+featherpad
+lximage-qt
+qpdfview
+screengrab
+pavucontrol-qt
+nm-tray
+blueman
+breeze-icon-theme
+
+# Audio
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+
+# Printing
+cups
+system-config-printer
+
+# Browser and apps
+firefox-esr
+flatpak
+
+# Fonts (Hebrew + emoji)
+fonts-noto-core
+fonts-noto-color-emoji
+fonts-dejavu-core
+
+# Accessibility
+orca
+at-spi2-core

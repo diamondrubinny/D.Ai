@@ -1,0 +1,21 @@
+# D.Ai OS Developer — development tooling
+build-essential
+pkg-config
+cmake
+clang
+gdb
+git
+openssh-client
+python3
+python3-venv
+python3-pip
+nodejs
+npm
+cargo
+podman
+neovim
+shellcheck
+jq
+ripgrep
+fd-find
+sqlite3

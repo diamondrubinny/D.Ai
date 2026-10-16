@@ -1,0 +1,7 @@
+# D.Ai OS session autostart (executed by labwc with sh).
+lxqt-panel >/dev/null 2>&1 &
+pcmanfm-qt --desktop --profile=lxqt >/dev/null 2>&1 &
+lxqt-notificationd >/dev/null 2>&1 &
+lxqt-policykit-agent >/dev/null 2>&1 &
+nm-tray >/dev/null 2>&1 &
+swayidle -w timeout 600 'swaylock -f' before-sleep 'swaylock -f' >/dev/null 2>&1 &

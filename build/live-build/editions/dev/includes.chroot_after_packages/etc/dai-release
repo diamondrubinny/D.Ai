@@ -1,0 +1,5 @@
+NAME="D.Ai OS Developer"
+EDITION=dev
+VERSION="0.1.0-alpha"
+BASE="Debian 13 (trixie)"
+HOME_URL="https://github.com/diamondrubinny/D.Ai"

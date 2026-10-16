@@ -1,0 +1,54 @@
+# D.Ai OS — base system (all editions)
+
+# Kernel, live boot, init
+linux-image-amd64
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+systemd-timesyncd
+systemd-zram-generator
+dbus-user-session
+
+# CPU microcode and common firmware (non-free-firmware area)
+intel-microcode
+amd64-microcode
+firmware-linux-free
+firmware-misc-nonfree
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-amd-graphics
+
+# Locale, keyboard, time
+locales
+console-setup
+keyboard-configuration
+tzdata
+
+# Security
+apparmor
+apparmor-profiles
+apparmor-utils
+nftables
+cryptsetup
+unattended-upgrades
+apt-listchanges
+sudo
+polkitd
+ca-certificates
+
+# Networking and Bluetooth
+network-manager
+wpasupplicant
+bluez
+
+# Basic tools
+bash-completion
+less
+nano
+man-db
+curl
+pciutils
+usbutils
+efibootmgr
