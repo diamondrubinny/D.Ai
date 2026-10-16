@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=D.Ai OS (LXQt Wayland)
+Comment=Lightweight LXQt desktop on the labwc Wayland compositor
+Exec=startdai-wayland
+TryExec=startdai-wayland
+DesktopNames=LXQt

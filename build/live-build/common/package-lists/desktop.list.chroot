@@ -2,9 +2,7 @@
 
 # Session and login (LXQt Wayland session on the labwc compositor)
 labwc
-lxqt-wayland-session
 lxqt-session
-swaybg
 xwayland
 sddm
 xserver-xorg-core
