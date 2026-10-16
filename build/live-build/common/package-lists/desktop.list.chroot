@@ -47,6 +47,9 @@ wl-clipboard
 wtype
 libnotify-bin
 
+# D.Ai Backup: encrypted, deduplicated backups to an external drive
+restic
+
 # Power: battery saver / balanced / performance (D.Ai Tune "power.profile", D.Ai Doctor)
 power-profiles-daemon
 

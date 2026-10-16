@@ -235,6 +235,16 @@ def main() -> int:
          "(timeout 8 pw-record /tmp/privacy-test.wav >/dev/null 2>&1 &); sleep 4; dai-privacy status; sleep 5; "
          "dai-privacy log | tail -n 2; rm -f /tmp/privacy-test.wav", False,
          lambda o: "pw-record" in o or "microphone" in o, 40),
+        # D.Ai Backup: the whole cycle on a stand-in drive, with the daily timer for this user.
+        ("backup: encrypted cycle", "export XDG_RUNTIME_DIR=/run/user/$(id -u); rm -rf /tmp/drive ~/.config/dai/backup.*; "
+         "mkdir -p /tmp/drive ~/Documents && echo 'version 1' > ~/Documents/vm-report.txt; dai-backup --version; "
+         "dai-backup setup /tmp/drive --folders Documents | grep -c 'RECOVERY KEY'; dai-backup now; "
+         "echo 'version 2' > ~/Documents/vm-report.txt; dai-backup now; "
+         "dai-backup restore ~/Documents/vm-report.txt --from \"$(dai-backup list | head -n1 | cut -d' ' -f1)\"; "
+         "cat ~/Restored/*/home/*/Documents/vm-report.txt; grep -rl 'version 1' /tmp/drive >/dev/null || echo ENCRYPTED; "
+         "systemctl --user is-enabled dai-backup.timer", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "Backed up" in o and "Restored into" in o
+         and re.search(r"^\s*version 1\s*$", o, re.M) is not None and "ENCRYPTED" in o and "enabled" in o, 180),
         # D.Ai Welcome: installed, in the menu, and never opens by itself in the live session.
         ("welcome: first run", "dai-welcome --version; dai-welcome --first-run; "
          "test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; "

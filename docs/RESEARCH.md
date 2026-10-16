@@ -40,7 +40,7 @@
 2. ✅ **D.Ai Doctor** — "למה המחשב איטי", "מה תופס את הדיסק", עם תיקונים בטוחים דרך Tune ([DOCTOR.md](DOCTOR.md)).
 3. ✅ **סוללה** — ‏power-profiles-daemon ופעולת Tune ‏`power.profile`.
 4. ✅ **מחוון פרטיות** — מיקרופון ומצלמה בשימוש: מחוון בפאנל ויומן ([PRIVACY.md](PRIVACY.md)).
-5. **D.Ai Backup** — גיבוי מוצפן לדיסק חיצוני עם בדיקת שחזור.
+5. ✅ **D.Ai Backup** — גיבוי מוצפן לדיסק חיצוני עם בדיקת שחזור ([BACKUP.md](BACKUP.md)).
 6. מתכוני Forge למשחקים ול־Windows apps ‏(Steam, ‏Bottles).
 7. לוח הדבקות בטוח. ‏snapshots לפני עדכון.
 

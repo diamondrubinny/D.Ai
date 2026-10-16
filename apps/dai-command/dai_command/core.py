@@ -403,6 +403,13 @@ _STRINGS = {
     "find_none": ("No matching files", "לא נמצאו קבצים מתאימים"),
     "privacy_now": ("Right now · Enter for the privacy log", "עכשיו · Enter ליומן הפרטיות"),
     "privacy_log": ("privacy log (30 days, on this computer)", "יומן פרטיות (30 יום, במחשב הזה)"),
+    "backup_setup": ("Set up automatic encrypted backup", "הגדרת גיבוי מוצפן אוטומטי"),
+    "backup_setup_hint": ("Connect an external drive · Enter", "חברו דיסק חיצוני · Enter"),
+    "backup_now": ("Back up now", "גיבוי עכשיו"),
+    "backup_connected": ("Backup drive connected · Enter", "דיסק הגיבוי מחובר · Enter"),
+    "backup_disconnected": ("Connect the backup drive first", "חברו קודם את דיסק הגיבוי"),
+    "backup_last": ("Last backup:", "גיבוי אחרון:"),
+    "backup_details": ("Enter for details", "Enter לפרטים"),
     "doctor_open": ("D.Ai Doctor · Enter for details and fixes", "D.Ai Doctor · Enter לפרטים ולתיקון"),
     "query_name": ("D.Ai Command input", "שורת הפקודות של D.Ai"),
     "results_name": ("Results", "תוצאות"),
@@ -431,7 +438,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -475,6 +482,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return answers
     if (privacy := privacy_actions(text)) is not None:
         return privacy
+    if (backup := backup_actions(text)) is not None:
+        return backup
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -591,6 +600,28 @@ def privacy_actions(text: str) -> list[Action] | None:
         rows.append(Action("privacy", describe(use, lang, stopped=entry.get("event") == "stop"),
                            f"{when} · {tr('privacy_log')}", "document-open-recent", "log"))
     return rows
+
+
+BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
+
+
+def backup_actions(text: str) -> list[Action] | None:
+    """D.Ai Backup: "גבה את הקבצים שלי", "when was my last backup?"."""
+    if not BACKUP_WORDS.search(text):
+        return None
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_backup.config import load
+    except ImportError:
+        return None
+    settings = load()
+    if settings is None:
+        return [Action("backup", tr("backup_setup"), tr("backup_setup_hint"), "drive-harddisk", "setup")]
+    connected = (settings.repo_path / "config").is_file()
+    when = time.strftime("%d.%m.%Y %H:%M", time.localtime(settings.last_backup)) if settings.last_backup else "—"
+    state = tr("backup_connected") if connected else tr("backup_disconnected")
+    return [Action("backup", tr("backup_now"), state, "document-save", "now"),
+            Action("backup", f"{tr('backup_last')} {when}", f"{settings.repo} · {tr('backup_details')}",
+                   "document-open-recent", "status")]
 
 
 def tune_actions(request: str) -> list[Action]:
