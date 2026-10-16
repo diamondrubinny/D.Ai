@@ -129,6 +129,52 @@ class DiagnoseTests(FakeSystem):
             self.assertEqual(topic_for(text), topic, text)
 
 
+class HardwareTests(FakeSystem):
+    def pci(self, slot, cls, driver=None):
+        dev = self.root / "sys/bus/pci/devices" / slot
+        dev.mkdir(parents=True)
+        (dev / "class").write_text(cls + "\n")
+        (dev / "vendor").write_text("0x8086\n")
+        (dev / "device").write_text("0x2723\n")
+        if driver:
+            target = self.root / "sys/bus/pci/drivers" / driver
+            target.mkdir(parents=True, exist_ok=True)
+            (dev / "driver").symlink_to(target)
+
+    def test_scan_and_findings(self):
+        from dai_doctor import hardware
+        self.pci("0000:00:14.3", "0x028000", "iwlwifi")
+        self.pci("0000:01:00.0", "0x030000")              # graphics without a driver
+        self.pci("0000:00:1f.3", "0x040300", "snd_hda_intel")
+        self.pci("0000:00:00.0", "0x060000", "skl_uncore")  # host bridge: not listed
+        kill = self.root / "sys/class/rfkill/rfkill0"
+        kill.mkdir(parents=True)
+        (kill / "type").write_text("wlan\n")
+        (kill / "soft").write_text("1\n")
+        (kill / "hard").write_text("0\n")
+        usb = self.root / "sys/bus/usb/devices"
+        (usb / "1-2").mkdir(parents=True)
+        (usb / "1-2" / "manufacturer").write_text("HP\n")
+        (usb / "1-2" / "product").write_text("LaserJet 1020\n")
+        (usb / "1-2:1.0").mkdir()
+        (usb / "1-2:1.0" / "bInterfaceClass").write_text("07\n")
+        devices = hardware.scan(self.root)
+        self.assertEqual([(d.kind, d.driver) for d in devices],
+                         [("wifi", "iwlwifi"), ("audio", "snd_hda_intel"), ("graphics", None), ("printer", None)])
+        facts = collect(self.root, self.home, runner=quiet, topics=("hardware",))
+        findings = {f.key: f for f in diagnose(facts, ("hardware",), "he")}
+        self.assertEqual(findings["hw:graphics"].level, "bad")
+        self.assertEqual(findings["hw:wifi"].title, "Wi-Fi: במצב תקין")
+        self.assertEqual(findings["hw:wifi-off"].level, "warn")
+        self.assertEqual(findings["hw:printer"].fixes[0].kind, "forge")
+        self.assertEqual(findings["hw:printer"].fixes[0].payload, "install printer")
+        self.assertIn("HP LaserJet 1020", findings["hw:printer"].title)
+
+    def test_hardware_questions(self):
+        for text in ("will my wifi work?", "המדפסת שלי לא עובדת", "האם המצלמה תעבוד במחשב הזה?", "my sound is not working"):
+            self.assertEqual(topic_for(text), "hardware", text)
+
+
 class CleanTests(FakeSystem):
     def test_only_trash_and_previews_and_no_symlink_following(self):
         trash = self.home / ".local/share/Trash/files"

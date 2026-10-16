@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "id": "windows-apps",
+  "name": {
+    "en": "Windows programs (Bottles)",
+    "he": "תוכנות Windows ‏(Bottles)"
+  },
+  "description": {
+    "en": "Bottles runs many Windows programs (.exe) in isolated bottles using Wine. Not everything works — check before relying on it.",
+    "he": "Bottles מריץ הרבה תוכנות Windows ‏(‎.exe) בבקבוקים מבודדים בעזרת Wine. לא הכל עובד — כדאי לבדוק לפני שסומכים על זה."
+  },
+  "match": {
+    "en": [
+      "bottles",
+      "wine",
+      "windows programs",
+      "windows apps",
+      "exe files",
+      "run exe"
+    ],
+    "he": [
+      "תוכנות ווינדוס",
+      "תוכנות windows",
+      "קבצי exe",
+      "בוטלס",
+      "להריץ exe"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "com.usebottles.bottles"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

@@ -57,6 +57,10 @@ class Facts:
     failed_units: list[str] = field(default_factory=list)
     battery: Battery | None = None
     power_profile: str = ""
+    devices: list = field(default_factory=list)          # hardware.Device
+    wifi_blocked: bool = False
+    wifi_interfaces: list[str] = field(default_factory=list)
+    printing: bool = True
 
 
 def _read(path: Path) -> str:
@@ -161,7 +165,7 @@ def battery(root: Path) -> Battery | None:
 
 
 def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = run, sample: float = 0.5,
-            topics: tuple[str, ...] = ("slow", "disk", "battery"), budget: float = 3.0) -> Facts:
+            topics: tuple[str, ...] = ("slow", "disk", "battery", "hardware"), budget: float = 3.0) -> Facts:
     home = home or Path.home()
     facts = Facts(cores=os.cpu_count() or 1)
     load = _read(root / "proc/loadavg").split()
@@ -192,6 +196,13 @@ def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = r
             "thumbnails": dir_size(home / ".cache/thumbnails", deadline),
         }
         facts.folders = biggest_folders(home, budget)
+    if "hardware" in topics:
+        from . import hardware
+
+        facts.devices = hardware.scan(root, runner)
+        facts.wifi_blocked = hardware.wifi_blocked(root)
+        facts.wifi_interfaces = hardware.wifi_interfaces(root)
+        facts.printing = hardware.printing_installed(root)
     if "battery" in topics:
         facts.battery = battery(root)
         if facts.battery is not None:

@@ -245,6 +245,15 @@ def main() -> int:
          "systemctl --user is-enabled dai-backup.timer", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "Backed up" in o and "Restored into" in o
          and re.search(r"^\s*version 1\s*$", o, re.M) is not None and "ENCRYPTED" in o and "enabled" in o, 180),
+        # Windows refugees: the hardware answer before installing, and their files after.
+        ("doctor: hardware", "dai-doctor hardware", True,
+         lambda o: re.search(r"Graphics: works|גרפיקה: במצב תקין", o) is not None
+         and re.search(r"Wired network: works|רשת קווית: במצב תקין", o) is not None),
+        ("move: from windows", "rm -rf /tmp/win && mkdir -p /tmp/win/Users/Dana/Documents /tmp/win/Users/Dana/Pictures "
+         "&& echo cv > /tmp/win/Users/Dana/Documents/cv-from-windows.docx && echo j > /tmp/win/Users/Dana/Pictures/desktop.ini; "
+         "dai-move --version; dai-move /tmp/win --yes; test -f ~/Documents/cv-from-windows.docx && echo COPIED; "
+         "test -f ~/Pictures/desktop.ini || echo JUNK_SKIPPED", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "COPIED" in o and "JUNK_SKIPPED" in o),
         # D.Ai Welcome: installed, in the menu, and never opens by itself in the live session.
         ("welcome: first run", "dai-welcome --version; dai-welcome --first-run; "
          "test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; "

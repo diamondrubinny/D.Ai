@@ -66,6 +66,16 @@ D.Ai Forge מטפל בשלושה סוגי בקשות. כולן מגיעות מא
 | `nextcloud` | לקוח סנכרון Nextcloud | packages |
 | `vscode` | Visual Studio Code מ־Flathub | flatpak.remote ← flatpak.install |
 | `telegram`, `signal` | מסרים מ־Flathub | flatpak.remote ← flatpak.install |
+| `steam` | ‏Steam עם Proton (רוב משחקי Windows). **משחקים עם anti-cheat בליבה לא ירוצו**, וזה כתוב במתכון | flatpak.remote ← flatpak.install |
+| `windows-apps` | ‏Bottles: תוכנות Windows ‏(‎.exe) בבקבוקים מבודדים (Wine). לא הכל עובד | flatpak.remote ← flatpak.install |
+| `onlyoffice` | חבילת משרד עם תאימות גבוהה ל־Word, ‏Excel ו־PowerPoint ‏(LibreOffice נשאר) | flatpak.remote ← flatpak.install |
+| `zoom`, `spotify`, `discord` | אפליקציות פופולריות מ־Flathub, בארגז חול | flatpak.remote ← flatpak.install |
+| `printer` | הדפסה: ‏CUPS, ‏driverless/IPP, ‏HPLIP, ‏Gutenprint וחלון הגדרה | packages ← service cups |
+| `scanner` | סריקה: ‏SANE, ‏AirScan/eSCL ותוכנת סריקה | packages |
+| `openvpn` | ‏VPN של העבודה (ייבוא ‎.ovpn בתפריט הרשת) | packages |
+| `cisco-vpn` | ‏OpenConnect: ‏Cisco AnyConnect, ‏GlobalProtect, ‏Fortinet | packages |
+
+> המתכונים מ־Flathub רצים בארגז חול. אף מתכון לא מוסיף ארכיטקטורת i386 או מאגרי non-free ל־Debian.
 
 פורמט מתכון:
 

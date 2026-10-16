@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "id": "spotify",
+  "name": {
+    "en": "Spotify",
+    "he": "ספוטיפיי"
+  },
+  "description": {
+    "en": "Spotify from Flathub (sandboxed).",
+    "he": "ספוטיפיי מ־Flathub (בארגז חול)."
+  },
+  "match": {
+    "en": [
+      "spotify"
+    ],
+    "he": [
+      "ספוטיפיי"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "com.spotify.Client"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

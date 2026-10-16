@@ -22,6 +22,7 @@
 | | ‏cache של המערכת (חבילות שהורדו, יומנים) | **‏D.Ai Tune**: ‏"free up disk space" (‏`system.clean`) |
 | | סל המחזור ותצוגות מקדימות | ניקוי אחרי אישור: רק `~/.local/share/Trash` ו־`~/.cache/thumbnails` |
 | | התיקיות הגדולות בבית | רשימה, בלי לשנות דבר |
+| חומרה (`dai-doctor hardware`) | לכל רכיב PCI (‏Wi-Fi, רשת, גרפיקה, קול), מצלמה, ‏Bluetooth ומדפסת USB: האם נטען דרייבר (`/sys/bus/pci/devices/*/driver`) | "במצב תקין" / "אין דרייבר"; ‏Wi-Fi כבוי (rfkill) → איך מדליקים; כרטיס בלי ממשק → כנראה חסר firmware; מדפסת בלי שירות הדפסה → **‏D.Ai Forge**: ‏"install printer". **רץ גם בסשן ה־live, לפני ההתקנה** |
 | סוללה | בריאות (`energy_full` מול `energy_full_design`), טעינה, מצב | שחוקה (פחות מ־70%) → עצה; פחות מ־30% → **‏D.Ai Tune**: ‏"battery saver mode" (‏`power.profile`) |
 
 ## 3. בטיחות
