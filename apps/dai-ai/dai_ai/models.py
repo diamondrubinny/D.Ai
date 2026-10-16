@@ -18,7 +18,9 @@ from typing import Callable
 
 from .paths import CATALOG, config_file, models_dir
 
-ALLOWED_HOSTS = ("huggingface.co", "cdn-lfs.hf.co", "cdn-lfs-us-1.hf.co", "cas-bridge.xethub.hf.co")
+# Hugging Face and its CDN subdomains (the CDN host names change over time).
+# Integrity does not depend on the host: every file must match a pinned SHA-256.
+ALLOWED_DOMAINS = ("huggingface.co", "hf.co")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9.-]{1,48}$")
 CHUNK = 1024 * 1024
@@ -26,6 +28,12 @@ CHUNK = 1024 * 1024
 
 class ModelError(RuntimeError):
     pass
+
+
+def host_allowed(host: str | None) -> bool:
+    """Exact domain or a real subdomain of it ("evilhf.co" is not "hf.co")."""
+    host = (host or "").lower().rstrip(".")
+    return any(host == domain or host.endswith("." + domain) for domain in ALLOWED_DOMAINS)
 
 
 @dataclass(frozen=True)
@@ -77,14 +85,15 @@ def sha256_file(path: Path) -> str:
 class _HttpsOnlyRedirects(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         parsed = urllib.parse.urlparse(newurl)
-        if parsed.scheme != "https" or not parsed.hostname or not parsed.hostname.endswith(ALLOWED_HOSTS):
+        if parsed.scheme != "https" or not host_allowed(parsed.hostname):
             raise ModelError(f"refusing redirect to {parsed.scheme}://{parsed.hostname}")
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 def _open(url: str):
-    host = urllib.parse.urlparse(url).hostname or ""
-    if not host.endswith(ALLOWED_HOSTS):
+    parsed = urllib.parse.urlparse(url)
+    host = parsed.hostname or ""
+    if parsed.scheme != "https" or not host_allowed(host):
         raise ModelError(f"host not allowed: {host}")
     opener = urllib.request.build_opener(_HttpsOnlyRedirects())
     request = urllib.request.Request(url, headers={"User-Agent": "dai-models/0.1"})

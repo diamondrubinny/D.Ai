@@ -68,6 +68,18 @@ def system_prompt() -> str:
     )
 
 
+def model_installed() -> bool:
+    """True when at least one local model file exists (no daemon is started)."""
+    try:
+        from dai_ai.paths import models_dir
+    except ImportError:
+        return False
+    try:
+        return any(models_dir().glob("*.gguf"))
+    except OSError:
+        return False
+
+
 def interpret(text: str) -> list[Request] | None:
     """Ask the local AI; None when the AI is not available."""
     try:
