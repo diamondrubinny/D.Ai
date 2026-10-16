@@ -63,6 +63,7 @@ D.Ai's own components are installed as Debian packages (`dai-apps`, `dai-llama-r
 - [`site/`](site/): the Hebrew landing page (static, no trackers or cookies, AA contrast, tested in CI).
 - [docs/FROM-WINDOWS.md](docs/FROM-WINDOWS.md): moving from Windows 10 step by step, including what will not work.
 - [docs/GROWTH.md](docs/GROWTH.md): research on what makes a new desktop OS popular, and the plan.
+- [docs/PARTNERS.md](docs/PARTNERS.md): a kit for refurbishers and nonprofits (pitch, secure wipe, install, hand-over).
 
 ## Releases and updates
 
