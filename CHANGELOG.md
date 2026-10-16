@@ -22,6 +22,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai Backup: encrypted automatic backups to an external drive (restic), recovery key, retention, weekly verification, safe restore.
 - For people leaving Windows: D.Ai Move (files, bookmarks, Wi-Fi names), `dai-doctor hardware`, and Forge recipes for Steam, Bottles, ONLYOFFICE, Zoom, Spotify, Discord, printers, scanners, OpenVPN and Cisco-compatible VPN.
 - D.Ai Clip: clipboard history (`Super+V`) in memory only; password-manager copies, keys, tokens, card and ID numbers are never kept, and keys/tokens are cleared from the clipboard after 90 seconds.
+- D.Ai OEM: `dai-oem prepare` for refurbishers; a first-boot wizard where the new owner creates their account, names the computer and replaces the temporary disk encryption password; temporary users removed before the first login.
 - Education edition (`edu`) and organization policies (`/etc/dai/policy.d`, applied at boot and on change), including a screen-lock limit for every user.
 - LibreOffice (Writer, Calc, Impress) with the Hebrew interface and Hebrew/English spell checking in every edition.
 - D.Ai Welcome: first-run wizard — security level through D.Ai Tune, local models sized to the computer's memory, privacy facts.

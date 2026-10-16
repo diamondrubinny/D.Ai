@@ -148,6 +148,18 @@ build_apps() {
   install -d "$root/etc/xdg/autostart"
   install -m 0644 "$clip/data/dai-clip-autostart.desktop" "$root/etc/xdg/autostart/dai-clip.desktop"
 
+  # D.Ai OEM (docs/OEM.md): prepare a computer for its new owner; first-boot wizard.
+  local oem="$REPO_ROOT/apps/dai-oem"
+  copy_package "$oem/dai_oem" "$root"
+  install -m 0755 "$oem/data/dai-oem" "$root/usr/bin/dai-oem"
+  install -m 0755 "$oem/data/dai-oem-helper" "$oem/data/dai-oem-setup" "$root/usr/lib/dai/"
+  install -d "$root/usr/share/dai/oem/labwc" "$root/usr/share/polkit-1/rules.d"
+  install -m 0644 "$oem/data/dai-oem.desktop" "$root/usr/share/dai/oem/"
+  install -m 0644 "$oem/data/labwc/rc.xml" "$oem/data/labwc/menu.xml" "$oem/data/labwc/autostart" "$root/usr/share/dai/oem/labwc/"
+  install -m 0644 "$oem/data/io.github.diamondrubinny.dai.oem.policy" "$root/usr/share/polkit-1/actions/"
+  install -m 0644 "$oem/data/50-dai-oem.rules" "$root/usr/share/polkit-1/rules.d/"
+  install -m 0644 "$oem/data/dai-oem-cleanup.service" "$root/usr/lib/systemd/system/"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
@@ -185,6 +197,8 @@ if [ "$1" = configure ]; then
   install -d /etc/systemd/system/multi-user.target.wants /etc/systemd/system/paths.target.wants
   ln -sf /usr/lib/systemd/system/dai-policy.service /etc/systemd/system/multi-user.target.wants/dai-policy.service
   ln -sf /usr/lib/systemd/system/dai-policy.path /etc/systemd/system/paths.target.wants/dai-policy.path
+  # D.Ai OEM: does nothing unless a first-boot setup was just finished.
+  ln -sf /usr/lib/systemd/system/dai-oem-cleanup.service /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
 fi
 exit 0
 EOF
@@ -197,6 +211,7 @@ find /usr/lib/dai -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null
 if [ "$1" = remove ]; then
   rm -f /etc/systemd/user/sockets.target.wants/dai-daid.socket
   rm -f /etc/systemd/system/multi-user.target.wants/dai-policy.service /etc/systemd/system/paths.target.wants/dai-policy.path
+  rm -f /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
 fi
 exit 0
 EOF

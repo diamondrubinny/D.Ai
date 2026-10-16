@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OEM privileged helper (installed as /usr/lib/dai/dai-oem-helper).
+# Runs as root through polkit; see io.github.diamondrubinny.dai.oem.policy and 50-dai-oem.rules.
+exec /usr/bin/python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_oem.helper import main; sys.exit(main(["dai-oem-helper", *sys.argv[1:]]))' "$@"
