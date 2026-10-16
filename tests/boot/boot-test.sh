@@ -36,6 +36,7 @@ mkdir -p "$ARTIFACT_DIR"
 readonly SERIAL_LOG="$ARTIFACT_DIR/serial.log"
 readonly MONITOR_SOCK="$ARTIFACT_DIR/qemu-monitor.sock"
 readonly SERIAL_SOCK="$ARTIFACT_DIR/qemu-serial.sock"
+readonly QMP_SOCK="$ARTIFACT_DIR/qemu-qmp.sock"
 readonly REPORT="$ARTIFACT_DIR/system-checks.txt"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
@@ -71,6 +72,41 @@ sock.close()
 PY
 }
 
+# Click with the absolute pointer (usb-tablet) through QMP. The human
+# monitor's mouse_move sends relative motion, which goes to the PS/2 mouse.
+qmp_click() { # qmp_click <x> <y> in screen pixels (1280x800)
+  python3 - "$QMP_SOCK" "$(($1 * 32767 / 1280))" "$(($2 * 32767 / 800))" <<'PY'
+import json, socket, sys, time
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+sock.settimeout(10)
+sock.connect(sys.argv[1])
+stream = sock.makefile("rw")
+stream.readline()  # greeting
+
+def call(command, **arguments):
+    stream.write(json.dumps({"execute": command, "arguments": arguments} if arguments else {"execute": command}) + "\n")
+    stream.flush()
+    while True:
+        reply = json.loads(stream.readline())
+        if "return" in reply or "error" in reply:
+            if "error" in reply:
+                print(f"qmp {command}: {reply['error']}", file=sys.stderr)
+            return reply
+
+call("qmp_capabilities")
+x, y = int(sys.argv[2]), int(sys.argv[3])
+call("input-send-event", events=[
+    {"type": "abs", "data": {"axis": "x", "value": x}},
+    {"type": "abs", "data": {"axis": "y", "value": y}},
+])
+time.sleep(0.3)
+for down in (True, False):
+    call("input-send-event", events=[{"type": "btn", "data": {"down": down, "button": "left"}}])
+    time.sleep(0.15)
+sock.close()
+PY
+}
+
 # Extract the live kernel and initrd so we can append a serial console
 # without depending on the bootloader menu.
 xorriso -osirrox on -indev "$ISO" -extract /live "$EXTRACT_DIR/live" >/dev/null 2>&1 \
@@ -100,6 +136,7 @@ qemu-system-x86_64 \
   -chardev "socket,id=ser0,path=$SERIAL_SOCK,server=on,wait=off,logfile=$SERIAL_LOG" \
   -serial chardev:ser0 \
   -monitor "unix:$MONITOR_SOCK,server,nowait" \
+  -qmp "unix:$QMP_SOCK,server,nowait" \
   -nic user,model=virtio-net-pci \
   -usb -device usb-tablet \
   -no-reboot &
@@ -143,7 +180,7 @@ monitor "screendump $ARTIFACT_DIR/apps.png -f png" || log "warning: screenshot f
 # Interactive checks driven through the QEMU monitor (real keyboard/mouse).
 # usb-tablet gives absolute coordinates: 0..32767 across the 1280x800 screen.
 click() { # click <x> <y> in screen pixels
-  monitor "mouse_move $(($1 * 32767 / 1280)) $(($2 * 32767 / 800))" "mouse_button 1" "mouse_button 0"
+  qmp_click "$1" "$2" || log "warning: click failed"
 }
 type_keys() {
   local key commands=()
