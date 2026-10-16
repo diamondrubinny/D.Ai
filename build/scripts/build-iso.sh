@@ -31,8 +31,8 @@ log() { printf '[build-iso] %s\n' "$*" >&2; }
 die() { log "error: $*"; exit 1; }
 
 case "$EDITION" in
-  user | dev) ;;
-  *) die "usage: $(basename "$0") <user|dev> [output-dir]" ;;
+  user | dev | edu) ;;
+  *) die "usage: $(basename "$0") <user|dev|edu> [output-dir]" ;;
 esac
 
 [[ $EUID -eq 0 ]] || die "must run as root inside a disposable container or VM"
@@ -101,6 +101,20 @@ configure() {
   # Qt draws SVG files (the D.Ai diamond on Start, in D.Ai Command and Forge)
   # through its SVG plugins. Newer Debian Qt packages ship them separately
   # from libqt6svg6; recommends are not installed, so add them explicitly.
+  # *.list.optional: packages that are welcome but must not break the build if
+  # Debian dropped them (e.g. some education apps); only available ones are kept.
+  local optional name kept missing
+  for optional in config/package-lists/*.list.optional; do
+    [[ -e "$optional" ]] || continue
+    kept=() missing=()
+    while read -r name; do
+      [[ -z "$name" || "$name" == \#* ]] && continue
+      if apt-cache show "$name" >/dev/null 2>&1; then kept+=("$name"); else missing+=("$name"); fi
+    done <"$optional"
+    printf '%s\n' "# from $(basename "$optional") (filtered by build-iso.sh)" "${kept[@]}" >"${optional%.optional}.chroot"
+    ((${#missing[@]} == 0)) || log "not in this Debian release, skipped: ${missing[*]}"
+    rm -f -- "$optional"
+  done
   if apt-cache show qt6-svg-plugins >/dev/null 2>&1; then
     printf '%s\n' '# Qt SVG image/icon plugins (added by build-iso.sh)' qt6-svg-plugins >config/package-lists/dai-qt-svg.list.chroot
   fi

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai organization policies (/etc/dai/policy.d)
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/EDU.md
+After=network-online.target
+Wants=network-online.target
+ConditionDirectoryNotEmpty=/etc/dai/policy.d
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/dai/dai-tune-helper policy apply
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=multi-user.target

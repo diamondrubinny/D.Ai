@@ -1,0 +1,4 @@
+D.Ai OS organization policies — examples (docs/EDU.md). Not active.
+Activate:  sudo install -m 0644 -o root -g root school.json /etc/dai/policy.d/10-school.json
+Status:    dai-tune policy
+© 2026 Diamond Rubinny (d.Ai) · Apache-2.0

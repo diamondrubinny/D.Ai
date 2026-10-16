@@ -285,6 +285,29 @@ def cmd_status(ctx: Context) -> int:
     return 0
 
 
+def cmd_policy(ctx: Context, as_json: bool) -> int:
+    """Organization policies in /etc/dai/policy.d (docs/EDU.md)."""
+    from .policy import POLICY_DIR, status
+
+    lang = ctx.lang
+    rows = status(ctx)
+    if as_json:
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+        return 0
+    if not rows:
+        print(_l(lang, f"No organization policies ({POLICY_DIR}).", f"אין מדיניות ארגונית ({POLICY_DIR})."))
+        return 0
+    marks = {"applied": ("✓", "32"), "pending": ("…", "33"), "rejected": ("✗", "31")}
+    for row in rows:
+        mark, code = marks[row["state"]]
+        print(_color(f"{mark} {row['name'] or row['file']}  ({row['file']}, {row['state']})", code))
+        for step in row["steps"]:
+            print(f"    • {step}")
+        for problem in row["problems"]:
+            print(_color(f"    ✗ {problem}", "31"))
+    return 0 if all(r["state"] != "rejected" for r in rows) else 1
+
+
 def cmd_help(lang: str) -> int:
     print(_l(lang, "D.Ai Tune — configure the system by writing what you need.",
              "D.Ai Tune — מתאימים את המערכת פשוט ע\"י כתיבה."))
@@ -315,6 +338,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_status(ctx)
     if command in ("history", "היסטוריה"):
         return cmd_history(ctx)
+    if command in ("policy", "מדיניות"):
+        return cmd_policy(ctx, "--json" in flags)
     if command in ("undo", "בטל"):
         return cmd_undo(words[1] if len(words) > 1 else "last", ctx)
     try:

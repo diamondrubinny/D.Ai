@@ -91,6 +91,10 @@ build_apps() {
   install -m 0755 "$tune/data/dai-tune" "$root/usr/bin/dai-tune"
   install -m 0755 "$tune/data/dai-tune-helper" "$root/usr/lib/dai/dai-tune-helper"
   install -m 0644 "$tune/data/io.github.diamondrubinny.dai.tune.policy" "$root/usr/share/polkit-1/actions/"
+  # Organization policies (docs/EDU.md): applied at boot and when /etc/dai/policy.d changes.
+  install -d "$root/usr/lib/systemd/system" "$root/usr/share/dai/policy-examples"
+  install -m 0644 "$tune/data/dai-policy.service" "$tune/data/dai-policy.path" "$root/usr/lib/systemd/system/"
+  install -m 0644 "$tune/data/policy-examples/"* "$root/usr/share/dai/policy-examples/"
 
   local ai="$REPO_ROOT/apps/dai-ai"
   copy_package "$ai/dai_ai" "$root"
@@ -169,6 +173,11 @@ if [ "$1" = configure ]; then
   # Same as "systemctl --global enable dai-daid.socket" (works in a chroot too).
   install -d /etc/systemd/user/sockets.target.wants
   ln -sf /usr/lib/systemd/user/dai-daid.socket /etc/systemd/user/sockets.target.wants/dai-daid.socket
+  # Organization policies: the folder (root only can write) and the units that watch it.
+  install -d -m 0755 /etc/dai/policy.d
+  install -d /etc/systemd/system/multi-user.target.wants /etc/systemd/system/paths.target.wants
+  ln -sf /usr/lib/systemd/system/dai-policy.service /etc/systemd/system/multi-user.target.wants/dai-policy.service
+  ln -sf /usr/lib/systemd/system/dai-policy.path /etc/systemd/system/paths.target.wants/dai-policy.path
 fi
 exit 0
 EOF
@@ -180,6 +189,7 @@ set -e
 find /usr/lib/dai -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true
 if [ "$1" = remove ]; then
   rm -f /etc/systemd/user/sockets.target.wants/dai-daid.socket
+  rm -f /etc/systemd/system/multi-user.target.wants/dai-policy.service /etc/systemd/system/paths.target.wants/dai-policy.path
 fi
 exit 0
 EOF

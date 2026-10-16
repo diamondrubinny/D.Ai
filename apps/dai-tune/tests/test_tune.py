@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from dai_tune import catalog, executor, parser, planner, posture
 from dai_tune.catalog import ValidationError
@@ -509,3 +510,56 @@ class DoctorActionTests(ForgeActionTests):
     def test_power_profile_needs_the_daemon(self):
         with self.assertRaises(executor.ApplyError):
             self.apply("power.profile", {"profile": "performance"})
+
+
+class PolicyTests(TuneTestCase):
+    """Organization policies in /etc/dai/policy.d (docs/EDU.md)."""
+
+    def write(self, name, data, mode=0o644):
+        folder = self.root / "etc/dai/policy.d"
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / name
+        path.write_text(data if isinstance(data, str) else json.dumps(data))
+        os.chmod(path, mode)
+        return path
+
+    def test_valid_policy_applies_once_and_is_journaled(self):
+        from dai_tune import policy
+        self.write("10-school.json", {"format": 1, "name": "School", "apply": ["block usb storage", "turn off bluetooth"]})
+        journal = executor.Journal.for_system(self.ctx)
+        results = policy.apply_all(self.ctx, journal)
+        self.assertTrue(results[0]["ok"], results)
+        self.assertTrue((self.root / "etc/modprobe.d/dai-tune-usb_storage.conf").exists())
+        self.assertEqual(policy.apply_all(self.ctx, journal)[0]["detail"], "unchanged")
+        self.assertEqual(len(journal.entries()), 1)
+        self.assertEqual(policy.status(self.ctx)[0]["state"], "applied")
+        executor.undo_entry(journal.entries()[0], self.ctx, journal)  # undo works like any change
+        self.assertFalse((self.root / "etc/modprobe.d/dai-tune-usb_storage.conf").exists())
+
+    def test_untrusted_or_invalid_policies_are_rejected(self):
+        from dai_tune import policy
+        self.write("20-writable.json", {"format": 1, "apply": ["block usb storage"]}, mode=0o666)
+        self.write("30-user-setting.json", {"format": 1, "apply": ["lock the screen after 5 minutes"]})
+        self.write("40-gibberish.json", {"format": 1, "apply": ["make it faster please"]})
+        self.write("50-bad.json", "{not json")
+        self.write("60-shape.json", {"format": 2, "apply": "block usb"})
+        target = self.write("70-target.json", {"format": 1, "apply": ["block usb storage"]})
+        (target.parent / "80-link.json").symlink_to(target)
+        rows = {row["file"]: row for row in policy.status(self.ctx)}
+        for name in ("20-writable.json", "30-user-setting.json", "40-gibberish.json", "50-bad.json",
+                     "60-shape.json", "80-link.json"):
+            with self.subTest(name=name):
+                self.assertEqual(rows[name]["state"], "rejected")
+        self.assertIn("writable", rows["20-writable.json"]["problems"][0])
+        self.assertIn("only system settings", rows["30-user-setting.json"]["problems"][0])
+        self.assertEqual(rows["70-target.json"]["state"], "pending")
+        results = policy.apply_all(self.ctx, executor.Journal.for_system(self.ctx))
+        self.assertEqual([r["file"] for r in results if r["ok"]], ["70-target.json"])
+
+    def test_must_be_owned_by_root_on_a_real_system(self):
+        from dai_tune import policy
+        path = self.write("10-x.json", {"format": 1, "apply": ["block usb storage"]})
+        real = Context(root=Path("/"), home=self.home, runner=self.runner)
+        fake_stat = os.stat_result((0o100644, 0, 0, 1, 1000, 1000, 100, 0, 0, 0))
+        with mock.patch.object(Path, "stat", return_value=fake_stat):
+            self.assertEqual(policy._trusted(path, real), "is not owned by root")

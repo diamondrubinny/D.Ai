@@ -1,0 +1,10 @@
+{
+  "format": 1,
+  "name": "School computers (example)",
+  "apply": [
+    "block usb storage",
+    "turn off bluetooth",
+    "enable automatic updates",
+    "install gcompris-qt tuxpaint"
+  ]
+}
