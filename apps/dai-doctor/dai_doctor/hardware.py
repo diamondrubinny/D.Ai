@@ -10,6 +10,7 @@ installing anything.
 
 from __future__ import annotations
 
+import shlex
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,8 +40,16 @@ def _pci_name(slot: str, runner: Callable[[Sequence[str]], subprocess.CompletedP
     if runner is None:
         return ""
     result = runner(["lspci", "-mm", "-s", slot])
-    parts = [p.strip('"') for p in result.stdout.split('" "')] if result.returncode == 0 else []
-    return f"{parts[1]} {parts[2]}".strip() if len(parts) >= 3 else ""
+    return parse_lspci_mm(result.stdout) if result.returncode == 0 else ""
+
+
+def parse_lspci_mm(line: str) -> str:
+    """'00:02.0 "VGA compatible controller" "Intel Corporation" "UHD Graphics 620" -r07 -p00 ...' → vendor + device."""
+    try:
+        fields = [f for f in shlex.split(line.strip().splitlines()[0]) if not f.startswith("-")] if line.strip() else []
+    except ValueError:
+        return ""
+    return f"{fields[2]} {fields[3]}".strip() if len(fields) >= 4 else ""
 
 
 def scan(root: Path = Path("/"), runner=None) -> list[Device]:

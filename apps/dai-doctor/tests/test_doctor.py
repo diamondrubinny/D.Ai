@@ -170,6 +170,15 @@ class HardwareTests(FakeSystem):
         self.assertEqual(findings["hw:printer"].fixes[0].payload, "install printer")
         self.assertIn("HP LaserJet 1020", findings["hw:printer"].title)
 
+    def test_lspci_names(self):
+        from dai_doctor.hardware import parse_lspci_mm
+        vm = '00:02.0 "VGA compatible controller" "Vendor 1234" "Device 1111" -r02 -p00 "Red Hat, Inc." "Device 1100"'
+        self.assertEqual(parse_lspci_mm(vm), "Vendor 1234 Device 1111")
+        intel = '00:14.3 "Network controller" "Intel Corporation" "Wi-Fi 6 AX201" -r30 "Intel Corporation" "Wi-Fi 6 AX201"\n'
+        self.assertEqual(parse_lspci_mm(intel), "Intel Corporation Wi-Fi 6 AX201")
+        self.assertEqual(parse_lspci_mm(""), "")
+        self.assertEqual(parse_lspci_mm('broken "quote'), "")
+
     def test_hardware_questions(self):
         for text in ("will my wifi work?", "המדפסת שלי לא עובדת", "האם המצלמה תעבוד במחשב הזה?", "my sound is not working"):
             self.assertEqual(topic_for(text), "hardware", text)
