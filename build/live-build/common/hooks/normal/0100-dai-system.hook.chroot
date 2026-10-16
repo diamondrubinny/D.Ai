@@ -1,0 +1,10 @@
+#!/bin/sh
+# Enable D.Ai OS security services and boot into the graphical session.
+set -eu
+
+systemctl enable nftables.service
+systemctl enable apparmor.service
+systemctl set-default graphical.target
+
+# Lock the root account; administration goes through sudo/polkit.
+passwd -l root

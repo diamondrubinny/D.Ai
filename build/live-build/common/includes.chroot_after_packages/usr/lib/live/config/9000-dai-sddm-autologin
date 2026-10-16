@@ -1,0 +1,15 @@
+#!/bin/sh
+# Live session only: log the live user straight into the labwc session.
+# live-config runs this at boot when booted with boot=live; an installed
+# system does not run live-config, so this never applies after install.
+set -e
+
+LIVE_USERNAME="${LIVE_USERNAME:-dai}"
+
+mkdir -p /etc/sddm.conf.d
+cat >/etc/sddm.conf.d/90-dai-live-autologin.conf <<CONF
+[Autologin]
+User=${LIVE_USERNAME}
+Session=labwc.desktop
+Relogin=false
+CONF
