@@ -8,6 +8,7 @@ system-scope actions are accepted, and every change is journaled for undo.
 
   dai-tune-helper apply        < plan.json   -> {"ok": true, "id": "..."}
   dai-tune-helper undo <id>                  -> {"ok": true}
+  dai-tune-helper policy apply               -> {"ok": true, "results": [...]}  (dai-policy.service)
 """
 
 from __future__ import annotations
@@ -58,7 +59,15 @@ def main(argv: list[str]) -> int:
             undo_entry(entry, ctx, journal)
             syslog.syslog(syslog.LOG_NOTICE, f"uid={actor} undid {argv[2]}")
             return _reply(True)
-        raise ValidationError("usage: dai-tune-helper apply < plan.json | undo <id>")
+        if command == "policy" and argv[2:] == ["apply"]:
+            from .policy import apply_all
+
+            results = apply_all(ctx, journal)
+            for result in results:
+                level = syslog.LOG_NOTICE if result["ok"] else syslog.LOG_WARNING
+                syslog.syslog(level, f"policy {result['file']}: {result['detail']}")
+            return _reply(all(r["ok"] for r in results), results=results)
+        raise ValidationError("usage: dai-tune-helper apply < plan.json | undo <id> | policy apply")
     except (ValidationError, ApplyError, ActionError, json.JSONDecodeError) as exc:
         syslog.syslog(syslog.LOG_WARNING, f"uid={actor} rejected/failed {command}: {exc}")
         return _reply(False, error=str(exc))

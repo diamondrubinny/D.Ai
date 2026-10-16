@@ -66,7 +66,7 @@ D.Ai's own components are installed as Debian packages (`dai-apps`, `dai-llama-r
 
 ## Releases and updates
 
-Pushing a `v*` tag builds both editions, runs every boot test and publishes a GitHub Release with the ISOs,
+Pushing a `v*` tag builds every edition, runs every boot test and publishes a GitHub Release with the ISOs,
 `SHA256SUMS` and a signed apt repository. Installed systems get D.Ai updates from it only when the user runs
 `sudo apt update && sudo apt upgrade` (Debian security updates stay automatic). Pinning allows only `dai-*`
 packages from that repository, so it can never replace a Debian package. Details and the one-time key setup:
@@ -169,6 +169,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   copies Documents, Pictures, Desktop, Music, Videos, Downloads and Chrome/Edge bookmarks from a Windows drive
   without overwriting anything; Forge recipes for Steam (Proton), Windows programs (Bottles), ONLYOFFICE, Zoom,
   Spotify, Discord, printers, scanners and work VPNs (OpenVPN, Cisco/OpenConnect).
+- **Education edition and fleet policies** ([docs/EDU.md](docs/EDU.md)): an `edu` ISO with learning apps (GCompris,
+  Tux Paint, Stellarium, KDE Edu…, filtered against Debian at build time), and organization policies — root-owned
+  JSON files of D.Ai Tune sentences in `/etc/dai/policy.d/`, applied at boot and as soon as they change, journaled
+  and undoable; `dai-tune policy` shows what is active. Accessibility statement draft: [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 - **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
   wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
   undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what

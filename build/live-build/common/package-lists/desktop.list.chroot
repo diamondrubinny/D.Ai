@@ -47,6 +47,14 @@ wl-clipboard
 wtype
 libnotify-bin
 
+# Office suite with a Hebrew interface and Hebrew/English spell checking
+libreoffice-writer
+libreoffice-calc
+libreoffice-impress
+libreoffice-l10n-he
+hunspell-he
+hunspell-en-us
+
 # D.Ai Backup: encrypted, deduplicated backups to an external drive
 restic
 
