@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Welcome to D.Ai
+Name[he]=ברוכים הבאים ל־D.Ai
+GenericName=First-run setup
+GenericName[he]=הגדרה ראשונית
+Comment=Security level, local AI models and privacy at a glance
+Comment[he]=רמת אבטחה, מודלים מקומיים ופרטיות במבט אחד
+Exec=dai-welcome
+Icon=/usr/share/dai/branding/dai-logo.svg
+Terminal=false
+Categories=Settings;System;
+Keywords=welcome;setup;first run;privacy;security;ברוכים הבאים;הגדרה;פרטיות;אבטחה;

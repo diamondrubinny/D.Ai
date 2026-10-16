@@ -31,6 +31,7 @@ apps/dai-ai/                 Local AI: daid service, model manager, client + uni
 apps/dai-forge/              D.Ai Forge: recipes, AI app builder, bubblewrap sandbox + unit tests
 apps/dai-voice/              D.Ai Voice: push-to-talk dictation and voice commands (whisper.cpp) + unit tests
 apps/dai-code/               D.Ai Code: local coding assistant + unit tests
+apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
 docs/                        Specification, architecture, threat model
@@ -132,6 +133,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   current folder: `dai-code ask`, `explain FILE[:A-B]`, `edit FILE "change"` (a diff to approve, a backup and
   `dai-code undo`), `review` and `commit-msg`. It never runs code, never leaves the project folder, never reads or
   edits `.env`, keys or `.git`, and redacts secrets before anything reaches the local model.
+- **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
+  wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
+  undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what
+  happens with your data. Every step can be skipped; reopen it any time from the menu or with `dai-welcome`.
 - **Installer with full-disk encryption** ([docs/INSTALL.md](docs/INSTALL.md)): Calamares with Debian's tested
   settings (LUKS via `cryptsetup`), D.Ai branding and a Hebrew slideshow; the live user and the installer are
   removed from the installed system. Start it from the desktop icon, the 💎 menu or by typing "install".

@@ -245,6 +245,17 @@ type_keys ret
 sleep 15
 monitor "screendump $ARTIFACT_DIR/installer.png -f png" || log "warning: screenshot failed"
 
+log "interactive: open D.Ai Welcome (first-run setup) from the command bar"
+type_keys esc
+sleep 2
+type_keys meta_l-spc
+sleep 2
+type_keys w e l c o m e
+sleep 2
+type_keys ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/welcome.png -f png" || log "warning: screenshot failed"
+
 if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2
