@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Diamond Rubinny (d.Ai)
 #include "daicommand.h"
 
 #include <QDir>

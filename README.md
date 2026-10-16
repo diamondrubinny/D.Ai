@@ -93,7 +93,16 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
 Everyone is welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
 Security issues: see [SECURITY.md](SECURITY.md) — please do not open public issues for vulnerabilities.
 
+## Credits
+
+D.Ai OS is created and maintained by **Diamond Rubinny (d.Ai)**.
+Every source file carries an SPDX header with this copyright; see [NOTICE](NOTICE) for attribution of third-party components.
+
 ## License
 
 D.Ai OS's own code is licensed under the [Apache License 2.0](LICENSE).
 The ISO images bundle Debian packages that keep their own licenses (including `non-free-firmware` for hardware support); see each image's package manifest.
+
+---
+
+© 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0

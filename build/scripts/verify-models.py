@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Verify (or, for unpinned entries, compute) model SHA-256 values.
 
 Usage: verify-models.py <models.json>

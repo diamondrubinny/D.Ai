@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """dai-tune-helper: the only part of D.Ai Tune that runs as root.
 
 Started through polkit (pkexec) by the dai-tune CLI. It trusts nothing from

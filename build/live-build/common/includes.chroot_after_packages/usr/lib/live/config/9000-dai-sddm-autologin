@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Live session only: log the live user straight into the LXQt Wayland session (labwc).
 #
 # live-config runs the scripts in this directory in order at boot when booted

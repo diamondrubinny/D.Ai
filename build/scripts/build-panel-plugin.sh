@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Build the D.Ai Command field plugin for lxqt-panel.
 #
 # Usage: build-panel-plugin.sh <output-dir>

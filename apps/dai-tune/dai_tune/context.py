@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Execution context: filesystem root, home, command runner and language.
 
 Tests swap the root for a temporary directory and the runner for a fake, so

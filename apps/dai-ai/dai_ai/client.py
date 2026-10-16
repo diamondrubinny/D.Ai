@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Client for daid, used by dai-ai, D.Ai Command and D.Ai Tune."""
 
 from __future__ import annotations
@@ -7,7 +9,7 @@ import socket
 import sys
 from typing import Any, Iterator
 
-from . import __version__
+from . import __author__, __version__
 from .paths import daid_socket
 
 
@@ -62,7 +64,7 @@ def main(argv: list[str]) -> int:
         print('usage: dai-ai "question"  |  dai-ai status  |  dai-ai --version')
         return 0
     if args[0] == "--version":
-        print(f"dai-ai {__version__}")
+        print(f"dai-ai {__version__} — {__author__}")
         return 0
     try:
         if args[0] == "status":

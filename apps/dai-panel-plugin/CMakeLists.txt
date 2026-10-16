@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 cmake_minimum_required(VERSION 3.18)
 project(dai-panel-plugin LANGUAGES CXX)
 

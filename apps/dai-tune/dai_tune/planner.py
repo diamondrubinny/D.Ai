@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Validate requests against the catalog and build a reviewable plan."""
 
 from __future__ import annotations

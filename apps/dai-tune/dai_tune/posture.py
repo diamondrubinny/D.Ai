@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Security posture score: read-only checks, each with a phrase that fixes it."""
 
 from __future__ import annotations

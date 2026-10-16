@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai OS — Wayland desktop (labwc compositor + LXQt components)
 
 # Session and login (LXQt Wayland session on the labwc compositor)

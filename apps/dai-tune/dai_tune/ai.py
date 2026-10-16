@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Local-AI interpretation for sentences the rule parser does not understand.
 
 The model never acts. It is constrained by a JSON schema to the catalog's

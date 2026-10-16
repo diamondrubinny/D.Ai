@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Build a D.Ai OS live ISO with Debian live-build.
 #
 # Usage: build-iso.sh <user|dev> [output-dir]
@@ -87,7 +89,7 @@ configure() {
     --memtest none \
     --image-name "dai-os-$EDITION" \
     --iso-application "D.Ai OS" \
-    --iso-publisher "D.Ai OS project" \
+    --iso-publisher "Diamond Rubinny (d.Ai)" \
     --iso-volume "$volume" \
     --bootappend-live "boot=live components quiet hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il keyboard-options=grp:alt_shift_toggle timezone=Asia/Jerusalem" \
     "${mirror_args[@]}"

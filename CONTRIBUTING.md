@@ -44,3 +44,7 @@ shellcheck build/scripts/*.sh tests/boot/*.sh \
 ## Commit messages
 
 [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `build:`, `ci:`, `security:`, `refactor:`, `test:`.
+
+---
+
+© 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0

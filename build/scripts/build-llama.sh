@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Build llama-server (llama.cpp) for D.Ai OS's local AI service.
 #
 # Usage: build-llama.sh <output-dir>

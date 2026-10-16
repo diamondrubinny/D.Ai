@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """daid: the per-user local AI service.
 
 Listens on $XDG_RUNTIME_DIR/dai/daid.sock (systemd socket activation, or its

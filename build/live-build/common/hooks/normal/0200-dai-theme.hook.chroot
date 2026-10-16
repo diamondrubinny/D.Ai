@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Build the "dai" LXQt theme from the packaged "dark" theme plus D.Ai overrides,
 # so the image does not vendor a copy of the upstream stylesheets.
 set -eu

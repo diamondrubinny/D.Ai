@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Headless boot test for a D.Ai OS live ISO.
 #
 # Boots the ISO's live kernel in QEMU with a serial console and passes when

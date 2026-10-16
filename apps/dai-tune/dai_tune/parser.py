@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Turn Hebrew or English text into action requests (offline, rule based).
 
 The parser only produces *requests*: an action id from the catalog plus raw
