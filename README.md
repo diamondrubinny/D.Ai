@@ -59,6 +59,12 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
 
 ## Desktop
 
+![D.Ai OS desktop: Start button and command bar on the taskbar](docs/screenshots/desktop.png)
+
+![D.Ai Command open over the file manager](docs/screenshots/command-bar.png)
+
+*Screenshots are captured automatically by CI from the live ISO booted in QEMU.*
+
 - **Taskbar** with a **Start** menu and, right next to it, the **D.Ai Command** bar.
 - **D.Ai Command** (`apps/dai-command`): one bar to launch apps (also by Hebrew name), run commands
   (`>` in a terminal, `$` in the background), calculate (`2*(3+4)`, `15% of 80`) and **fix text typed in
