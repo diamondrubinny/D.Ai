@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """PyQt6 user interface for D.Ai Command."""
 
 from __future__ import annotations
@@ -28,7 +30,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from . import __version__
+from . import __author__, __version__
 from .core import Action, History, build_actions, load_apps, tr
 
 APP_ID = "dai-command"
@@ -240,7 +242,7 @@ class CommandWindow(QWidget):
 
         footer = QHBoxLayout()
         footer.addWidget(QLabel(tr("hints"), objectName="Hints"), 1)
-        footer.addWidget(QLabel(f"D.Ai Command {__version__}", objectName="Hints"))
+        footer.addWidget(QLabel(f"D.Ai Command {__version__} · {__author__}", objectName="Hints"))
         layout.addLayout(footer)
 
         self.query.textChanged.connect(self.refresh)
@@ -428,12 +430,14 @@ def _send_to_running(command: bytes) -> bool:
 
 def main(argv: list[str]) -> int:
     if "--version" in argv:
-        print(f"dai-command {__version__}")
+        print(f"dai-command {__version__} — {__author__}")
         return 0
 
     QGuiApplication.setDesktopFileName(APP_ID)  # Wayland app_id for labwc window rules
     app = QApplication(argv)
     app.setApplicationName("D.Ai Command")
+    app.setApplicationVersion(__version__)
+    app.setOrganizationName(__author__)
 
     initial = None
     if "--query" in argv and argv.index("--query") + 1 < len(argv):

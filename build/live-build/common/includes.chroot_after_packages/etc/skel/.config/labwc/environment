@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai OS labwc environment (LXQt Wayland session).
 # Keyboard layouts, switched with Alt+Shift by dai-lang (which writes the
 # active one to environment.d/50-dai-lang.env so the panel can show it).

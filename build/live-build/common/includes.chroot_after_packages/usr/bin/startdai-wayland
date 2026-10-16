@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai OS desktop session: LXQt on the labwc Wayland compositor.
 #
 # labwc runs lxqt-session as its session client (-S); lxqt-session then starts

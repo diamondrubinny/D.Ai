@@ -9,3 +9,7 @@ In short: be welcoming, respectful and constructive. Harassment, discrimination 
 Report unacceptable behavior privately to the project maintainers through GitHub (contact a maintainer listed on the repository profile). Reports are handled confidentially.
 
 Maintainers may remove, edit or reject contributions and may temporarily or permanently ban contributors who violate this code of conduct, following the enforcement guidelines of the Contributor Covenant.
+
+---
+
+© 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0

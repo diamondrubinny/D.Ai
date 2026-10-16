@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
 <!-- D.Ai OS labwc configuration. Full reference: man 5 labwc-config -->
 <labwc_config>
   <core>

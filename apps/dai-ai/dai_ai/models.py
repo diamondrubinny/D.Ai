@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Model catalog, download and verification (dai-models)."""
 
 from __future__ import annotations
@@ -139,6 +141,11 @@ def set_default(model_id: str) -> None:
 
 def main(argv: list[str]) -> int:
     args = argv[1:]
+    if args[:1] == ["--version"]:
+        from . import __author__, __version__
+
+        print(f"dai-models {__version__} — {__author__}")
+        return 0
     try:
         models = load_catalog()
     except (OSError, ModelError, KeyError, TypeError, json.JSONDecodeError) as exc:

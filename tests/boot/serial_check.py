@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Log into a booted D.Ai OS live system over a QEMU serial socket and verify it.
 
 Usage: serial_check.py <serial-unix-socket> <report-file> [--launch-apps]
@@ -126,6 +128,8 @@ def main() -> int:
     # (name, command, required, predicate on output)
     checks = [
         ("dai-release", "cat /etc/dai-release", True, lambda o: 'NAME="D.Ai OS' in o),
+        ("credit", "cat /etc/dai-release; dai-tune --version", True,
+         lambda o: o.count("Diamond Rubinny (d.Ai)") >= 2),
         ("graphical target", "systemctl get-default", True, lambda o: "graphical.target" in o),
         ("display manager", "systemctl is-active sddm", True, lambda o: o.splitlines()[-1:] == ["active"]),
         ("labwc compositor", "pgrep -a -x labwc", True, lambda o: "labwc" in o),

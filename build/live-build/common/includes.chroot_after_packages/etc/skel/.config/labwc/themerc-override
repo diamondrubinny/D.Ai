@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai Night window theme for labwc (see man 5 labwc-theme)
 border.width: 1
 padding.height: 6

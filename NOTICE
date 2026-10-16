@@ -1,0 +1,18 @@
+D.Ai OS
+Copyright (c) 2026 Diamond Rubinny (d.Ai)
+
+Created by Diamond Rubinny (d.Ai).
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+Contributions are accepted under the same license with a Developer
+Certificate of Origin sign-off (see CONTRIBUTING.md).
+
+Third-party components (not part of this repository's source):
+- Debian GNU/Linux packages included in the ISO images keep their own
+  licenses; see each image's package manifest.
+- llama.cpp (MIT License, Copyright (c) the ggml authors), built from
+  a pinned upstream commit by build/scripts/build-llama.sh.
+- lxqt-panel plugin interface headers (LGPL-2.1-or-later, the LXQt team), used
+  at build time by apps/dai-panel-plugin.
+- Language models downloaded by the user with dai-models keep their own
+  licenses (listed in apps/dai-ai/data/models.json).

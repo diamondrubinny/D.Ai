@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Diamond Rubinny (d.Ai)
 // D.Ai Command field for lxqt-panel: a text field next to Start.
 // Typing hands the text to D.Ai Command (apps/dai-command), which shows the
 // results and keeps the focus; all logic stays in one place.

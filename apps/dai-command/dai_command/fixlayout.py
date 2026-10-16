@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """dai-fixlayout: fix text typed in the wrong keyboard layout, in any app.
 
 Select the text, press Pause (or Super+Alt+L): the selection is converted

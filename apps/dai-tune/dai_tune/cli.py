@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """dai-tune command line: plan, confirm, apply, undo, status."""
 
 from __future__ import annotations
@@ -8,7 +10,7 @@ import subprocess
 import sys
 from typing import Any
 
-from . import __version__
+from . import __author__, __version__
 from .catalog import CATALOG
 from .context import Context, detect_lang
 from .executor import ApplyError, Journal, apply_steps, undo_entry
@@ -252,7 +254,7 @@ def main(argv: list[str] | None = None) -> int:
     flags = {a for a in args if a.startswith("--")}
     words = [a for a in args if not a.startswith("--")]
     if "--version" in flags:
-        print(f"dai-tune {__version__}")
+        print(f"dai-tune {__version__} — {__author__}")
         return 0
     if not words or words[0] in ("help", "עזרה") or "--help" in flags:
         return cmd_help(lang)

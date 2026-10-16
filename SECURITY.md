@@ -29,3 +29,7 @@ We follow coordinated disclosure and will credit reporters who want to be credit
 - Build pipeline and supply chain (package lists, model download verification)
 
 Vulnerabilities in upstream Debian packages should also be reported to Debian: https://www.debian.org/security/
+
+---
+
+© 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0

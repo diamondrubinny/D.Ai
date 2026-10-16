@@ -1,3 +1,5 @@
 #!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai local AI: daid (installed in /usr/bin). -I ignores PYTHONPATH and user site-packages.
 exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_ai.daid import main; sys.exit(main(["daid", *sys.argv[1:]]))' "$@"

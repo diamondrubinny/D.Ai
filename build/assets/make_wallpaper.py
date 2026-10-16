@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Generate the D.Ai OS "Night" wallpaper (deterministic).
 
 Usage: make_wallpaper.py <output.jpg> [width] [height]
@@ -79,7 +81,10 @@ def main() -> int:
         return 2
     width = int(sys.argv[2]) if len(sys.argv) > 2 else 2560
     height = int(sys.argv[3]) if len(sys.argv) > 3 else 1440
-    render(width, height).save(sys.argv[1], quality=90, optimize=True, progressive=True)
+    render(width, height).save(
+        sys.argv[1], quality=90, optimize=True, progressive=True,
+        comment=b"D.Ai OS wallpaper - (c) 2026 Diamond Rubinny (d.Ai) - Apache-2.0",
+    )
     return 0
 
 

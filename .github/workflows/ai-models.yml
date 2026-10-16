@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 name: AI models
 
 # Downloads every model in the catalog and checks its SHA-256 against the

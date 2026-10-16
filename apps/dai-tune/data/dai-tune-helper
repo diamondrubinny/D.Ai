@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai Tune privileged helper (installed as /usr/lib/dai/dai-tune-helper).
 # Runs as root through polkit; see io.github.diamondrubinny.dai.tune.policy.
 exec /usr/bin/python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_tune.helper import main; sys.exit(main(["dai-tune-helper", *sys.argv[1:]]))' "$@"

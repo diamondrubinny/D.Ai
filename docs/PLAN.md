@@ -344,3 +344,7 @@ D.Ai/
 
 ## 17. מגבלת סביבת פיתוח
 בסביבת הענן של Claude Code הגישה ל־`deb.debian.org` חסומה, לכן בניית ה־ISO ובדיקת האתחול רצות ב־GitHub Actions (`.github/workflows/build-iso.yml`).
+
+---
+
+© 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0

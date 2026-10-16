@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """Pure logic for D.Ai Command: app index, calculator, layout fixer, history.
 
 Nothing in this module touches the GUI, so it can be unit tested headless.

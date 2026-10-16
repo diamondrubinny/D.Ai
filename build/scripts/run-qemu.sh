@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Boot a D.Ai OS ISO interactively in QEMU for manual testing.
 #
 # Usage: run-qemu.sh <path-to-iso> [--uefi]
