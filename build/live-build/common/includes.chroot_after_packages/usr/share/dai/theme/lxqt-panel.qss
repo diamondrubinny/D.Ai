@@ -1,0 +1,132 @@
+
+/* ========================================================================
+ * D.Ai Night — appended to the LXQt "dark" theme at image build time.
+ * Tokens: docs/DESIGN.md §2. Later rules override the base theme.
+ * ======================================================================== */
+
+LXQtPanel #BackgroundWidget {
+    background: rgba(11, 16, 32, 94%);
+    border-top: 1px solid #2A3563;
+}
+
+QToolTip {
+    background: #1C2547;
+    color: #E6E9F5;
+    border: 1px solid #2A3563;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+Plugin > QToolButton,
+Plugin > QWidget > QToolButton,
+LXQtPanelPlugin > QToolButton {
+    color: #E6E9F5;
+    border-radius: 8px;
+}
+
+Plugin > QToolButton:hover,
+Plugin > QWidget > QToolButton:hover,
+LXQtPanelPlugin > QToolButton:hover {
+    border: 1px solid rgba(124, 92, 255, 55%);
+    background: rgba(124, 92, 255, 22%);
+}
+
+/* Start button */
+#FancyMenu {
+    margin: 5px 4px 5px 6px;
+    padding: 2px 14px;
+    border: none;
+    border-radius: 10px;
+    color: #FFFFFF;
+    font-weight: bold;
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #6447F0, stop: 1 #5B3FD6);
+    qproperty-icon: url(mainmenu.svg);
+}
+#FancyMenu:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #7C5CFF, stop: 1 #6447F0);
+}
+
+/* Start menu window */
+#FancyMenu QLineEdit {
+    background: #1C2547;
+    border: 1px solid #2A3563;
+    border-radius: 8px;
+    padding: 6px 10px;
+    color: #E6E9F5;
+    selection-background-color: #5B3FD6;
+}
+#FancyMenu QLineEdit:focus { border: 2px solid #22D3EE; }
+#FancyMenu #AppView {
+    border: none;
+    border-radius: 8px;
+    background: rgba(20, 27, 51, 92%);
+    color: #E6E9F5;
+}
+#FancyMenu QListView::item { color: #E6E9F5; padding: 6px 4px 6px 10px; border-radius: 6px; }
+#FancyMenu QListView::item:hover { background: rgba(124, 92, 255, 30%); color: #FFFFFF; }
+#FancyMenu QListView::item:selected { background: #5B3FD6; color: #FFFFFF; }
+#FancyMenu QToolButton:hover,
+#FancyMenu QToolButton:focus { background: rgba(124, 92, 255, 30%); border: 1px solid #7C5CFF; }
+#FancyMenu QToolButton:pressed { background: #5B3FD6; }
+
+/* Command bar button (customcommand plugin), next to Start */
+#Custom {
+    margin: 6px 4px;
+    padding: 0 16px;
+    min-width: 260px;
+    border-radius: 10px;
+    background: #1C2547;
+    border: 1px solid #2A3563;
+    color: #9AA3C7;
+}
+#Custom:hover {
+    background: #1C2547;
+    border: 1px solid #22D3EE;
+    color: #E6E9F5;
+}
+
+/* Window buttons */
+#TaskBar QToolButton {
+    margin: 5px 2px;
+    padding: 2px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    color: #E6E9F5;
+}
+#TaskBar QToolButton:hover { background: rgba(255, 255, 255, 8%); border: 1px solid #2A3563; }
+#TaskBar QToolButton:on {
+    background: rgba(124, 92, 255, 26%);
+    border: 1px solid rgba(124, 92, 255, 60%);
+    border-bottom: 2px solid #22D3EE;
+}
+#TaskBar QToolButton[urgent="true"] { background: #5B3FD6; color: #FFFFFF; }
+
+/* Keyboard layout, clock */
+#KbIndicator > QLabel:enabled {
+    color: #FFFFFF;
+    background: #5B3FD6;
+    border-radius: 6px;
+    padding: 2px 6px;
+}
+#WorldClockContent { color: #E6E9F5; font-weight: bold; }
+#WorldClock:hover { background: rgba(124, 92, 255, 22%); border: 1px solid rgba(124, 92, 255, 55%); border-radius: 8px; }
+
+/* Menus and popups */
+QMenu {
+    background: rgba(11, 16, 32, 97%);
+    border: 1px solid #2A3563;
+    border-radius: 10px;
+    color: #E6E9F5;
+    padding: 6px;
+}
+QMenu::item { color: #E6E9F5; border-radius: 6px; padding: 6px 32px 6px 20px; border: none; }
+QMenu::item:selected { background: #5B3FD6; color: #FFFFFF; border: none; }
+QMenu::separator { background: #2A3563; height: 1px; margin: 4px 8px; }
+
+VolumePopup { background: #141B33; border: 1px solid #2A3563; border-radius: 10px; }
+VolumePopup > QSlider::add-page:vertical { background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7C5CFF, stop: 1 #22D3EE); border: none; }
+VolumePopup > QSlider::handle:vertical { background: #FFFFFF; }
+
+QCalendarWidget QAbstractItemView:enabled { background: #0B1020; color: #E6E9F5; selection-background-color: #5B3FD6; }
+QCalendarWidget #qt_calendar_navigationbar,
+QCalendarWidget #qt_calendar_navigationbar * { background-color: #141B33; color: #E6E9F5; }

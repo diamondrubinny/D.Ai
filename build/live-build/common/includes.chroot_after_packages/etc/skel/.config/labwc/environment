@@ -5,3 +5,7 @@ XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle
 
 # Java apps (e.g. JetBrains IDEs) need this on wlroots compositors.
 _JAVA_AWT_WM_NONREPARENTING=1
+
+# Cursor theme (also removes labwc's XCURSOR_* warnings)
+XCURSOR_THEME=breeze_cursors
+XCURSOR_SIZE=24

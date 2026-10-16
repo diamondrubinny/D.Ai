@@ -12,11 +12,16 @@
   <theme>
     <cornerRadius>8</cornerRadius>
     <dropShadows>yes</dropShadows>
+    <font place="ActiveWindow"><name>Noto Sans</name><size>11</size><weight>bold</weight></font>
+    <font place="InactiveWindow"><name>Noto Sans</name><size>11</size><weight>normal</weight></font>
+    <font place="MenuItem"><name>Noto Sans</name><size>11</size></font>
+    <font place="OnScreenDisplay"><name>Noto Sans</name><size>11</size></font>
   </theme>
 
   <keyboard>
     <default />
     <numlock>on</numlock>
+    <keybind key="W-space"><action name="Execute" command="dai-command" /></keybind>
     <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
     <keybind key="W-e"><action name="Execute" command="pcmanfm-qt" /></keybind>
     <keybind key="W-l"><action name="Execute" command="lxqt-leave --lockscreen" /></keybind>
@@ -26,4 +31,9 @@
     <!-- Toggle the Orca screen reader -->
     <keybind key="W-A-s"><action name="Execute" command="orca --replace" /></keybind>
   </keyboard>
+
+  <windowRules>
+    <!-- D.Ai Command draws its own frame and behaves like a popup -->
+    <windowRule identifier="dai-command" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes" />
+  </windowRules>
 </labwc_config>

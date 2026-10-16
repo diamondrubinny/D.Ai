@@ -78,9 +78,12 @@ def launch_apps_command() -> str:
         'export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; '
         "export QT_QPA_PLATFORM=wayland QT_QPA_PLATFORMTHEME=lxqt XDG_CURRENT_DESKTOP=LXQt:labwc:wlroots; "
         f"printf '{sample}' > ~/hello-he.txt; "
+        "mkdir -p ~/.local/state/dai; "
+        "printf 'Firefox ESR\\n>htop\\n' > ~/.local/state/dai/command-history; "
         "setsid -f qterminal >/dev/null 2>&1; "
         "setsid -f pcmanfm-qt ~ >/dev/null 2>&1; "
-        "setsid -f featherpad ~/hello-he.txt >/dev/null 2>&1"
+        "setsid -f featherpad ~/hello-he.txt >/dev/null 2>&1; "
+        "sleep 4; setsid -f dai-command >/dev/null 2>&1"
     )
 
 
@@ -124,6 +127,8 @@ def main() -> int:
         ("apparmor enabled", "cat /sys/module/apparmor/parameters/enabled", True, lambda o: o.strip().endswith("Y")),
         ("kptr_restrict", "cat /proc/sys/kernel/kptr_restrict", True, lambda o: o.strip().endswith("2")),
         ("root locked", "sudo passwd -S root", True, lambda o: " L " in o),
+        ("dai theme", "grep -c 'D.Ai Night' /usr/share/lxqt/themes/dai/lxqt-panel.qss", True, lambda o: o.strip().endswith("1")),
+        ("dai-command", "dai-command --version", True, lambda o: "dai-command" in o),
         ("zram swap", "cat /proc/swaps", False, lambda o: "zram" in o),
         ("failed units", "systemctl --failed --no-legend --plain", False, lambda o: o.strip() == ""),
     ]
