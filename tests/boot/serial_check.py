@@ -341,6 +341,20 @@ def main() -> int:
         # Global wrong-layout fixer: real Wayland primary selection round trip.
         ("fixlayout: selection", WAYLAND_ENV + "printf akuo | wl-copy --primary && dai-fixlayout --print", True,
          lambda o: o.strip().splitlines()[-1:] == ["שלום"]),
+        # D.Ai OEM, the whole cycle in the live session (last: it resets the machine ID and journal).
+        # LUKS is not part of it here (no installed disk); unit tests run it against a fake and real cryptsetup.
+        ("oem: prepare, finish, cleanup", "dai-oem --version; sudo useradd -m -G sudo,audio,lpadmin oemtest; "
+         "sudo dai-oem prepare --remove-user oemtest --yes --allow-live; dai-oem status; "
+         "grep -c '^User=dai-setup' /etc/sddm.conf; test -f /usr/local/share/wayland-sessions/dai-oem.desktop && echo SESSION_READY; "
+         "printf '%s' '{\"full_name\": \"Dana Levi\", \"username\": \"dana\", \"password\": \"correct horse 9\", "
+         "\"hostname\": \"dana-pc\", \"language\": \"en\"}' | sudo /usr/lib/dai/dai-oem-helper complete; "
+         "id dana; sudo grep -c '^dana:[$]y[$]' /etc/shadow; cat /etc/hostname; "
+         "grep -q dai-setup /etc/sddm.conf || echo SDDM_RESTORED; "
+         "sudo dai-oem cleanup; getent passwd oemtest dai-setup || echo TEMP_USERS_GONE; dai-oem status; "
+         "sudo userdel -r dana; sudo hostnamectl set-hostname dai-os", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "Prepared" in o and "SESSION_READY" in o
+         and '{"ok": true}' in o and "(sudo)" in o and "(lpadmin)" in o and "dana-pc" in o
+         and "SDDM_RESTORED" in o and "TEMP_USERS_GONE" in o and "Not prepared" in o, 120),
     ]
 
     # Always printed, never judged: context for diagnosing failures.

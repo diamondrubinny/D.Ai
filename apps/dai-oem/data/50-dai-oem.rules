@@ -1,0 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Diamond Rubinny (d.Ai)
+// D.Ai OEM (docs/OEM.md §3): the first-boot setup may finish itself without a
+// password, only from its own local, active session. The helper checks again.
+polkit.addRule(function (action, subject) {
+    if (action.id == "io.github.diamondrubinny.dai.oem.complete" &&
+            subject.user == "dai-setup" && subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});

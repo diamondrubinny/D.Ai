@@ -1,0 +1,5 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The first-boot setup wizard (installed as /usr/lib/dai/dai-oem-setup).
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_oem.wizard import main; sys.exit(main())'

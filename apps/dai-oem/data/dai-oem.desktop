@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Template: dai-oem prepare copies it to /usr/local/share/wayland-sessions/ and
+# SDDM logs the dai-setup user into it once. Removed when the setup is finished.
+[Desktop Entry]
+Type=Application
+Name=D.Ai first-boot setup
+Name[he]=הגדרה ראשונה של D.Ai
+Exec=labwc -C /usr/share/dai/oem/labwc
+DesktopNames=labwc;wlroots

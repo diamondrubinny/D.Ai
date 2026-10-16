@@ -37,6 +37,7 @@ apps/dai-privacy/            D.Ai Privacy: microphone/camera indicator and local
 apps/dai-backup/             D.Ai Backup: encrypted automatic backups (restic) + unit tests
 apps/dai-move/               D.Ai Move: bring files and bookmarks from Windows + unit tests
 apps/dai-clip/               D.Ai Clip: clipboard history that never keeps passwords + unit tests
+apps/dai-oem/                D.Ai OEM: prepare a computer for its new owner (first-boot wizard) + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -170,6 +171,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   Copies from password managers (`x-kde-passwordManagerHint`), private keys, API tokens, card and ID numbers never
   enter the history, and the clipboard itself is emptied 90 seconds after a token or key is copied. The history lives
   in memory only (`$XDG_RUNTIME_DIR`) and is gone at logout.
+- **D.Ai OEM** ([docs/OEM.md](docs/OEM.md)): for refurbishers and charities. After installing, `sudo dai-oem
+  prepare` hands the computer over: at first boot the new owner chooses their name, user, password, computer name
+  and a new disk encryption password in a full-screen wizard, and the temporary user is deleted before anyone logs
+  in. Only the wizard's own session may finish the setup without a password (polkit), passwords travel only on stdin.
 - **Coming from Windows** ([docs/GROWTH.md](docs/GROWTH.md)): `dai-doctor hardware` answers "will my Wi-Fi,
   sound and printer work?" in the live session before installing; **D.Ai Move** ([docs/MOVE.md](docs/MOVE.md))
   copies Documents, Pictures, Desktop, Music, Videos, Downloads and Chrome/Edge bookmarks from a Windows drive
