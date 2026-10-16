@@ -138,9 +138,9 @@ def _may_build(lang: str) -> bool:
 
 
 def _progress(lang: str):
-    def report(chars: int) -> None:
+    def report(reply: str) -> None:
         if sys.stdout.isatty():
-            print(f"\r  {_l(lang, 'writing code…', 'כותב קוד…')} {chars:,}", end="", flush=True)
+            print(f"\r  {_l(lang, 'writing code…', 'כותב קוד…')} {len(reply):,}", end="", flush=True)
     return report
 
 

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Forge
+Name[he]=D.Ai Forge — בונים ומוסיפים
+GenericName=Build and add to your system
+GenericName[he]=בנייה והוספה למערכת
+Comment=Ask for a capability, integration or app; review it and the system sets it up (Super+B)
+Comment[he]=מבקשים יכולת, אינטגרציה או אפליקציה, בודקים, והמערכת מקימה (Super+B)
+Exec=dai-forge-gui %U
+Icon=dai-logo
+StartupWMClass=dai-forge
+Categories=System;Utility;
+Keywords=build;app;install;antivirus;integration;ai;
+Keywords[he]=בנייה;אפליקציה;התקנה;אנטי וירוס;אינטגרציה;בינה;

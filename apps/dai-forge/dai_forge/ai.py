@@ -45,12 +45,13 @@ def _default_chat() -> ChatFn:
 
 
 def _collect(chat: ChatFn, messages: list[dict[str, str]], schema: dict, max_tokens: int, task: str,
-             progress: Callable[[int], None] | None) -> dict[str, Any]:
+             progress: Callable[[str], None] | None) -> dict[str, Any]:
+    """Run the chat; progress() receives the reply received so far."""
     parts: list[str] = []
     for piece in chat(messages, schema=schema, max_tokens=max_tokens, task=task):
         parts.append(piece)
         if progress:
-            progress(sum(len(p) for p in parts))
+            progress("".join(parts))
     reply = "".join(parts)
     try:
         data = json.loads(reply)
@@ -121,8 +122,40 @@ def app_messages(request: str, kind: str, current: str | None = None) -> list[di
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
+def partial_code(reply: str) -> str:
+    """The "code" string of a JSON reply that is still being streamed (for live display)."""
+    match = re.search(r'"code"\s*:\s*"', reply)
+    if not match:
+        return ""
+    body, out, i = reply[match.end():], [], 0
+    escapes = {"n": "\n", "t": "\t", "r": "", '"': '"', "\\": "\\", "/": "/", "b": "", "f": ""}
+    while i < len(body):
+        char = body[i]
+        if char == "\\":
+            if i + 1 >= len(body):
+                break
+            nxt = body[i + 1]
+            if nxt == "u":
+                if i + 6 > len(body):
+                    break
+                try:
+                    out.append(chr(int(body[i + 2:i + 6], 16)))
+                except ValueError:
+                    pass
+                i += 6
+                continue
+            out.append(escapes.get(nxt, nxt))
+            i += 2
+            continue
+        if char == '"':
+            break
+        out.append(char)
+        i += 1
+    return "".join(out)
+
+
 def generate_app(request: str, kind: str, current: str | None = None, chat: ChatFn | None = None,
-                 progress: Callable[[int], None] | None = None) -> dict[str, Any]:
+                 progress: Callable[[str], None] | None = None) -> dict[str, Any]:
     chat = chat or _default_chat()
     data = _collect(chat, app_messages(request, kind, current), APP_SCHEMA, 4096, "code", progress)
     code = data.get("code")

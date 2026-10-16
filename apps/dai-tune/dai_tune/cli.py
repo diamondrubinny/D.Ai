@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+from dataclasses import dataclass
 from typing import Any
 
 from . import __author__, __version__
@@ -190,15 +191,43 @@ def execute_plan(
         print(_l(lang, "Cancelled. Nothing was changed.", "בוטל. לא בוצע שום שינוי."))
         return 1
 
+    result = apply_plan(plan, ctx, label)
+    if not result.ok:
+        print(_color("✗ " + result.error, "31"))
+        if result.rolled_back:
+            print(_l(lang, "System changes were rolled back too.", "גם שינויי המערכת בוטלו."))
+        else:
+            print(_l(lang, "Nothing was changed.", "לא בוצע שום שינוי."))
+        return 1
+    print(_color(_l(lang, "✓ Applied. To undo: dai-tune undo", "✓ בוצע. לביטול: dai-tune undo"), "32"))
+    return 0
+
+
+@dataclass
+class ApplyResult:
+    ok: bool
+    error: str = ""
+    rolled_back: bool = False
+    entry_id: str = ""
+
+
+def apply_plan(plan: Plan, ctx: Context, label: str = "") -> ApplyResult:
+    """Apply an already reviewed and confirmed plan (no prompts).
+
+    System steps go to the root helper through polkit (it shows its own
+    password dialog); user steps run here. Used by the dai-tune CLI and by
+    graphical front ends such as the D.Ai Forge window.
+    """
+    if not plan.ok:
+        return ApplyResult(False, "the plan is not valid")
+    lang = ctx.lang
     system_steps = plan.scoped("system")
     system_id = None
     if system_steps:
         payload = {"version": 1, "hash": plan_hash(system_steps), "steps": [s.as_dict() for s in system_steps]}
         result = run_helper(["apply"], payload)
         if not result.get("ok"):
-            print(_color("✗ " + str(result.get("error")), "31"))
-            print(_l(lang, "Nothing was changed.", "לא בוצע שום שינוי."))
-            return 1
+            return ApplyResult(False, str(result.get("error")))
         system_id = result["id"]
 
     journal = Journal.for_user(ctx)
@@ -206,17 +235,13 @@ def execute_plan(
     if label:  # e.g. the Forge recipe name, shown first in history
         summaries.insert(0, label)
     try:
-        apply_steps(plan.scoped("user"), ctx, journal, actor=str(os.getuid()), scope="user",
-                    extra={"system_entry": system_id, "summary": summaries})
+        entry = apply_steps(plan.scoped("user"), ctx, journal, actor=str(os.getuid()), scope="user",
+                            extra={"system_entry": system_id, "summary": summaries})
     except ApplyError as exc:
-        print(_color(f"✗ {exc}", "31"))
         if system_id:
             run_helper(["undo", system_id])
-            print(_l(lang, "System changes were rolled back too.", "גם שינויי המערכת בוטלו."))
-        return 1
-
-    print(_color(_l(lang, "✓ Applied. To undo: dai-tune undo", "✓ בוצע. לביטול: dai-tune undo"), "32"))
-    return 0
+        return ApplyResult(False, str(exc), rolled_back=bool(system_id))
+    return ApplyResult(True, entry_id=entry["id"])
 
 
 def cmd_undo(entry_id: str, ctx: Context) -> int:

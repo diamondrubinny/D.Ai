@@ -387,3 +387,120 @@ class AITests(ForgeTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+try:  # the window needs PyQt6 (in the image; installed in CI)
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PyQt6.QtWidgets import QApplication, QLabel
+
+    from dai_forge import gui
+except ImportError:  # pragma: no cover - depends on the machine
+    gui = None
+
+
+@unittest.skipIf(gui is None, "PyQt6 is not installed")
+class WindowTests(ForgeTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.qt = QApplication.instance() or QApplication([])
+
+    def setUp(self):
+        super().setUp()
+        patcher = mock.patch.object(gui, "load_library", lambda: recipes.load_library(self.dirs))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.window = gui.ForgeWindow("en")
+        self.window.admin = True
+        self.addCleanup(self.window.deleteLater)
+
+    def wait(self, timeout=10):
+        import time
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            self.qt.processEvents()
+            if not self.window.threads:
+                self.qt.processEvents()
+                return
+            time.sleep(0.01)
+        self.fail("background work did not finish")
+
+    def texts(self):
+        page = self.window.pages.currentWidget()
+        return " ".join(label.text() for label in page.findChildren(QLabel))
+
+    def ask(self, text):
+        self.window.ask.setText(text)
+        self.window.submit()
+
+    def test_weakening_plan_needs_typed_yes_then_applies(self):
+        self.ask("add file sync between my computers")
+        self.assertIn("Syncthing", self.texts())
+        self.assertFalse(self.window.apply_button.isEnabled())
+        self.window.confirm_field.setText("maybe")
+        self.assertFalse(self.window.apply_button.isEnabled())
+        self.window.confirm_field.setText("yes")
+        self.assertTrue(self.window.apply_button.isEnabled())
+        calls = []
+
+        def fake_apply(plan, ctx, label):
+            calls.append((plan, label))
+            from dai_tune.cli import ApplyResult
+            return ApplyResult(True, entry_id="20260101-000000-abcdef")
+
+        with mock.patch.object(gui, "apply_plan", fake_apply):
+            self.window.apply()
+            self.wait()
+        self.assertEqual(len(calls), 1)
+        self.assertIn("Forge:", calls[0][1])
+        self.assertIn("Done", self.texts())
+        self.assertEqual(self.window.last_entry, "20260101-000000-abcdef")
+
+    def test_hardening_plan_applies_without_typing(self):
+        self.ask("install antivirus")
+        self.assertIsNone(self.window.confirm_field)
+        self.assertTrue(self.window.apply_button.isEnabled())
+
+    def test_non_admin_cannot_apply(self):
+        self.window.admin = False
+        self.ask("install antivirus")
+        self.assertFalse(self.window.apply_button.isEnabled())
+
+    def test_ai_recipe_needs_review(self):
+        recipe = recipes.validate(recipe_json(), source="ai")
+        self.window.show_recipe(recipe, removing=False)
+        self.assertFalse(self.window.apply_button.isEnabled())
+        self.window.reviewed.setChecked(True)
+        self.assertTrue(self.window.apply_button.isEnabled())
+
+    def test_failed_apply_shows_error(self):
+        from dai_tune.cli import ApplyResult
+        self.ask("install antivirus")
+        with mock.patch.object(gui, "apply_plan", lambda *a: ApplyResult(False, "authorization cancelled")):
+            self.window.apply()
+            self.wait()
+        self.assertIn("authorization cancelled", self.texts())
+
+    def test_build_app_streams_code_and_asks_permissions(self):
+        def fake_generate(request, kind, existing=None, chat=None, progress=None):
+            reply = json.dumps({"name": "shopping", "title": "Shopping", "network": True, "documents": False, "code": GUI_CODE})
+            progress(reply[: len(reply) // 2])
+            return {"name": "shopping", "title": "Shopping", "network": True, "documents": False, "code": GUI_CODE}
+
+        with mock.patch.object(gui, "model_installed", lambda: True), \
+                mock.patch.object(gui, "generate_app", fake_generate):
+            self.ask("build an app for a shopping list")
+            self.wait()
+        self.assertEqual(self.window.app.name, "shopping")
+        self.assertIn("ready", self.texts())
+        self.assertEqual(list(self.window.permission_boxes), ["network"])
+        with mock.patch.object(gui.subprocess, "Popen") as popen, mock.patch.object(gui.shutil, "which", return_value="/usr/bin/bwrap"):
+            self.window.run_current()  # network left unchecked -> request withdrawn, app runs offline
+        argv = popen.call_args[0][0]
+        self.assertEqual(argv[0], "bwrap")
+        self.assertNotIn("--share-net", argv)
+        self.assertFalse(apps.load("shopping").permissions["network"])
+
+    def test_without_model_offers_download(self):
+        with mock.patch.object(gui, "model_installed", lambda: False):
+            self.ask("build an app for a shopping list")
+        self.assertIn("local AI model", self.texts())

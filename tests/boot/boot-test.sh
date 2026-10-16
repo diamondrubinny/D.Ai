@@ -204,13 +204,25 @@ type_keys shift-slash w h a t spc i s spc l i n u x shift-slash ret
 sleep "${AI_WAIT:-45}"
 monitor "screendump $ARTIFACT_DIR/ai-answer.png -f png" || log "warning: screenshot failed"
 
-log "interactive: D.Ai Forge preview in the command bar (+install antivirus)"
+log "interactive: the diamond Start button opens the Start menu"
 type_keys esc
+click 30 776
+sleep 3
+monitor "screendump $ARTIFACT_DIR/start-menu.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 1
+
+log "interactive: ask D.Ai Forge from the command bar (+install antivirus → Forge window)"
 type_keys meta_l-spc
 sleep 2
 type_keys shift-equal i n s t a l l spc a n t i v i r u s
-sleep 3
+sleep 2
 monitor "screendump $ARTIFACT_DIR/forge-preview.png -f png" || log "warning: screenshot failed"
+type_keys ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/forge-window.png -f png" || log "warning: screenshot failed"
+type_keys esc esc
+sleep 1
 
 log "interactive: open the sandboxed example app from the command bar"
 type_keys esc
