@@ -11,12 +11,14 @@
 # Environment:
 #   BOOT_TIMEOUT  Seconds to wait for the login prompt (default: 600)
 #   DESKTOP_WAIT  Seconds to wait after login prompt before the screenshot (default: 60)
+#   APPS_WAIT     Seconds to wait for demo apps before the second screenshot (default: 20)
 set -euo pipefail
 
 readonly ISO="${1:-}"
 ARTIFACT_DIR="$(realpath -m "${2:-boot-artifacts}")"
 readonly BOOT_TIMEOUT="${BOOT_TIMEOUT:-600}"
 readonly DESKTOP_WAIT="${DESKTOP_WAIT:-60}"
+readonly APPS_WAIT="${APPS_WAIT:-20}"
 readonly LOGIN_PATTERN='dai-os login:'
 readonly PANIC_PATTERN='Kernel panic|end Kernel panic|Unable to find a medium containing a live file system'
 
@@ -125,7 +127,15 @@ monitor "screendump $ARTIFACT_DIR/desktop.png -f png" || log "warning: screensho
 [[ -s "$ARTIFACT_DIR/desktop.png" ]] && log "screenshot: $ARTIFACT_DIR/desktop.png"
 
 log "running in-guest system checks over the serial console"
-if ! python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT"; then
+checks_ok=1
+python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" --launch-apps || checks_ok=0
+
+log "waiting ${APPS_WAIT}s for demo apps, then capturing a second screenshot"
+sleep "$APPS_WAIT"
+monitor "screendump $ARTIFACT_DIR/apps.png -f png" || log "warning: screenshot failed"
+[[ -s "$ARTIFACT_DIR/apps.png" ]] && log "screenshot: $ARTIFACT_DIR/apps.png"
+
+if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2
   die "system checks failed (see $REPORT)"

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Log into a booted D.Ai OS live system over a QEMU serial socket and verify it.
 
-Usage: serial_check.py <serial-unix-socket> <report-file>
+Usage: serial_check.py <serial-unix-socket> <report-file> [--launch-apps]
+
+With --launch-apps, opens a terminal, the file manager and a Hebrew text file
+in the editor inside the graphical session, for screenshots.
 
 Exits 0 when every required check passes, 1 otherwise. Optional checks are
 reported but never fail the run.
@@ -63,11 +66,32 @@ class Serial:
         return "\n".join(body).strip()
 
 
+HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
+
+
+def launch_apps_command() -> str:
+    """Shell command that opens demo windows in the user's Wayland session."""
+    # Encode the sample as \xNN escapes so only ASCII crosses the serial line.
+    sample = "".join(f"\\x{b:02x}" for b in HEBREW_SAMPLE.encode("utf-8"))
+    return (
+        "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+        'export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; '
+        "export QT_QPA_PLATFORM=wayland QT_QPA_PLATFORMTHEME=lxqt XDG_CURRENT_DESKTOP=labwc:wlroots; "
+        f"printf '{sample}' > ~/hello-he.txt; "
+        "setsid -f qterminal >/dev/null 2>&1; "
+        "setsid -f pcmanfm-qt ~ >/dev/null 2>&1; "
+        "setsid -f featherpad ~/hello-he.txt >/dev/null 2>&1"
+    )
+
+
 def main() -> int:
-    if len(sys.argv) != 3:
+    args = sys.argv[1:]
+    launch_apps = "--launch-apps" in args
+    args = [a for a in args if a != "--launch-apps"]
+    if len(args) != 2:
         print(__doc__, file=sys.stderr)
         return 2
-    sock_path, report_path = sys.argv[1], sys.argv[2]
+    sock_path, report_path = args
 
     serial = Serial(sock_path)
     serial.send("\n")
@@ -134,6 +158,13 @@ def main() -> int:
             output = f"<error: {exc}>"
         lines.append(f"[INFO] {name}: {command}")
         lines.extend(f"        {line}" for line in output.splitlines()[:40])
+
+    if launch_apps:
+        try:
+            serial.run(launch_apps_command())
+            lines.append("[INFO] launched demo apps in the graphical session")
+        except (TimeoutError, OSError) as exc:
+            lines.append(f"[INFO] could not launch demo apps: {exc}")
 
     serial.send("exit\n")
     report = "\n".join(lines) + "\n"
