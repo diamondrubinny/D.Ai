@@ -94,6 +94,18 @@ configure() {
   cp -a "$LB_SRC/common/." config/
   cp -a "$LB_SRC/editions/$EDITION/." config/
   chmod 0755 config/hooks/normal/*.hook.chroot
+  stage_apps config/includes.chroot_after_packages
+}
+
+# Copy D.Ai's own applications from apps/ into the image tree.
+stage_apps() {
+  local root="$1"
+  local cmd="$REPO_ROOT/apps/dai-command"
+  install -d "$root/usr/lib/dai" "$root/usr/bin" "$root/usr/share/applications"
+  cp -r "$cmd/dai_command" "$root/usr/lib/dai/"
+  find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
+  install -m 0755 "$cmd/data/dai-command" "$root/usr/bin/dai-command"
+  install -m 0644 "$cmd/data/dai-command.desktop" "$root/usr/share/applications/dai-command.desktop"
 }
 
 main() {

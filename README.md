@@ -23,6 +23,8 @@ See the full specification and roadmap in [docs/PLAN.md](docs/PLAN.md).
 build/live-build/common/     Shared live-build config (packages, hardening, desktop defaults)
 build/live-build/editions/   Edition overlays: user, dev
 build/scripts/               build-iso.sh, run-qemu.sh
+build/assets/                Wallpaper generator
+apps/dai-command/            D.Ai Command (PyQt6) + unit tests
 tests/boot/                  Headless QEMU boot test
 docs/                        Specification, architecture, threat model
 ```
@@ -52,7 +54,17 @@ bash build/scripts/run-qemu.sh out/dai-os-user-*.iso --uefi
 ```
 
 Live session: user `dai`, Hebrew/English keyboard toggle with `Alt+Shift`.
-Shortcuts: `Super+Enter` terminal, `Super+E` files, `Super+L` lock, `Super+Alt+S` screen reader (Orca).
+Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, `Super+L` lock,
+`Super+←/→` snap windows, `Super+Alt+S` screen reader (Orca).
+
+## Desktop
+
+- **Taskbar** with a **Start** menu and, right next to it, the **D.Ai Command** bar.
+- **D.Ai Command** (`apps/dai-command`): one bar to launch apps (also by Hebrew name), run commands
+  (`>` in a terminal, `$` in the background), calculate (`2*(3+4)`, `15% of 80`) and **fix text typed in
+  the wrong keyboard layout** (`akuo` → `שלום`). `?` will ask the local AI (Phase 3).
+- **D.Ai Night** theme: dark, high-contrast (WCAG AA) palette with a violet→cyan accent, custom wallpaper,
+  matching window decorations. Design system: [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Contributing
 

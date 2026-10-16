@@ -35,6 +35,10 @@ pavucontrol-qt
 nm-tray
 blueman
 breeze-icon-theme
+breeze-cursor-theme
+
+# D.Ai applications
+python3-pyqt6
 
 # Audio
 pipewire

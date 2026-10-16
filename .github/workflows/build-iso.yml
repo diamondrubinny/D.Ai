@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - "build/**"
+      - "apps/**"
       - "tests/boot/**"
       - ".github/workflows/build-iso.yml"
   pull_request:
     paths:
       - "build/**"
+      - "apps/**"
       - "tests/boot/**"
       - ".github/workflows/build-iso.yml"
   workflow_dispatch:
@@ -33,7 +35,11 @@ jobs:
             build/live-build/common/hooks/normal/*.hook.chroot \
             build/live-build/common/includes.chroot_after_packages/usr/lib/live/config/*
           shellcheck -s sh build/live-build/common/includes.chroot_after_packages/etc/skel/.config/labwc/autostart \
-            build/live-build/common/includes.chroot_after_packages/usr/bin/startdai-wayland
+            build/live-build/common/includes.chroot_after_packages/usr/bin/startdai-wayland \
+            apps/dai-command/data/dai-command
+
+      - name: Unit tests (dai-command)
+        run: python3 -m unittest discover -s apps/dai-command/tests -t apps/dai-command -v
 
   build:
     needs: lint

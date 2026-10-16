@@ -1,0 +1,27 @@
+# D.Ai Night window theme for labwc (see man 5 labwc-theme)
+border.width: 1
+padding.height: 6
+window.titlebar.padding.height: 4
+
+window.active.border.color: #2A3563
+window.inactive.border.color: #1C2547
+window.active.title.bg.color: #141B33
+window.inactive.title.bg.color: #0B1020
+window.active.label.text.color: #E6E9F5
+window.inactive.label.text.color: #9AA3C7
+window.label.text.justify: center
+window.active.button.unpressed.image.color: #E6E9F5
+window.inactive.button.unpressed.image.color: #9AA3C7
+
+menu.border.width: 1
+menu.border.color: #2A3563
+menu.items.bg.color: #141B33
+menu.items.text.color: #E6E9F5
+menu.items.active.bg.color: #5B3FD6
+menu.items.active.text.color: #FFFFFF
+menu.separator.color: #2A3563
+
+osd.bg.color: #141B33
+osd.border.color: #7C5CFF
+osd.border.width: 1
+osd.label.text.color: #E6E9F5

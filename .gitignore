@@ -4,3 +4,7 @@
 *.iso
 *.iso.sha256
 /boot-artifacts/
+
+# Python
+__pycache__/
+*.pyc

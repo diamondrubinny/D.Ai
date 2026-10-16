@@ -1,0 +1,185 @@
+import os
+import stat
+import tempfile
+import textwrap
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from dai_command import core
+
+
+def write_desktop(directory: Path, name: str, body: str) -> Path:
+    path = directory / name
+    path.write_text(textwrap.dedent(body), encoding="utf-8")
+    return path
+
+
+class ParseExecTests(unittest.TestCase):
+    def test_strips_field_codes(self):
+        self.assertEqual(core.parse_exec("firefox-esr %u"), ("firefox-esr",))
+        self.assertEqual(core.parse_exec("app --file=%f %F"), ("app", "--file="))
+
+    def test_keeps_literal_percent_and_quotes(self):
+        self.assertEqual(core.parse_exec('sh -c "echo 100%%"'), ("sh", "-c", "echo 100%"))
+
+    def test_invalid_quoting(self):
+        self.assertEqual(core.parse_exec('broken "quote'), ())
+
+
+class DesktopEntryTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_localized_name_and_keywords(self):
+        path = write_desktop(self.dir, "browser.desktop", """\
+            [Desktop Entry]
+            Type=Application
+            Name=Web Browser
+            Name[he]=דפדפן
+            Keywords=internet;web;
+            Exec=firefox-esr %u
+            Icon=firefox-esr
+        """)
+        app = core.parse_desktop_file(path, "browser.desktop", ["LXQt"], ["he_IL", "he"])
+        self.assertIsNotNone(app)
+        self.assertEqual(app.name, "דפדפן")
+        self.assertIn("web browser", app.search_terms)
+        self.assertIn("internet", app.search_terms)
+        self.assertEqual(app.exec_args, ("firefox-esr",))
+
+    def test_hebrew_terms_searchable_on_english_system(self):
+        path = write_desktop(self.dir, "browser.desktop", """\
+            [Desktop Entry]
+            Type=Application
+            Name=Firefox ESR
+            GenericName=Web Browser
+            GenericName[he]=דפדפן
+            Exec=firefox-esr %u
+        """)
+        app = core.parse_desktop_file(path, "browser.desktop", ["LXQt"], ["en_US", "en"])
+        self.assertEqual(app.name, "Firefox ESR")
+        self.assertEqual(core.search_apps([app], "דפדפן"), [app])
+
+    def test_hidden_and_desktop_filters(self):
+        cases = {
+            "nodisplay.desktop": "NoDisplay=true",
+            "hidden.desktop": "Hidden=true",
+            "gnome-only.desktop": "OnlyShowIn=GNOME;",
+            "not-lxqt.desktop": "NotShowIn=LXQt;",
+            "tryexec.desktop": "TryExec=/nonexistent/binary",
+        }
+        for filename, extra in cases.items():
+            path = write_desktop(self.dir, filename, f"""\
+                [Desktop Entry]
+                Type=Application
+                Name=X
+                Exec=true
+                {extra}
+            """)
+            with self.subTest(filename):
+                self.assertIsNone(core.parse_desktop_file(path, filename, ["LXQt"], []))
+
+    def test_load_apps_first_directory_wins(self):
+        user_dir, system_dir = self.dir / "user", self.dir / "system"
+        user_dir.mkdir()
+        system_dir.mkdir()
+        body = "[Desktop Entry]\nType=Application\nName={}\nExec=true\n"
+        (user_dir / "app.desktop").write_text(body.format("User copy"))
+        (system_dir / "app.desktop").write_text(body.format("System copy"))
+        apps = core.load_apps([user_dir, system_dir])
+        self.assertEqual([a.name for a in apps], ["User copy"])
+
+    def test_search_ranking(self):
+        apps = [
+            core.AppEntry("a", "Terminal", ("qterminal",), search_terms=("terminal", "shell")),
+            core.AppEntry("b", "Text Editor", ("featherpad",), search_terms=("text editor",)),
+            core.AppEntry("c", "Settings", ("lxqt-config",), search_terms=("settings", "system terminal options")),
+        ]
+        self.assertEqual([a.name for a in core.search_apps(apps, "ter")], ["Terminal", "Settings"])
+        self.assertEqual([a.name for a in core.search_apps(apps, "edit")], ["Text Editor"])
+        self.assertEqual(core.search_apps(apps, "  "), [])
+
+
+class CalculatorTests(unittest.TestCase):
+    def test_arithmetic(self):
+        self.assertEqual(core.calculate("2*(3+4)"), 14)
+        self.assertEqual(core.calculate("2^10"), 1024)
+        self.assertAlmostEqual(core.calculate("sqrt(16)+pi"), 4 + 3.141592653589793)
+        self.assertEqual(core.calculate("15% of 80"), 12)
+        self.assertEqual(core.calculate("15% מתוך 80"), 12)
+
+    def test_rejects_non_math_and_unsafe_input(self):
+        for text in [
+            "firefox",
+            "42",
+            "__import__('os').system('id')",
+            "().__class__",
+            "open('/etc/passwd')",
+            "2**100000",
+            "10**1000*10**1000",
+            "1/0",
+            "x" * 300,
+            "lambda: 1",
+        ]:
+            with self.subTest(text):
+                self.assertIsNone(core.calculate(text))
+
+    def test_format(self):
+        self.assertEqual(core.format_number(1234567.0), "1,234,567")
+        self.assertEqual(core.format_number(0.1 + 0.2), "0.3")
+
+
+class LayoutFixTests(unittest.TestCase):
+    def test_english_typed_on_hebrew_intent(self):
+        self.assertEqual(core.fix_layout("akuo"), ("שלום", "he"))
+        self.assertEqual(core.fix_layout("nv bang"), ("מה נשמע", "he"))
+
+    def test_hebrew_typed_on_english_intent(self):
+        self.assertEqual(core.fix_layout("יקךךם"), ("hello", "en"))
+
+    def test_not_candidates(self):
+        self.assertIsNone(core.fix_layout("a"))
+        self.assertIsNone(core.fix_layout("123"))
+        self.assertIsNone(core.fix_layout("mixed שלום"))
+
+
+class HistoryTests(unittest.TestCase):
+    def test_dedupe_limit_privacy_and_permissions(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            history = core.History(Path(tmp) / "dai" / "history", limit=3)
+            for entry in ["a", "b", "a", "c", "d", " secret", ""]:
+                history.add(entry)
+            self.assertEqual(history.load(), ["a", "c", "d"])
+            mode = stat.S_IMODE(os.stat(history.path).st_mode)
+            self.assertEqual(mode, 0o600)
+
+
+class BuildActionsTests(unittest.TestCase):
+    apps = [core.AppEntry("t", "Terminal", ("qterminal",), "utilities-terminal", "Shell", ("terminal",))]
+
+    def test_prefixes(self):
+        self.assertEqual(core.build_actions("?how", self.apps)[0].kind, "ai")
+        self.assertEqual(core.build_actions(">ls -la", self.apps)[0].payload, "ls -la")
+        self.assertEqual(core.build_actions("$sleep 1", self.apps)[0].kind, "run")
+
+    def test_calc_app_layout_and_history(self):
+        self.assertEqual(core.build_actions("1+1", self.apps)[0].payload, "2")
+        self.assertEqual(core.build_actions("term", self.apps)[0].kind, "app")
+        self.assertEqual(core.build_actions("akuo", self.apps)[0].payload, "שלום")
+        recent = core.build_actions("", self.apps, ["one", "two"])
+        self.assertEqual([a.title for a in recent], ["two", "one"])
+        self.assertTrue(all(a.kind == "history" for a in recent))
+
+    def test_executable_offers_run_and_terminal(self):
+        with mock.patch.object(core.shutil, "which", return_value="/usr/bin/htop"):
+            kinds = [a.kind for a in core.build_actions("htop", [])]
+        self.assertEqual(kinds[-2:], ["run", "terminal"])
+
+
+if __name__ == "__main__":
+    unittest.main()
