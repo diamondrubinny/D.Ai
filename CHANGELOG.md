@@ -15,6 +15,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai Forge: install integrations (antivirus, VPN, sync…) and build sandboxed apps (bubblewrap) by asking.
 - D.Ai Voice: push-to-talk dictation and voice commands with a local, pinned whisper.cpp.
 - D.Ai Code: local coding assistant (`dai-code`): diffs to approve, backups and undo, confined to the project.
+- D.Ai Find: natural-language file search in Hebrew and English (type, time, folder, name), in D.Ai Command and `dai-find`.
 - D.Ai Welcome: first-run wizard — security level through D.Ai Tune, local models sized to the computer's memory, privacy facts.
 - Installer (Calamares) with full-disk encryption (LUKS) and D.Ai branding.
 - Hardening: nftables firewall (deny inbound), AppArmor, kernel/sysctl hardening, automatic Debian security updates.

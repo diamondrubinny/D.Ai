@@ -210,6 +210,15 @@ def main() -> int:
          lambda o: not re.search(r"^\s*(missing|[?.0-9]{9}) ", o, re.M) and "dai-apps: /usr/bin/dai-code" in o
          and "dai-llama-runtime: /opt/dai/llama/llama-server" in o and "VERIFY_OK" in o and "SOCKET_ENABLED" in o
          and o.count("install ok installed") >= 4),
+        # D.Ai Find: files as you remember them, in English and Hebrew.
+        ("find: natural language", "mkdir -p ~/Downloads ~/Pictures && echo x > ~/Downloads/boarding-pass.pdf "
+         "&& echo x > ~/Pictures/beach.jpg && touch -d '40 days ago' ~/Downloads/old-ticket.pdf; "
+         "dai-find --version; dai-find 'find the pdf I downloaded today'; "
+         "LANG=he_IL.UTF-8 dai-find \"$(printf '\\xd7\\x9e\\xd7\\xa6\\xd7\\x90\\x20\\xd7\\x90\\xd7\\xaa\\x20\\xd7\\x94\\x2d\\x50\\x44\\x46\\x20"
+         "\\xd7\\xa9\\xd7\\x94\\xd7\\x95\\xd7\\xa8\\xd7\\x93\\xd7\\xaa\\xd7\\x99\\x20\\xd7\\x94\\xd7\\x99\\xd7\\x95\\xd7\\x9d')\"; "
+         "dai-find 'find photos from today'", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and o.count("boarding-pass.pdf") == 2 and "old-ticket" not in o
+         and "beach.jpg" in o),
         # D.Ai Welcome: installed, in the menu, and never opens by itself in the live session.
         ("welcome: first run", "dai-welcome --version; dai-welcome --first-run; "
          "test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; "

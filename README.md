@@ -31,6 +31,7 @@ apps/dai-ai/                 Local AI: daid service, model manager, client + uni
 apps/dai-forge/              D.Ai Forge: recipes, AI app builder, bubblewrap sandbox + unit tests
 apps/dai-voice/              D.Ai Voice: push-to-talk dictation and voice commands (whisper.cpp) + unit tests
 apps/dai-code/               D.Ai Code: local coding assistant + unit tests
+apps/dai-find/               D.Ai Find: natural-language file search (Hebrew/English) + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -88,6 +89,10 @@ Inside the running image (captured by CI with real keyboard/mouse input):
 |----------|----------------------------------|----------------------------------|
 | ![The diamond Start button and the Start menu](docs/screenshots/start-menu.png) | ![D.Ai Forge opened with "+install antivirus"](docs/screenshots/forge-window.png) | ![The D.Ai OS installer welcome page](docs/screenshots/installer.png) |
 
+| D.Ai Welcome (first-run setup) |
+|--------------------------------|
+| ![D.Ai Welcome opened from the command bar](docs/screenshots/welcome.png) |
+
 D.Ai Forge (rendered from the real window code; in-VM screenshots are published by CI):
 
 | Ask | Review the plan | The local AI writes the app |
@@ -133,6 +138,9 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   current folder: `dai-code ask`, `explain FILE[:A-B]`, `edit FILE "change"` (a diff to approve, a backup and
   `dai-code undo`), `review` and `commit-msg`. It never runs code, never leaves the project folder, never reads or
   edits `.env`, keys or `.git`, and redacts secrets before anything reaches the local model.
+- **D.Ai Find** ([docs/FIND.md](docs/FIND.md)): find files the way you remember them, in Hebrew or English —
+  "find the pdf I downloaded last week", "התמונות מאתמול", "invoice from March" — from D.Ai Command or `dai-find`.
+  Local, rule-based and instant; no index is written to disk.
 - **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
   wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
   undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what
