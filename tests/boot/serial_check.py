@@ -73,13 +73,15 @@ def main() -> int:
     serial.send(f"{LIVE_USER}\n")
     serial.expect(re.compile(rb"Password: ?$", re.M), 30)
     serial.send(f"{LIVE_PASSWORD}\n")
-    time.sleep(5)
-    if LOGIN_FAILED.search(serial.buf):
-        print("login as the live user failed", file=sys.stderr)
-        return 1
     # Wait for an interactive shell by round-tripping a marker; this does not
     # depend on the prompt format or terminal escape sequences.
-    serial.run("true", timeout=60)
+    try:
+        serial.run("true", timeout=30)
+    except TimeoutError:
+        if LOGIN_FAILED.search(serial.buf):
+            print(f"login as the live user '{LIVE_USER}' failed", file=sys.stderr)
+            return 1
+        raise
     # Quiet the console: no kernel messages, no colors, fixed width.
     serial.run("sudo dmesg -n 1; export TERM=dumb PAGER=cat SYSTEMD_PAGER=cat SYSTEMD_COLORS=0")
 
