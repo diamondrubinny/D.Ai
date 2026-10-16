@@ -33,8 +33,9 @@ esac
 
 [[ $EUID -eq 0 ]] || die "must run as root inside a disposable container or VM"
 # live-build from other distributions (e.g. Ubuntu) is too old for this config.
-# shellcheck source=/dev/null
-[[ "$(. /etc/os-release && echo "${ID:-}:${VERSION_CODENAME:-}")" == "debian:trixie" ]] \
+# shellcheck disable=SC2016 # expanded by the inner shell
+host_os="$(env -i sh -c '. /etc/os-release && echo "${ID:-}:${VERSION_CODENAME:-}"')"
+[[ "$host_os" == "debian:trixie" ]] \
   || die "build host must be Debian trixie (use: docker run --privileged debian:trixie ...)"
 [[ "$VERSION" =~ ^[0-9A-Za-z.+~-]+$ ]] || die "invalid DAI_VERSION: $VERSION"
 [[ -d "$LB_SRC/common" && -d "$LB_SRC/editions/$EDITION" ]] || die "live-build config not found under $LB_SRC"
