@@ -25,6 +25,7 @@ build/live-build/editions/   Edition overlays: user, dev
 build/scripts/               build-iso.sh, run-qemu.sh
 build/assets/                Wallpaper generator
 apps/dai-command/            D.Ai Command (PyQt6) + unit tests
+apps/dai-tune/               D.Ai Tune: text-driven configuration, root helper, polkit policy + unit tests
 tests/boot/                  Headless QEMU boot test
 docs/                        Specification, architecture, threat model
 ```
@@ -69,6 +70,12 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
 - **D.Ai Command** (`apps/dai-command`): one bar to launch apps (also by Hebrew name), run commands
   (`>` in a terminal, `$` in the background), calculate (`2*(3+4)`, `15% of 80`) and **fix text typed in
   the wrong keyboard layout** (`akuo` → `שלום`). `?` will ask the local AI (Phase 3).
+- **D.Ai Tune** (`apps/dai-tune`): configure the system by **writing what you need**, in Hebrew or English —
+  `dai-tune "חסום דיסק און קי, כבה בלוטות' ונעל מסך אחרי 5 דקות"`. Text is never executed: it maps to a
+  closed catalog of validated actions, shown as a plan (scope, risk, security effect) before anything changes.
+  System changes go through a minimal root helper authorized by polkit, are journaled and can be undone
+  (`dai-tune undo`). `dai-tune status` gives a security score with a phrase to fix each finding.
+  In D.Ai Command, type `!` followed by the request. Design and threat model: [docs/TUNE.md](docs/TUNE.md).
 - **D.Ai Night** theme: dark, high-contrast (WCAG AA) palette with a violet→cyan accent, custom wallpaper,
   matching window decorations. Design system: [docs/DESIGN.md](docs/DESIGN.md).
 

@@ -175,6 +175,16 @@ class BuildActionsTests(unittest.TestCase):
         self.assertEqual([a.title for a in recent], ["two", "one"])
         self.assertTrue(all(a.kind == "history" for a in recent))
 
+    def test_tune_prefix_previews_plan(self):
+        import sys
+
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "dai-tune"))
+        with mock.patch.dict(os.environ, {"LANG": "en_US.UTF-8"}):
+            rows = core.build_actions("!block the camera and turn off bluetooth", [])
+            self.assertEqual([a.title for a in rows], ["Block the camera", "Block Bluetooth"])
+            self.assertTrue(all(a.kind == "tune" and a.payload for a in rows))
+            self.assertEqual(core.build_actions("!what is this", [])[0].payload, "")
+
     def test_executable_offers_run_and_terminal(self):
         with mock.patch.object(core.shutil, "which", return_value="/usr/bin/htop"):
             kinds = [a.kind for a in core.build_actions("htop", [])]

@@ -260,6 +260,12 @@ class CommandWindow(QWidget):
             command = f"{action.payload}; echo; read -r -p 'Enter ↵' _"
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", command])
             remembered = f">{action.payload}"
+        elif action.kind == "tune":
+            # Review, confirmation and authorization happen in dai-tune.
+            request = str(action.payload)
+            command = ["dai-tune", request] if request else ["dai-tune", "help"]
+            self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-tune "$@"; echo; read -r -p "Enter ↵" _', "dai-tune", *command[1:]])
+            remembered = f"!{request}" if request else ""
         else:
             return  # AI rows are informational until Phase 3
         if remembered and not private:

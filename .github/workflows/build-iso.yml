@@ -36,9 +36,15 @@ jobs:
             build/live-build/common/includes.chroot_after_packages/usr/lib/live/config/*
           shellcheck -s sh build/live-build/common/includes.chroot_after_packages/etc/skel/.config/labwc/autostart \
             build/live-build/common/includes.chroot_after_packages/usr/bin/startdai-wayland \
-            apps/dai-command/data/dai-command
+            apps/dai-command/data/dai-command \
+            apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper
+
+      - name: Unit tests (dai-tune)
+        run: python3 -m unittest discover -s apps/dai-tune/tests -t apps/dai-tune -v
 
       - name: Unit tests (dai-command)
+        env:
+          PYTHONPATH: apps/dai-tune
         run: python3 -m unittest discover -s apps/dai-command/tests -t apps/dai-command -v
 
   build:

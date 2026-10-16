@@ -357,6 +357,9 @@ _STRINGS = {
     "placeholder": ("Apps, commands, math…    ? ask    > terminal", "אפליקציות, פקודות, חישובים…    ? שאלה    > טרמינל"),
     "hints": ("Enter open  ·  ↑↓ move  ·  Esc close  ·  Alt+Shift language", "הפעלה Enter  ·  ניווט ↑↓  ·  סגירה Esc  ·  שפה Alt+Shift"),
     "mic": ("Local voice dictation (Whisper) — Phase 5", "הכתבה קולית מקומית (Whisper) — שלב 5"),
+    "tune_review": ("D.Ai Tune · Enter to review and apply", "D.Ai Tune · Enter לבדיקה והחלה"),
+    "tune_unknown": ("Not understood — Enter for examples", "לא הובן — Enter לדוגמאות"),
+    "tune_hint": ("Configure the system in words, e.g. !block usb", "התאמת המערכת במילים, למשל !חסום דיסק און קי"),
     "query_name": ("D.Ai Command input", "שורת הפקודות של D.Ai"),
     "results_name": ("Results", "תוצאות"),
 }
@@ -384,7 +387,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -411,6 +414,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
                 question,
             )
         ]
+    if text.startswith("!"):
+        return tune_actions(text[1:].strip())
     if text.startswith(">"):
         command = text[1:].strip()
         return [Action("terminal", command, tr("terminal"), "utilities-terminal", command)] if command else []
@@ -436,3 +441,35 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         actions.append(Action("run", text, tr("background"), "system-run", text))
         actions.append(Action("terminal", text, tr("terminal"), "utilities-terminal", text))
     return actions
+
+
+def tune_actions(request: str) -> list[Action]:
+    """Preview a D.Ai Tune plan; applying always happens in dai-tune itself."""
+    if not request:
+        return [Action("tune", tr("tune_hint"), "dai-tune help", "preferences-system", "")]
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_tune.catalog import CATALOG
+        from dai_tune.context import Context
+        from dai_tune.planner import plan_from_text
+    except ImportError:
+        return []
+    lang = ui_language()
+    plan = plan_from_text(request, Context(lang=lang))
+    if not plan.ok:
+        return [Action("tune", request, tr("tune_unknown"), "dialog-question", "")]
+    icons = {"hardens": "security-high", "weakens": "security-low", "neutral": "preferences-system"}
+    effects = {
+        "hardens": ("hardens security", "מחזק אבטחה"),
+        "weakens": ("weakens security", "מחליש אבטחה"),
+        "neutral": ("neutral", "ניטרלי"),
+    }
+    return [
+        Action(
+            "tune",
+            CATALOG[step.action].summary(step.params, lang),
+            f"{effects[step.effect][lang == 'he']} · {tr('tune_review')}",
+            icons[step.effect],
+            request,
+        )
+        for step in plan.steps
+    ]

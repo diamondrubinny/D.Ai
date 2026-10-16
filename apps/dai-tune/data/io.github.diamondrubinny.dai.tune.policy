@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>D.Ai OS</vendor>
+  <vendor_url>https://github.com/diamondrubinny/D.Ai</vendor_url>
+
+  <action id="io.github.diamondrubinny.dai.tune.apply">
+    <description>Apply system changes with D.Ai Tune</description>
+    <description xml:lang="he">החלת שינויי מערכת באמצעות D.Ai Tune</description>
+    <message>Authentication is required to change system settings with D.Ai Tune</message>
+    <message xml:lang="he">נדרש אימות מנהל כדי לשנות הגדרות מערכת עם D.Ai Tune</message>
+    <icon_name>dai-logo</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/dai/dai-tune-helper</annotate>
+  </action>
+</policyconfig>

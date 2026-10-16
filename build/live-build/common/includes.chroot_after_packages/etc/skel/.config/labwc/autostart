@@ -5,5 +5,16 @@
 # Make the Wayland display available to D-Bus activated services.
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP >/dev/null 2>&1 &
 
-# Lock the screen after 10 minutes of inactivity and before sleep.
-swayidle -w timeout 600 'swaylock -f' before-sleep 'swaylock -f' >/dev/null 2>&1 &
+# Screen lock: timeout from ~/.config/dai/session.env (set with D.Ai Tune,
+# e.g. dai-tune "lock the screen after 5 minutes"); default 10 minutes.
+DAI_LOCK_TIMEOUT_SECONDS=600
+if [ -r "$HOME/.config/dai/session.env" ]; then
+	# shellcheck source=/dev/null
+	. "$HOME/.config/dai/session.env"
+fi
+case "$DAI_LOCK_TIMEOUT_SECONDS" in
+	'' | *[!0-9]*) DAI_LOCK_TIMEOUT_SECONDS=600 ;;
+esac
+if [ "$DAI_LOCK_TIMEOUT_SECONDS" -gt 0 ]; then
+	swayidle -w timeout "$DAI_LOCK_TIMEOUT_SECONDS" 'swaylock -f' before-sleep 'swaylock -f' >/dev/null 2>&1 &
+fi

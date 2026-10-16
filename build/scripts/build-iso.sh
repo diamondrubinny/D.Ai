@@ -106,6 +106,15 @@ stage_apps() {
   find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
   install -m 0755 "$cmd/data/dai-command" "$root/usr/bin/dai-command"
   install -m 0644 "$cmd/data/dai-command.desktop" "$root/usr/share/applications/dai-command.desktop"
+
+  local tune="$REPO_ROOT/apps/dai-tune"
+  install -d "$root/usr/share/polkit-1/actions"
+  cp -r "$tune/dai_tune" "$root/usr/lib/dai/"
+  find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
+  install -m 0755 "$tune/data/dai-tune" "$root/usr/bin/dai-tune"
+  install -m 0755 "$tune/data/dai-tune-helper" "$root/usr/lib/dai/dai-tune-helper"
+  install -m 0644 "$tune/data/io.github.diamondrubinny.dai.tune.policy" \
+    "$root/usr/share/polkit-1/actions/io.github.diamondrubinny.dai.tune.policy"
 }
 
 main() {
