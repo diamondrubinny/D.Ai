@@ -195,12 +195,23 @@ def main() -> int:
         ("ai: install model (verified)", "dai-models install qwen2.5-0.5b 2>&1 | tail -n 2", True,
          lambda o: "installed and verified" in o, 600),
         ("ai: answer", "dai-ai 'What is 2+2? Reply with only the number.'", True, lambda o: "4" in o, 300),
+        # D.Ai Voice: pinned whisper.cpp, verified speech model, sandboxed transcription.
+        ("voice: installed", "dai-voice --version; cat /opt/dai/whisper/VERSION; "
+         "/opt/dai/whisper/whisper-cli --help >/dev/null 2>&1 && echo WHISPER_RUNS; dai-voice status", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "WHISPER_RUNS" in o and "idle" in o),
+        ("voice: install speech model (verified)", "dai-models install whisper-base 2>&1 | tail -n 2", True,
+         lambda o: "installed and verified" in o, 600),
+        ("voice: transcribe (sandboxed, no network)", "dai-voice transcribe /opt/dai/whisper/test-jfk.wav --lang en", True,
+         lambda o: "country" in o.lower(), 300),
         ("ai: forge builds an app", "dai-forge --dry-run 'write a python script that prints the numbers 1 to 5' </dev/null", False,
          lambda o: "print" in o and "(dry run" in o, 600),
         ("ai: tune interpretation", "dai-tune --dry-run --ai 'make sure nobody can plug in a flash drive'", False,
          lambda o: "USB" in o, 300),
         # D.Ai Forge: recipes become Tune plans; apps run in the bubblewrap sandbox.
         ("forge: version", "dai-forge --version", True, lambda o: "Diamond Rubinny (d.Ai)" in o),
+        ("design: Qt can draw SVG (diamond)", "ls /usr/lib/x86_64-linux-gnu/qt6/plugins/iconengines/ "
+         "/usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/ | grep -c 'svg'", True,
+         lambda o: o.strip().splitlines()[-1:] in (["2"], ["3"], ["4"])),
         ("forge: window installed", "dai-forge-gui --version; test -f /usr/share/applications/dai-forge.desktop && echo IN_MENU; "
          "grep -c 'ownIcon=true' /etc/xdg/lxqt/panel.conf; test -f /etc/swaylock/config && echo LOCK_THEMED", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "IN_MENU" in o and "LOCK_THEMED" in o),

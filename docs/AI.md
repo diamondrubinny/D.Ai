@@ -57,7 +57,7 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 
 - מודל 0.5B מהיר אבל מוגבל, בעיקר בעברית. אפשר לבחור מודל גדול יותר מהקטלוג.
 - האצת GPU (Vulkan/CUDA) עוד לא נבנתה. כרגע CPU בלבד.
-- הכתבה קולית (Whisper) היא שלב 5.
+- הכתבה קולית (Whisper): ראו [VOICE.md](VOICE.md).
 
 ---
 

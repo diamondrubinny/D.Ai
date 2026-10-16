@@ -75,6 +75,10 @@ QLineEdit#Confirm {{ background: {BG_900}; border: 1px solid {BORDER}; border-ra
 QLineEdit#Confirm:focus {{ border: 2px solid {ACCENT_2}; }}
 QPlainTextEdit#Code {{ background: #070B17; border: 1px solid {BORDER}; border-radius: 12px; padding: 8px;
     font-family: "Noto Sans Mono", monospace; font-size: 10pt; color: #CFE8FF; }}
+QToolButton#Mic {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 10px; padding: 7px; }}
+QToolButton#Mic:hover {{ border: 1px solid {ACCENT}; }}
+QToolButton#Mic:focus {{ border: 2px solid {ACCENT_2}; }}
+QToolButton#Mic[recording="true"] {{ background: #B4233A; border: 2px solid {DANGER}; }}
 QCheckBox {{ spacing: 8px; }}
 QCheckBox::indicator {{ width: 18px; height: 18px; border-radius: 5px; border: 1px solid {BORDER}; background: {BG_900}; }}
 QCheckBox::indicator:checked {{ background: {ACCENT}; border: 1px solid {ACCENT}; }}
@@ -310,8 +314,9 @@ class ForgeWindow(QWidget):
         row = QHBoxLayout()
         logo = QLabel("◆")
         logo.setStyleSheet(f"color: {ACCENT}; font-size: 30pt;")
-        if LOGO.is_file():
-            logo.setPixmap(QIcon(str(LOGO)).pixmap(QSize(52, 52)))
+        pixmap = QIcon(str(LOGO)).pixmap(QSize(52, 52)) if LOGO.is_file() else None
+        if pixmap is not None and not pixmap.isNull():  # glyph fallback without Qt's SVG plugin
+            logo.setPixmap(pixmap)
         logo.setAccessibleName("D.Ai")
         row.addWidget(logo)
         texts = QVBoxLayout()
@@ -336,6 +341,15 @@ class ForgeWindow(QWidget):
         self.ask.setAccessibleName(self.t("ask_name"))
         self.ask.returnPressed.connect(self.submit)
         row.addWidget(self.ask, 1)
+        try:  # D.Ai Voice: say the request instead of typing it
+            from dai_voice.qt import VoiceButton
+
+            self.mic = VoiceButton(self)
+            self.mic.transcribed.connect(lambda text: (self.ask.setText(text), self.ask.setFocus()))
+            self.mic.failed.connect(lambda message: self.ask.setPlaceholderText("🎙 " + message))
+            row.addWidget(self.mic)
+        except ImportError:
+            self.mic = None
         self.go = QPushButton(self.t("go"), objectName="Primary")
         self.go.setAccessibleName(self.t("go"))
         self.go.clicked.connect(self.submit)

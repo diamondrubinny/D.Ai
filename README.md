@@ -28,6 +28,7 @@ apps/dai-command/            D.Ai Command (PyQt6) + unit tests
 apps/dai-tune/               D.Ai Tune: text-driven configuration, root helper, polkit policy + unit tests
 apps/dai-ai/                 Local AI: daid service, model manager, client + unit tests
 apps/dai-forge/              D.Ai Forge: recipes, AI app builder, bubblewrap sandbox + unit tests
+apps/dai-voice/              D.Ai Voice: push-to-talk dictation and voice commands (whisper.cpp) + unit tests
 tests/boot/                  Headless QEMU boot test
 docs/                        Specification, architecture, threat model
 ```
@@ -102,6 +103,11 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   **bubblewrap sandbox**: no network, no access to the rest of your files, read-only system — unless you approve
   a permission. Every change keeps the previous version. Capabilities are data the user owns, so they do not
   wait for a D.Ai release.
+- **D.Ai Voice** (`apps/dai-voice`, [docs/VOICE.md](docs/VOICE.md)): talk instead of typing, fully local with a
+  pinned whisper.cpp. `Super+H` dictates into any app, `Super+Shift+Space` turns speech into a command for
+  D.Ai Command, and the 🎙 buttons in D.Ai Command and D.Ai Forge fill the request field. Recording only starts on
+  an explicit press, a notification is shown the whole time, audio lives in tmpfs and is deleted right after
+  transcription, which runs in a bubblewrap sandbox without network. Models: `dai-models install whisper-small`.
 - **D.Ai Night** theme: dark, high-contrast (WCAG AA) palette with a violet→cyan accent, custom wallpaper,
   matching window decorations. Design system: [docs/DESIGN.md](docs/DESIGN.md).
 

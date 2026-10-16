@@ -24,7 +24,7 @@ ALLOWED_DOMAINS = ("huggingface.co", "hf.co")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9.-]{1,48}$")
 CHUNK = 1024 * 1024
-TASKS = ("general", "code")
+TASKS = ("general", "code", "speech")  # speech: whisper.cpp models for D.Ai Voice
 
 
 class ModelError(RuntimeError):
@@ -70,7 +70,8 @@ def load_catalog(path: Path = CATALOG) -> dict[str, Model]:
         if not isinstance(raw.get("tasks", []), list) or not all(t in TASKS for t in raw.get("tasks", [])):
             raise ModelError(f"invalid tasks in catalog entry: {raw.get('id')}")
         model = Model(**{**raw, "tasks": tuple(raw.get("tasks", ["general"]))})
-        if not ID_RE.match(model.id) or "/" in model.file or not model.file.endswith(".gguf"):
+        suffix = ".bin" if "speech" in model.tasks else ".gguf"  # whisper.cpp uses ggml .bin files
+        if not ID_RE.match(model.id) or "/" in model.file or not model.file.endswith(suffix):
             raise ModelError(f"invalid catalog entry: {model.id}")
         if urllib.parse.urlparse(model.url).scheme != "https":
             raise ModelError(f"catalog URL must be https: {model.id}")
@@ -136,25 +137,46 @@ def install(model: Model, progress: Callable[[int, int], None] | None = None, op
 
 
 def default_model_id(models: dict[str, Model], task: str = "general") -> str | None:
+    """The model to use for a task: chat ("general"), code, or speech.
+
+    Speech models are never used for chat and vice versa; code falls back to
+    the general model when no coding model is installed.
+    """
     if task != "general":
-        # Prefer a model made for the task (e.g. the coder model for apps).
         suited = [m for m in models.values() if m.installed and task in m.tasks]
+        if task == "speech":
+            chosen = _configured("speech_model")
+            if chosen in models and models[chosen].installed and "speech" in models[chosen].tasks:
+                return chosen
+            return min(suited, key=lambda m: m.size).id if suited else None
         if suited:
             return min(suited, key=lambda m: m.ram_mb).id
-    try:
-        chosen = json.loads(config_file().read_text(encoding="utf-8")).get("model")
-        if chosen in models and models[chosen].installed:
-            return chosen
-    except (OSError, json.JSONDecodeError):
-        pass
-    installed = [m for m in models.values() if m.installed]
+    chat_models = {k: m for k, m in models.items() if "general" in m.tasks}
+    chosen = _configured("model")
+    if chosen in chat_models and chat_models[chosen].installed:
+        return chosen
+    installed = [m for m in chat_models.values() if m.installed]
     return min(installed, key=lambda m: m.ram_mb).id if installed else None
 
 
-def set_default(model_id: str) -> None:
+def _configured(key: str) -> str | None:
+    try:
+        value = json.loads(config_file().read_text(encoding="utf-8")).get(key)
+    except (OSError, json.JSONDecodeError, AttributeError):
+        return None
+    return value if isinstance(value, str) else None
+
+
+def set_default(model_id: str, key: str = "model") -> None:
     path = config_file()
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({"model": model_id}) + "\n", encoding="utf-8")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data = data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        data = {}
+    data[key] = model_id
+    path.write_text(json.dumps(data) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str]) -> int:
@@ -171,10 +193,10 @@ def main(argv: list[str]) -> int:
         return 1
     command = args[0] if args else "list"
     if command == "list":
-        default = default_model_id(models)
+        defaults = {default_model_id(models), default_model_id(models, "speech")}
         for model in models.values():
             state = "installed" if model.installed else "available"
-            mark = "*" if model.id == default else " "
+            mark = "*" if model.id in defaults else " "
             print(f"{mark} {model.id:22} {model.size / 2**30:5.1f} GB  RAM≥{model.ram_mb} MB  {model.license:12} {state}  {model.purpose}")
         return 0
     if command in ("install", "verify", "remove", "use") and len(args) == 2 and args[1] in models:
@@ -185,8 +207,10 @@ def main(argv: list[str]) -> int:
                     print(f"\r  {model.id}: {done * 100 // max(total, 1):3d}%", end="", flush=True)
                 install(model, show)
                 print(f"\n✓ {model.id} installed and verified (SHA-256)")
-                if default_model_id(models) is None or len([m for m in models.values() if m.installed]) == 1:
-                    set_default(model.id)
+                key = "speech_model" if "speech" in model.tasks else "model"
+                same_kind = [m for m in models.values() if m.installed and ("speech" in m.tasks) == ("speech" in model.tasks)]
+                if len(same_kind) == 1:
+                    set_default(model.id, key)
             elif command == "verify":
                 ok = model.installed and sha256_file(model.path) == model.sha256
                 print(("✓ verified: " if ok else "✗ missing or modified: ") + model.id)
@@ -197,7 +221,7 @@ def main(argv: list[str]) -> int:
             else:
                 if not model.installed:
                     raise ModelError(f"{model.id} is not installed")
-                set_default(model.id)
+                set_default(model.id, "speech_model" if "speech" in model.tasks else "model")
                 print(f"✓ default model: {model.id}")
         except (ModelError, OSError) as exc:
             print(f"\n✗ {exc}", file=sys.stderr)

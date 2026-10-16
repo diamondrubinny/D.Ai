@@ -91,6 +91,9 @@ STYLE = f"""
     font-size: 11pt;
 }}
 #Mic:disabled {{ background: {SURFACE}; }}
+#Mic:hover {{ border: 1px solid {ACCENT}; }}
+#Mic:focus {{ border: 2px solid {ACCENT_2}; }}
+#Mic[recording="true"] {{ background: #B4233A; border: 2px solid #F87171; }}
 QToolTip {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; }}
 """
 
@@ -208,19 +211,28 @@ class CommandWindow(QWidget):
 
         row = QHBoxLayout()
         logo = QLabel("◆", objectName="Logo")
-        if LOGO.is_file():  # the faceted D.Ai diamond; the glyph is the fallback
-            logo.setPixmap(QIcon(str(LOGO)).pixmap(QSize(34, 34)))
+        pixmap = QIcon(str(LOGO)).pixmap(QSize(34, 34)) if LOGO.is_file() else None
+        if pixmap is not None and not pixmap.isNull():  # the faceted D.Ai diamond; the glyph is the fallback
+            logo.setPixmap(pixmap)
         logo.setAccessibleName("D.Ai")
         self.query = QLineEdit(objectName="Query")
         self.query.setPlaceholderText(tr("placeholder"))
         self.query.setAccessibleName(tr("query_name"))
         self.query.setClearButtonEnabled(True)
-        mic = QToolButton(objectName="Mic")
-        mic.setIcon(QIcon.fromTheme("audio-input-microphone"))
-        mic.setIconSize(QSize(22, 22))
-        mic.setEnabled(False)
-        mic.setToolTip(tr("mic"))
-        mic.setAccessibleName(tr("mic"))
+        try:  # D.Ai Voice: push-to-talk, transcribed locally (installed next to dai_command)
+            from dai_voice.qt import VoiceButton
+
+            mic = VoiceButton(self)
+            mic.transcribed.connect(self._voice_text)
+            mic.failed.connect(self._voice_failed)
+            mic.state_changed.connect(self._voice_state)
+        except ImportError:
+            mic = QToolButton(objectName="Mic")
+            mic.setIcon(QIcon.fromTheme("audio-input-microphone"))
+            mic.setIconSize(QSize(22, 22))
+            mic.setEnabled(False)
+            mic.setToolTip(tr("mic"))
+            mic.setAccessibleName(tr("mic"))
         row.addWidget(logo)
         row.addWidget(self.query, 1)
         row.addWidget(mic)
@@ -330,6 +342,24 @@ class CommandWindow(QWidget):
         if remembered and not private:
             self.history.add(remembered)
         self.hide()
+
+    def _voice_text(self, text: str) -> None:
+        self.query.setText(text)
+        self.query.setFocus()
+        self.query.end(False)
+
+    def _voice_failed(self, message: str) -> None:
+        self.query.clear()
+        self.query.setPlaceholderText("🎙 " + message)
+        QTimer.singleShot(5000, lambda: self.query.setPlaceholderText(tr("placeholder")))
+
+    def _voice_state(self, state: str) -> None:
+        if state == "recording":
+            self.query.setPlaceholderText(tr("listening"))
+        elif state == "working":
+            self.query.setPlaceholderText(tr("transcribing"))
+        else:
+            self.query.setPlaceholderText(tr("placeholder"))
 
     def ask_ai(self, question: str) -> None:
         if not question or (self._thread and self._thread.isRunning()):

@@ -28,6 +28,48 @@
         "general",
         "code"
       ]
+    },
+    {
+      "id": "whisper-base",
+      "name": "Whisper base (multilingual, ggml)",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin",
+      "file": "ggml-base.bin",
+      "sha256": "",
+      "size": 0,
+      "license": "MIT",
+      "ram_mb": 400,
+      "purpose": "speech to text (fast)",
+      "tasks": [
+        "speech"
+      ]
+    },
+    {
+      "id": "whisper-small",
+      "name": "Whisper small (multilingual, ggml)",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin",
+      "file": "ggml-small.bin",
+      "sha256": "",
+      "size": 0,
+      "license": "MIT",
+      "ram_mb": 900,
+      "purpose": "speech to text (recommended for Hebrew)",
+      "tasks": [
+        "speech"
+      ]
+    },
+    {
+      "id": "whisper-large-v3-turbo",
+      "name": "Whisper large-v3-turbo (multilingual, ggml Q5_0)",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin",
+      "file": "ggml-large-v3-turbo-q5_0.bin",
+      "sha256": "",
+      "size": 0,
+      "license": "MIT",
+      "ram_mb": 1600,
+      "purpose": "speech to text (most accurate)",
+      "tasks": [
+        "speech"
+      ]
     }
   ]
 }
