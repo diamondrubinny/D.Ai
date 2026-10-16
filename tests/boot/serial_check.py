@@ -203,6 +203,13 @@ def main() -> int:
          lambda o: "installed and verified" in o, 600),
         ("voice: transcribe (sandboxed, no network)", "dai-voice transcribe /opt/dai/whisper/test-jfk.wav --lang en", True,
          lambda o: "country" in o.lower(), 300),
+        # D.Ai components are real packages: dpkg owns and verifies their files.
+        ("packages: installed by dpkg", "dpkg-query -W -f '${Package} ${Version} ${Status}\\n' 'dai-*'; "
+         "dpkg -S /usr/bin/dai-code /opt/dai/llama/llama-server; dpkg --verify dai-apps && echo VERIFY_OK; "
+         "test -L /etc/systemd/user/sockets.target.wants/dai-daid.socket && echo SOCKET_ENABLED", True,
+         lambda o: not re.search(r"^\s*(missing|[?.0-9]{9}) ", o, re.M) and "dai-apps: /usr/bin/dai-code" in o
+         and "dai-llama-runtime: /opt/dai/llama/llama-server" in o and "VERIFY_OK" in o and "SOCKET_ENABLED" in o
+         and o.count("install ok installed") >= 4),
         # D.Ai Code: works inside a project, never outside it or on secrets.
         ("code: installed and confined", "dai-code --version; rm -rf /tmp/demo && mkdir -p /tmp/demo/src && cd /tmp/demo "
          "&& printf 'def add(a, b):\\n    return a - b\\n' > src/util.py && printf 'TOKEN=x\\n' > .env; "
