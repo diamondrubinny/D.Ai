@@ -49,7 +49,7 @@ jobs:
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models \
-            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code apps/dai-welcome/data/dai-welcome apps/dai-find/data/dai-find apps/dai-doctor/data/dai-doctor apps/dai-privacy/data/dai-privacy apps/dai-backup/data/dai-backup apps/dai-move/data/dai-move \
+            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code apps/dai-welcome/data/dai-welcome apps/dai-find/data/dai-find apps/dai-doctor/data/dai-doctor apps/dai-privacy/data/dai-privacy apps/dai-backup/data/dai-backup apps/dai-move/data/dai-move apps/dai-clip/data/dai-clip \
             build/live-build/common/includes.chroot_after_packages/usr/bin/dai-install
           shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh build/scripts/build-whisper.sh
 
@@ -119,6 +119,12 @@ jobs:
         env:
           PYTHONPATH: apps/dai-command:apps/dai-tune
         run: python3 -m unittest discover -s apps/dai-move/tests -t apps/dai-move -v
+
+      - name: Unit tests (dai-clip, with the history window and D.Ai Command)
+        env:
+          PYTHONPATH: apps/dai-command:apps/dai-tune
+          QT_QPA_PLATFORM: offscreen
+        run: python3 -m unittest discover -s apps/dai-clip/tests -t apps/dai-clip -v
 
       - name: Unit tests (dai-command)
         env:
@@ -394,7 +400,7 @@ jobs:
           set -euo pipefail
           mkdir -p publish
           for edition in user dev edu; do
-            for file in desktop.png apps.png panel-field.png ai-answer.png start-menu.png forge-preview.png forge-window.png forge-app.png installer.png welcome.png system-checks.txt; do
+            for file in desktop.png apps.png panel-field.png ai-answer.png start-menu.png forge-preview.png forge-window.png forge-app.png installer.png welcome.png clip.png system-checks.txt; do
               src="shots/boot-$edition/$file"
               if [ -f "$src" ]; then cp "$src" "publish/$edition-$file"; fi
             done

@@ -36,6 +36,7 @@ apps/dai-doctor/             D.Ai Doctor: "why is my computer slow?", disk space
 apps/dai-privacy/            D.Ai Privacy: microphone/camera indicator and local log + unit tests
 apps/dai-backup/             D.Ai Backup: encrypted automatic backups (restic) + unit tests
 apps/dai-move/               D.Ai Move: bring files and bookmarks from Windows + unit tests
+apps/dai-clip/               D.Ai Clip: clipboard history that never keeps passwords + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -165,6 +166,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   הקבצים שלי" in D.Ai Command) creates an encrypted backup with restic and shows a recovery key once; it then runs
   daily whenever the drive is connected, keeps 7 daily, 4 weekly and 12 monthly copies, verifies itself weekly, and
   restores into `~/Restored/` without overwriting anything. No cloud, no root.
+- **D.Ai Clip** ([docs/CLIP.md](docs/CLIP.md)): `Super+V` shows the last 30 things you copied; Enter pastes.
+  Copies from password managers (`x-kde-passwordManagerHint`), private keys, API tokens, card and ID numbers never
+  enter the history, and the clipboard itself is emptied 90 seconds after a token or key is copied. The history lives
+  in memory only (`$XDG_RUNTIME_DIR`) and is gone at logout.
 - **Coming from Windows** ([docs/GROWTH.md](docs/GROWTH.md)): `dai-doctor hardware` answers "will my Wi-Fi,
   sound and printer work?" in the live session before installing; **D.Ai Move** ([docs/MOVE.md](docs/MOVE.md))
   copies Documents, Pictures, Desktop, Music, Videos, Downloads and Chrome/Edge bookmarks from a Windows drive
