@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The microphone/camera indicator (docs/PRIVACY.md). It shows nothing until
+# something records or films.
+[Desktop Entry]
+Type=Application
+Name=D.Ai Privacy indicator
+Name[he]=מחוון הפרטיות של D.Ai
+Exec=dai-privacy tray
+TryExec=dai-privacy
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

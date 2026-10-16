@@ -121,6 +121,12 @@ build_apps() {
   copy_package "$doctor/dai_doctor" "$root"
   install -m 0755 "$doctor/data/dai-doctor" "$root/usr/bin/dai-doctor"
 
+  local privacy="$REPO_ROOT/apps/dai-privacy"
+  copy_package "$privacy/dai_privacy" "$root"
+  install -m 0755 "$privacy/data/dai-privacy" "$root/usr/bin/dai-privacy"
+  install -d "$root/etc/xdg/autostart"
+  install -m 0644 "$privacy/data/dai-privacy-autostart.desktop" "$root/etc/xdg/autostart/dai-privacy.desktop"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
@@ -171,7 +177,7 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, Find, Doctor, local AI, Forge, Code, Voice and Welcome" \
+    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, local AI, Forge, Code, Voice and Welcome" \
     "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon"
 }
 

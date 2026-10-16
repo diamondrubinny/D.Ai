@@ -226,6 +226,15 @@ def main() -> int:
          lambda o: "Diamond Rubinny (d.Ai)" in o and "FINDINGS" in o and "'memory'" in o and "'disk'" in o
          and "apt-get clean" not in o and ("Free disk space" in o or "פינוי מקום" in o)
          and re.search(r"^\s*(balanced|power-saver|performance)\s*$", o, re.M) is not None),
+        # D.Ai Privacy: the indicator starts with the session and stays hidden until something records.
+        ("privacy: indicator running", "dai-privacy --version; dai-privacy status; "
+         "pgrep -f 'dai_privacy.cli import main.* tray' >/dev/null && echo TRAY_RUNNING; "
+         "test -f /etc/xdg/autostart/dai-privacy.desktop && echo AUTOSTART", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "TRAY_RUNNING" in o and "AUTOSTART" in o),
+        ("privacy: a recording is seen", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "(timeout 8 pw-record /tmp/privacy-test.wav >/dev/null 2>&1 &); sleep 4; dai-privacy status; sleep 5; "
+         "dai-privacy log | tail -n 2; rm -f /tmp/privacy-test.wav", False,
+         lambda o: "pw-record" in o or "microphone" in o, 40),
         # D.Ai Welcome: installed, in the menu, and never opens by itself in the live session.
         ("welcome: first run", "dai-welcome --version; dai-welcome --first-run; "
          "test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; "

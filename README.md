@@ -33,6 +33,7 @@ apps/dai-voice/              D.Ai Voice: push-to-talk dictation and voice comman
 apps/dai-code/               D.Ai Code: local coding assistant + unit tests
 apps/dai-find/               D.Ai Find: natural-language file search (Hebrew/English) + unit tests
 apps/dai-doctor/             D.Ai Doctor: "why is my computer slow?", disk space, battery + unit tests
+apps/dai-privacy/            D.Ai Privacy: microphone/camera indicator and local log + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -147,6 +148,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   hogs, failed services, free space, caches, biggest folders, battery wear — with safe fixes: system ones as
   D.Ai Tune plans (free disk space, battery saver mode via power-profiles-daemon), the trash and picture previews
   only after you confirm.
+- **D.Ai Privacy** ([docs/PRIVACY.md](docs/PRIVACY.md)): a red dot appears in the panel only while an app
+  records or films, with its name and a notification; `dai-privacy log` (or "מי משתמש במיקרופון?" in D.Ai Command)
+  shows who used the microphone or camera in the last 30 days. Read-only detection (PipeWire capture streams,
+  `/dev/video*`), and the log never leaves the computer.
 - **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
   wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
   undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what
