@@ -67,6 +67,12 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
 
 ![D.Ai Command open over the file manager](docs/screenshots/command-bar.png)
 
+Inside the running image (captured by CI with real keyboard/mouse input):
+
+| 💎 Start | D.Ai Forge from the command line | Installer (Calamares, encrypted) |
+|----------|----------------------------------|----------------------------------|
+| ![The diamond Start button and the Start menu](docs/screenshots/start-menu.png) | ![D.Ai Forge opened with "+install antivirus"](docs/screenshots/forge-window.png) | ![The D.Ai OS installer welcome page](docs/screenshots/installer.png) |
+
 D.Ai Forge (rendered from the real window code; in-VM screenshots are published by CI):
 
 | Ask | Review the plan | The local AI writes the app |

@@ -218,9 +218,11 @@ def main() -> int:
          "test -f ~/Desktop/dai-install.desktop && echo ON_DESKTOP", True,
          lambda o: "/calamares" in o and "branding: dai" in o and "username: dai" in o
          and "show.qml" in o and "ON_DESKTOP" in o),
-        ("installer: LUKS available", "command -v cryptsetup; grep -rhoE 'enableLuksAutomatedPartitioning:[^#]*' "
-         "/etc/calamares/modules/partition.conf /usr/share/calamares/modules/partition.conf 2>/dev/null | head -n1", False,
-         lambda o: "cryptsetup" in o and "true" in o),
+        # Encryption: cryptsetup in the image and Calamares' automatic LUKS partitioning (on unless a
+        # config turns it off; Calamares' default is true).
+        ("installer: LUKS available", "test -x /usr/sbin/cryptsetup && echo CRYPTSETUP_OK; "
+         "cat /etc/calamares/modules/partition.conf 2>/dev/null | grep -iE '^[^#]*luks' || echo 'luks: calamares default'", True,
+         lambda o: "CRYPTSETUP_OK" in o and "enableLuksAutomatedPartitioning: false" not in o),
         ("forge: window installed", "dai-forge-gui --version; test -f /usr/share/applications/dai-forge.desktop && echo IN_MENU; "
          "grep -c 'ownIcon=true' /etc/xdg/lxqt/panel.conf; test -f /etc/swaylock/config && echo LOCK_THEMED", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "IN_MENU" in o and "LOCK_THEMED" in o),
