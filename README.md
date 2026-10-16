@@ -22,14 +22,17 @@ See the full specification and roadmap in [docs/PLAN.md](docs/PLAN.md).
 ```
 build/live-build/common/     Shared live-build config (packages, hardening, desktop defaults)
 build/live-build/editions/   Edition overlays: user, dev
-build/scripts/               build-iso.sh, run-qemu.sh
+build/scripts/               build-iso.sh, build-debs.sh, build-apt-repo.sh, run-qemu.sh
+build/keys/                  Public update-signing key and apt pinning (docs/RELEASE.md)
 build/assets/                Wallpaper generator
 apps/dai-command/            D.Ai Command (PyQt6) + unit tests
 apps/dai-tune/               D.Ai Tune: text-driven configuration, root helper, polkit policy + unit tests
 apps/dai-ai/                 Local AI: daid service, model manager, client + unit tests
 apps/dai-forge/              D.Ai Forge: recipes, AI app builder, bubblewrap sandbox + unit tests
 apps/dai-voice/              D.Ai Voice: push-to-talk dictation and voice commands (whisper.cpp) + unit tests
+apps/dai-code/               D.Ai Code: local coding assistant + unit tests
 tests/boot/                  Headless QEMU boot test
+tests/apt/                   Update repository test (signature, redirect, pinning)
 docs/                        Specification, architecture, threat model
 ```
 
@@ -45,6 +48,17 @@ docker run --rm --privileged -v "$PWD:/src" -w /src debian:trixie \
 Output: `out/dai-os-<edition>-<version>-amd64.iso` with a `.sha256` file and a package manifest.
 
 CI builds both editions on every change under `build/` and boots them in QEMU (`.github/workflows/build-iso.yml`). Built ISOs are available as workflow artifacts for 7 days.
+
+D.Ai's own components are installed as Debian packages (`dai-apps`, `dai-llama-runtime`, `dai-whisper-runtime`,
+`dai-panel-plugin`, built by `build/scripts/build-debs.sh`), so `dpkg` owns, verifies and can remove them.
+
+## Releases and updates
+
+Pushing a `v*` tag builds both editions, runs every boot test and publishes a GitHub Release with the ISOs,
+`SHA256SUMS` and a signed apt repository. Installed systems get D.Ai updates from it only when the user runs
+`sudo apt update && sudo apt upgrade` (Debian security updates stay automatic). Pinning allows only `dai-*`
+packages from that repository, so it can never replace a Debian package. Details and the one-time key setup:
+[docs/RELEASE.md](docs/RELEASE.md). Changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## Testing
 

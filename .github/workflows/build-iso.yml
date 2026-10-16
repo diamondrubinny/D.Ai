@@ -5,16 +5,20 @@ name: Build ISO
 on:
   push:
     branches: [main]
+    # Tag pushes ignore the path filter: every v* tag builds and publishes a release.
+    tags: ["v*"]
     paths:
       - "build/**"
       - "apps/**"
       - "tests/boot/**"
+      - "tests/apt/**"
       - ".github/workflows/build-iso.yml"
   pull_request:
     paths:
       - "build/**"
       - "apps/**"
       - "tests/boot/**"
+      - "tests/apt/**"
       - ".github/workflows/build-iso.yml"
   workflow_dispatch:
 
@@ -33,7 +37,7 @@ jobs:
       - name: ShellCheck
         run: |
           shellcheck --version
-          shellcheck build/scripts/*.sh tests/boot/*.sh \
+          shellcheck build/scripts/*.sh tests/boot/*.sh tests/apt/*.sh \
             build/live-build/common/hooks/normal/*.hook.chroot \
             build/live-build/common/includes.chroot_after_packages/usr/lib/live/config/*
           shellcheck -s sh build/live-build/common/includes.chroot_after_packages/etc/skel/.config/labwc/autostart \
@@ -44,6 +48,9 @@ jobs:
             apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code \
             build/live-build/common/includes.chroot_after_packages/usr/bin/dai-install
           shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh build/scripts/build-whisper.sh
+
+      - name: Packages and update repository (signature, redirect, pinning; Debian trixie container)
+        run: docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie bash tests/apt/apt-repo-test.sh
 
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
@@ -180,8 +187,10 @@ jobs:
         run: |
           mkdir -p llama-dist && tar -xzf llama-dist.tar.gz -C llama-dist
           mkdir -p whisper-dist && tar -xzf whisper-dist.tar.gz -C whisper-dist
+          version="0.1.0-alpha+${GITHUB_SHA::7}"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then version="${GITHUB_REF_NAME#v}"; fi
           docker run --rm --privileged \
-            -e DAI_VERSION="0.1.0-alpha+${GITHUB_SHA::7}" \
+            -e DAI_VERSION="$version" \
             -e DAI_LLAMA_DIST=/src/llama-dist \
             -e DAI_WHISPER_DIST=/src/whisper-dist \
             -e DAI_PANEL_PLUGIN=/src/panel-plugin \
@@ -229,6 +238,95 @@ jobs:
             out/*.packages
           retention-days: 7
           compression-level: 0
+
+      - name: Upload D.Ai packages
+        if: matrix.edition == 'user'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dai-debs
+          path: out/debs/*.deb
+          retention-days: 7
+
+  # A v* tag publishes a GitHub Release: both ISOs, SHA256SUMS and the signed
+  # apt repository for updates (docs/RELEASE.md). Only after every boot test passed.
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    # Add required reviewers to this environment (Settings → Environments) to approve each release.
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: dai-os-*-iso
+          path: dist
+          merge-multiple: true
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dai-debs
+          path: debs
+
+      - name: Import the archive signing key
+        env:
+          DAI_APT_SIGNING_KEY: ${{ secrets.DAI_APT_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          public=build/keys/dai-archive-keyring.asc
+          if [[ -z "$DAI_APT_SIGNING_KEY" ]]; then
+            # Images that trust the key would see an unsigned update source.
+            [[ ! -f "$public" ]] || { echo "::error::$public exists but DAI_APT_SIGNING_KEY is not set"; exit 1; }
+            echo "::warning::No signing key: publishing ISOs without the update repository"
+            exit 0
+          fi
+          [[ -f "$public" ]] || { echo "::error::DAI_APT_SIGNING_KEY is set but $public is missing"; exit 1; }
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          install -d -m 0700 "$GNUPGHOME"
+          printf '%s\n' "$DAI_APT_SIGNING_KEY" | gpg --batch --import 2>/dev/null
+          secret_fpr="$(gpg --batch --list-secret-keys --with-colons | awk -F: '/^fpr/ {print $10; exit}')"
+          public_fpr="$(gpg --batch --with-colons --import-options show-only --import "$public" | awk -F: '/^fpr/ {print $10; exit}')"
+          [[ -n "$secret_fpr" && "$secret_fpr" == "$public_fpr" ]] \
+            || { echo "::error::the signing key does not match $public"; exit 1; }
+          echo "GNUPGHOME=$GNUPGHOME" >>"$GITHUB_ENV"
+          echo "DAI_APT_KEY_ID=$secret_fpr" >>"$GITHUB_ENV"
+
+      - name: Checksums and update repository
+        run: |
+          set -euo pipefail
+          cd dist
+          rm -f ./*.sha256
+          sha256sum ./*.iso | sed 's| \./| |' >SHA256SUMS
+          cat SHA256SUMS
+          if [[ -n "${DAI_APT_KEY_ID:-}" ]]; then
+            gpg --batch --local-user "$DAI_APT_KEY_ID" --armor --detach-sign -o SHA256SUMS.asc SHA256SUMS
+            sudo apt-get install -y --no-install-recommends apt-utils >/dev/null
+            bash ../build/scripts/build-apt-repo.sh ../debs ../repo
+            cp ../repo/* .
+          fi
+          ls -la
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="$GITHUB_REF_NAME"
+          flags=()
+          [[ "$tag" == *-* ]] && flags+=(--prerelease)
+          {
+            echo "D.Ai OS ${tag} — by Diamond Rubinny (d.Ai)."
+            echo
+            echo "- \`dai-os-user-*.iso\`: for everyday use. \`dai-os-dev-*.iso\`: with developer tools."
+            echo "- Verify: \`sha256sum -c SHA256SUMS --ignore-missing\`$( [[ -f dist/SHA256SUMS.asc ]] && echo ' and gpg --verify SHA256SUMS.asc SHA256SUMS')."
+            echo "- Installing: docs/INSTALL.md. Updates: docs/RELEASE.md."
+            echo
+            echo "Every image passed the automated boot and system tests before publishing. Alpha software: back up first."
+          } >notes.md
+          gh release create "$tag" dist/* --verify-tag --title "D.Ai OS $tag" --notes-file notes.md "${flags[@]}"
 
   # Publish boot screenshots and check reports to the ci-screenshots branch
   # so they can be viewed on GitHub and referenced from docs.
