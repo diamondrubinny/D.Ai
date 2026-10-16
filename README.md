@@ -114,6 +114,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   D.Ai Command, and the 🎙 buttons in D.Ai Command and D.Ai Forge fill the request field. Recording only starts on
   an explicit press, a notification is shown the whole time, audio lives in tmpfs and is deleted right after
   transcription, which runs in a bubblewrap sandbox without network. Models: `dai-models install whisper-small`.
+- **D.Ai Code** (`apps/dai-code`, [docs/CODE.md](docs/CODE.md)): a local coding assistant for the project in the
+  current folder: `dai-code ask`, `explain FILE[:A-B]`, `edit FILE "change"` (a diff to approve, a backup and
+  `dai-code undo`), `review` and `commit-msg`. It never runs code, never leaves the project folder, never reads or
+  edits `.env`, keys or `.git`, and redacts secrets before anything reaches the local model.
 - **Installer with full-disk encryption** ([docs/INSTALL.md](docs/INSTALL.md)): Calamares with Debian's tested
   settings (LUKS via `cryptsetup`), D.Ai branding and a Hebrew slideshow; the live user and the installer are
   removed from the installed system. Start it from the desktop icon, the 💎 menu or by typing "install".

@@ -153,6 +153,12 @@ stage_apps() {
   install -m 0644 "$forge"/examples/* "$root/usr/share/dai/forge/examples/"
   install -m 0644 "$forge/data/forge.json" "$root/etc/dai/forge.json"
 
+  # D.Ai Code: local coding assistant for the project in the current folder.
+  local code="$REPO_ROOT/apps/dai-code"
+  cp -r "$code/dai_code" "$root/usr/lib/dai/"
+  find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
+  install -m 0755 "$code/data/dai-code" "$root/usr/bin/dai-code"
+
   # D.Ai Voice: push-to-talk dictation and voice commands (local Whisper).
   local voice="$REPO_ROOT/apps/dai-voice"
   cp -r "$voice/dai_voice" "$root/usr/lib/dai/"

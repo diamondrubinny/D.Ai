@@ -41,7 +41,7 @@ jobs:
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models \
-            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice \
+            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code \
             build/live-build/common/includes.chroot_after_packages/usr/bin/dai-install
           shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh build/scripts/build-whisper.sh
 
@@ -66,6 +66,11 @@ jobs:
           PYTHONPATH: apps/dai-ai
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-voice/tests -t apps/dai-voice -v
+
+      - name: Unit tests (dai-code)
+        env:
+          PYTHONPATH: apps/dai-ai
+        run: python3 -m unittest discover -s apps/dai-code/tests -t apps/dai-code -v
 
       - name: Unit tests (dai-command)
         env:

@@ -203,6 +203,14 @@ def main() -> int:
          lambda o: "installed and verified" in o, 600),
         ("voice: transcribe (sandboxed, no network)", "dai-voice transcribe /opt/dai/whisper/test-jfk.wav --lang en", True,
          lambda o: "country" in o.lower(), 300),
+        # D.Ai Code: works inside a project, never outside it or on secrets.
+        ("code: installed and confined", "dai-code --version; rm -rf /tmp/demo && mkdir -p /tmp/demo/src && cd /tmp/demo "
+         "&& printf 'def add(a, b):\\n    return a - b\\n' > src/util.py && printf 'TOKEN=x\\n' > .env; "
+         "dai-code explain ../../etc/passwd; echo rc=$?; dai-code edit .env x --yes; echo rc=$?; cd ~", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "outside the project" in o and "sensitive" in o
+         and o.count("rc=1") == 2),
+        ("ai: code assistant answers", "cd /tmp/demo && dai-code ask 'what does add do and is it correct?' </dev/null; cd ~",
+         False, lambda o: len(o.strip()) > 20, 300),
         ("ai: forge builds an app", "dai-forge --dry-run 'write a python script that prints the numbers 1 to 5' </dev/null", False,
          lambda o: "print" in o and "(dry run" in o, 600),
         ("ai: tune interpretation", "dai-tune --dry-run --ai 'make sure nobody can plug in a flash drive'", False,
