@@ -104,7 +104,7 @@ def main() -> int:
 
     # Always printed, never judged: context for diagnosing failures.
     diagnostics = [
-        ("sddm config", "cat /etc/sddm.conf.d/*.conf"),
+        ("sddm config", "cat /etc/sddm.conf"),
         ("session files", "ls /usr/share/wayland-sessions /usr/share/xsessions"),
         ("login sessions", "loginctl list-sessions --no-legend"),
         ("session processes", "ps -eo user,args | grep -Ei 'sddm|xorg|labwc|lxqt|pcmanfm' | grep -v grep"),
