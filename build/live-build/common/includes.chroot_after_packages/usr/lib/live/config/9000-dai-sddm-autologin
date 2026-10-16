@@ -19,6 +19,6 @@ cat >/etc/sddm.conf <<CONF
 # Written at boot by /usr/lib/live/config/9000-dai-sddm-autologin (live session only)
 [Autologin]
 User=${live_user}
-Session=lxqt-wayland.desktop
+Session=dai.desktop
 Relogin=false
 CONF
