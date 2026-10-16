@@ -113,6 +113,10 @@ build_apps() {
   copy_package "$code/dai_code" "$root"
   install -m 0755 "$code/data/dai-code" "$root/usr/bin/dai-code"
 
+  local find="$REPO_ROOT/apps/dai-find"
+  copy_package "$find/dai_find" "$root"
+  install -m 0755 "$find/data/dai-find" "$root/usr/bin/dai-find"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
@@ -163,7 +167,7 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, local AI, Forge, Code, Voice and Welcome" \
+    "D.Ai OS apps: Command, Tune, Find, local AI, Forge, Code, Voice and Welcome" \
     "dai-llama-runtime, dai-whisper-runtime, git"
 }
 

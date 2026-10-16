@@ -397,6 +397,9 @@ _STRINGS = {
                         "אין מתכון עדיין · ה־AI המקומי יכתוב מתכון לבדיקה · Enter"),
     "build_app": ("Build app: ", "בניית אפליקציה: "),
     "update_app": ("Update app: ", "עדכון אפליקציה: "),
+    "find_hint": ("Find files as you remember them: “find the pdf I downloaded last week”",
+                  "מציאת קבצים כמו שזוכרים אותם: „מצא את ה־PDF שהורדתי בשבוע שעבר”"),
+    "find_none": ("No matching files", "לא נמצאו קבצים מתאימים"),
     "query_name": ("D.Ai Command input", "שורת הפקודות של D.Ai"),
     "results_name": ("Results", "תוצאות"),
 }
@@ -424,7 +427,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -462,6 +465,9 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         command = text[1:].strip()
         return [Action("run", command, tr("background"), "system-run", command)] if command else []
 
+    if (found := find_actions(text)) is not None:
+        return found
+
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
         result = format_number(value)
@@ -480,6 +486,45 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         actions.append(Action("run", text, tr("background"), "system-run", text))
         actions.append(Action("terminal", text, tr("terminal"), "utilities-terminal", text))
     return actions
+
+
+FILE_ICONS = {
+    "pdf": "application-pdf", "image": "image-x-generic", "video": "video-x-generic", "audio": "audio-x-generic",
+    "spreadsheet": "x-office-spreadsheet", "presentation": "x-office-presentation", "archive": "package-x-generic",
+    "document": "x-office-document", "file": "text-x-generic",
+}
+
+
+def find_actions(text: str, home: Path | None = None) -> list[Action] | None:
+    """D.Ai Find: "find the pdf I downloaded last week", "התמונות מאתמול".
+
+    None when the text is not a find request, so other interpretations apply.
+    """
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_find.query import is_find_request, parse
+        from dai_find.search import human_size, search
+    except ImportError:
+        return None
+    if not is_find_request(text):
+        return None
+    lang = ui_language()
+    query = parse(text, lang=lang)
+    if not query.specific:
+        return [Action("file", tr("find_hint"), "dai-find", "system-search", None)]
+    # Typing repeats the search on every key: a short memory-only cache keeps it instant.
+    hits = search(query, home, limit=8, budget=0.8, ttl=30)
+    if not hits:
+        return [Action("file", tr("find_none"), tr("find_hint"), "system-search", None)]
+    base = home or Path.home()
+    rows = []
+    for hit in hits:
+        try:
+            folder = "~/" + str(hit.path.parent.relative_to(base)) if hit.path.parent != base else "~"
+        except ValueError:
+            folder = str(hit.path.parent)
+        rows.append(Action("file", hit.path.name, f"{hit.date:%d.%m.%Y %H:%M} · {human_size(hit.size)} · {folder}",
+                           FILE_ICONS.get(hit.kind, "text-x-generic"), str(hit.path)))
+    return rows
 
 
 def tune_actions(request: str) -> list[Action]:

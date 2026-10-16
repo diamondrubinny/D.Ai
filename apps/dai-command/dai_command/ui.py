@@ -334,6 +334,11 @@ class CommandWindow(QWidget):
             request = str(action.payload)
             self._spawn(["dai-forge-gui", *([request] if request else [])])
             remembered = f"+{request}" if request else ""
+        elif action.kind == "file":
+            if not action.payload:  # a hint row: keep the bar open
+                return
+            self._spawn(["xdg-open", str(action.payload)])
+            remembered = self.query.text().strip()
         elif action.kind == "ai":
             self.ask_ai(str(action.payload))
             return
