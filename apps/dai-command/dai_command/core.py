@@ -406,6 +406,9 @@ _STRINGS = {
     "move_title": ("Bring files and bookmarks from Windows", "העברת קבצים וסימניות מ־Windows"),
     "move_hint": ("D.Ai Move · shows what will be copied first · nothing is overwritten · Enter",
                   "D.Ai Move · מראה קודם מה יועתק · שום דבר לא נדרס · Enter"),
+    "clip_title": ("Clipboard history", "היסטוריית העתקות"),
+    "clip_hint": ("D.Ai Clip · Super+V · in memory only, never passwords · Enter",
+                  "D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter"),
     "backup_setup": ("Set up automatic encrypted backup", "הגדרת גיבוי מוצפן אוטומטי"),
     "backup_setup_hint": ("Connect an external drive · Enter", "חברו דיסק חיצוני · Enter"),
     "backup_now": ("Back up now", "גיבוי עכשיו"),
@@ -441,7 +444,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -489,6 +492,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return backup
     if MOVE_WORDS.search(text) and shutil.which("dai-move"):
         return [Action("move", tr("move_title"), tr("move_hint"), "document-import", "")]
+    if CLIP_WORDS.search(text) and shutil.which("dai-clip"):
+        return [Action("clip", tr("clip_title"), tr("clip_hint"), "edit-paste", "")]
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -610,6 +615,8 @@ def privacy_actions(text: str) -> list[Action] | None:
 MOVE_WORDS = re.compile(r"(?:(?:import|move|copy|bring|transfer)\b.*\bfrom (?:my )?(?:old )?windows|from windows to|"
                         r"(?:העבר|תעביר|להעביר|ייבוא|לייבא|תייבא|העתק|תעתיק|להעתיק|העתיק)\S*.*(?:מ|מה)(?:ווינדוס|windows|מחשב הישן))",
                         re.IGNORECASE)
+CLIP_WORDS = re.compile(r"\bclipboard\b|what (?:did i copy|i copied)|copy history|paste history|"
+                        r"(?:היסטוריי?ת|יומן) (?:ה)?(?:העתקות|לוח|הדבקות)|מה העתקתי|לוח (?:ה)?(?:העתקות|גזירים)", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
 
 

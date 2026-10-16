@@ -141,6 +141,13 @@ build_apps() {
   copy_package "$move/dai_move" "$root"
   install -m 0755 "$move/data/dai-move" "$root/usr/bin/dai-move"
 
+  local clip="$REPO_ROOT/apps/dai-clip"
+  copy_package "$clip/dai_clip" "$root"
+  install -m 0755 "$clip/data/dai-clip" "$root/usr/bin/dai-clip"
+  install -m 0644 "$clip/data/dai-clip.desktop" "$root/usr/share/applications/"
+  install -d "$root/etc/xdg/autostart"
+  install -m 0644 "$clip/data/dai-clip-autostart.desktop" "$root/etc/xdg/autostart/dai-clip.desktop"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"

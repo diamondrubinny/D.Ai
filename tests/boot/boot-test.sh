@@ -256,6 +256,14 @@ type_keys ret
 sleep 8
 monitor "screendump $ARTIFACT_DIR/welcome.png -f png" || log "warning: screenshot failed"
 
+log "interactive: clipboard history (Super+V, filled by the clip check)"
+type_keys esc
+sleep 2
+type_keys meta_l-v
+sleep 5
+monitor "screendump $ARTIFACT_DIR/clip.png -f png" || log "warning: screenshot failed"
+type_keys esc
+
 if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Clipboard history
+Name[he]=היסטוריית העתקות
+GenericName=D.Ai Clip
+Comment=What you copied recently (never passwords) · Super+V
+Comment[he]=מה שהעתקתם לאחרונה (אף פעם לא סיסמאות) · Super+V
+Exec=dai-clip
+TryExec=dai-clip
+Icon=edit-paste
+Terminal=false
+Categories=Utility;
+Keywords=clipboard;paste;copy;history;לוח;העתקה;הדבקה;

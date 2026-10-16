@@ -93,6 +93,7 @@ def _hex(text: str) -> str:
 # Runs inside the D.Ai Forge sandbox and reports what it can reach.
 SANDBOX_PROBE_B64 = "aW1wb3J0IG9zLCBzb2NrZXQKcHJpbnQoJ2hvbWU6Jywgc29ydGVkKG9zLmxpc3RkaXIob3MucGF0aC5leHBhbmR1c2VyKCd+JykpKSkKdHJ5OgogICAgc29ja2V0LmNyZWF0ZV9jb25uZWN0aW9uKCgnMS4xLjEuMScsIDgwKSwgdGltZW91dD0zKQogICAgcHJpbnQoJ25ldHdvcms6IG9wZW4nKQpleGNlcHQgT1NFcnJvcjoKICAgIHByaW50KCduZXR3b3JrOiBibG9ja2VkJykKZm9yIHBhdGggaW4gWycvYXBwL2FwcC5weScsICcvZXRjL3Bhc3N3ZCddOgogICAgdHJ5OgogICAgICAgIG9wZW4ocGF0aCwgJ2EnKS53cml0ZSgneCcpCiAgICAgICAgcHJpbnQoJ3dyaXRhYmxlOicsIHBhdGgpCiAgICBleGNlcHQgT1NFcnJvcjoKICAgICAgICBwcmludCgncmVhZC1vbmx5OicsIHBhdGgpCnByaW50KCdzc2gga2V5IHZpc2libGU6Jywgb3MucGF0aC5leGlzdHMoJy9ob21lL2RhaS8uc3NoL2NhbmFyeScpKQpwcmludCgneDExIHNvY2tldCB2aXNpYmxlOicsIG9zLnBhdGguZXhpc3RzKCcvdG1wLy5YMTEtdW5peCcpKQo="
 HEBREW_FORGE = "תתקין אנטי וירוס"
+HEBREW_CLIP = "שלום מהלוח של D.Ai"
 
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
@@ -318,6 +319,20 @@ def main() -> int:
         ("forge: example app added", "dai-forge app add tasks /usr/share/dai/forge/examples/tasks.py --title Tasks </dev/null "
          "| head -n 2; dai-forge app list; test -f ~/.local/share/applications/dai-app-tasks.desktop && echo IN_MENU", True,
          lambda o: "IN_MENU" in o and "tasks" in o),
+        # D.Ai Clip: the real labwc clipboard → history; tokens and password-manager copies stay out.
+        # The secrets are assembled in the shell so the command echo never contains them.
+        ("clip: history without secrets", WAYLAND_ENV + "dai-clip --version; dai-clip clear >/dev/null; "
+         "pgrep -f 'wl-paste --type text --watch dai-clip _store' >/dev/null && echo WATCHING; "
+         "printf 'hello from the VM clipboard' | wl-copy; sleep 1; "
+         "T=gh; T=\"${T}p_A1b2C3d4A1b2C3d4A1b2C3d4A1b2C3d4A1b2C3d4\"; printf '%s' \"$T\" | wl-copy; sleep 1; "
+         "printf secret | wl-copy --type x-kde-passwordManagerHint; sleep 1; "
+         "P=Hunter-Pm; printf '%s' \"$P-Secret-77 copied by a password manager\" | CLIPBOARD_STATE=data dai-clip _store; "
+         f"printf '{_hex(HEBREW_CLIP)}' | wl-copy; sleep 1; "
+         "dai-clip list; dai-clip status; stat -c 'MODE=%a' \"$XDG_RUNTIME_DIR/dai-clip\" \"$XDG_RUNTIME_DIR/dai-clip/history.json\"",
+         True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "WATCHING" in o and "hello from the VM clipboard" in o
+         and HEBREW_CLIP in o and "ghp_" not in o and "Hunter-Pm-Secret" not in o
+         and re.search(r"(On|פועל) · 2 ", o) is not None and "MODE=700" in o and "MODE=600" in o),
         # Keyboard layout switching with a known state (panel indicator).
         ("lang: switch", WAYLAND_ENV + "dai-lang --label; dai-lang toggle; dai-lang --label; dai-lang toggle; dai-lang --label", True,
          lambda o: o.strip().splitlines()[-3:] == ["EN", "HE", "EN"]),

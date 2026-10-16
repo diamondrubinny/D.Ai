@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Follows the clipboard for the history (docs/CLIP.md). Text only, in memory
+# only, never passwords. "dai-clip off" turns the history off.
+[Desktop Entry]
+Type=Application
+Name=D.Ai Clip
+Name[he]=היסטוריית ההעתקות של D.Ai
+Exec=dai-clip watch
+TryExec=dai-clip
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

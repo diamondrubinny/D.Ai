@@ -351,6 +351,9 @@ class CommandWindow(QWidget):
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c",
                          'dai-backup "$1"; echo; read -r -p "Enter ↵" _', "dai-backup", str(action.payload)])
             remembered = self.query.text().strip()
+        elif action.kind == "clip":
+            self._spawn(["dai-clip"])
+            remembered = self.query.text().strip()
         elif action.kind == "privacy":
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-privacy log; echo; read -r -p "Enter ↵" _'])
             remembered = self.query.text().strip()
