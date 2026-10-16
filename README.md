@@ -34,6 +34,7 @@ apps/dai-code/               D.Ai Code: local coding assistant + unit tests
 apps/dai-find/               D.Ai Find: natural-language file search (Hebrew/English) + unit tests
 apps/dai-doctor/             D.Ai Doctor: "why is my computer slow?", disk space, battery + unit tests
 apps/dai-privacy/            D.Ai Privacy: microphone/camera indicator and local log + unit tests
+apps/dai-backup/             D.Ai Backup: encrypted automatic backups (restic) + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -152,6 +153,10 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   records or films, with its name and a notification; `dai-privacy log` (or "מי משתמש במיקרופון?" in D.Ai Command)
   shows who used the microphone or camera in the last 30 days. Read-only detection (PipeWire capture streams,
   `/dev/video*`), and the log never leaves the computer.
+- **D.Ai Backup** ([docs/BACKUP.md](docs/BACKUP.md)): `dai-backup setup /media/$USER/<drive>` (or "גבה את
+  הקבצים שלי" in D.Ai Command) creates an encrypted backup with restic and shows a recovery key once; it then runs
+  daily whenever the drive is connected, keeps 7 daily, 4 weekly and 12 monthly copies, verifies itself weekly, and
+  restores into `~/Restored/` without overwriting anything. No cloud, no root.
 - **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
   wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
   undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what

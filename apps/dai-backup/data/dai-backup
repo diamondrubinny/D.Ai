@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Backup: encrypted backups to an external drive (installed as /usr/bin/dai-backup).
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_backup.cli import main; sys.exit(main(["dai-backup", *sys.argv[1:]]))' "$@"

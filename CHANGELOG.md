@@ -19,6 +19,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai Doctor: "why is my computer slow?", disk space and battery health in plain Hebrew/English, with safe fixes.
 - D.Ai Tune: `system.clean` (free disk space) and `power.profile` (battery saver / balanced / performance); power-profiles-daemon installed.
 - D.Ai Privacy: a panel dot only while the microphone or camera is in use, notifications, and a local 30-day log.
+- D.Ai Backup: encrypted automatic backups to an external drive (restic), recovery key, retention, weekly verification, safe restore.
 - D.Ai Welcome: first-run wizard — security level through D.Ai Tune, local models sized to the computer's memory, privacy facts.
 - Installer (Calamares) with full-disk encryption (LUKS) and D.Ai branding.
 - Hardening: nftables firewall (deny inbound), AppArmor, kernel/sysctl hardening, automatic Debian security updates.

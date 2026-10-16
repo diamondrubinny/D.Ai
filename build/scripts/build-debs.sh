@@ -127,6 +127,12 @@ build_apps() {
   install -d "$root/etc/xdg/autostart"
   install -m 0644 "$privacy/data/dai-privacy-autostart.desktop" "$root/etc/xdg/autostart/dai-privacy.desktop"
 
+  local backup="$REPO_ROOT/apps/dai-backup"
+  copy_package "$backup/dai_backup" "$root"
+  install -m 0755 "$backup/data/dai-backup" "$root/usr/bin/dai-backup"
+  # Enabled per user by "dai-backup setup", never globally.
+  install -m 0644 "$backup/data/dai-backup.service" "$backup/data/dai-backup.timer" "$root/usr/lib/systemd/user/"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
@@ -177,8 +183,8 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, local AI, Forge, Code, Voice and Welcome" \
-    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon"
+    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, local AI, Forge, Code, Voice and Welcome" \
+    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic"
 }
 
 build_runtime() { # build_runtime <dist> <name> <dir> <check-binary> <description>
