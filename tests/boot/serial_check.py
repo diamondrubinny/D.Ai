@@ -212,6 +212,15 @@ def main() -> int:
         ("design: Qt can draw SVG (diamond)", "ls /usr/lib/x86_64-linux-gnu/qt6/plugins/iconengines/ "
          "/usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/ | grep -c 'svg'", True,
          lambda o: o.strip().splitlines()[-1:] in (["2"], ["3"], ["4"])),
+        # Installer: Calamares with Debian's settings (LUKS), D.Ai branding, live user removed.
+        ("installer: calamares", "command -v calamares; grep '^branding:' /etc/calamares/settings.conf; "
+         "grep '^username:' /etc/calamares/modules/removeuser.conf; ls /etc/calamares/branding/dai; "
+         "test -f ~/Desktop/dai-install.desktop && echo ON_DESKTOP", True,
+         lambda o: "/calamares" in o and "branding: dai" in o and "username: dai" in o
+         and "show.qml" in o and "ON_DESKTOP" in o),
+        ("installer: LUKS available", "command -v cryptsetup; grep -rhoE 'enableLuksAutomatedPartitioning:[^#]*' "
+         "/etc/calamares/modules/partition.conf /usr/share/calamares/modules/partition.conf 2>/dev/null | head -n1", False,
+         lambda o: "cryptsetup" in o and "true" in o),
         ("forge: window installed", "dai-forge-gui --version; test -f /usr/share/applications/dai-forge.desktop && echo IN_MENU; "
          "grep -c 'ownIcon=true' /etc/xdg/lxqt/panel.conf; test -f /etc/swaylock/config && echo LOCK_THEMED", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "IN_MENU" in o and "LOCK_THEMED" in o),

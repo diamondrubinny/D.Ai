@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Calamares branding for D.Ai OS (selected by /etc/calamares/settings.conf).
+---
+componentName: dai
+
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 1000px,640px
+windowPlacement: center
+
+strings:
+    productName:         D.Ai OS
+    shortProductName:    D.Ai OS
+    version:             0.1.0
+    shortVersion:        0.1
+    versionedName:       D.Ai OS 0.1
+    shortVersionedName:  D.Ai OS 0.1
+    bootloaderEntryName: D.Ai OS
+    productUrl:          https://github.com/diamondrubinny/D.Ai
+    supportUrl:          https://github.com/diamondrubinny/D.Ai/issues
+    knownIssuesUrl:      https://github.com/diamondrubinny/D.Ai/blob/main/docs/INSTALL.md
+    releaseNotesUrl:     https://github.com/diamondrubinny/D.Ai/blob/main/README.md
+
+images:
+    productLogo:    "logo.svg"
+    productIcon:    "logo.svg"
+    productWelcome: "welcome.jpg"
+
+slideshow: "show.qml"
+slideshowAPI: 2
+
+# D.Ai Night (docs/DESIGN.md §2)
+style:
+    SidebarBackground:        "#0B1020"
+    SidebarText:              "#E6E9F5"
+    SidebarTextCurrent:       "#FFFFFF"
+    SidebarBackgroundCurrent: "#5B3FD6"

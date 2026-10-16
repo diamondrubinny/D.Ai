@@ -1,0 +1,19 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Installer: Debian's tested Calamares configuration (calamares-settings-debian,
+# including LUKS full-disk encryption) with D.Ai branding and the D.Ai live user.
+set -eu
+
+conf=/etc/calamares/settings.conf
+[ -f "$conf" ] || { echo "dai-installer: $conf not found (calamares-settings-debian missing?)" >&2; exit 1; }
+[ -f /etc/calamares/branding/dai/branding.desc ] || { echo "dai-installer: D.Ai branding missing" >&2; exit 1; }
+
+sed -i 's/^branding:.*/branding: dai/' "$conf"
+grep -q '^branding: dai$' "$conf" || { echo "dai-installer: could not select the dai branding" >&2; exit 1; }
+
+# The live session user is "dai" (build-iso.sh: username=dai); the installed
+# system must not keep it.
+mkdir -p /etc/calamares/modules
+printf '%s\n' '# Set by D.Ai OS: remove the live session user from the installed system.' '---' 'username: dai' \
+	>/etc/calamares/modules/removeuser.conf

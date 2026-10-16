@@ -73,3 +73,7 @@ fonts-dejavu-core
 # Accessibility
 orca
 at-spi2-core
+
+# Installer (live session): Calamares with Debian's tested settings, incl. LUKS encryption
+calamares
+calamares-settings-debian

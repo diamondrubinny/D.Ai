@@ -127,10 +127,13 @@ fi
 readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il timezone=Asia/Jerusalem console=tty0 console=ttyS0,115200"
 
 : >"$SERIAL_LOG"
+# An empty, sparse target disk so the installer sees somewhere to install.
+truncate -s 24G "$EXTRACT_DIR/target-disk.raw"
 qemu-system-x86_64 \
   "${ACCEL[@]}" \
   -m 6144 -smp 2 \
   -cdrom "$ISO" \
+  -drive "file=$EXTRACT_DIR/target-disk.raw,format=raw,if=virtio" \
   -kernel "$KERNEL" -initrd "$INITRD" -append "$CMDLINE" \
   -vga std -display none \
   -chardev "socket,id=ser0,path=$SERIAL_SOCK,server=on,wait=off,logfile=$SERIAL_LOG" \
@@ -231,6 +234,16 @@ sleep 2
 type_keys t a s k s ret
 sleep 8
 monitor "screendump $ARTIFACT_DIR/forge-app.png -f png" || log "warning: screenshot failed"
+
+log "interactive: open the installer (Calamares, D.Ai branding)"
+type_keys esc
+type_keys meta_l-spc
+sleep 2
+type_keys i n s t a l l spc d dot a i spc o s
+sleep 2
+type_keys ret
+sleep 15
+monitor "screendump $ARTIFACT_DIR/installer.png -f png" || log "warning: screenshot failed"
 
 if ((checks_ok == 0)); then
   log "last serial console lines:"
