@@ -11,6 +11,7 @@
 #   SOURCE_DATE_EPOCH  Fixed timestamp for reproducible output (default: now)
 #   WORK_DIR           live-build working directory (default: <repo>/.work/<edition>)
 #   DEBIAN_MIRROR      Optional Debian mirror URL override
+#   DAI_LLAMA_DIST     Directory produced by build-llama.sh (local AI runtime)
 set -euo pipefail
 
 readonly EDITION="${1:-}"
@@ -105,6 +106,7 @@ stage_apps() {
   cp -r "$cmd/dai_command" "$root/usr/lib/dai/"
   find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
   install -m 0755 "$cmd/data/dai-command" "$root/usr/bin/dai-command"
+  install -m 0755 "$cmd/data/dai-fixlayout" "$root/usr/bin/dai-fixlayout"
   install -m 0644 "$cmd/data/dai-command.desktop" "$root/usr/share/applications/dai-command.desktop"
 
   local tune="$REPO_ROOT/apps/dai-tune"
@@ -115,6 +117,28 @@ stage_apps() {
   install -m 0755 "$tune/data/dai-tune-helper" "$root/usr/lib/dai/dai-tune-helper"
   install -m 0644 "$tune/data/io.github.diamondrubinny.dai.tune.policy" \
     "$root/usr/share/polkit-1/actions/io.github.diamondrubinny.dai.tune.policy"
+
+  local ai="$REPO_ROOT/apps/dai-ai"
+  cp -r "$ai/dai_ai" "$root/usr/lib/dai/"
+  find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
+  local bin
+  for bin in daid dai-ai dai-models; do
+    install -m 0755 "$ai/data/$bin" "$root/usr/bin/$bin"
+  done
+  install -d "$root/usr/share/dai" "$root/usr/lib/systemd/user" "$root/etc/systemd/user/sockets.target.wants"
+  install -m 0644 "$ai/data/models.json" "$root/usr/share/dai/models.json"
+  install -m 0644 "$ai/data/dai-daid.socket" "$ai/data/dai-daid.service" "$root/usr/lib/systemd/user/"
+  # Same as "systemctl --global enable dai-daid.socket".
+  ln -sf /usr/lib/systemd/user/dai-daid.socket "$root/etc/systemd/user/sockets.target.wants/dai-daid.socket"
+
+  # llama.cpp runtime, built separately by build-llama.sh (optional for local builds).
+  if [[ -n "${DAI_LLAMA_DIST:-}" ]]; then
+    [[ -x "$DAI_LLAMA_DIST/llama-server" ]] || die "DAI_LLAMA_DIST has no llama-server: $DAI_LLAMA_DIST"
+    install -d "$root/opt/dai/llama"
+    cp -a "$DAI_LLAMA_DIST/." "$root/opt/dai/llama/"
+  else
+    log "warning: DAI_LLAMA_DIST not set; the image will not include the local AI runtime"
+  fi
 }
 
 main() {

@@ -142,6 +142,24 @@ class LayoutFixTests(unittest.TestCase):
     def test_hebrew_typed_on_english_intent(self):
         self.assertEqual(core.fix_layout("יקךךם"), ("hello", "en"))
 
+    def test_convert_whole_selection(self):
+        self.assertEqual(core.convert_layout("akuo"), "שלום")
+        self.assertEqual(core.convert_layout("nv bang?"), "מה נשמע?")
+        self.assertEqual(core.convert_layout("יקךךם"), "hello")
+        self.assertEqual(core.convert_layout("akuo 123"), "שלום 123")
+        self.assertIsNone(core.convert_layout("123 !?"))
+
+    def test_fixlayout_print_mode(self):
+        from dai_command import fixlayout
+
+        with mock.patch.object(fixlayout, "read_selection", return_value="akuo"), \
+                mock.patch("builtins.print") as printed:
+            self.assertEqual(fixlayout.main(["dai-fixlayout", "--print"]), 0)
+        printed.assert_called_once_with("שלום")
+        with mock.patch.object(fixlayout, "read_selection", return_value=""), \
+                mock.patch.object(fixlayout, "_notify"):
+            self.assertEqual(fixlayout.main(["dai-fixlayout"]), 1)
+
     def test_not_candidates(self):
         self.assertIsNone(core.fix_layout("a"))
         self.assertIsNone(core.fix_layout("123"))

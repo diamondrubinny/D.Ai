@@ -1,0 +1,3 @@
+#!/bin/sh
+# Fix the selected text typed in the wrong keyboard layout (bound to Pause).
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_command.fixlayout import main; sys.exit(main(sys.argv))' "$@"

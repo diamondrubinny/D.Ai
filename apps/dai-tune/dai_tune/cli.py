@@ -13,7 +13,7 @@ from .catalog import CATALOG
 from .context import Context, detect_lang
 from .executor import ApplyError, Journal, apply_steps, undo_entry
 from .parser import EXAMPLES
-from .planner import Plan, plan_from_text, plan_hash
+from .planner import Plan, build_plan, plan_from_text, plan_hash
 from .posture import assess, title
 
 HELPER = "/usr/lib/dai/dai-tune-helper"
@@ -108,9 +108,35 @@ def run_helper(args: list[str], payload: dict | None = None) -> dict[str, Any]:
     return data
 
 
-def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes: bool) -> int:
+def ai_plan(text: str, ctx: Context) -> Plan | None:
+    """Ask the local AI to interpret text the rules did not understand."""
+    from .ai import interpret
+
+    requests = interpret(text)
+    if requests is None:
+        return None
+    return build_plan(requests, ctx)
+
+
+def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes: bool, use_ai: bool = False) -> int:
     lang = ctx.lang
     plan = plan_from_text(text, ctx)
+    from_ai = False
+    if plan.unknown and not as_json:
+        wants_ai = use_ai or (
+            sys.stdin.isatty()
+            and input(_l(lang, "Not understood by the rules. Ask the local AI to interpret? [y/N] ",
+                         "הכללים לא הבינו. לבקש פרשנות מה־AI המקומי? [כ/ל] ")).strip().casefold() in ("y", "yes", "כ", "כן")
+        )
+        if wants_ai:
+            print(_l(lang, "Asking the local AI…", "שואל את ה־AI המקומי…"))
+            interpreted = ai_plan(text, ctx)
+            if interpreted is None:
+                print(_l(lang, "Local AI is not available (dai-models install qwen2.5-0.5b).",
+                         "ה־AI המקומי לא זמין (dai-models install qwen2.5-0.5b)."))
+            else:
+                plan, from_ai = interpreted, True
+                print(_color(_l(lang, "AI interpretation — review it carefully:", "פרשנות AI — בדקו היטב:"), "1;35"))
     if as_json:
         print(json.dumps({
             "ok": plan.ok, "hash": plan.hash, "risk": plan.risk, "weakens": plan.weakens,
@@ -129,7 +155,11 @@ def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes:
     if dry_run:
         print(_l(lang, "(dry run — nothing was changed)", "(הרצת ניסיון — לא בוצע שינוי)"))
         return 0
-    if not confirm(plan, lang, assume_yes):
+    if from_ai and assume_yes:
+        print(_l(lang, "Refusing --yes: AI interpretations always need manual confirmation.",
+                 "‎--yes נדחה: פרשנות AI דורשת תמיד אישור ידני."))
+        return 1
+    if not confirm(plan, lang, assume_yes and not from_ai):
         print(_l(lang, "Cancelled. Nothing was changed.", "בוטל. לא בוצע שום שינוי."))
         return 1
 
@@ -211,7 +241,7 @@ def cmd_help(lang: str) -> int:
     print("  dai-tune status   " + _l(lang, "security score and fixes", "ציון אבטחה והמלצות"))
     print("  dai-tune history  " + _l(lang, "what was changed", "מה שונה"))
     print("  dai-tune undo     " + _l(lang, "undo the last change", "ביטול השינוי האחרון"))
-    print("  --dry-run --json --yes")
+    print("  --dry-run --json --yes --ai")
     return 0
 
 
@@ -234,7 +264,7 @@ def main(argv: list[str] | None = None) -> int:
     if command in ("undo", "בטל"):
         return cmd_undo(words[1] if len(words) > 1 else "last", ctx)
     try:
-        return cmd_apply(" ".join(words), ctx, "--dry-run" in flags, "--json" in flags, "--yes" in flags)
+        return cmd_apply(" ".join(words), ctx, "--dry-run" in flags, "--json" in flags, "--yes" in flags, "--ai" in flags)
     except (EOFError, KeyboardInterrupt):
         print()
         return 1

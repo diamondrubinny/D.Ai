@@ -26,6 +26,7 @@ build/scripts/               build-iso.sh, run-qemu.sh
 build/assets/                Wallpaper generator
 apps/dai-command/            D.Ai Command (PyQt6) + unit tests
 apps/dai-tune/               D.Ai Tune: text-driven configuration, root helper, polkit policy + unit tests
+apps/dai-ai/                 Local AI: daid service, model manager, client + unit tests
 tests/boot/                  Headless QEMU boot test
 docs/                        Specification, architecture, threat model
 ```
@@ -76,6 +77,13 @@ Shortcuts: `Super+Space` D.Ai Command, `Super+Enter` terminal, `Super+E` files, 
   System changes go through a minimal root helper authorized by polkit, are journaled and can be undone
   (`dai-tune undo`). `dai-tune status` gives a security score with a phrase to fix each finding.
   In D.Ai Command, type `!` followed by the request. Design and threat model: [docs/TUNE.md](docs/TUNE.md).
+- **Wrong-layout fixer, everywhere**: select text typed in the wrong layout in any app and press `Pause`
+  (or `Super+Alt+L`) — `akuo` becomes `שלום` in place.
+- **Local AI** (`apps/dai-ai`, [docs/AI.md](docs/AI.md)): llama.cpp (pinned build) served on a UNIX socket by
+  the `daid` user service, which has **no network access at all** (systemd `RestrictAddressFamilies=AF_UNIX`).
+  Models are downloaded on demand with `dai-models install qwen2.5-0.5b` and verified against a pinned SHA-256.
+  Ask with `?` in D.Ai Command or `dai-ai "question"`; D.Ai Tune can ask it to interpret free-form requests,
+  constrained to the action catalog and always confirmed by the user.
 - **D.Ai Night** theme: dark, high-contrast (WCAG AA) palette with a violet→cyan accent, custom wallpaper,
   matching window decorations. Design system: [docs/DESIGN.md](docs/DESIGN.md).
 

@@ -66,6 +66,10 @@ class Serial:
         return "\n".join(body).strip()
 
 
+WAYLAND_ENV = (
+    "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+    'export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; '
+)
 HEBREW_TUNE = "חסום דיסק און קי ונעל מסך אחרי 5 דקות"
 
 
@@ -158,6 +162,16 @@ def main() -> int:
         ("tune: injection refused", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'install vlc; rm -rf /tmp/x'; echo rc=$?", True,
          lambda o: "rc=2" in o),
         ("tune: security score", "dai-tune status", True, lambda o: "Security score" in o),
+        # Local AI runtime (model download is checked separately once pinned).
+        ("ai: llama-server", "LD_LIBRARY_PATH=/opt/dai/llama /opt/dai/llama/llama-server --version 2>&1", True,
+         lambda o: "0bb496d" in o),
+        ("ai: daid socket", "systemctl --user is-active dai-daid.socket", True, lambda o: o.strip().endswith("active")),
+        ("ai: daid status", "dai-ai status", True, lambda o: "model:" in o),
+        ("ai: daid has no network", "systemctl --user show dai-daid.service -p RestrictAddressFamilies", True,
+         lambda o: "AF_UNIX" in o and "AF_INET" not in o),
+        # Global wrong-layout fixer: real Wayland primary selection round trip.
+        ("fixlayout: selection", WAYLAND_ENV + "printf akuo | wl-copy --primary && dai-fixlayout --print", True,
+         lambda o: o.strip().splitlines()[-1:] == ["שלום"]),
     ]
 
     # Always printed, never judged: context for diagnosing failures.
