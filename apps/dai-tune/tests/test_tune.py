@@ -479,3 +479,33 @@ class ForgeActionTests(TuneTestCase):
         payload = {"version": 1, "hash": planner.plan_hash(steps), "steps": [step]}
         with self.assertRaises(ValidationError):
             planner.steps_from_json(payload, self.ctx, scope="system")
+
+
+class DoctorActionTests(ForgeActionTests):
+    """Actions D.Ai Doctor suggests: free disk space, power profiles."""
+
+    def test_clean_frees_caches_only(self):
+        (self.root / "var/log/journal").mkdir(parents=True)
+        entry, _ = self.apply("system.clean", {})
+        self.assertEqual(self.runner.calls[-2:], [["apt-get", "clean"], ["journalctl", "--vacuum-size=200M"]])
+        plan = self.plan("פנה מקום בדיסק")
+        self.assertTrue(plan.ok)
+        self.assertEqual((plan.steps[0].scope, plan.steps[0].effect), ("system", "neutral"))
+        with self.assertRaises(ValidationError):
+            catalog.CATALOG["system.clean"].validate({"path": "/"}, self.ctx)
+
+    def test_power_profile_apply_and_undo(self):
+        (self.root / "usr/bin").mkdir(parents=True)
+        (self.root / "usr/bin/powerprofilesctl").write_text("")
+        self.runner.responses[("powerprofilesctl", "get")] = (0, "balanced\n")
+        entry, journal = self.apply("power.profile", {"profile": "power-saver"})
+        self.assertIn(["powerprofilesctl", "set", "power-saver"], self.runner.calls)
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(self.runner.calls[-1], ["powerprofilesctl", "set", "balanced"])
+        self.assertEqual(self.plan("מצב חיסכון בסוללה").steps[0].params, {"profile": "power-saver"})
+        with self.assertRaises(ValidationError):
+            catalog.CATALOG["power.profile"].validate({"profile": "turbo; reboot"}, self.ctx)
+
+    def test_power_profile_needs_the_daemon(self):
+        with self.assertRaises(executor.ApplyError):
+            self.apply("power.profile", {"profile": "performance"})

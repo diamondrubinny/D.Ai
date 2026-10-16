@@ -339,6 +339,11 @@ class CommandWindow(QWidget):
                 return
             self._spawn(["xdg-open", str(action.payload)])
             remembered = self.query.text().strip()
+        elif action.kind == "doctor":
+            # Fixes are offered and confirmed there; system ones go through D.Ai Tune.
+            self._spawn(["x-terminal-emulator", "-e", "bash", "-c",
+                         'dai-doctor "$1"; echo; read -r -p "Enter ↵" _', "dai-doctor", str(action.payload)])
+            remembered = self.query.text().strip()
         elif action.kind == "ai":
             self.ask_ai(str(action.payload))
             return

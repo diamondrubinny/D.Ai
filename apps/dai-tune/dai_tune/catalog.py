@@ -960,3 +960,74 @@ register(ActionSpec(
     note=lambda p, lang: _t(lang, f"Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}",
                             f"הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}") if p["enabled"] else "",
 ))
+
+
+# --------------------------------------------------------------------------
+# Maintenance: free disk space taken by caches (D.Ai Doctor)
+# --------------------------------------------------------------------------
+
+JOURNAL_KEEP = "200M"
+
+
+def _clean_apply(params: Params, ctx: Context) -> None:
+    ctx.run(["apt-get", "clean"])
+    if ctx.path("/var/log/journal").is_dir():
+        ctx.run(["journalctl", f"--vacuum-size={JOURNAL_KEEP}"])
+
+
+register(ActionSpec(
+    id="system.clean",
+    scope="system",
+    validate=lambda p, c: (_only_keys(p, set()), {})[1],
+    apply=_clean_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Free disk space: downloaded package files and old system logs",
+                               "פינוי מקום: קבצי התקנה שהורדו ויומני מערכת ישנים"),
+    # Only caches are removed: packages stay installed and recent logs are kept.
+    note=lambda p, lang: _t(lang, f"Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only).",
+                            f"אי אפשר לבטל, אבל שום דבר שאתם משתמשים בו לא נמחק (רק יומנים מעבר ל־{JOURNAL_KEEP})."),
+))
+
+
+# --------------------------------------------------------------------------
+# Power profile (power-profiles-daemon): battery saver / balanced / performance
+# --------------------------------------------------------------------------
+
+POWER_PROFILES = ("power-saver", "balanced", "performance")
+
+
+def current_power_profile(ctx: Context) -> str:
+    result = ctx.run(["powerprofilesctl", "get"], check=False)
+    value = result.stdout.strip()
+    return value if value in POWER_PROFILES else ""
+
+
+def _power_apply(params: Params, ctx: Context) -> None:
+    if not ctx.path("/usr/bin/powerprofilesctl").exists():
+        raise ActionError("power-profiles-daemon is not installed")
+    ctx.run(["powerprofilesctl", "set", params["profile"]])
+
+
+def _power_restore(params: Params, ctx: Context, extra: dict) -> None:
+    if extra.get("profile") in POWER_PROFILES:
+        ctx.run(["powerprofilesctl", "set", extra["profile"]])
+
+
+register(ActionSpec(
+    id="power.profile",
+    scope="user",  # power-profiles-daemon lets the active local user switch profiles
+    validate=lambda p, c: (_only_keys(p, {"profile"}),
+                           {"profile": _choice(p.get("profile"), POWER_PROFILES, "profile")})[1],
+    apply=_power_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: {
+        "power-saver": _t(lang, "Battery saver mode (longer battery life, a bit slower)",
+                          "מצב חיסכון בסוללה (סוללה ארוכה יותר, קצת יותר איטי)"),
+        "balanced": _t(lang, "Balanced power mode", "מצב צריכת חשמל מאוזן"),
+        "performance": _t(lang, "Performance mode (faster, uses more power)", "מצב ביצועים (מהיר יותר, צורך יותר חשמל)"),
+    }[p["profile"]],
+    capture=lambda p, c: {"profile": current_power_profile(c)},
+    restore=_power_restore,
+))

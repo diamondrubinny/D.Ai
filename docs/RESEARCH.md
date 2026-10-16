@@ -37,8 +37,8 @@
 ## 3. סדר בנייה (לפי ערך × היתכנות)
 
 1. ✅ **D.Ai Find** — חיפוש קבצים בשפה טבעית (עברית ואנגלית) בתוך D.Ai Command ([FIND.md](FIND.md)).
-2. **D.Ai Doctor** — "למה המחשב איטי", "מה תופס את הדיסק", עם תיקונים בטוחים דרך Tune.
-3. **סוללה** — ‏power-profiles-daemon ופעולות Tune ‏(`power.profile`).
+2. ✅ **D.Ai Doctor** — "למה המחשב איטי", "מה תופס את הדיסק", עם תיקונים בטוחים דרך Tune ([DOCTOR.md](DOCTOR.md)).
+3. ✅ **סוללה** — ‏power-profiles-daemon ופעולת Tune ‏`power.profile`.
 4. **מחוון פרטיות** — מיקרופון ומצלמה בשימוש: מחוון בפאנל ויומן.
 5. **D.Ai Backup** — גיבוי מוצפן לדיסק חיצוני עם בדיקת שחזור.
 6. מתכוני Forge למשחקים ול־Windows apps ‏(Steam, ‏Bottles).

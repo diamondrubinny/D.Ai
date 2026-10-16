@@ -32,6 +32,7 @@ apps/dai-forge/              D.Ai Forge: recipes, AI app builder, bubblewrap san
 apps/dai-voice/              D.Ai Voice: push-to-talk dictation and voice commands (whisper.cpp) + unit tests
 apps/dai-code/               D.Ai Code: local coding assistant + unit tests
 apps/dai-find/               D.Ai Find: natural-language file search (Hebrew/English) + unit tests
+apps/dai-doctor/             D.Ai Doctor: "why is my computer slow?", disk space, battery + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -141,6 +142,11 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
 - **D.Ai Find** ([docs/FIND.md](docs/FIND.md)): find files the way you remember them, in Hebrew or English —
   "find the pdf I downloaded last week", "התמונות מאתמול", "invoice from March" — from D.Ai Command or `dai-find`.
   Local, rule-based and instant; no index is written to disk.
+- **D.Ai Doctor** ([docs/DOCTOR.md](docs/DOCTOR.md)): ask "why is my computer slow?", "מה תופס את הדיסק?" or
+  "how is my battery?" in D.Ai Command (or run `dai-doctor`) and get plain-language answers — memory and processor
+  hogs, failed services, free space, caches, biggest folders, battery wear — with safe fixes: system ones as
+  D.Ai Tune plans (free disk space, battery saver mode via power-profiles-daemon), the trash and picture previews
+  only after you confirm.
 - **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
   wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
   undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what

@@ -15,6 +15,7 @@ import os
 import re
 import shlex
 import shutil
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterable
@@ -400,6 +401,7 @@ _STRINGS = {
     "find_hint": ("Find files as you remember them: “find the pdf I downloaded last week”",
                   "מציאת קבצים כמו שזוכרים אותם: „מצא את ה־PDF שהורדתי בשבוע שעבר”"),
     "find_none": ("No matching files", "לא נמצאו קבצים מתאימים"),
+    "doctor_open": ("D.Ai Doctor · Enter for details and fixes", "D.Ai Doctor · Enter לפרטים ולתיקון"),
     "query_name": ("D.Ai Command input", "שורת הפקודות של D.Ai"),
     "results_name": ("Results", "תוצאות"),
 }
@@ -427,7 +429,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -467,6 +469,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
 
     if (found := find_actions(text)) is not None:
         return found
+    if (answers := doctor_actions(text)) is not None:
+        return answers
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -525,6 +529,36 @@ def find_actions(text: str, home: Path | None = None) -> list[Action] | None:
         rows.append(Action("file", hit.path.name, f"{hit.date:%d.%m.%Y %H:%M} · {human_size(hit.size)} · {folder}",
                            FILE_ICONS.get(hit.kind, "text-x-generic"), str(hit.path)))
     return rows
+
+
+_DOCTOR_CACHE: dict[str, tuple[float, list]] = {}
+DOCTOR_ICONS = {"bad": "dialog-error", "warn": "dialog-warning", "ok": "emblem-ok-symbolic"}
+
+
+def doctor_actions(text: str) -> list[Action] | None:
+    """D.Ai Doctor: "why is my computer slow?", "מה תופס את הדיסק?".
+
+    The bar shows the main findings; Enter opens the full diagnosis with fixes.
+    """
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_doctor.diagnose import diagnose, topic_for
+        from dai_doctor.facts import collect
+    except ImportError:
+        return None
+    topic = topic_for(text)
+    if topic is None:
+        return None
+    lang = ui_language()
+    cached = _DOCTOR_CACHE.get(topic)
+    if cached and time.monotonic() - cached[0] < 15:  # typing must stay instant
+        findings = cached[1]
+    else:
+        findings = diagnose(collect(topics=(topic,), sample=0.25, budget=1.0), (topic,), lang)
+        _DOCTOR_CACHE[topic] = (time.monotonic(), findings)
+    shown = [f for f in findings if f.level != "ok"][:4] or findings[:1]
+    subtitle = tr("doctor_open")
+    return [Action("doctor", f.title, f"{f.detail} · {subtitle}" if f.detail else subtitle,
+                   DOCTOR_ICONS[f.level], topic) for f in shown]
 
 
 def tune_actions(request: str) -> list[Action]:

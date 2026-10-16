@@ -47,6 +47,9 @@ wl-clipboard
 wtype
 libnotify-bin
 
+# Power: battery saver / balanced / performance (D.Ai Tune "power.profile", D.Ai Doctor)
+power-profiles-daemon
+
 # Audio
 pipewire
 # pw-record for D.Ai Voice
