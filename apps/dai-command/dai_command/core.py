@@ -377,12 +377,24 @@ _STRINGS = {
     "copy": ("Enter to copy", "Enter להעתקה"),
     "fix_he": ("Fix to Hebrew · Enter to copy", "תיקון לעברית · Enter להעתקה"),
     "fix_en": ("Fix to English · Enter to copy", "תיקון לאנגלית · Enter להעתקה"),
-    "placeholder": ("Apps, commands, math…    ? ask    > terminal", "אפליקציות, פקודות, חישובים…    ? שאלה    > טרמינל"),
+    "placeholder": ("Apps, commands, math…    ? ask    + add / build    > terminal",
+                    "אפליקציות, פקודות, חישובים…    ? שאלה    + הוספה / בנייה    > טרמינל"),
     "hints": ("Enter open  ·  ↑↓ move  ·  Esc close  ·  Alt+Shift language", "הפעלה Enter  ·  ניווט ↑↓  ·  סגירה Esc  ·  שפה Alt+Shift"),
     "mic": ("Local voice dictation (Whisper) — Phase 5", "הכתבה קולית מקומית (Whisper) — שלב 5"),
     "tune_review": ("D.Ai Tune · Enter to review and apply", "D.Ai Tune · Enter לבדיקה והחלה"),
     "tune_unknown": ("Not understood — Enter for examples", "לא הובן — Enter לדוגמאות"),
     "tune_hint": ("Configure the system in words, e.g. !block usb", "התאמת המערכת במילים, למשל !חסום דיסק און קי"),
+    "forge_hint": ("Add or build anything, e.g. +install antivirus · +build an app for…",
+                   "הוסיפו או בנו כל דבר, למשל +תתקין אנטי וירוס · +תבנה אפליקציה ל…"),
+    "forge_setup": ("D.Ai Forge · Enter to review and set up (admin)", "D.Ai Forge · Enter לבדיקה והקמה (מנהל)"),
+    "forge_remove": ("D.Ai Forge · Enter to review and remove (admin)", "D.Ai Forge · Enter לבדיקה והסרה (מנהל)"),
+    "forge_build": ("Build with local AI · runs in a sandbox · Enter", "בנייה עם AI מקומי · רץ בארגז חול · Enter"),
+    "forge_edit": ("Update this app with local AI · previous version kept · Enter",
+                   "עדכון האפליקציה עם AI מקומי · הגרסה הקודמת נשמרת · Enter"),
+    "forge_ai_recipe": ("No recipe yet · the local AI will write one for review · Enter",
+                        "אין מתכון עדיין · ה־AI המקומי יכתוב מתכון לבדיקה · Enter"),
+    "build_app": ("Build app: ", "בניית אפליקציה: "),
+    "update_app": ("Update app: ", "עדכון אפליקציה: "),
     "query_name": ("D.Ai Command input", "שורת הפקודות של D.Ai"),
     "results_name": ("Results", "תוצאות"),
 }
@@ -410,7 +422,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -439,6 +451,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         ]
     if text.startswith("!"):
         return tune_actions(text[1:].strip())
+    if text.startswith("+"):
+        return forge_actions(text[1:].strip())
     if text.startswith(">"):
         command = text[1:].strip()
         return [Action("terminal", command, tr("terminal"), "utilities-terminal", command)] if command else []
@@ -496,3 +510,37 @@ def tune_actions(request: str) -> list[Action]:
         )
         for step in plan.steps
     ]
+
+
+def forge_actions(request: str) -> list[Action]:
+    """Preview a D.Ai Forge request; review and confirmation happen in dai-forge."""
+    if not request:
+        return [Action("forge", tr("forge_hint"), "dai-forge help", "system-software-install", "")]
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_forge.apps import list_apps
+        from dai_forge.intent import classify
+        from dai_forge.recipes import install_requests, load_library, remove_requests
+        from dai_tune.catalog import CATALOG
+        from dai_tune.context import Context
+        from dai_tune.planner import build_plan
+    except ImportError:
+        return []
+    lang = ui_language()
+    intent = classify(request, load_library(), (a.name for a in list_apps()))
+    if intent.kind in ("recipe", "remove") and intent.recipe is not None:
+        removing = intent.kind == "remove"
+        requests = remove_requests(intent.recipe) if removing else install_requests(intent.recipe)
+        plan = build_plan(requests, Context(lang=lang))
+        rows = [Action("forge", intent.recipe.title(lang), tr("forge_remove" if removing else "forge_setup"),
+                       "edit-delete" if removing else "system-software-install", request)]
+        icons = {"hardens": "security-high", "weakens": "security-low", "neutral": "preferences-system"}
+        rows += [
+            Action("forge", CATALOG[step.action].summary(step.params, lang), "", icons[step.effect], request)
+            for step in plan.steps
+        ]
+        return rows
+    if intent.kind == "app":
+        return [Action("forge", tr("build_app") + intent.text, tr("forge_build"), "applications-development", request)]
+    if intent.kind == "edit":
+        return [Action("forge", tr("update_app") + intent.app_name, tr("forge_edit"), "document-edit", request)]
+    return [Action("forge", request, tr("forge_ai_recipe"), "dialog-question", request)]

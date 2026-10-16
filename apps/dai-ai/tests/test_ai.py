@@ -122,7 +122,8 @@ class DaidTests(EnvTestCase):
             def status(self):
                 return {"ok": True, "model": "fake", "running": False}
 
-            def chat(self, messages, schema, max_tokens):
+            def chat(self, messages, schema, max_tokens, task):
+                yield f"[{task}] " if task != "general" else ""
                 yield "שלום "
                 yield messages[-1]["content"]
 
@@ -148,3 +149,24 @@ class DaidTests(EnvTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TaskTests(EnvTestCase):
+    def test_code_task_prefers_coder_model(self):
+        shipped = Path(__file__).resolve().parents[1] / "data" / "models.json"
+        catalog = models.load_catalog(shipped)
+        self.assertIn("code", catalog["qwen2.5-coder-1.5b"].tasks)
+        self.assertIsNone(models.default_model_id(catalog, "code"))
+        for model in catalog.values():
+            model.path.parent.mkdir(parents=True, exist_ok=True)
+            model.path.write_bytes(b"x")
+        self.assertEqual(models.default_model_id(catalog), "qwen2.5-0.5b")  # smallest for general use
+        self.assertEqual(models.default_model_id(catalog, "code"), "qwen2.5-coder-1.5b")
+
+    def test_task_is_validated(self):
+        base = {"op": "chat", "messages": [{"role": "user", "content": "x"}]}
+        self.assertEqual(daid.validate_request(base)["task"], "general")
+        self.assertEqual(daid.validate_request({**base, "task": "code"})["task"], "code")
+        with self.assertRaises(ValueError):
+            daid.validate_request({**base, "task": "root"})
+

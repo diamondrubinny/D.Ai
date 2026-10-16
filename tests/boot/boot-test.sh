@@ -167,6 +167,22 @@ type_keys shift-slash w h a t spc i s spc l i n u x shift-slash ret
 sleep "${AI_WAIT:-45}"
 monitor "screendump $ARTIFACT_DIR/ai-answer.png -f png" || log "warning: screenshot failed"
 
+log "interactive: D.Ai Forge preview in the command bar (+install antivirus)"
+type_keys esc
+type_keys meta_l-spc
+sleep 2
+type_keys shift-equal i n s t a l l spc a n t i v i r u s
+sleep 3
+monitor "screendump $ARTIFACT_DIR/forge-preview.png -f png" || log "warning: screenshot failed"
+
+log "interactive: open the sandboxed example app from the command bar"
+type_keys esc
+type_keys meta_l-spc
+sleep 2
+type_keys t a s k s ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/forge-app.png -f png" || log "warning: screenshot failed"
+
 if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2

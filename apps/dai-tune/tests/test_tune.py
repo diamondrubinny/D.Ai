@@ -377,3 +377,105 @@ class AITests(TuneTestCase):
                 self.assertTrue(ai.model_installed())
                 # --yes never stops to ask.
                 self.assertEqual(cli.cmd_apply("make it nice", self.ctx, True, False, True), 2)
+
+
+class ForgeActionTests(TuneTestCase):
+    """Catalog actions added for D.Ai Forge recipes."""
+
+    def apply(self, action, params):
+        spec = catalog.CATALOG[action]
+        clean = spec.validate(params, self.ctx)
+        step = planner.Step(action, clean, spec.scope, spec.risk(clean), spec.effect(clean))
+        journal = executor.Journal(self.root / "journal.json")
+        return executor.apply_steps([step], self.ctx, journal, actor="1000", scope=spec.scope), journal
+
+    def test_unit_validation(self):
+        validate = catalog.CATALOG["service.unit"].validate
+        self.assertEqual(validate({"unit": "clamav-freshclam.service", "enabled": True}, self.ctx)["unit"],
+                         "clamav-freshclam.service")
+        for unit in ["nftables.service", "apparmor.service", "systemd-resolved.service", "ssh.service",
+                     "sddm.service", "NetworkManager.service", "dai-av-scan.timer", "polkit.service"]:
+            with self.subTest(unit=unit), self.assertRaises(ValidationError):
+                validate({"unit": unit, "enabled": False}, self.ctx)
+        for unit in ["../x.service", "x.service; rm -rf /", "x", "x.mount", ""]:
+            with self.subTest(unit=unit), self.assertRaises(ValidationError):
+                validate({"unit": unit, "enabled": True}, self.ctx)
+
+    def test_unit_apply_and_undo(self):
+        (self.root / "usr/lib/systemd/system").mkdir(parents=True)
+        (self.root / "usr/lib/systemd/system/clamav-freshclam.service").write_text("[Unit]\n")
+        self.runner.responses[("systemctl", "is-enabled")] = (1, "disabled\n")
+        entry, journal = self.apply("service.unit", {"unit": "clamav-freshclam.service", "enabled": True})
+        self.assertIn(["systemctl", "enable", "--now", "clamav-freshclam.service"], self.runner.calls)
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(self.runner.calls[-1], ["systemctl", "disable", "--now", "clamav-freshclam.service"])
+
+    def test_unit_must_be_installed(self):
+        with self.assertRaises(executor.ApplyError):
+            self.apply("service.unit", {"unit": "missing.service", "enabled": True})
+
+    def test_user_unit_uses_user_manager(self):
+        (self.root / "usr/lib/systemd/user").mkdir(parents=True)
+        (self.root / "usr/lib/systemd/user/syncthing.service").write_text("[Unit]\n")
+        self.apply("service.user_unit", {"unit": "syncthing.service", "enabled": True})
+        self.assertIn(["systemctl", "--user", "enable", "--now", "syncthing.service"], self.runner.calls)
+        self.assertEqual(catalog.CATALOG["service.user_unit"].scope, "user")
+
+    def test_flatpak_validation(self):
+        validate = catalog.CATALOG["flatpak.install"].validate
+        self.assertEqual(validate({"apps": ["org.telegram.desktop"]}, self.ctx),
+                         {"apps": ["org.telegram.desktop"], "remote": "flathub"})
+        too_many = {"apps": [f"org.app.n{i}" for i in range(6)]}
+        for bad in [{"apps": ["telegram"]}, {"apps": ["org.x.y; rm"]}, {"apps": []},
+                    {"apps": ["org.a.b"], "remote": "evil"}, too_many]:
+            with self.subTest(bad=bad), self.assertRaises(ValidationError):
+                validate(bad, self.ctx)
+        with self.assertRaises(ValidationError):
+            catalog.CATALOG["flatpak.remote"].validate({"name": "https://evil.example/repo"}, self.ctx)
+
+    def test_flatpak_remote_url_is_fixed_and_undone(self):
+        self.runner.responses[("flatpak", "remotes")] = (0, "")
+        entry, journal = self.apply("flatpak.remote", {"name": "flathub"})
+        self.assertIn(["flatpak", "remote-add", "--system", "--if-not-exists", "flathub",
+                       "https://dl.flathub.org/repo/flathub.flatpakrepo"], self.runner.calls)
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(self.runner.calls[-1], ["flatpak", "remote-delete", "--system", "--force", "flathub"])
+
+    def test_flatpak_install_undo_removes_only_new_apps(self):
+        self.runner.responses[("flatpak", "list")] = (0, "org.signal.Signal\n")
+        entry, journal = self.apply("flatpak.install", {"apps": ["org.signal.Signal", "org.telegram.desktop"]})
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(self.runner.calls[-1],
+                         ["flatpak", "uninstall", "--system", "-y", "--noninteractive", "org.telegram.desktop"])
+
+    def test_antivirus_schedule(self):
+        (self.root / "usr/bin").mkdir(parents=True)
+        (self.root / "usr/bin/clamscan").write_text("")
+        entry, journal = self.apply("antivirus.schedule", {"enabled": True, "frequency": "weekly"})
+        service = (self.root / "etc/systemd/system/dai-av-scan.service").read_text()
+        timer = (self.root / "etc/systemd/system/dai-av-scan.timer").read_text()
+        self.assertIn("--move=/var/lib/dai/quarantine", service)
+        self.assertIn("PrivateNetwork=yes", service)
+        self.assertIn("ProtectSystem=strict", service)
+        self.assertIn("OnCalendar=weekly", timer)
+        self.assertEqual(oct((self.root / "var/lib/dai/quarantine").stat().st_mode & 0o777), "0o700")
+        self.assertIn(["systemctl", "enable", "--now", "dai-av-scan.timer"], self.runner.calls)
+        self.assertEqual(catalog.CATALOG["antivirus.schedule"].effect({"enabled": True}), "hardens")
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertFalse((self.root / "etc/systemd/system/dai-av-scan.service").exists())
+        self.assertFalse((self.root / "etc/systemd/system/dai-av-scan.timer").exists())
+
+    def test_antivirus_needs_clamav(self):
+        with self.assertRaises(executor.ApplyError):
+            self.apply("antivirus.schedule", {"enabled": True})
+
+    def test_disabling_antivirus_weakens(self):
+        plan = planner.build_plan([parser.Request("antivirus.schedule", {"enabled": False})], self.ctx)
+        self.assertTrue(plan.weakens)
+
+    def test_helper_accepts_new_system_actions_only_in_system_scope(self):
+        step = {"action": "service.user_unit", "params": {"unit": "syncthing.service", "enabled": True}}
+        steps = [planner.Step("service.user_unit", step["params"], "user", "low", "neutral")]
+        payload = {"version": 1, "hash": planner.plan_hash(steps), "steps": [step]}
+        with self.assertRaises(ValidationError):
+            planner.steps_from_json(payload, self.ctx, scope="system")

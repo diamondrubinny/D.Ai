@@ -135,6 +135,16 @@ stage_apps() {
   # Same as "systemctl --global enable dai-daid.socket".
   ln -sf /usr/lib/systemd/user/dai-daid.socket "$root/etc/systemd/user/sockets.target.wants/dai-daid.socket"
 
+  # D.Ai Forge: recipes, the app builder and its sandbox runner.
+  local forge="$REPO_ROOT/apps/dai-forge"
+  cp -r "$forge/dai_forge" "$root/usr/lib/dai/"
+  find "$root/usr/lib/dai" -name '__pycache__' -prune -exec rm -rf {} +
+  install -m 0755 "$forge/data/dai-forge" "$root/usr/bin/dai-forge"
+  install -d "$root/usr/share/dai/forge/recipes" "$root/usr/share/dai/forge/examples" "$root/etc/dai/forge/recipes"
+  install -m 0644 "$forge"/data/recipes/*.json "$root/usr/share/dai/forge/recipes/"
+  install -m 0644 "$forge"/examples/* "$root/usr/share/dai/forge/examples/"
+  install -m 0644 "$forge/data/forge.json" "$root/etc/dai/forge.json"
+
   # Command field in the panel (build-panel-plugin.sh). Without it, fall back
   # to the button that opens D.Ai Command.
   if [[ -n "${DAI_PANEL_PLUGIN:-}" && -f "$DAI_PANEL_PLUGIN/libdaicommand.so" ]]; then

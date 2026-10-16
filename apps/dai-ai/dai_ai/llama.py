@@ -63,7 +63,7 @@ class LlamaServer:
                 "-m", str(self.model),
                 "--host", str(self.socket_path),
                 "--no-webui",
-                "-c", "4096",
+                "-c", "8192",
                 "-t", str(self.threads),
                 "--parallel", "1",
             ],

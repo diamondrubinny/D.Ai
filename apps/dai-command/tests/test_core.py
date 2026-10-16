@@ -205,6 +205,30 @@ class BuildActionsTests(unittest.TestCase):
             self.assertTrue(all(a.kind == "tune" and a.payload for a in rows))
             self.assertEqual(core.build_actions("!what is this", [])[0].payload, "")
 
+    def test_forge_prefix_previews_recipe_and_app(self):
+        import sys
+
+        apps_root = Path(__file__).resolve().parents[2]
+        for name in ("dai-tune", "dai-forge"):
+            sys.path.insert(0, str(apps_root / name))
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {
+            "LANG": "he_IL.UTF-8",
+            "DAI_FORGE_BUILTIN": str(apps_root / "dai-forge/data/recipes"),
+            "XDG_DATA_HOME": tmp,
+            "DAI_APPS_DIR": str(Path(tmp) / "Apps"),
+        }):
+            from dai_forge import paths
+
+            with mock.patch.object(paths, "BUILTIN_RECIPES", apps_root / "dai-forge/data/recipes"):
+                rows = core.build_actions("+תתקין אנטי וירוס", [])
+                self.assertEqual(rows[0].title, "אנטי וירוס (ClamAV)")
+                self.assertEqual(len(rows), 4)  # heading + 3 steps
+                self.assertTrue(all(a.kind == "forge" and a.payload == "תתקין אנטי וירוס" for a in rows))
+                build = core.build_actions("+תבנה אפליקציה לרשימת קניות", [])
+                self.assertEqual(len(build), 1)
+                self.assertIn("ארגז חול", build[0].subtitle)
+                self.assertEqual(core.build_actions("+", [])[0].payload, "")
+
     def test_executable_offers_run_and_terminal(self):
         with mock.patch.object(core.shutil, "which", return_value="/usr/bin/htop"):
             kinds = [a.kind for a in core.build_actions("htop", [])]

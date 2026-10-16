@@ -58,6 +58,8 @@ system-config-printer
 # Browser and apps
 firefox-esr
 flatpak
+# D.Ai Forge app sandbox (also used by Flatpak)
+bubblewrap
 
 # Fonts (Hebrew + emoji)
 fonts-noto-core

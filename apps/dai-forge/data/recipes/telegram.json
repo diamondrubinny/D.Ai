@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "id": "telegram",
+  "name": {
+    "en": "Telegram",
+    "he": "טלגרם"
+  },
+  "description": {
+    "en": "Telegram Desktop from Flathub (sandboxed).",
+    "he": "טלגרם למחשב מ־Flathub (בארגז חול)."
+  },
+  "match": {
+    "en": [
+      "telegram"
+    ],
+    "he": [
+      "טלגרם"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "org.telegram.desktop"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

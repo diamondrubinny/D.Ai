@@ -23,12 +23,12 @@ import threading
 from typing import Any
 
 from .llama import LlamaError, LlamaServer
-from .models import ModelError, default_model_id, load_catalog
+from .models import TASKS, ModelError, default_model_id, load_catalog
 from .paths import daid_socket
 
 MAX_REQUEST = 256 * 1024
 MAX_MESSAGES = 32
-MAX_TOKENS = 2048
+MAX_TOKENS = 4096  # D.Ai Forge writes whole (small) programs
 
 
 class Backend:
@@ -38,9 +38,9 @@ class Backend:
         self.lock = threading.Lock()
         self.server: LlamaServer | None = None
 
-    def _server(self) -> LlamaServer:
+    def _server(self, task: str = "general") -> LlamaServer:
         models = load_catalog()
-        model_id = default_model_id(models)
+        model_id = default_model_id(models, task)
         if model_id is None:
             raise ModelError("no model installed (run: dai-models install qwen2.5-0.5b)")
         model = models[model_id]
@@ -59,9 +59,9 @@ class Backend:
         running = bool(self.server and self.server.process and self.server.process.poll() is None)
         return {"ok": True, "model": model_id, "running": running}
 
-    def chat(self, messages: list[dict[str, str]], schema: dict | None, max_tokens: int):
+    def chat(self, messages: list[dict[str, str]], schema: dict | None, max_tokens: int, task: str = "general"):
         with self.lock:
-            yield from self._server().chat(messages, schema=schema, max_tokens=max_tokens,
+            yield from self._server(task).chat(messages, schema=schema, max_tokens=max_tokens,
                                            temperature=0.0 if schema else 0.3)
 
     def reap(self) -> None:
@@ -92,7 +92,10 @@ def validate_request(request: Any) -> dict[str, Any]:
         max_tokens = request.get("max_tokens", 512)
         if not isinstance(max_tokens, int) or not 1 <= max_tokens <= MAX_TOKENS:
             raise ValueError("invalid max_tokens")
-        return {"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens}
+        task = request.get("task", "general")
+        if task not in TASKS:
+            raise ValueError("invalid task")
+        return {"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens, "task": task}
     return {"op": "status"}
 
 
@@ -112,7 +115,7 @@ class Handler(socketserver.StreamRequestHandler):
             if request["op"] == "status":
                 self.send(self.backend.status())
                 return
-            for delta in self.backend.chat(request["messages"], request["schema"], request["max_tokens"]):
+            for delta in self.backend.chat(request["messages"], request["schema"], request["max_tokens"], request["task"]):
                 self.send({"delta": delta})
             self.send({"done": True})
         except (ValueError, json.JSONDecodeError, ModelError, LlamaError, OSError) as exc:
