@@ -133,6 +133,10 @@ build_apps() {
   # Enabled per user by "dai-backup setup", never globally.
   install -m 0644 "$backup/data/dai-backup.service" "$backup/data/dai-backup.timer" "$root/usr/lib/systemd/user/"
 
+  local move="$REPO_ROOT/apps/dai-move"
+  copy_package "$move/dai_move" "$root"
+  install -m 0755 "$move/data/dai-move" "$root/usr/bin/dai-move"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
@@ -183,7 +187,7 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, local AI, Forge, Code, Voice and Welcome" \
+    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, Move, local AI, Forge, Code, Voice and Welcome" \
     "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic"
 }
 

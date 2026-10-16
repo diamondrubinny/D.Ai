@@ -163,7 +163,45 @@ def power(facts: Facts, lang: str) -> list[Finding]:
     return findings
 
 
-TOPICS = {"slow": slow, "disk": disk, "battery": power}
+KIND_NAMES = {
+    "wifi": ("Wi-Fi", "Wi-Fi"), "ethernet": ("Wired network", "רשת קווית"), "graphics": ("Graphics", "גרפיקה"),
+    "audio": ("Sound", "קול"), "camera": ("Camera", "מצלמה"), "bluetooth": ("Bluetooth", "Bluetooth"),
+    "printer": ("Printer", "מדפסת"),
+}
+
+
+def hardware(facts: Facts, lang: str) -> list[Finding]:
+    findings = []
+    for device in facts.devices:
+        label = _t(lang, *KIND_NAMES[device.kind])
+        if device.kind == "printer" and not facts.printing:
+            findings.append(Finding(f"hw:{device.kind}", "warn", f"{label}: {device.name}",
+                                    _t(lang, "Connected, but printing is not installed yet.", "מחוברת, אבל שירות ההדפסה עוד לא מותקן."),
+                                    [Fix("forge", _t(lang, "Install printing (D.Ai Forge)", "התקנת הדפסה (D.Ai Forge)"), "install printer")]))
+        elif device.driver:
+            findings.append(Finding(f"hw:{device.kind}", "ok", f"{label}: {_t(lang, 'works', 'במצב תקין')}",
+                                    f"{device.name} ({device.driver})"))
+        else:
+            findings.append(Finding(f"hw:{device.kind}", "bad", f"{label}: {_t(lang, 'no driver', 'אין דרייבר')}",
+                                    _t(lang, f"{device.name} has no driver loaded, so it will probably not work.",
+                                       f"ל־{device.name} לא נטען דרייבר, ולכן כנראה לא יעבוד."),
+                                    [Fix("advice", _t(lang, f"Search: linux driver {device.name}",
+                                                      f"חפשו: linux driver {device.name}"))]))
+    has_wifi_chip = any(d.kind == "wifi" and d.driver for d in facts.devices)
+    if facts.wifi_blocked:
+        findings.append(Finding("hw:wifi-off", "warn", _t(lang, "Wi-Fi is switched off", "ה־Wi-Fi כבוי"),
+                                _t(lang, "Airplane mode or a Wi-Fi key/switch is on.", "מצב טיסה, או מקש/מתג Wi-Fi כבוי."),
+                                [Fix("advice", _t(lang, "Turn Wi-Fi on in the network menu or with the Wi-Fi key",
+                                                  "הפעילו Wi-Fi מתפריט הרשת או עם מקש ה־Wi-Fi"))]))
+    elif has_wifi_chip and not facts.wifi_interfaces:
+        findings.append(Finding("hw:wifi-firmware", "warn", _t(lang, "Wi-Fi chip found but not ready", "נמצא כרטיס Wi-Fi אבל הוא לא מוכן"),
+                                _t(lang, "Usually missing firmware for this chip.", "בדרך כלל חסר firmware לשבב הזה.")))
+    if not facts.devices:
+        findings.append(Finding("hw:none", "ok", _t(lang, "No hardware details available here", "אין כאן פרטי חומרה")))
+    return findings
+
+
+TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware}
 
 QUESTIONS = {
     "slow": r"(?:\bslow\b|\bsluggish\b|\blag(?:gy|ging)?\b|\bfreez(?:e|es|ing)\b|\bhang(?:s|ing)?\b|"
@@ -171,6 +209,9 @@ QUESTIONS = {
     "disk": r"(?:disk space|storage|\bdisk\b.*\bfull\b|running out of space|what(?:'s| is) taking|free space|"
             r"מקום (?:ב)?דיסק|הדיסק מלא|מקום פנוי|מה תופס|נגמר (?:לי )?המקום|אחסון)",
     "battery": r"(?:\bbattery\b|סוללה|הסוללה)",
+    "hardware": (r"(?:hardware|\bdrivers?\b|wi-?fi|wireless|printer|bluetooth|\bsound\b|\baudio\b|webcam|camera|"
+                 r"will (?:my|the|this) \w+ work|חומרה|דרייבר|מדפסת|וויי ?פיי|wifi|אלחוטי|בלוטות|רמקול|מצלמה|"
+                 r"(?:יעבוד|תעבוד|יעבדו|לא עובד|לא עובדת))"),
 }
 
 

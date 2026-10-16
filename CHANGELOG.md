@@ -20,6 +20,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai Tune: `system.clean` (free disk space) and `power.profile` (battery saver / balanced / performance); power-profiles-daemon installed.
 - D.Ai Privacy: a panel dot only while the microphone or camera is in use, notifications, and a local 30-day log.
 - D.Ai Backup: encrypted automatic backups to an external drive (restic), recovery key, retention, weekly verification, safe restore.
+- For people leaving Windows: D.Ai Move (files, bookmarks, Wi-Fi names), `dai-doctor hardware`, and Forge recipes for Steam, Bottles, ONLYOFFICE, Zoom, Spotify, Discord, printers, scanners, OpenVPN and Cisco-compatible VPN.
 - D.Ai Welcome: first-run wizard — security level through D.Ai Tune, local models sized to the computer's memory, privacy facts.
 - Installer (Calamares) with full-disk encryption (LUKS) and D.Ai branding.
 - Hardening: nftables firewall (deny inbound), AppArmor, kernel/sysctl hardening, automatic Debian security updates.

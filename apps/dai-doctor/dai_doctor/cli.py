@@ -3,7 +3,7 @@
 """dai-doctor: why is my computer slow, what fills my disk, how is my battery.
 
   dai-doctor               everything
-  dai-doctor slow | disk | battery
+  dai-doctor slow | disk | battery | hardware   ("will my Wi-Fi/printer work?", also in the live session)
   dai-doctor --json        for scripts
   Fixes are offered one by one: system changes go through D.Ai Tune (undo),
   the trash and picture previews are emptied only after you confirm.
@@ -56,7 +56,8 @@ def main(argv: list[str] | None = None) -> int:
         print(__doc__.strip())
         return 0
     as_json = "--json" in args
-    topics = tuple(a for a in args if a in TOPICS) or tuple(TOPICS)
+    # Everything by default, except the hardware list (ask for it: dai-doctor hardware).
+    topics = tuple(a for a in args if a in TOPICS) or ("slow", "disk", "battery")
     lang = _lang()
     he = lang == "he"
     if not as_json:
@@ -71,13 +72,16 @@ def main(argv: list[str] | None = None) -> int:
         print(_color(f"{mark} {finding.title}", code))
         if finding.detail:
             print(f"    {finding.detail}")
-    fixes = [(f, fix) for f in findings for fix in f.fixes if fix.kind in ("tune", "clean")]
+    fixes = [(f, fix) for f in findings for fix in f.fixes if fix.kind in ("tune", "clean", "forge")]
     for finding, fix in fixes:
         if not _ask(f"\n{fix.label}? [{'כ/ל' if he else 'y/N'}] "):
             continue
         if fix.kind == "tune":
             # The plan is shown, authorized (polkit) and journaled for undo by D.Ai Tune.
             subprocess.run(["dai-tune", fix.payload], check=False)
+        elif fix.kind == "forge":
+            # Review and the administrator password happen in D.Ai Forge.
+            subprocess.run(["dai-forge", fix.payload], check=False)
         elif fix.kind == "clean":
             freed = clean_user(Path.home())
             print(_color(("✓ פונו " if he else "✓ Freed ") + size(freed), "32"))

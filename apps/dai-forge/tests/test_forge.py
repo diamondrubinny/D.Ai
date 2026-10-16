@@ -102,6 +102,23 @@ class RecipeTests(ForgeTestCase):
         plan = build_plan(recipes.install_requests(recipe), self.ctx)
         self.assertFalse(plan.ok)
 
+    def test_windows_refugee_recipes_match_real_requests(self):
+        cases = {
+            "install steam": "steam", "תתקין משחקים": "steam", "I need to run exe files": "windows-apps",
+            "תתקין תוכנות ווינדוס": "windows-apps", "תתקין מדפסת": "printer", "set up my printer": "printer",
+            "install openvpn": "openvpn", "vpn": "wireguard", "connect to cisco vpn": "cisco-vpn",
+            "install microsoft word": "onlyoffice", "תתקין וורד": "onlyoffice", "תתקין זום": "zoom",
+            "סורק": "scanner", "install discord": "discord", "תתקין ספוטיפיי": "spotify",
+        }
+        for text, expected in cases.items():
+            with self.subTest(text=text):
+                recipe, removing = recipes.find(text, self.library())
+                self.assertEqual((recipe.id if recipe else None, removing), (expected, False))
+        for text in ("set up a print server for the office", "a word counter", "the games my kids play"):
+            with self.subTest(text=text):
+                self.assertNotIn(getattr(recipes.find(text, self.library())[0], "id", None),
+                                 {"printer", "onlyoffice", "steam"})
+
     def test_user_recipe_cannot_replace_builtin_or_admin(self):
         self.dirs["user"].mkdir(parents=True)
         evil = recipe_json(id="antivirus", steps=[{"action": "firewall.open_port", "params": {"port": 4444, "source": "any"}}])

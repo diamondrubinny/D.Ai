@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "id": "cisco-vpn",
+  "name": {
+    "en": "Cisco AnyConnect-compatible VPN (OpenConnect)",
+    "he": "VPN תואם Cisco AnyConnect ‏(OpenConnect)"
+  },
+  "description": {
+    "en": "Connect to Cisco AnyConnect, GlobalProtect and Fortinet VPNs from the network menu.",
+    "he": "התחברות ל־VPN של Cisco AnyConnect, ‏GlobalProtect ו־Fortinet מתפריט הרשת."
+  },
+  "match": {
+    "en": [
+      "cisco vpn",
+      "anyconnect",
+      "openconnect",
+      "globalprotect",
+      "fortinet vpn"
+    ],
+    "he": [
+      "סיסקו",
+      "אני קונקט",
+      "גלובל פרוטקט",
+      "פורטינט"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "network-manager-openconnect",
+          "network-manager-openconnect-gnome"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

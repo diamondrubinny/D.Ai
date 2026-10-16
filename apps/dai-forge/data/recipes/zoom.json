@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "id": "zoom",
+  "name": {
+    "en": "Zoom",
+    "he": "זום"
+  },
+  "description": {
+    "en": "Zoom from Flathub (sandboxed).",
+    "he": "זום מ־Flathub (בארגז חול)."
+  },
+  "match": {
+    "en": [
+      "zoom"
+    ],
+    "he": [
+      "זום"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "us.zoom.Zoom"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

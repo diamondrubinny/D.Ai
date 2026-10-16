@@ -35,6 +35,7 @@ apps/dai-find/               D.Ai Find: natural-language file search (Hebrew/Eng
 apps/dai-doctor/             D.Ai Doctor: "why is my computer slow?", disk space, battery + unit tests
 apps/dai-privacy/            D.Ai Privacy: microphone/camera indicator and local log + unit tests
 apps/dai-backup/             D.Ai Backup: encrypted automatic backups (restic) + unit tests
+apps/dai-move/               D.Ai Move: bring files and bookmarks from Windows + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
 tests/apt/                   Update repository test (signature, redirect, pinning)
@@ -157,6 +158,11 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   הקבצים שלי" in D.Ai Command) creates an encrypted backup with restic and shows a recovery key once; it then runs
   daily whenever the drive is connected, keeps 7 daily, 4 weekly and 12 monthly copies, verifies itself weekly, and
   restores into `~/Restored/` without overwriting anything. No cloud, no root.
+- **Coming from Windows** ([docs/GROWTH.md](docs/GROWTH.md)): `dai-doctor hardware` answers "will my Wi-Fi,
+  sound and printer work?" in the live session before installing; **D.Ai Move** ([docs/MOVE.md](docs/MOVE.md))
+  copies Documents, Pictures, Desktop, Music, Videos, Downloads and Chrome/Edge bookmarks from a Windows drive
+  without overwriting anything; Forge recipes for Steam (Proton), Windows programs (Bottles), ONLYOFFICE, Zoom,
+  Spotify, Discord, printers, scanners and work VPNs (OpenVPN, Cisco/OpenConnect).
 - **D.Ai Welcome** ([docs/WELCOME.md](docs/WELCOME.md)): on the first login of an installed system, a short
   wizard shows the security score and offers a level (recommended / strict / keep, applied through D.Ai Tune with
   undo), downloads the local models that fit the computer's memory (verified by SHA-256), and states plainly what

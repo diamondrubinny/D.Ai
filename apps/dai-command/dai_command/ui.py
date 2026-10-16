@@ -344,6 +344,9 @@ class CommandWindow(QWidget):
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c",
                          'dai-doctor "$1"; echo; read -r -p "Enter ↵" _', "dai-doctor", str(action.payload)])
             remembered = self.query.text().strip()
+        elif action.kind == "move":
+            self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-move; echo; read -r -p "Enter ↵" _'])
+            remembered = self.query.text().strip()
         elif action.kind == "backup":
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c",
                          'dai-backup "$1"; echo; read -r -p "Enter ↵" _', "dai-backup", str(action.payload)])
