@@ -84,6 +84,14 @@ LANGUAGES = [
 PUBLIC = r"(?:public mode|public network|cafe mode|מצב ציבורי|רשת ציבורית|מצב בית קפה|מצב נסיעה)"
 PRIVACY = r"(?:privacy mode|private mode|מצב פרטיות|מצב פרטי)"
 
+CLEAN = (r"(?:free (?:up )?(?:disk )?space|clean (?:up )?(?:the )?(?:system|disk|computer)|clear (?:the )?caches?|"
+         r"פנה מקום|תפנה מקום|לפנות מקום|פינוי מקום|נקה את (?:המערכת|הדיסק|המחשב)|תנקה את (?:המערכת|הדיסק|המחשב)|ניקוי (?:המערכת|הדיסק))")
+POWER = {
+    "power-saver": r"(?:battery saver|power sav(?:er|ing)|save (?:the )?battery|low power mode|חיסכון ב(?:סוללה|חשמל)|לחסוך (?:ב)?סוללה|מצב חיסכון)",
+    "performance": r"(?:performance mode|high performance|max(?:imum)? performance|מצב ביצועים|ביצועים מרביים|ביצועים מקסימליים)",
+    "balanced": r"(?:balanced (?:power|mode)|power balanced|מצב מאוזן|צריכת חשמל מאוזנת)",
+}
+
 # Hebrew attaches "and" (ו) to the next verb: "חסום usb וכבה בלוטות'".
 _HE_VERBS = (
     "כבה|תכבה|הפעל|תפעיל|חסום|תחסום|אפשר|תאפשר|פתח|תפתח|סגור|תסגור|התקן|תתקין|הסר|תסיר|"
@@ -129,6 +137,13 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("preset.public", {}, clause)]
     if _has(PRIVACY, c):
         return [Request("preset.privacy", {}, clause)]
+
+    # Maintenance and power (D.Ai Doctor suggests these sentences).
+    if _has(CLEAN, c):
+        return [Request("system.clean", {}, clause)]
+    for profile, pattern in POWER.items():
+        if _has(pattern, c):
+            return [Request("power.profile", {"profile": profile}, clause)]
 
     # "Remove the block on the camera" is about devices, not packages.
     unblock_kinds = [kind for kind, pattern in DEVICES.items() if _has(pattern, c)]
@@ -270,6 +285,8 @@ EXAMPLES = {
         "שנה שם מחשב ל office-pc",
         "מצב ציבורי",
         "מצב פרטיות",
+        "פנה מקום בדיסק",
+        "מצב חיסכון בסוללה",
     ],
     "en": [
         "block usb storage",
@@ -285,5 +302,7 @@ EXAMPLES = {
         "rename computer to office-pc",
         "public mode",
         "privacy mode",
+        "free up disk space",
+        "battery saver mode",
     ],
 }

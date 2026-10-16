@@ -1,0 +1,196 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""Facts → findings in plain Hebrew or English, each with a safe fix.
+
+Fixes are never applied here. They are either a sentence for D.Ai Tune
+(planned, shown, authorized and undoable there), a user-level cleanup that
+dai-doctor performs after confirmation, or advice.
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+
+from .facts import Facts
+
+# Processes that are part of the desktop itself: never suggested for closing.
+SESSION = {"labwc", "lxqt-panel", "lxqt-session", "pcmanfm-qt", "Xwayland", "pipewire", "wireplumber",
+           "systemd", "sddm", "dbus-daemon", "kworker", "dai-doctor"}
+
+
+@dataclass
+class Fix:
+    kind: str      # tune | clean | advice
+    label: str
+    payload: str = ""   # tune sentence, or cleanup name
+
+
+@dataclass
+class Finding:
+    key: str
+    level: str     # ok | warn | bad
+    title: str
+    detail: str = ""
+    fixes: list[Fix] = field(default_factory=list)
+
+
+def size(n: float) -> str:
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if n < 1024 or unit == "TB":
+            return f"{n:.0f} {unit}" if unit in ("B", "KB") else f"{n:.1f} {unit}"
+        n /= 1024
+    return f"{n:.1f} TB"
+
+
+def _t(lang: str, en: str, he: str) -> str:
+    return he if lang == "he" else en
+
+
+def _apps(facts: Facts, key: str, limit: int = 3) -> list:
+    procs = [p for p in facts.processes if p.name not in SESSION and not p.name.startswith("kworker")]
+    return sorted(procs, key=lambda p: getattr(p, key), reverse=True)[:limit]
+
+
+def slow(facts: Facts, lang: str) -> list[Finding]:
+    findings = []
+    # Memory: the most common reason a desktop feels slow.
+    if facts.mem_total:
+        free = facts.mem_available / facts.mem_total
+        hogs = [p for p in _apps(facts, "rss") if p.rss > 200 * 2**20]
+        names = ", ".join(f"{p.name} ({size(p.rss)})" for p in hogs)
+        if free < 0.20:
+            level = "bad" if free < 0.10 else "warn"
+            detail = _t(lang, f"Only {size(facts.mem_available)} of {size(facts.mem_total)} is free.",
+                        f"רק {size(facts.mem_available)} מתוך {size(facts.mem_total)} פנויים.")
+            if names:
+                detail += " " + _t(lang, f"Using the most: {names}.", f"הכי הרבה משתמשים: {names}.")
+            fixes = [Fix("advice", _t(lang, "Close apps or browser tabs you are not using",
+                                      "סגרו אפליקציות או לשוניות דפדפן שלא בשימוש"))]
+            findings.append(Finding("memory", level, _t(lang, "Memory is almost full", "הזיכרון כמעט מלא"), detail, fixes))
+        else:
+            findings.append(Finding("memory", "ok", _t(lang, "Enough free memory", "יש מספיק זיכרון פנוי"),
+                                    _t(lang, f"{size(facts.mem_available)} free", f"{size(facts.mem_available)} פנויים")))
+    if facts.swap_total and facts.mem_total and facts.mem_available / facts.mem_total < 0.2:
+        used = facts.swap_total - facts.swap_free
+        if used > facts.swap_total * 0.5:
+            findings.append(Finding("swap", "warn", _t(lang, "The computer is using swap heavily",
+                                                      "המחשב משתמש הרבה בזיכרון החלפה (swap)"),
+                                    _t(lang, f"{size(used)} in swap: things slow down when it is used.",
+                                       f"{size(used)} ב־swap: כשמשתמשים בו הכל מאט.")))
+    # Processor.
+    busy = [p for p in _apps(facts, "cpu") if p.cpu >= 25]
+    pressure = facts.load1 / max(facts.cores, 1)
+    if busy or pressure > 1.0:
+        names = ", ".join(f"{p.name} ({p.cpu:.0f}%)" for p in busy) or "—"
+        level = "bad" if pressure > 1.5 else "warn"
+        findings.append(Finding("cpu", level, _t(lang, "The processor is busy", "המעבד עמוס"),
+                                _t(lang, f"Load {facts.load1:.1f} on {facts.cores} cores. Busiest: {names}.",
+                                   f"עומס {facts.load1:.1f} על {facts.cores} ליבות. הכי עמוסים: {names}."),
+                                [Fix("advice", _t(lang, "Close or wait for the busiest app", "סגרו את האפליקציה העמוסה או חכו שתסיים"))]))
+    else:
+        findings.append(Finding("cpu", "ok", _t(lang, "The processor is not overloaded", "המעבד לא עמוס"),
+                                _t(lang, f"Load {facts.load1:.1f} on {facts.cores} cores",
+                                   f"עומס {facts.load1:.1f} על {facts.cores} ליבות")))
+    if facts.failed_units:
+        units = ", ".join(facts.failed_units[:5])
+        findings.append(Finding("services", "warn", _t(lang, "Some system services failed", "שירותי מערכת נכשלו"),
+                                units, [Fix("advice", _t(lang, f"Details: journalctl -u {facts.failed_units[0]}",
+                                                         f"פרטים: journalctl -u {facts.failed_units[0]}"))]))
+    if facts.uptime_days >= 14:
+        findings.append(Finding("uptime", "warn", _t(lang, "Not restarted for a long time", "המחשב לא הופעל מחדש הרבה זמן"),
+                                _t(lang, f"{facts.uptime_days:.0f} days. A restart applies installed updates and frees memory.",
+                                   f"{facts.uptime_days:.0f} ימים. הפעלה מחדש מחילה עדכונים שהותקנו ומפנה זיכרון."),
+                                [Fix("advice", _t(lang, "Restart when convenient", "הפעילו מחדש כשנוח"))]))
+    return findings
+
+
+def disk(facts: Facts, lang: str) -> list[Finding]:
+    findings = []
+    for mount, (total, free) in facts.disks.items():
+        if not total:
+            continue
+        ratio = free / total
+        # A big disk with 11% free still has plenty of room: look at both.
+        if ratio < 0.08 or free < 5 * 2**30:
+            level = "bad" if ratio < 0.03 or free < 2 * 2**30 else "warn"
+            findings.append(Finding(f"disk:{mount}", level, _t(lang, f"Little free space on {mount}", f"מעט מקום פנוי ב־{mount}"),
+                                    _t(lang, f"{size(free)} free of {size(total)}.", f"{size(free)} פנויים מתוך {size(total)}.")))
+        else:
+            findings.append(Finding(f"disk:{mount}", "ok", _t(lang, f"Enough free space on {mount}", f"יש מספיק מקום ב־{mount}"),
+                                    _t(lang, f"{size(free)} free of {size(total)}", f"{size(free)} פנויים מתוך {size(total)}")))
+    system_caches = facts.caches.get("apt", 0) + max(0, facts.caches.get("journal", 0) - 200 * 2**20)
+    if system_caches > 100 * 2**20:
+        findings.append(Finding("system-caches", "warn",
+                                _t(lang, f"{size(system_caches)} can be freed in the system", f"אפשר לפנות {size(system_caches)} במערכת"),
+                                _t(lang, "Downloaded package files and old system logs.", "קבצי התקנה שהורדו ויומני מערכת ישנים."),
+                                [Fix("tune", _t(lang, "Free this space (administrator)", "לפנות את המקום (מנהל)"),
+                                     "free up disk space")]))
+    user_caches = facts.caches.get("trash", 0) + facts.caches.get("thumbnails", 0)
+    if user_caches > 50 * 2**20:
+        findings.append(Finding("user-caches", "warn",
+                                _t(lang, f"{size(user_caches)} in the trash and picture previews",
+                                   f"{size(user_caches)} בסל המחזור ובתצוגות מקדימות של תמונות"),
+                                _t(lang, f"Trash {size(facts.caches.get('trash', 0))}, previews {size(facts.caches.get('thumbnails', 0))}.",
+                                   f"סל מחזור {size(facts.caches.get('trash', 0))}, תצוגות מקדימות {size(facts.caches.get('thumbnails', 0))}."),
+                                [Fix("clean", _t(lang, "Empty the trash and clear previews", "לרוקן את סל המחזור ולנקות תצוגות מקדימות"),
+                                     "user")]))
+    if facts.folders:
+        listing = ", ".join(f"{name} {size(n)}" for name, n in facts.folders[:5])
+        findings.append(Finding("folders", "ok", _t(lang, "Biggest folders in your home", "התיקיות הגדולות בבית שלכם"), listing))
+    return findings
+
+
+def power(facts: Facts, lang: str) -> list[Finding]:
+    bat = facts.battery
+    if bat is None:
+        return []
+    findings = []
+    if bat.health is not None and bat.health < 70:
+        findings.append(Finding("battery-health", "warn", _t(lang, "The battery is worn", "הסוללה שחוקה"),
+                                _t(lang, f"It holds {bat.health}% of its original capacity.",
+                                   f"היא מחזיקה {bat.health}% מהקיבולת המקורית שלה."),
+                                [Fix("advice", _t(lang, "Consider replacing the battery", "שקלו להחליף סוללה"))]))
+    if bat.status == "Discharging" and bat.capacity <= 30 and facts.power_profile != "power-saver":
+        findings.append(Finding("battery-low", "warn", _t(lang, f"Battery at {bat.capacity}%", f"הסוללה ב־{bat.capacity}%"),
+                                _t(lang, "Battery saver mode makes it last longer.", "מצב חיסכון בסוללה יאריך אותה."),
+                                [Fix("tune", _t(lang, "Turn on battery saver", "להפעיל חיסכון בסוללה"), "battery saver mode")]))
+    if not findings:
+        health = f", {bat.health}% health" if bat.health is not None else ""
+        health_he = f", בריאות {bat.health}%" if bat.health is not None else ""
+        findings.append(Finding("battery", "ok", _t(lang, "Battery is fine", "הסוללה תקינה"),
+                                _t(lang, f"{bat.capacity}% charged{health}", f"{bat.capacity}% טעונה{health_he}")))
+    return findings
+
+
+TOPICS = {"slow": slow, "disk": disk, "battery": power}
+
+QUESTIONS = {
+    "slow": r"(?:\bslow\b|\bsluggish\b|\blag(?:gy|ging)?\b|\bfreez(?:e|es|ing)\b|\bhang(?:s|ing)?\b|"
+            r"איטי|איטית|נתקע|תקוע|מאט|כבד|לאט)",
+    "disk": r"(?:disk space|storage|\bdisk\b.*\bfull\b|running out of space|what(?:'s| is) taking|free space|"
+            r"מקום (?:ב)?דיסק|הדיסק מלא|מקום פנוי|מה תופס|נגמר (?:לי )?המקום|אחסון)",
+    "battery": r"(?:\bbattery\b|סוללה|הסוללה)",
+}
+
+
+# A question or a complaint about the computer, not just a word like "slow".
+CUES = (r"(?:\bwhy\b|\bwhat\b|\bhow\b|\bcomputer\b|\bpc\b|\blaptop\b|\bsystem\b|\bmy\b|\?|"
+        r"למה|מדוע|מה |איך|המחשב|מחשב|המערכת|הלפטופ|שלי)")
+
+
+def topic_for(text: str) -> str | None:
+    """The question a sentence asks, if it is one D.Ai Doctor answers."""
+    lowered = text.casefold()
+    if not re.search(CUES, lowered):
+        return None
+    for topic, pattern in QUESTIONS.items():
+        if re.search(pattern, lowered):
+            return topic
+    return None
+
+
+def diagnose(facts: Facts, topics: tuple[str, ...], lang: str = "en") -> list[Finding]:
+    findings = [f for topic in topics for f in TOPICS[topic](facts, lang)]
+    order = {"bad": 0, "warn": 1, "ok": 2}
+    return sorted(findings, key=lambda f: order[f.level])

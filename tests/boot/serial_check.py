@@ -219,6 +219,13 @@ def main() -> int:
          "dai-find 'find photos from today'", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and o.count("boarding-pass.pdf") == 2 and "old-ticket" not in o
          and "beach.jpg" in o),
+        # D.Ai Doctor: plain-language answers; its fixes are real D.Ai Tune plans.
+        ("doctor: diagnosis", "dai-doctor --version; dai-doctor --json slow disk battery | python3 -c "
+         "'import json,sys; f=json.load(sys.stdin); print(\"FINDINGS\", len(f), sorted({x[\"key\"].split(\":\")[0] for x in f}))'; "
+         "dai-tune --dry-run 'free up disk space' </dev/null; test -x /usr/bin/powerprofilesctl && powerprofilesctl get", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "FINDINGS" in o and "'memory'" in o and "'disk'" in o
+         and "apt-get clean" not in o and ("Free disk space" in o or "פינוי מקום" in o)
+         and re.search(r"^\s*(balanced|power-saver|performance)\s*$", o, re.M) is not None),
         # D.Ai Welcome: installed, in the menu, and never opens by itself in the live session.
         ("welcome: first run", "dai-welcome --version; dai-welcome --first-run; "
          "test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; "

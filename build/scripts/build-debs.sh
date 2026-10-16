@@ -117,6 +117,10 @@ build_apps() {
   copy_package "$find/dai_find" "$root"
   install -m 0755 "$find/data/dai-find" "$root/usr/bin/dai-find"
 
+  local doctor="$REPO_ROOT/apps/dai-doctor"
+  copy_package "$doctor/dai_doctor" "$root"
+  install -m 0755 "$doctor/data/dai-doctor" "$root/usr/bin/dai-doctor"
+
   local welcome="$REPO_ROOT/apps/dai-welcome"
   copy_package "$welcome/dai_welcome" "$root"
   install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
@@ -167,8 +171,8 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, Find, local AI, Forge, Code, Voice and Welcome" \
-    "dai-llama-runtime, dai-whisper-runtime, git"
+    "D.Ai OS apps: Command, Tune, Find, Doctor, local AI, Forge, Code, Voice and Welcome" \
+    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon"
 }
 
 build_runtime() { # build_runtime <dist> <name> <dir> <check-binary> <description>
