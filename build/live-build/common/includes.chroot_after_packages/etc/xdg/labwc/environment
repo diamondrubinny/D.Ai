@@ -1,5 +1,0 @@
-XDG_CURRENT_DESKTOP=labwc:wlroots
-QT_QPA_PLATFORM=wayland;xcb
-QT_QPA_PLATFORMTHEME=lxqt
-XKB_DEFAULT_LAYOUT=us,il
-XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle

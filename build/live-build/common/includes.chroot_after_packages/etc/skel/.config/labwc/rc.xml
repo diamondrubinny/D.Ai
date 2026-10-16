@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- D.Ai OS labwc configuration. Full reference: man 5 labwc-config -->
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+  </core>
+
+  <placement>
+    <policy>center</policy>
+  </placement>
+
+  <theme>
+    <name>Vent</name>
+    <cornerRadius>8</cornerRadius>
+    <dropShadows>yes</dropShadows>
+  </theme>
+
+  <keyboard>
+    <default />
+    <numlock>on</numlock>
+    <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
+    <keybind key="W-e"><action name="Execute" command="pcmanfm-qt" /></keybind>
+    <keybind key="W-l"><action name="Execute" command="lxqt-leave --lockscreen" /></keybind>
+    <keybind key="A-F2"><action name="Execute" command="lxqt-runner" /></keybind>
+    <keybind key="Print"><action name="Execute" command="screengrab" /></keybind>
+    <keybind key="XF86PowerOff"><action name="Execute" command="lxqt-leave" /></keybind>
+    <!-- Toggle the Orca screen reader -->
+    <keybind key="W-A-s"><action name="Execute" command="orca --replace" /></keybind>
+  </keyboard>
+</labwc_config>

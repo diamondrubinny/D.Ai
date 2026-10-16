@@ -1,0 +1,7 @@
+# D.Ai OS labwc environment (LXQt Wayland session).
+# Keyboard: English + Hebrew, toggle with Alt+Shift.
+XKB_DEFAULT_LAYOUT=us,il
+XKB_DEFAULT_OPTIONS=grp:alt_shift_toggle
+
+# Java apps (e.g. JetBrains IDEs) need this on wlroots compositors.
+_JAVA_AWT_WM_NONREPARENTING=1

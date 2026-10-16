@@ -1,5 +1,5 @@
 #!/bin/sh
-# Live session only: log the live user straight into the labwc session.
+# Live session only: log the live user straight into the LXQt Wayland session (labwc).
 #
 # live-config runs the scripts in this directory in order at boot when booted
 # with boot=live. Its own sddm script writes /etc/sddm.conf (which overrides
@@ -19,6 +19,6 @@ cat >/etc/sddm.conf <<CONF
 # Written at boot by /usr/lib/live/config/9000-dai-sddm-autologin (live session only)
 [Autologin]
 User=${live_user}
-Session=labwc.desktop
+Session=lxqt-wayland.desktop
 Relogin=false
 CONF
