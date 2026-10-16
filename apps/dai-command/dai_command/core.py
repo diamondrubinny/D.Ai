@@ -401,6 +401,8 @@ _STRINGS = {
     "find_hint": ("Find files as you remember them: “find the pdf I downloaded last week”",
                   "מציאת קבצים כמו שזוכרים אותם: „מצא את ה־PDF שהורדתי בשבוע שעבר”"),
     "find_none": ("No matching files", "לא נמצאו קבצים מתאימים"),
+    "privacy_now": ("Right now · Enter for the privacy log", "עכשיו · Enter ליומן הפרטיות"),
+    "privacy_log": ("privacy log (30 days, on this computer)", "יומן פרטיות (30 יום, במחשב הזה)"),
     "doctor_open": ("D.Ai Doctor · Enter for details and fixes", "D.Ai Doctor · Enter לפרטים ולתיקון"),
     "query_name": ("D.Ai Command input", "שורת הפקודות של D.Ai"),
     "results_name": ("Results", "תוצאות"),
@@ -429,7 +431,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -471,6 +473,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return found
     if (answers := doctor_actions(text)) is not None:
         return answers
+    if (privacy := privacy_actions(text)) is not None:
+        return privacy
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -559,6 +563,34 @@ def doctor_actions(text: str) -> list[Action] | None:
     subtitle = tr("doctor_open")
     return [Action("doctor", f.title, f"{f.detail} · {subtitle}" if f.detail else subtitle,
                    DOCTOR_ICONS[f.level], topic) for f in shown]
+
+
+PRIVACY_QUESTION = re.compile(
+    r"(?:who(?:'s| is)? (?:using|recording|listening|watching)|privacy log|(?:mic|microphone|camera|webcam) (?:log|in use)|"
+    r"מי (?:משתמש|מקליט|מצלם|מאזין)|יומן (?:ה)?פרטיות|יומן (?:ה)?(?:מיקרופון|מצלמה)|(?:ה)?(?:מיקרופון|מצלמה) בשימוש)",
+    re.IGNORECASE)
+
+
+def privacy_actions(text: str) -> list[Action] | None:
+    """D.Ai Privacy: "who is using my microphone?", "יומן פרטיות"."""
+    if not PRIVACY_QUESTION.search(text):
+        return None
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_privacy.log import log_path, read
+        from dai_privacy.sensors import Use, current
+        from dai_privacy.text import describe, t
+    except ImportError:
+        return None
+    lang = ui_language()
+    rows = [Action("privacy", describe(use, lang), tr("privacy_now"), "dialog-warning", "log") for use in current()]
+    if not rows:
+        rows.append(Action("privacy", t("nothing", lang), tr("privacy_now"), "security-high", "log"))
+    for entry in reversed(read(log_path(), days=30)[-3:]):
+        use = Use(entry.get("device", "video"), entry.get("app", "?"), entry.get("pid", 0))
+        when = time.strftime("%d.%m %H:%M", time.localtime(entry.get("time", 0)))
+        rows.append(Action("privacy", describe(use, lang, stopped=entry.get("event") == "stop"),
+                           f"{when} · {tr('privacy_log')}", "document-open-recent", "log"))
+    return rows
 
 
 def tune_actions(request: str) -> list[Action]:
