@@ -210,6 +210,12 @@ def main() -> int:
          lambda o: not re.search(r"^\s*(missing|[?.0-9]{9}) ", o, re.M) and "dai-apps: /usr/bin/dai-code" in o
          and "dai-llama-runtime: /opt/dai/llama/llama-server" in o and "VERIFY_OK" in o and "SOCKET_ENABLED" in o
          and o.count("install ok installed") >= 4),
+        # D.Ai Welcome: installed, in the menu, and never opens by itself in the live session.
+        ("welcome: first run", "dai-welcome --version; dai-welcome --first-run; "
+         "test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; "
+         "test -f /usr/share/applications/dai-welcome.desktop && echo IN_MENU", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "not needed (live session)" in o
+         and "AUTOSTART" in o and "IN_MENU" in o),
         # D.Ai Code: works inside a project, never outside it or on secrets.
         ("code: installed and confined", "dai-code --version; rm -rf /tmp/demo && mkdir -p /tmp/demo/src && cd /tmp/demo "
          "&& printf 'def add(a, b):\\n    return a - b\\n' > src/util.py && printf 'TOKEN=x\\n' > .env; "

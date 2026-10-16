@@ -113,6 +113,13 @@ build_apps() {
   copy_package "$code/dai_code" "$root"
   install -m 0755 "$code/data/dai-code" "$root/usr/bin/dai-code"
 
+  local welcome="$REPO_ROOT/apps/dai-welcome"
+  copy_package "$welcome/dai_welcome" "$root"
+  install -m 0755 "$welcome/data/dai-welcome" "$root/usr/bin/dai-welcome"
+  install -m 0644 "$welcome/data/dai-welcome.desktop" "$root/usr/share/applications/"
+  install -d "$root/etc/xdg/autostart"
+  install -m 0644 "$welcome/data/dai-welcome-autostart.desktop" "$root/etc/xdg/autostart/dai-welcome.desktop"
+
   local voice="$REPO_ROOT/apps/dai-voice"
   copy_package "$voice/dai_voice" "$root"
   install -m 0755 "$voice/data/dai-voice" "$root/usr/bin/dai-voice"
@@ -156,7 +163,7 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, local AI, Forge, Code and Voice" \
+    "D.Ai OS apps: Command, Tune, local AI, Forge, Code, Voice and Welcome" \
     "dai-llama-runtime, dai-whisper-runtime, git"
 }
 

@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Welcome: first-run setup (installed as /usr/bin/dai-welcome).
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_welcome.gui import main; sys.exit(main(["dai-welcome", *sys.argv[1:]]))' "$@"
