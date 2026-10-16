@@ -58,6 +58,12 @@ CI builds both editions on every change under `build/` and boots them in QEMU (`
 D.Ai's own components are installed as Debian packages (`dai-apps`, `dai-llama-runtime`, `dai-whisper-runtime`,
 `dai-panel-plugin`, built by `build/scripts/build-debs.sh`), so `dpkg` owns, verifies and can remove them.
 
+## Website and switching from Windows
+
+- [`site/`](site/): the Hebrew landing page (static, no trackers or cookies, AA contrast, tested in CI).
+- [docs/FROM-WINDOWS.md](docs/FROM-WINDOWS.md): moving from Windows 10 step by step, including what will not work.
+- [docs/GROWTH.md](docs/GROWTH.md): research on what makes a new desktop OS popular, and the plan.
+
 ## Releases and updates
 
 Pushing a `v*` tag builds both editions, runs every boot test and publishes a GitHub Release with the ISOs,
