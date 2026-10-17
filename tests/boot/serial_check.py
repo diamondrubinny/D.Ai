@@ -403,10 +403,9 @@ def main() -> int:
         ("panel environment", "tr '\\0' '\\n' < /proc/$(pgrep -x lxqt-panel | head -n1)/environ | grep -E '^(WAYLAND_DISPLAY|DISPLAY|QT_QPA|XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE)='"),
         ("panel layer-shell", "grep -oE '[^ ]*(LayerShell|layer-shell|wayland)[^ ]*' /proc/$(pgrep -x lxqt-panel | head -n1)/maps | sort -u"),
         # Facts for docs/SNAPSHOTS.md: what the installer does with Btrfs.
-        ("calamares btrfs", "grep -hE 'btrfsSubvolumes|mountPoint|subvolume|btrfsSwapSubvol' -A0 "
-         "/etc/calamares/modules/mount.conf /usr/share/calamares/modules/mount.conf 2>/dev/null | head -n 20; "
-         "grep -hE '^[^#]*(defaultFileSystemType|availableFileSystemTypes)' /etc/calamares/modules/partition.conf "
-         "/usr/share/calamares/modules/partition.conf 2>/dev/null"),
+        ("build info", "cat /usr/share/dai/build-info"),
+        ("calamares btrfs", "sed -n '/^btrfsSubvolumes/,/^[A-Za-z]/p' /etc/calamares/modules/mount.conf "
+         "/usr/share/calamares/modules/mount.conf 2>/dev/null; ls /etc/calamares/modules/ | tr '\\n' ' '"),
         ("layer-shell packages", "dpkg -l | grep -Ei 'layer-?shell' | cut -c1-80"),
     ]
 
