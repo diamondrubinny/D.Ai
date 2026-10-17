@@ -230,6 +230,18 @@ class CompleteTests(OemTestCase):
                 self.machine.complete(owner)
         self.assertEqual(len(self.system.calls), before)
 
+    def test_missing_command_is_a_failure_not_a_crash(self):
+        def runner(argv, data=None):
+            if argv[0] == "ssh-keygen":
+                raise FileNotFoundError(argv[0])
+            return self.system(argv, data)
+        self.machine.runner = runner
+        self.machine.prepare("oem")
+        self.machine.complete(self.owner())
+        self.assertTrue(self.machine.cleanup())
+        with self.assertRaisesRegex(OemError, "not installed"):
+            self.machine.run(["ssh-keygen", "-A"])
+
     def test_cleanup_at_next_boot(self):
         self.assertFalse(self.machine.cleanup())  # nothing pending: the service does nothing
         self.machine.prepare("oem")

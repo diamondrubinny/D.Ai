@@ -109,10 +109,32 @@ def cmd_store() -> int:
     return 0
 
 
+def ensure_std_fds() -> None:
+    """lxqt-session starts autostart programs with stdin closed, and wl-paste
+    refuses to run like that ("launched with a closed standard file descriptor").
+
+    Python may already have reused a closed 0-2 for its own close-on-exec file,
+    so a descriptor that would not survive exec counts as closed too. Only
+    called right before exec."""
+    for fd in (0, 1, 2):
+        try:
+            survives = os.get_inheritable(fd)
+        except OSError:
+            survives = False
+        if not survives:
+            null = os.open(os.devnull, os.O_RDWR)  # may itself land on fd, close-on-exec
+            if null != fd:
+                os.dup2(null, fd)
+                if null > 2:
+                    os.close(null)
+            os.set_inheritable(fd, True)
+
+
 def cmd_watch(language: str) -> int:
     if not shutil.which("wl-paste") or not os.environ.get("WAYLAND_DISPLAY"):
         print(t("no_wayland", language), file=sys.stderr)
         return 1
+    ensure_std_fds()
     # Text only: without a text type, wl-paste does not run the command at all.
     os.execvp("wl-paste", ["wl-paste", "--type", "text", "--watch", "dai-clip", "_store"])
     return 1  # not reached
