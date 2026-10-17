@@ -12,8 +12,10 @@
 | חבילת `snapper` כוללת hook של apt ‏(`/etc/apt/apt.conf.d/80snapper`) שיוצר snapshot לפני ואחרי כל הרצה של dpkg, ופעיל רק כשיש `/etc/snapper/configs/root` | נבדק בתוך החבילה (snapper 0.10.6, אותה חבילת מקור של Debian) |
 | ‏snapper דורש Btrfs (או LVM thin). על ext4, ברירת המחדל של המתקין היום, אין snapshots זולים | תיעוד snapper |
 | ‏Timeshift במצב rsync עובד על ext4, אבל בפעם הראשונה הוא מעתיק את כל המערכת (כמה GB). זה לא מתאים לפני כל עדכון אוטומטי | תיעוד Timeshift |
-| ‏`grub-btrfs` (אתחול לתוך snapshot מתפריט GRUB) **לא** נמצא ב־Ubuntu 24.04. האם הוא קיים ב־Debian 13 | **בבדיקה:** בניית התמונה ב־CI (קונטיינר debian:trixie) רושמת ביומן אם הוא קיים |
-| ה־Calamares של Debian יוצר ב־Btrfs את ה־subvolumes ‏`@` ו־`@home` | **בבדיקה:** בדיקת ה־VM מדפיסה את `mount.conf` ו־`partition.conf` של המתקין שבתמונה |
+| ‏`grub-btrfs` (אתחול לתוך snapshot מתפריט GRUB) **לא קיים** ב־Debian 13 (main) | **נבדק ב־CI:** ‏`/usr/share/dai/build-info` בתמונה: ‏`grub-btrfs-available=no`. לכן שחזור כשהמערכת לא עולה יהיה מ־USB, לא מתפריט האתחול |
+| ‏`snapper` 0.10.6-1.2 קיים ב־Debian 13 ונכנס לתמונה | **נבדק ב־CI** (יומן הבנייה) |
+| ‏Calamares בתמונה **בלי** `partition.conf`, ולכן ברירת המחדל המובנית שלו (ext4) בתוקף | **נבדק ב־VM** (CI) |
+| ה־Calamares של Debian יוצר ב־Btrfs את ה־subvolumes ‏`@` ו־`@home` | **בבדיקה:** בדיקת ה־VM מדפיסה את חלק ה־Btrfs של `mount.conf` |
 | ‏`snapper undochange pre..post` מחזיר קבצים למצב שלפני העדכון, ו־`undochange N..0` מחזיר למצב של N | **נבדק ב־VM** (CI): snapper אמיתי על דיסק Btrfs זמני, עדכון מדומה, ביטול וביטול־הביטול |
 
 ## 2. מה נבנה ומה לא
@@ -31,7 +33,7 @@
 ### שלב ב' (מחכה לאישור)
 
 1. ‏Calamares: ‏`defaultFileSystemType: btrfs`, עם LUKS כמו היום, ו־`snapshots.enable` אוטומטית בהתקנה.
-2. אם המערכת לא עולה אחרי עדכון: כלי שחזור מ־USB, ואם `grub-btrfs` קיים ב־Debian 13, רשומה בתפריט האתחול.
+2. אם המערכת לא עולה אחרי עדכון: כלי שחזור מה־USB של D.Ai (‏`grub-btrfs` לא קיים ב־Debian 13, ולכן אין רשומה בתפריט האתחול).
 
 ## 3. חלופות
 
