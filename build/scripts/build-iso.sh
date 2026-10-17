@@ -104,6 +104,7 @@ configure() {
   # *.list.optional: packages that are welcome but must not break the build if
   # Debian dropped them (e.g. some education apps); only available ones are kept.
   local optional name kept missing
+  local skipped_optional=()
   for optional in config/package-lists/*.list.optional; do
     [[ -e "$optional" ]] || continue
     kept=() missing=()
@@ -113,10 +114,17 @@ configure() {
     done <"$optional"
     printf '%s\n' "# from $(basename "$optional") (filtered by build-iso.sh)" "${kept[@]}" >"${optional%.optional}.chroot"
     ((${#missing[@]} == 0)) || log "not in this Debian release, skipped: ${missing[*]}"
+    skipped_optional+=("${missing[@]}")
     rm -f -- "$optional"
   done
-  # Facts for docs/SNAPSHOTS.md (logged only): is grub-btrfs in this Debian release?
-  if apt-cache show grub-btrfs >/dev/null 2>&1; then log "snapshots: grub-btrfs is available"; else log "snapshots: grub-btrfs is not available"; fi
+  # Build facts inside the image (/usr/share/dai/build-info), printed by the boot test:
+  # what this Debian release offered when the image was built (docs/SNAPSHOTS.md).
+  local info=config/includes.chroot_after_packages/usr/share/dai/build-info grub_btrfs=no
+  if apt-cache show grub-btrfs >/dev/null 2>&1; then grub_btrfs=yes; fi
+  mkdir -p "$(dirname "$info")"
+  printf '%s\n' "edition=$EDITION" "version=$VERSION" "grub-btrfs-available=$grub_btrfs" \
+    "optional-skipped=${skipped_optional[*]:-none}" >"$info"
+  log "build facts: $(tr '\n' ' ' <"$info")"
   if apt-cache show qt6-svg-plugins >/dev/null 2>&1; then
     printf '%s\n' '# Qt SVG image/icon plugins (added by build-iso.sh)' qt6-svg-plugins >config/package-lists/dai-qt-svg.list.chroot
   fi
