@@ -23,6 +23,7 @@
 | | סל המחזור ותצוגות מקדימות | ניקוי אחרי אישור: רק `~/.local/share/Trash` ו־`~/.cache/thumbnails` |
 | | התיקיות הגדולות בבית | רשימה, בלי לשנות דבר |
 | חומרה (`dai-doctor hardware`) | לכל רכיב PCI (‏Wi-Fi, רשת, גרפיקה, קול), מצלמה, ‏Bluetooth ומדפסת USB: האם נטען דרייבר (`/sys/bus/pci/devices/*/driver`) | "במצב תקין" / "אין דרייבר"; ‏Wi-Fi כבוי (rfkill) → איך מדליקים; כרטיס בלי ממשק → כנראה חסר firmware; מדפסת בלי שירות הדפסה → **‏D.Ai Forge**: ‏"install printer". **רץ גם בסשן ה־live, לפני ההתקנה** |
+| אחרי עדכון (`dai-doctor update`, ‏"לא עובד מאז העדכון") | העדכון האחרון ב־`/var/log/apt/history.log`, סוג מערכת הקבצים של `/`, והאם snapper פעיל | יש תמונות מצב → **D.Ai Tune**: ‏"undo the last update"; ‏Btrfs בלי תמונות → להפעיל לעתיד; ‏ext4 → מה השתנה ועצה ([SNAPSHOTS.md](SNAPSHOTS.md)). עצות (advice) מודפסות עכשיו מתחת לכל ממצא |
 | סוללה | בריאות (`energy_full` מול `energy_full_design`), טעינה, מצב | שחוקה (פחות מ־70%) → עצה; פחות מ־30% → **‏D.Ai Tune**: ‏"battery saver mode" (‏`power.profile`) |
 
 ## 3. בטיחות

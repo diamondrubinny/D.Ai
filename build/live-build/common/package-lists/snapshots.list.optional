@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Snapshots before updates (docs/SNAPSHOTS.md): only used on a Btrfs system disk.
+# The snapper package carries the apt hook (80snapper) that takes them.
+btrfs-progs
+snapper

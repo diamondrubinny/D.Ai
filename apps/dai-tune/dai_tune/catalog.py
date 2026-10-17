@@ -1088,3 +1088,64 @@ register(ActionSpec(
     capture=lambda p, c: {"profile": current_power_profile(c)},
     restore=_power_restore,
 ))
+
+
+# --------------------------------------------------------------------------
+# Snapshots before updates (docs/SNAPSHOTS.md): snapper on a Btrfs system disk
+# --------------------------------------------------------------------------
+
+
+def _snap_enable_restore(params: Params, ctx: Context, extra: dict) -> None:
+    from . import snapshots
+
+    if not extra.get("existed"):
+        snapshots.disable(ctx)
+
+
+register(ActionSpec(
+    id="snapshots.enable",
+    scope="system",
+    validate=lambda p, c: (_only_keys(p, set()), {})[1],
+    apply=lambda p, c: __import__("dai_tune.snapshots", fromlist=["enable"]).enable(c),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Take a snapshot of the system before every software update",
+                               "צילום מצב של המערכת לפני כל עדכון תוכנה"),
+    capture=lambda p, c: {"existed": __import__("dai_tune.snapshots", fromlist=["enabled"]).enabled(c)},
+    restore=_snap_enable_restore,
+    note=lambda p, lang: _t(lang, "Needs a Btrfs system disk. Your personal files (/home) are not part of it. "
+                                  "Up to 10 snapshots are kept.",
+                            "דורש דיסק מערכת מסוג Btrfs. הקבצים האישיים (/home) לא חלק מזה. נשמרות עד 10 תמונות מצב."),
+))
+
+
+def _undo_update_capture(params: Params, ctx: Context) -> dict:
+    from . import snapshots
+
+    # Taken before anything changes, so this undo can itself be undone.
+    return {"safety": snapshots.create_safety(ctx)}
+
+
+def _undo_update_restore(params: Params, ctx: Context, extra: dict) -> None:
+    from . import snapshots
+
+    if isinstance(extra.get("safety"), int):
+        snapshots.back_to(ctx, extra["safety"])
+
+
+register(ActionSpec(
+    id="snapshots.undo_update",
+    scope="system",
+    validate=lambda p, c: (_only_keys(p, set()), {})[1],
+    apply=lambda p, c: __import__("dai_tune.snapshots", fromlist=["undo_update"]).undo_update(c),
+    risk=lambda p: "high",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Undo the last software update (system files go back to before it)",
+                               "ביטול העדכון האחרון (קבצי המערכת חוזרים למצב שלפניו)"),
+    capture=_undo_update_capture,
+    restore=_undo_update_restore,
+    note=lambda p, lang: _t(lang, "Restart afterwards. Personal files are not touched. "
+                                  "A snapshot of now is taken first, so this can be undone too.",
+                            "אחר כך מפעילים מחדש. הקבצים האישיים לא משתנים. "
+                            "לפני כן נשמרת תמונת מצב של עכשיו, כך שאפשר לבטל גם את זה."),
+))

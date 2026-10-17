@@ -86,6 +86,11 @@ PRIVACY = r"(?:privacy mode|private mode|מצב פרטיות|מצב פרטי)"
 
 CLEAN = (r"(?:free (?:up )?(?:disk )?space|clean (?:up )?(?:the )?(?:system|disk|computer)|clear (?:the )?caches?|"
          r"פנה מקום|תפנה מקום|לפנות מקום|פינוי מקום|נקה את (?:המערכת|הדיסק|המחשב)|תנקה את (?:המערכת|הדיסק|המחשב)|ניקוי (?:המערכת|הדיסק))")
+SNAPSHOTS_ON = (r"(?:(?:enable|turn on|take|keep) (?:system )?snapshots?|snapshots? before (?:each |every |any )?(?:software )?updates?|"
+                r"(?:הפעל|תפעיל|להפעיל) (?:צילום|תמונות|תמונת) מצב|(?:צילום|תמונות|תמונת) מצב (?:של המערכת )?לפני (?:כל )?עדכון)")
+UNDO_UPDATE = (r"(?:undo (?:the )?(?:last|latest|recent) (?:software |system )?update|roll ?back (?:the )?(?:last |latest )?update|"
+               r"revert (?:the )?(?:last|latest) update|(?:בטל|תבטל|לבטל) את העדכון האחרון|"
+               r"(?:החזר|תחזיר|שחזר|תשחזר) (?:את )?(?:המחשב|המערכת) (?:ל)?(?:מצב )?(?:ש)?לפני העדכון)")
 POWER = {
     "power-saver": r"(?:battery saver|power sav(?:er|ing)|save (?:the )?battery|low power mode|חיסכון ב(?:סוללה|חשמל)|לחסוך (?:ב)?סוללה|מצב חיסכון)",
     "performance": r"(?:performance mode|high performance|max(?:imum)? performance|מצב ביצועים|ביצועים מרביים|ביצועים מקסימליים)",
@@ -137,6 +142,12 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("preset.public", {}, clause)]
     if _has(PRIVACY, c):
         return [Request("preset.privacy", {}, clause)]
+
+    # Before anything that mentions "updates" (automatic updates).
+    if _has(UNDO_UPDATE, c):
+        return [Request("snapshots.undo_update", {}, clause)]
+    if _has(SNAPSHOTS_ON, c):
+        return [Request("snapshots.enable", {}, clause)]
 
     # Maintenance and power (D.Ai Doctor suggests these sentences).
     if _has(CLEAN, c):
@@ -287,6 +298,8 @@ EXAMPLES = {
         "מצב פרטיות",
         "פנה מקום בדיסק",
         "מצב חיסכון בסוללה",
+        "הפעל צילום מצב לפני כל עדכון",
+        "בטל את העדכון האחרון",
     ],
     "en": [
         "block usb storage",
@@ -304,5 +317,7 @@ EXAMPLES = {
         "privacy mode",
         "free up disk space",
         "battery saver mode",
+        "snapshots before updates",
+        "undo the last update",
     ],
 }

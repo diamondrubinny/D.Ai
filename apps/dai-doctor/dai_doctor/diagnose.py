@@ -201,9 +201,39 @@ def hardware(facts: Facts, lang: str) -> list[Finding]:
     return findings
 
 
-TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware}
+def update(facts: Facts, lang: str) -> list[Finding]:
+    """"It broke after the update": what changed, and the way back when there is one."""
+    when = ""
+    if facts.last_update:
+        date, count = facts.last_update
+        when = _t(lang, f"The last update ({date}) changed {count} package(s). ",
+                  f"העדכון האחרון ({date}) שינה {count} חבילות. ")
+    if facts.snapshots:
+        return [Finding("update", "warn", _t(lang, "You can undo the last update", "אפשר לבטל את העדכון האחרון"),
+                        when + _t(lang, "A snapshot of the system was taken before it. Your personal files are not touched.",
+                                  "לפניו נשמרה תמונת מצב של המערכת. הקבצים האישיים לא משתנים."),
+                        [Fix("tune", _t(lang, "Undo the last update", "לבטל את העדכון האחרון"), "undo the last update")])]
+    if facts.root_fs == "btrfs":
+        return [Finding("update", "warn", _t(lang, "Snapshots before updates are off", "צילום מצב לפני עדכונים כבוי"),
+                        when + _t(lang, "This update cannot be undone automatically, but the next ones can.",
+                                  "את העדכון הזה אי אפשר לבטל אוטומטית, אבל את הבאים כן."),
+                        [Fix("tune", _t(lang, "Take snapshots before updates", "להפעיל צילום מצב לפני עדכונים"),
+                             "snapshots before updates"),
+                         Fix("advice", _t(lang, "See what changed: /var/log/apt/history.log",
+                                          "מה השתנה: /var/log/apt/history.log"))])]
+    return [Finding("update", "warn", _t(lang, "Updates cannot be undone on this disk", "על הדיסק הזה אי אפשר לבטל עדכונים"),
+                    when + _t(lang, f"Snapshots need a Btrfs system disk; this one is {facts.root_fs or 'unknown'}.",
+                              f"תמונות מצב דורשות דיסק מערכת מסוג Btrfs, וזה {facts.root_fs or 'לא ידוע'}."),
+                    [Fix("advice", _t(lang, "See what changed: /var/log/apt/history.log, and report it on GitHub",
+                                      "מה השתנה: /var/log/apt/history.log, ודווחו ב־GitHub"))])]
+
+
+TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware, "update": update}
 
 QUESTIONS = {
+    # First: "the printer doesn't work since the update" is about the update.
+    "update": (r"(?:(?:since|after) (?:the |an |last |latest )?update|update (?:broke|ruined)|broke after|"
+               r"(?:מאז|אחרי|לאחר) (?:ה)?עדכון|העדכון (?:שבר|הרס|קלקל|דפק))"),
     "slow": r"(?:\bslow\b|\bsluggish\b|\blag(?:gy|ging)?\b|\bfreez(?:e|es|ing)\b|\bhang(?:s|ing)?\b|"
             r"איטי|איטית|נתקע|תקוע|מאט|כבד|לאט)",
     "disk": r"(?:disk space|storage|\bdisk\b.*\bfull\b|running out of space|what(?:'s| is) taking|free space|"
@@ -217,7 +247,7 @@ QUESTIONS = {
 
 # A question or a complaint about the computer, not just a word like "slow".
 CUES = (r"(?:\bwhy\b|\bwhat\b|\bhow\b|\bcomputer\b|\bpc\b|\blaptop\b|\bsystem\b|\bmy\b|\?|"
-        r"למה|מדוע|מה |איך|המחשב|מחשב|המערכת|הלפטופ|שלי)")
+        r"למה|מדוע|מה |איך|המחשב|מחשב|המערכת|הלפטופ|שלי|עדכון|\bupdate\b)")
 
 
 def topic_for(text: str) -> str | None:

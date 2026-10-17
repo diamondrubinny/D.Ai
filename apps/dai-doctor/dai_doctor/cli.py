@@ -72,6 +72,9 @@ def main(argv: list[str] | None = None) -> int:
         print(_color(f"{mark} {finding.title}", code))
         if finding.detail:
             print(f"    {finding.detail}")
+        for fix in finding.fixes:
+            if fix.kind == "advice":
+                print(f"    → {fix.label}")
     fixes = [(f, fix) for f in findings for fix in f.fixes if fix.kind in ("tune", "clean", "forge")]
     for finding, fix in fixes:
         if not _ask(f"\n{fix.label}? [{'כ/ל' if he else 'y/N'}] "):

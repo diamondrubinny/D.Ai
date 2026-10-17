@@ -512,6 +512,60 @@ class DoctorActionTests(ForgeActionTests):
             self.apply("power.profile", {"profile": "performance"})
 
 
+class SnapshotTests(ForgeActionTests):
+    """Snapshots before updates (docs/SNAPSHOTS.md). The real snapper runs in the VM check."""
+
+    LIST = {"root": [
+        {"number": 0, "type": "single", "pre-number": None, "description": "current"},
+        {"number": 5, "type": "pre", "pre-number": None, "description": "apt"},
+        {"number": 6, "type": "post", "pre-number": 5, "description": "apt"},
+        {"number": 7, "type": "single", "pre-number": None, "description": "manual"},
+        {"number": 8, "type": "pre", "pre-number": None, "description": "apt"},  # an update still running
+    ]}
+
+    def snapper_ready(self, fstype="btrfs"):
+        (self.root / "usr/bin").mkdir(parents=True, exist_ok=True)
+        (self.root / "usr/bin/snapper").write_text("")
+        self.runner.responses[("findmnt",)] = (0, f"{fstype}\n")
+
+    def test_enable_on_btrfs_and_undo(self):
+        self.snapper_ready()
+        entry, journal = self.apply("snapshots.enable", {})
+        self.assertIn(["snapper", "--no-dbus", "-c", "root", "create-config", "/"], self.runner.calls)
+        self.assertIn("NUMBER_LIMIT=10", self.runner.calls[-1])
+        (self.root / "etc/snapper/configs").mkdir(parents=True)
+        (self.root / "etc/snapper/configs/root").write_text("")  # what create-config wrote
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(self.runner.calls[-1], ["snapper", "--no-dbus", "-c", "root", "delete-config"])
+
+    def test_enable_refuses_other_filesystems(self):
+        self.snapper_ready("ext4")
+        with self.assertRaisesRegex(executor.ApplyError, "need a Btrfs disk; / is ext4"):
+            self.apply("snapshots.enable", {})
+        self.assertFalse(any("create-config" in call for call in self.runner.calls))
+
+    def test_undo_last_update_takes_a_safety_snapshot_first(self):
+        import json as _json
+        self.snapper_ready()
+        self.runner.responses[("snapper", "--no-dbus", "-c", "root", "create")] = (0, "9\n")
+        self.runner.responses[("snapper", "--no-dbus", "-c", "root", "--jsonout", "list")] = (0, _json.dumps(self.LIST))
+        entry, journal = self.apply("snapshots.undo_update", {})
+        snapper_calls = [c[4:] for c in self.runner.calls if c[:1] == ["snapper"]]
+        self.assertEqual(snapper_calls[0][:3], ["create", "-t", "single"])
+        self.assertEqual(snapper_calls[-1], ["undochange", "5..6"])  # the last finished update, not 8
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(self.runner.calls[-1][4:], ["undochange", "9..0"])
+        plan = self.plan("בטל את העדכון האחרון")
+        self.assertEqual((plan.steps[0].action, plan.steps[0].risk), ("snapshots.undo_update", "high"))
+
+    def test_nothing_to_undo(self):
+        from dai_tune import snapshots
+        self.assertIsNone(snapshots.last_update([{"number": 3, "type": "pre", "description": "apt"}]))
+        self.assertIsNone(snapshots.last_update([{"number": 4, "type": "post", "pre-number": 3, "description": "apt"}]))
+        self.assertEqual(snapshots.last_update([{"number": 3, "type": "pre"}, {"number": 4, "type": "post", "pre_number": 3,
+                                                                                "description": "apt"}]), (3, 4))
+
+
 class PolicyTests(TuneTestCase):
     """Organization policies in /etc/dai/policy.d (docs/EDU.md)."""
 
