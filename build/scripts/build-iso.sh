@@ -115,6 +115,8 @@ configure() {
     ((${#missing[@]} == 0)) || log "not in this Debian release, skipped: ${missing[*]}"
     rm -f -- "$optional"
   done
+  # Facts for docs/SNAPSHOTS.md (logged only): is grub-btrfs in this Debian release?
+  if apt-cache show grub-btrfs >/dev/null 2>&1; then log "snapshots: grub-btrfs is available"; else log "snapshots: grub-btrfs is not available"; fi
   if apt-cache show qt6-svg-plugins >/dev/null 2>&1; then
     printf '%s\n' '# Qt SVG image/icon plugins (added by build-iso.sh)' qt6-svg-plugins >config/package-lists/dai-qt-svg.list.chroot
   fi

@@ -14,6 +14,7 @@ reported but never fail the run.
 
 from __future__ import annotations
 
+import base64
 import re
 import socket
 import sys
@@ -94,6 +95,32 @@ def _hex(text: str) -> str:
 SANDBOX_PROBE_B64 = "aW1wb3J0IG9zLCBzb2NrZXQKcHJpbnQoJ2hvbWU6Jywgc29ydGVkKG9zLmxpc3RkaXIob3MucGF0aC5leHBhbmR1c2VyKCd+JykpKSkKdHJ5OgogICAgc29ja2V0LmNyZWF0ZV9jb25uZWN0aW9uKCgnMS4xLjEuMScsIDgwKSwgdGltZW91dD0zKQogICAgcHJpbnQoJ25ldHdvcms6IG9wZW4nKQpleGNlcHQgT1NFcnJvcjoKICAgIHByaW50KCduZXR3b3JrOiBibG9ja2VkJykKZm9yIHBhdGggaW4gWycvYXBwL2FwcC5weScsICcvZXRjL3Bhc3N3ZCddOgogICAgdHJ5OgogICAgICAgIG9wZW4ocGF0aCwgJ2EnKS53cml0ZSgneCcpCiAgICAgICAgcHJpbnQoJ3dyaXRhYmxlOicsIHBhdGgpCiAgICBleGNlcHQgT1NFcnJvcjoKICAgICAgICBwcmludCgncmVhZC1vbmx5OicsIHBhdGgpCnByaW50KCdzc2gga2V5IHZpc2libGU6Jywgb3MucGF0aC5leGlzdHMoJy9ob21lL2RhaS8uc3NoL2NhbmFyeScpKQpwcmludCgneDExIHNvY2tldCB2aXNpYmxlOicsIG9zLnBhdGguZXhpc3RzKCcvdG1wLy5YMTEtdW5peCcpKQo="
 HEBREW_FORGE = "תתקין אנטי וירוס"
 HEBREW_CLIP = "שלום מהלוח של D.Ai"
+
+# Runs as root in the VM against the real snapper, on a Btrfs image (the live root is not Btrfs).
+SNAPSHOT_PROBE = """
+import sys
+sys.path.insert(0, "/usr/lib/dai")
+from pathlib import Path
+from dai_tune import snapshots as s
+from dai_tune.context import Context
+ctx, mnt, cfg = Context(root=Path("/"), home=Path("/root")), "/mnt/dai-snap", "daitest"
+print("FS", s.filesystem(ctx, mnt))
+s.enable(ctx, cfg, mnt)
+print("ENABLED", s.enabled(ctx, cfg))
+f = Path(mnt) / "app.conf"
+f.write_text("before update")
+pre = ctx.run(s.snapper(cfg, "create", "-t", "pre", "-d", "apt", "-p")).stdout.strip()
+f.write_text("after update")
+ctx.run(s.snapper(cfg, "create", "-t", "post", "--pre-number", pre, "-d", "apt"))
+print("LIST", s.listing(ctx, cfg)[-1])
+safety = s.create_safety(ctx, cfg)
+print("UNDONE", s.undo_update(ctx, cfg), f.read_text())
+s.back_to(ctx, safety, cfg)
+print("REDONE", f.read_text())
+s.disable(ctx, cfg)
+print("DISABLED", not s.enabled(ctx, cfg))
+"""
+SNAPSHOT_PROBE_B64 = base64.b64encode(SNAPSHOT_PROBE.encode()).decode()
 
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
@@ -341,6 +368,14 @@ def main() -> int:
         # Global wrong-layout fixer: real Wayland primary selection round trip.
         ("fixlayout: selection", WAYLAND_ENV + "printf akuo | wl-copy --primary && dai-fixlayout --print", True,
          lambda o: o.strip().splitlines()[-1:] == ["שלום"]),
+        # Snapshots before updates: the real snapper on a Btrfs image (docs/SNAPSHOTS.md).
+        ("snapshots: update undo and redo", "command -v snapper && truncate -s 400M /tmp/snap.img && "
+         "sudo mkfs.btrfs -q /tmp/snap.img && sudo mkdir -p /mnt/dai-snap && sudo mount -o loop /tmp/snap.img /mnt/dai-snap && "
+         f"echo {SNAPSHOT_PROBE_B64} | base64 -d > /tmp/snap-probe.py && sudo python3 -I /tmp/snap-probe.py; "
+         "sudo umount /mnt/dai-snap; rm -f /tmp/snap.img; dai-tune --dry-run 'undo the last update' </dev/null", True,
+         lambda o: "FS btrfs" in o and "ENABLED True" in o and re.search(r"UNDONE \(\d+, \d+\) before update", o) is not None
+         and "REDONE after update" in o and "DISABLED True" in o
+         and ("Undo the last software update" in o or "ביטול העדכון האחרון" in o), 180),
         # D.Ai OEM, the whole cycle in the live session (last: it resets the machine ID and journal).
         # LUKS is not part of it here (no installed disk); unit tests run it against a fake and real cryptsetup.
         ("oem: prepare, finish, cleanup", "dai-oem --version; sudo useradd -m -G sudo,audio,lpadmin oemtest; "
@@ -367,6 +402,11 @@ def main() -> int:
         ("wayland session log", "tail -n 60 ~/.local/share/sddm/wayland-session.log"),
         ("panel environment", "tr '\\0' '\\n' < /proc/$(pgrep -x lxqt-panel | head -n1)/environ | grep -E '^(WAYLAND_DISPLAY|DISPLAY|QT_QPA|XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE)='"),
         ("panel layer-shell", "grep -oE '[^ ]*(LayerShell|layer-shell|wayland)[^ ]*' /proc/$(pgrep -x lxqt-panel | head -n1)/maps | sort -u"),
+        # Facts for docs/SNAPSHOTS.md: what the installer does with Btrfs.
+        ("calamares btrfs", "grep -hE 'btrfsSubvolumes|mountPoint|subvolume|btrfsSwapSubvol' -A0 "
+         "/etc/calamares/modules/mount.conf /usr/share/calamares/modules/mount.conf 2>/dev/null | head -n 20; "
+         "grep -hE '^[^#]*(defaultFileSystemType|availableFileSystemTypes)' /etc/calamares/modules/partition.conf "
+         "/usr/share/calamares/modules/partition.conf 2>/dev/null"),
         ("layer-shell packages", "dpkg -l | grep -Ei 'layer-?shell' | cut -c1-80"),
     ]
 

@@ -9,6 +9,7 @@ Nothing here changes anything or needs root. Every path goes through
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -61,6 +62,9 @@ class Facts:
     wifi_blocked: bool = False
     wifi_interfaces: list[str] = field(default_factory=list)
     printing: bool = True
+    root_fs: str = ""                 # file system of /, for snapshots (docs/SNAPSHOTS.md)
+    snapshots: bool = False           # snapper takes snapshots before updates
+    last_update: tuple[str, int] | None = None   # (date, packages) of the last apt run
 
 
 def _read(path: Path) -> str:
@@ -164,8 +168,30 @@ def battery(root: Path) -> Battery | None:
     return None
 
 
+def root_filesystem(root: Path) -> str:
+    fstype = ""
+    for line in _read(root / "proc/mounts").splitlines():
+        fields = line.split()
+        if len(fields) >= 3 and fields[1] == "/":
+            fstype = fields[2]  # the last mount on / wins (overlays)
+    return fstype
+
+
+def last_apt_run(root: Path) -> tuple[str, int] | None:
+    """Date and number of packages of the last install/upgrade in apt's history."""
+    entry = _read(root / "var/log/apt/history.log").strip().split("\n\n")[-1]
+    date, count = "", 0
+    for line in entry.splitlines():
+        key, _, value = line.partition(": ")
+        if key == "Start-Date":
+            date = value.strip()
+        elif key in ("Install", "Upgrade", "Remove", "Purge", "Downgrade", "Reinstall"):
+            count += len(re.findall(r"\),?", value)) or 1
+    return (date, count) if date else None
+
+
 def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = run, sample: float = 0.5,
-            topics: tuple[str, ...] = ("slow", "disk", "battery", "hardware"), budget: float = 3.0) -> Facts:
+            topics: tuple[str, ...] = ("slow", "disk", "battery", "hardware", "update"), budget: float = 3.0) -> Facts:
     home = home or Path.home()
     facts = Facts(cores=os.cpu_count() or 1)
     load = _read(root / "proc/loadavg").split()
@@ -203,6 +229,10 @@ def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = r
         facts.wifi_blocked = hardware.wifi_blocked(root)
         facts.wifi_interfaces = hardware.wifi_interfaces(root)
         facts.printing = hardware.printing_installed(root)
+    if "update" in topics:
+        facts.root_fs = root_filesystem(root)
+        facts.snapshots = (root / "etc/snapper/configs/root").exists()
+        facts.last_update = last_apt_run(root)
     if "battery" in topics:
         facts.battery = battery(root)
         if facts.battery is not None:

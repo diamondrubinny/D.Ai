@@ -129,6 +129,44 @@ class DiagnoseTests(FakeSystem):
             self.assertEqual(topic_for(text), topic, text)
 
 
+class UpdateTests(FakeSystem):
+    """"It broke after the update" (docs/SNAPSHOTS.md)."""
+
+    HISTORY = ("Start-Date: 2026-10-01  10:00:00\nCommandline: apt upgrade\nUpgrade: a:amd64 (1, 2)\nEnd-Date: x\n\n"
+               "Start-Date: 2026-10-16  09:12:44\nCommandline: apt full-upgrade\n"
+               "Upgrade: libfoo:amd64 (1.0, 1.1), bar:amd64 (2, 3)\nInstall: linux-image-6.12:amd64 (6.12, automatic)\n"
+               "End-Date: 2026-10-16  09:14:02\n")
+
+    def write(self, path, text):
+        target = self.root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text)
+
+    def test_facts(self):
+        self.write("proc/mounts", "sysfs /sys sysfs rw 0 0\n/dev/mapper/luks-1 / btrfs rw,subvol=/@ 0 0\n")
+        self.write("var/log/apt/history.log", self.HISTORY)
+        facts = collect(self.root, self.home, runner=quiet, topics=("update",))
+        self.assertEqual((facts.root_fs, facts.snapshots), ("btrfs", False))
+        self.assertEqual(facts.last_update, ("2026-10-16  09:12:44", 3))
+        self.write("etc/snapper/configs/root", "")
+        self.assertTrue(collect(self.root, self.home, runner=quiet, topics=("update",)).snapshots)
+
+    def test_answers(self):
+        undo = diagnose(Facts(root_fs="btrfs", snapshots=True, last_update=("2026-10-16", 3)), ("update",), "he")[0]
+        self.assertEqual(undo.fixes[0].payload, "undo the last update")
+        self.assertIn("3 חבילות", undo.detail)
+        off = diagnose(Facts(root_fs="btrfs"), ("update",))[0]
+        self.assertEqual(off.fixes[0].payload, "snapshots before updates")
+        ext4 = diagnose(Facts(root_fs="ext4"), ("update",))[0]
+        self.assertEqual([f.kind for f in ext4.fixes], ["advice"])
+        self.assertIn("ext4", ext4.detail)
+
+    def test_questions(self):
+        for text in ("המדפסת לא עובדת מאז העדכון", "my wifi stopped working after the update", "העדכון שבר לי את המחשב"):
+            self.assertEqual(topic_for(text), "update", text)
+        self.assertEqual(topic_for("will my printer work?"), "hardware")
+
+
 class HardwareTests(FakeSystem):
     def pci(self, slot, cls, driver=None):
         dev = self.root / "sys/bus/pci/devices" / slot
