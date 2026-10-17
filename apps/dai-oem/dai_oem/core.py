@@ -105,7 +105,10 @@ class Machine:
 
     def run(self, argv: Sequence[str], data: str | None = None, check: bool = True) -> subprocess.CompletedProcess:
         self.log.append(" ".join(argv))  # never the data: it may hold a password
-        result = self.runner(argv, data)
+        try:
+            result = self.runner(argv, data)
+        except FileNotFoundError:  # e.g. no ssh-keygen without openssh
+            result = subprocess.CompletedProcess(list(argv), 127, "", f"{argv[0]}: not installed")
         if check and result.returncode != 0:
             detail = (result.stderr or result.stdout or "").strip().splitlines()[-2:]
             raise OemError(f"{argv[0]} failed (exit {result.returncode}): {' '.join(detail)}")

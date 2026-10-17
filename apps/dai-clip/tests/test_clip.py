@@ -4,6 +4,8 @@ import io
 import json
 import os
 import stat
+import subprocess
+import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -262,6 +264,13 @@ class CliTests(unittest.TestCase):
                 mock.patch("shutil.which", return_value="/usr/bin/wl-paste"), mock.patch("os.execvp") as execvp:
             cli.main(["dai-clip", "watch"])
         execvp.assert_called_once_with("wl-paste", ["wl-paste", "--type", "text", "--watch", "dai-clip", "_store"])
+
+    def test_watch_reopens_closed_std_fds(self):
+        code = ("import os, sys; sys.path.insert(0, %r); from dai_clip.cli import ensure_std_fds; "
+                "ensure_std_fds(); os.execvp('sh', ['sh', '-c', 'test -e /proc/self/fd/0 && echo OPEN'])") % str(Path(cli.__file__).parent.parent)
+        result = subprocess.run([sys.executable, "-c", code], stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                                preexec_fn=lambda: os.close(0))
+        self.assertEqual(result.stdout.strip(), "OPEN", result.stderr)
 
     def test_store_never_prints_the_content(self):
         stdin = mock.Mock()
