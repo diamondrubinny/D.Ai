@@ -344,7 +344,9 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(self.window.layoutDirection(), Qt.LayoutDirection.RightToLeft)
         self.assertEqual(self.window.list.count(), 3)
         self.assertEqual(self.window.current_text(), "שלום עולם")
-        self.assertIn("2 שורות", self.window.list.item(1).text())
+        from dai_clip.gui import META_ROLE
+        self.assertIn("2 שורות", self.window.list.item(1).data(META_ROLE))
+        self.assertEqual(self.window.list.item(1).text(), "\u202adef add(a, b):\u202c")
 
     def test_search_and_empty_state(self):
         self.window.search.setText("ADD(")
