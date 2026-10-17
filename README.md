@@ -5,9 +5,9 @@
 
 Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 
-![D.Ai Night desktop](docs/screenshots/desktop.png)
+![D.Ai Night desktop](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
 
-> **Status:** early development. The first working version builds and boots in CI; the installer works but a full end-to-end install is not yet automated. Not recommended as your only operating system yet. Try it live from a USB stick first.
+> **Status:** early development. The first working version builds and boots in CI; the installer works but a full end-to-end install is not yet automated. Not recommended as your only operating system.
 
 ---
 
@@ -48,9 +48,9 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 
 ## D.Ai Forge
 
-![Forge: ask](docs/screenshots/forge-home.png)
-![Forge: review the plan](docs/screenshots/forge-plan.png)
-![Forge: the local AI writes the app](docs/screenshots/forge-building.png)
+![Forge: ask](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/forge-home.png?raw=true)
+![Forge: review the plan](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/forge-plan.png?raw=true)
+![Forge: the local AI writes the app](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/forge-building.png?raw=true)
 
 Press `Super+B`, or type `+` in the command field, and say what the computer should be able to do:
 
@@ -60,7 +60,7 @@ Press `Super+B`, or type `+` in the command field, and say what the computer sho
 + build an app for ...
 ```
 
-Every recipe becomes a D.Ai Tune plan that is reviewed, authorized by polkit, validated again by the root helper, journaled and undoable. Apps built by the local AI run in a **bubblewrap sandbox**: read-only system, private home, no network, no access to your files, unless you approve a permission.
+Every recipe becomes a D.Ai Tune plan that is reviewed, authorized by polkit, validated again by the root helper, journaled and undoable. Apps built by the local AI run in a **bubblewrap sandbox**.
 
 ## Security model, in short
 
@@ -93,7 +93,7 @@ build/build-iso.sh user
 build/run-qemu.sh
 ```
 
-CI (`.github/workflows/build-iso.yml`) runs ShellCheck and unit tests, builds llama.cpp, whisper.cpp, the panel plugin and every ISO in `debian:trixie`, boots each ISO in QEMU/KVM, runs in-guest checks, and drives the real keyboard and mouse to produce screenshots.
+CI (`.github/workflows/build-iso.yml`) runs ShellCheck and unit tests, builds llama.cpp, whisper.cpp, the panel plugin and every ISO in `debian:trixie`, boots each ISO in QEMU/KVM, runs in-guest checks and publishes screenshots.
 
 ## Repository layout
 
@@ -130,13 +130,12 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 
 ## בעברית
 
-**D.Ai OS** היא מערכת הפעלה חופשית, מאובטחת ובקוד פתוח (מבוססת Debian 13) עם AI מקומי שרץ על המחשב שלכם, ממשק עברית מלא, והגדרה והרחבה של המערכת בכתיבה חופשית.
+**D.Ai OS** היא מערכת הפעלה חופשית, מאובטחת ובקוד פתוח (מבוססת Debian 13) עם AI מקומי שרץ על המחשב שלכם, ממשק עברית מלא, ומבנה שמאפשר להרחיב את המערכת רק באמצעות טקסט.
 
 - **AI פרטי:** המודל רץ מקומית, ושירות ה-AI לא מחובר לרשת.
 - **הגדרות בטקסט:** כותבים מה רוצים ("חסום USB", "פתח פורט"), מקבלים תוכנית לבדיקה ואישור, ותמיד אפשר לבטל.
-- **D.Ai Forge:** כותבים `+ תתקין אנטי וירוס`, והמערכת בונה תוכנית, אתם בודקים, והיא מותקנת. אפשר גם לבקש בניית אפליקציה, והיא תרוץ בסביבה מבודדת.
+- **D.Ai Forge:** כותבים `+ תתקין אנטי וירוס`, והמערכת בונה תוכנית, אתם בודקים, והיא מותקנת. אפשר גם לבקש בניית אפל��קציה.
 - **עברית ו-RTL:** מחוון HE/EN, תיקון הקלדה בפריסה שגויה (`akuo` ל-`שלום`), הכתבה בעברית וחיפוש קבצים בעברית.
 - **אבטחה כברירת מחדל:** חומת אש, AppArmor, הצפנת דיסק מלאה בהתקנה, גיבוי מוצפן ועדכוני אבטחה אוטומטיים.
 
 **סטטוס:** שלב מוקדם. מומלץ לנסות מ-USB (Live) לפני התקנה. מעבר מ-Windows: ראו `docs/FROM-WINDOWS.md`.
-
