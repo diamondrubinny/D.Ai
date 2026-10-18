@@ -12,6 +12,7 @@ saved: J's store keeps only what arrived.
 
 from __future__ import annotations
 
+import base64
 import copy
 import email
 import email.policy
@@ -235,12 +236,57 @@ def _gpg(args: list[str], data: bytes, run: Callable) -> bytes:
     return result.stdout
 
 
-def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = subprocess.run) -> bytes:
+MICALG = {"2": "sha-1", "8": "sha-256", "9": "sha-384", "10": "sha-512", "11": "sha-224"}  # OpenPGP hash ids
+
+
+def signing_method(address: str, run: Callable = subprocess.run) -> str:
+    """"openpgp" when there is an OpenPGP key of yours for the address, else "smime" for an S/MIME certificate,
+    else ""."""
+    if not ADDRESS.match(address):
+        return ""
+    for method, tool in (("openpgp", "gpg"), ("smime", "gpgsm")):
+        try:
+            found = run([tool, "--batch", "--with-colons", "--list-secret-keys", f"<{address}>"], capture_output=True,
+                        timeout=TIMEOUT)
+        except (OSError, subprocess.SubprocessError):
+            continue
+        kinds = {line.split(b":", 1)[0] for line in (found.stdout or b"").splitlines()}
+        if found.returncode == 0 and kinds & {b"sec", b"crs"}:  # gpg: a secret key; gpgsm: a certificate with one
+            return method
+    return ""
+
+
+def _smime_signed(message: EmailMessage, sender: str, inner: bytes, run: Callable) -> bytes:
+    """S/MIME multipart/signed (RFC 8551 §3.5.3) with gpgsm and the sender's certificate."""
+    try:
+        result = run(["gpgsm", "--batch", "--status-fd", "2", "--detach-sign", "--local-user", sender], input=inner,
+                     capture_output=True, timeout=SIGN_TIMEOUT, env={**os.environ, "LC_ALL": "C"})
+    except (OSError, subprocess.SubprocessError):
+        raise ProtectError("gpg") from None
+    status = (result.stderr or b"").decode("utf-8", "replace")
+    if result.returncode != 0 or not result.stdout:
+        raise ProtectError("own_key" if "No public key" in status or "NO_SECKEY" in status or "INV_SGNR" in status
+                           else "gpg")
+    created = re.search(r"\[GNUPG:\] SIG_CREATED \S+ \d+ (\d+)", status)
+    micalg = MICALG.get(created.group(1) if created else "", "sha-256")
+    der = base64.encodebytes(result.stdout).replace(b"\n", b"\r\n")
+    boundary = _boundary()
+    content_type = f'multipart/signed; protocol="application/pkcs7-signature"; micalg={micalg}; boundary="{boundary}"'
+    b = boundary.encode()
+    body = (b"This is an S/MIME signed message\r\n--" + b + b"\r\n" + inner + b"\r\n--" + b + b"\r\n"
+            b'Content-Type: application/pkcs7-signature; name="smime.p7s"\r\nContent-Transfer-Encoding: base64\r\n'
+            b'Content-Disposition: attachment; filename="smime.p7s"\r\n\r\n' + der + b"\r\n--" + b + b"--\r\n")
+    return _headers(message, content_type) + b"\r\n" + body
+
+
+def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = subprocess.run,
+            method: str | None = None) -> bytes:
     """The message, signed and/or encrypted with the sender's and the recipients' keys, as the bytes to send.
 
-    Signing uses the sender's own key (gpg-agent asks for its passphrase in its own window). Encrypting needs a
-    key for every recipient, and is also made to the sender, so the copy in "Sent" stays readable. The Subject and
-    the addresses stay outside, readable by the servers on the way, as in every OpenPGP/MIME mail.
+    Signing uses the sender's own key: OpenPGP when there is one, else their S/MIME certificate (gpg-agent asks
+    for the passphrase in its own window). Encrypting (OpenPGP) needs a key for every recipient, and is also made
+    to the sender, so the copy in "Sent" stays readable; the real subject travels only inside (protected headers),
+    while the addresses stay outside, readable by the servers on the way.
     """
     sender = next((a for _, a in getaddresses(message.get_all("From", [])) if ADDRESS.match(a)), "")
     if not sender:
@@ -269,6 +315,8 @@ def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = su
         return _headers(outer, content_type) + b"\r\n" + body
     if not sign:
         return message.as_bytes(policy=email.policy.SMTP)
+    if (method if method is not None else signing_method(sender, run)) == "smime":
+        return _smime_signed(message, sender, inner, run)
     signature = _gpg(["--detach-sign", "--digest-algo", "SHA256", "--local-user", sender], inner, run)
     boundary = _boundary()
     content_type = (f'multipart/signed; micalg=pgp-sha256; protocol="application/pgp-signature"; '

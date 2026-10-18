@@ -3641,13 +3641,7 @@ msgstr "Não enviada: não há neste computador uma chave sua para este endereç
 msgid "Not sent: GnuPG could not sign or encrypt (the key's password was not given?)."
 msgstr "Não enviada: o GnuPG não conseguiu assinar ou cifrar (a senha da chave não foi indicada?)."
 
-#: apps/dai-j/dai_j/text.py
-msgid "Sign (OpenPGP)"
-msgstr "Assinar (OpenPGP)"
 
-#: apps/dai-j/dai_j/text.py
-msgid "Recipients can check that it came from you and was not changed."
-msgstr "Os destinatários poderão verificar que veio de você e não foi alterada."
 
 #: apps/dai-j/dai_j/text.py
 msgid "Encrypt"
@@ -3676,3 +3670,11 @@ msgstr "Arquivos do Outlook precisam do readpst. Instale pelo D.Ai Command: !ins
 #: apps/dai-j/dai_j/gui.py
 msgid "This Outlook file could not be read. It may be damaged or protected with a password."
 msgstr "Não foi possível ler este arquivo do Outlook. Ele pode estar danificado ou protegido por senha."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Sign"
+msgstr "Assinar"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Recipients can check that it came from you and was not changed. With your OpenPGP key, or your S/MIME certificate when you have no OpenPGP key."
+msgstr "Os destinatários poderão verificar que veio de você e não foi alterada. Com sua chave OpenPGP, ou seu certificado S/MIME se você não tiver chave OpenPGP."

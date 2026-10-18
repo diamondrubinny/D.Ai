@@ -101,9 +101,11 @@ STRINGS = {
                       "לא נשלח: אין במחשב הזה מפתח שלכם לכתובת הזו, לחתימה."),
     "e_pgp_gpg": ("Not sent: GnuPG could not sign or encrypt (the key's password was not given?).",
                   "לא נשלח: GnuPG לא הצליח לחתום או להצפין (הסיסמה של המפתח לא הוזנה?)."),
-    "pgp_sign": ("Sign (OpenPGP)", "חתימה (OpenPGP)"),
-    "pgp_sign_tip": ("Recipients can check that it came from you and was not changed.",
-                     "הנמענים יוכלו לבדוק שההודעה מכם ושלא שונתה."),
+    "pgp_sign": ("Sign", "חתימה"),
+    "pgp_sign_tip": ("Recipients can check that it came from you and was not changed. With your OpenPGP key, or "
+                     "your S/MIME certificate when you have no OpenPGP key.",
+                     "הנמענים יוכלו לבדוק שההודעה מכם ושלא שונתה. עם מפתח ה־OpenPGP שלכם, או עם תעודת "
+                     "ה־S/MIME שלכם כשאין לכם מפתח OpenPGP."),
     "pgp_encrypt": ("Encrypt", "הצפנה"),
     "pgp_encrypt_tip": ("Only the recipients can read it, subject included, with their keys. The addresses stay "
                         "visible.", "רק הנמענים יוכלו לקרוא, כולל הנושא, עם המפתחות שלהם. הכתובות נשארות גלויות."),

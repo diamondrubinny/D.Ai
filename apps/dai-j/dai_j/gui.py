@@ -370,7 +370,7 @@ class ComposeWindow(QWidget):
         for box, tip in ((self.sign_box, "pgp_sign_tip"), (self.encrypt_box, "pgp_encrypt_tip")):
             box.setToolTip(t(tip, lang))
             box.setAccessibleDescription(t(tip, lang))
-            box.setVisible(shutil.which("gpg") is not None)  # docs/MAIL.md §15: through the system's GnuPG
+            box.setVisible(shutil.which("gpg") is not None)  # docs/MAIL.md §15: through the system's GnuPG (gpg, gpgsm)
             tools.addWidget(box)
         layout.addLayout(tools)
 

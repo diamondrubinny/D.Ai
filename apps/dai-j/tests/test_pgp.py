@@ -194,6 +194,58 @@ class SendingTests(KeyHome):
         self.assertEqual(len(sent), 1)  # nothing left the computer
 
 
+@unittest.skipUnless(shutil.which("gpgsm"), "gpgsm is not installed")
+class SmimeSendingTests(unittest.TestCase):
+    """Signing with an S/MIME certificate (docs/MAIL.md §15), a throwaway self-signed one trusted only here."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.home = tempfile.mkdtemp()
+        os.chmod(cls.home, 0o700)
+        cls.env = mock.patch.dict(os.environ, {"GNUPGHOME": cls.home})
+        cls.env.start()
+        params = Path(cls.home) / "params"
+        params.write_text("Key-Type: RSA\nKey-Length: 2048\nKey-Usage: sign, encrypt\nSerial: random\n"
+                          "Name-DN: CN=Dana Test\nName-Email: dana@example.org\n")
+        loop = ["--batch", "--pinentry-mode", "loopback", "--passphrase", ""]
+        # Never waits for a passphrase: loopback with an empty one, and stdin closed (an inherited open stdin is
+        # where gpgsm would otherwise wait for it).
+        made = subprocess.run(["gpgsm", *loop, "--generate-key", str(params)], capture_output=True,
+                              stdin=subprocess.DEVNULL, timeout=180)
+        if made.returncode != 0 or not made.stdout:
+            raise AssertionError("gpgsm could not make the test certificate: " + made.stderr.decode(errors="replace"))
+        cert = made.stdout
+        subprocess.run(["gpgsm", "--batch", "--import"], input=cert, capture_output=True, check=True, timeout=60)
+        listing = subprocess.run(["gpgsm", "--with-colons", "--list-secret-keys"], capture_output=True, text=True,
+                                 stdin=subprocess.DEVNULL, timeout=60).stdout
+        fingerprint = next(line.split(":")[9] for line in listing.splitlines() if line.startswith("fpr"))
+        (Path(cls.home) / "trustlist.txt").write_text(f"{fingerprint} S relax\n")
+        (Path(cls.home) / "gpgsm.conf").write_text("disable-crl-checks\npinentry-mode loopback\n")
+        (Path(cls.home) / "gpg-agent.conf").write_text("allow-loopback-pinentry\n")
+        subprocess.run(["gpgconf", "--homedir", cls.home, "--kill", "gpg-agent"], capture_output=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.env.stop()
+        subprocess.run(["gpgconf", "--homedir", cls.home, "--kill", "all"], capture_output=True)
+        shutil.rmtree(cls.home, ignore_errors=True)
+
+    def test_signed_with_the_certificate_and_checked(self):
+        from dai_j import compose, mail
+
+        draft = compose.Draft("Dana Test", "dana@example.org", "avi@example.net", subject="Plan",
+                              paragraphs=[("שלום, signed with S/MIME.", "rtl")])
+        self.assertEqual(pgp.signing_method("dana@example.org"), "smime")  # no OpenPGP key here, a certificate
+        self.assertEqual(pgp.signing_method("nobody@example.net"), "")
+        raw = pgp.protect(compose.build(draft), sign=True, encrypt=False)
+        self.assertEqual(pgp.kind(raw), "smime_signed")
+        self.assertRegex(raw, rb'micalg="?sha-256')
+        check = pgp.verify(raw)
+        self.assertEqual((check.state, check.kind), ("good", "smime"))
+        self.assertIn("signed with S/MIME", mail.parse_body(raw).text)
+        self.assertEqual(pgp.verify(raw.replace(b"S/MIME.", b"S/MIME!")).state, "bad")
+
+
 class WindowTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

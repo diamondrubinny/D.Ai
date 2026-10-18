@@ -3641,13 +3641,7 @@ msgstr "لم تُرسل: لا يوجد على هذا الحاسوب مفتاح �
 msgid "Not sent: GnuPG could not sign or encrypt (the key's password was not given?)."
 msgstr "لم تُرسل: لم يتمكن GnuPG من التوقيع أو التشفير (ألم تُدخل كلمة مرور المفتاح؟)."
 
-#: apps/dai-j/dai_j/text.py
-msgid "Sign (OpenPGP)"
-msgstr "توقيع (OpenPGP)"
 
-#: apps/dai-j/dai_j/text.py
-msgid "Recipients can check that it came from you and was not changed."
-msgstr "يستطيع المستلمون التحقق من أنها منك ولم تُغيَّر."
 
 #: apps/dai-j/dai_j/text.py
 msgid "Encrypt"
@@ -3676,3 +3670,11 @@ msgstr "تحتاج ملفات Outlook إلى readpst. ثبّته من D.Ai Comma
 #: apps/dai-j/dai_j/gui.py
 msgid "This Outlook file could not be read. It may be damaged or protected with a password."
 msgstr "تعذّرت قراءة ملف Outlook هذا. ربما هو تالف أو محمي بكلمة مرور."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Sign"
+msgstr "توقيع"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Recipients can check that it came from you and was not changed. With your OpenPGP key, or your S/MIME certificate when you have no OpenPGP key."
+msgstr "يستطيع المستلمون التحقق من أنها منك ولم تُغيَّر. بمفتاح OpenPGP الخاص بك، أو بشهادة S/MIME إن لم يكن لديك مفتاح OpenPGP."
