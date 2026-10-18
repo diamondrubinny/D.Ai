@@ -31,6 +31,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - LibreOffice (Writer, Calc, Impress) with the Hebrew interface and Hebrew/English spell checking in every edition.
 - D.Ai Welcome: first-run wizard — security level through D.Ai Tune, local models sized to the computer's memory, privacy facts.
 - Installer (Calamares) with full-disk encryption (LUKS) and D.Ai branding.
+- Copyright and brand: trademark policy (TRADEMARKS.md), terms of use draft (docs/legal/TERMS.md, site/terms.html), a Debian copyright file in every package, and a CI check that every source file keeps its copyright notice.
 - Hardening: nftables firewall (deny inbound), AppArmor, kernel/sysctl hardening, automatic Debian security updates.
 - D.Ai components shipped as Debian packages; signed, pinned update repository in each GitHub Release.
 

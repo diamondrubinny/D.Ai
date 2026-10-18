@@ -49,8 +49,31 @@ copy_package() { # copy_package <python-package-dir> <root>
 }
 
 # Write DEBIAN/control (+ conffiles) and build the package.
+write_legal() { # write_legal <root> <name>: copyright (Debian format), NOTICE, trademarks, terms
+  local root="$1" name="$2" doc="$1/usr/share/doc/$2" dir
+  install -d "$doc"
+  {
+    printf '%s\n' "Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/" \
+      "Upstream-Name: D.Ai OS" "Upstream-Contact: https://github.com/diamondrubinny/D.Ai/issues" \
+      "Source: https://github.com/diamondrubinny/D.Ai" "" \
+      "Files: *" "Copyright: 2026 Diamond Rubinny (d.Ai)" "License: Apache-2.0" \
+      " On Debian systems the full text of the Apache License 2.0 is in /usr/share/common-licenses/Apache-2.0." \
+      "Comment: \"D.Ai\", \"D.Ai OS\" and the diamond logo are trademarks of Diamond Rubinny (d.Ai)." \
+      " The license grants no rights to them (Apache-2.0 section 6); see TRADEMARKS.md in this folder." \
+      " Copies must keep these copyright notices (Apache-2.0 section 4)."
+    for dir in "$root"/opt/dai/*/; do
+      [[ -f "$dir/LICENSE" ]] || continue
+      dir="${dir#"$root"/}"
+      printf '%s\n' "" "Files: ${dir}*" "Copyright: the ggml authors" "License: MIT" " See /${dir}LICENSE."
+    done
+  } >"$doc/copyright"
+  install -m 0644 "$REPO_ROOT/NOTICE" "$REPO_ROOT/TRADEMARKS.md" "$doc/"
+  install -m 0644 "$REPO_ROOT/docs/legal/TERMS.md" "$doc/TERMS.md"
+}
+
 finish() { # finish <root> <name> <arch> <depends> <description> [recommends]
   local root="$1" name="$2" arch="$3" depends="$4" description="$5" recommends="${6:-}"
+  write_legal "$root" "$name"
   install -d "$root/DEBIAN"
   {
     printf 'Package: %s\nVersion: %s\nArchitecture: %s\n' "$name" "$VERSION" "$arch"

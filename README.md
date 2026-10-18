@@ -214,7 +214,11 @@ Every source file carries an SPDX header with this copyright; see [NOTICE](NOTIC
 
 ## License
 
-D.Ai OS's own code is licensed under the [Apache License 2.0](LICENSE).
+Copyright (c) 2026 Diamond Rubinny (d.Ai). D.Ai OS's own code is licensed under the [Apache License 2.0](LICENSE);
+copies must keep the copyright notices and [NOTICE](NOTICE). **"D.Ai", "D.Ai OS" and the diamond logo are trademarks**:
+the license grants no rights to them, so modified versions may not be distributed under the D.Ai name or logo, or
+presented as official ([TRADEMARKS.md](TRADEMARKS.md)). Terms of use for the official releases: [docs/legal/TERMS.md](docs/legal/TERMS.md)
+(draft, pending legal review).
 The ISO images bundle Debian packages that keep their own licenses (including `non-free-firmware` for hardware support); see each image's package manifest.
 
 ---
