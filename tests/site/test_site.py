@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
-"""The website: Hebrew RTL, accessible structure, AA contrast, no trackers."""
+"""The website: Hebrew RTL and seven more languages, accessible structure, AA contrast, no trackers."""
 
 import re
 import unittest
@@ -8,7 +8,11 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 SITE = Path(__file__).resolve().parents[2] / "site"
-PAGES = sorted(SITE.glob("*.html"))
+LANGS = ("en", "ar", "ru", "es", "fr", "de", "pt")
+PAGES = sorted([*SITE.glob("*.html"), *(SITE / lang / "index.html" for lang in LANGS)])
+RTL = {"he", "ar"}
+SECTION_IDS = {"main", "hero-title", "why", "why-title", "see-title", "windows", "windows-title", "honest",
+               "honest-title", "download", "download-title", "faq-title"}
 
 
 class Page(HTMLParser):
@@ -44,13 +48,48 @@ def contrast(a, b):
 
 class SiteTests(unittest.TestCase):
     def test_pages_exist(self):
-        self.assertEqual({p.name for p in PAGES}, {"index.html", "privacy.html", "accessibility.html", "terms.html"})
+        self.assertEqual({p.name for p in SITE.glob("*.html")}, {"index.html", "privacy.html", "accessibility.html",
+                                                                "terms.html"})
+        for lang in LANGS:
+            self.assertTrue((SITE / lang / "index.html").is_file(), lang)
+
+    def test_every_language_has_the_same_page(self):
+        for lang in LANGS:
+            with self.subTest(lang=lang):
+                page = parse(SITE / lang / "index.html")
+                ids = {a.get("id") for _, a in page.tags if a.get("id")}
+                self.assertTrue(SECTION_IDS <= ids, SECTION_IDS - ids)
+                self.assertIn("draft", (SITE / lang / "index.html").read_text(encoding="utf-8"))  # until reviewed
+
+    def test_the_switcher_is_generated(self):
+        import subprocess
+        import sys
+        script = SITE.parent / "build/scripts/site-languages.py"
+        result = subprocess.run([sys.executable, str(script), "--check"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout)
+
+    def test_the_language_switcher(self):
+        for path in PAGES:
+            if path.name != "index.html":
+                continue
+            with self.subTest(page=str(path.relative_to(SITE))):
+                page = parse(path)
+                switch = [a for t, a in page.tags if t == "a" and a.get("hreflang")]
+                self.assertEqual(sorted(a["hreflang"] for a in switch), sorted(("he", *LANGS)))
+                self.assertEqual(len([a for a in switch if a.get("aria-current") == "page"]), 1)
+                for link in switch:
+                    self.assertTrue((path.parent / link["href"]).resolve().is_file(), link["href"])
+                alternates = [a for t, a in page.tags if t == "link" and a.get("rel") == "alternate"]
+                self.assertEqual(len(alternates), 8)
 
     def test_language_direction_and_basics(self):
         for path in PAGES:
-            with self.subTest(page=path.name):
+            with self.subTest(page=str(path.relative_to(SITE))):
                 page = parse(path)
-                self.assertEqual((page.html_attrs.get("lang"), page.html_attrs.get("dir")), ("he", "rtl"))
+                lang = page.html_attrs.get("lang", "")
+                expected = path.parent.name if path.parent != SITE else "he"
+                self.assertEqual(lang.split("-")[0], expected)
+                self.assertEqual(page.html_attrs.get("dir"), "rtl" if expected in RTL else "ltr")
                 tags = [t for t, _ in page.tags]
                 for required in ("title", "main", "header", "footer"):
                     self.assertIn(required, tags)
@@ -70,7 +109,7 @@ class SiteTests(unittest.TestCase):
     def test_no_scripts_trackers_or_third_party_resources(self):
         for path in PAGES:
             text = path.read_text(encoding="utf-8")
-            with self.subTest(page=path.name):
+            with self.subTest(page=str(path.relative_to(SITE))):
                 page = parse(path)
                 self.assertNotIn("script", [t for t, _ in page.tags])
                 self.assertNotRegex(text, r"(?i)google-analytics|googletagmanager|facebook\.net|hotjar|fonts\.googleapis")
@@ -92,7 +131,9 @@ class SiteTests(unittest.TestCase):
                     if url.startswith("#"):
                         self.assertIn(url[1:], ids)
                     else:
-                        self.assertTrue((SITE / url).exists())
+                        target = (path.parent / url).resolve()
+                        self.assertTrue(target.exists())
+                        self.assertTrue(target.is_relative_to(SITE), url)  # never outside the site
 
     def test_contrast_meets_wcag_aa(self):
         css = (SITE / "style.css").read_text(encoding="utf-8")

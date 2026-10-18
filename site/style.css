@@ -66,3 +66,7 @@ code { overflow-wrap: anywhere; }
   .lead { font-size: 1.05rem; }
   h2 { font-size: 1.5rem; }
 }
+
+/* Language switcher (build/scripts/site-languages.py): every language named in itself. */
+.langs { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin: 1rem 0 0; }
+.langs a[aria-current="page"] { font-weight: 700; text-decoration: none; }

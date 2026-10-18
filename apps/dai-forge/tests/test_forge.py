@@ -76,6 +76,9 @@ class RecipeTests(ForgeTestCase):
                              ("+ français", "language-fr"), ("+ português", "language-pt")):
             recipe, removing = recipes.find(text, library)
             self.assertEqual((recipe.id if recipe else None, removing), (wanted, False), text)
+        for text in ("+ install word", "+ install excel", "+ install powerpoint", "+ וורד"):  # as the site promises
+            self.assertEqual(recipes.find(text, library)[0].id, "onlyoffice", text)
+        self.assertNotEqual(getattr(recipes.find("+ wordpress", library)[0], "id", None), "onlyoffice")
         recipe = library.recipes["language-ar"]
         self.assertEqual([r.action for r in recipes.install_requests(recipe)],
                          ["system.locale", "packages.install", "keyboard.layouts", "session.language"])
