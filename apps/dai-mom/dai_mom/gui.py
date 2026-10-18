@@ -274,7 +274,8 @@ class MomWindow(QMainWindow):
             other.addChild(child)
         other.setText(1, size(sum(a.memory for a in rest), self.lang))
         other.setText(2, f"{round(sum(a.cpu for a in rest), 1):g}%")
-        other.setText(3, t("processes", self.lang, count=sum(len(a.processes) for a in rest)))
+        total = sum(len(a.processes) for a in rest)
+        other.setText(3, t("one_process", self.lang) if total == 1 else t("processes", self.lang, count=total))
         if selected is not None:
             match = self._item_for(selected)
             if match is not None:

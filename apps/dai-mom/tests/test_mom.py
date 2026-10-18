@@ -147,9 +147,9 @@ class GroupTests(Base):
     def test_plain_language(self):
         found = {a.key: a for a in self.grouped()}
         line = text.describe(found["firefox-esr"], "en")
-        self.assertIn("Firefox ESR · Browse the Web · 684 MB", line)
+        self.assertIn("Firefox ESR · Browse the Web · \u2066684 MB\u2069", line)
         self.assertIn("3 processes", line)
-        self.assertEqual(text.size(int(1.25 * 1024 ** 3)), "1.2 GB")
+        self.assertEqual(text.size(int(1.25 * 1024 ** 3)).strip("\u2066\u2069"), "1.2 GB")
 
 
 class ActionTests(Base):
@@ -244,10 +244,10 @@ class WindowTests(Base):
         first = window.tree.topLevelItem(0)
         self.assertEqual(first.text(0), "Firefox ESR")
         spoken = first.data(0, Qt.ItemDataRole.AccessibleTextRole)
-        self.assertIn("Firefox ESR, 684 MB memory, 0 percent CPU", spoken)
+        self.assertIn("Firefox ESR, \u2066684 MB\u2069 memory, 0 percent CPU", spoken)
         last = window.tree.topLevelItem(window.tree.topLevelItemCount() - 1)
         self.assertEqual(last.text(0), "Other processes")
-        self.assertIn("Memory: 3.0 GB of 8.0 GB in use", window.bars["memory"][0].text())
+        self.assertIn("Memory: \u20663.0 GB\u2069 of \u20668.0 GB\u2069 in use", window.bars["memory"][0].text())
         self.assertTrue(window.bars["swap"][1].isHidden())  # no swap, no empty bar
 
     def test_close_and_force_with_questions(self):

@@ -87,6 +87,11 @@ firefox-esr-l10n-fr
 firefox-esr-l10n-de
 firefox-esr-l10n-pt-br
 flatpak
+# J (docs/MAIL.md): passwords in the desktop keyring, unlocked at login; DNS lookups for account setup
+gnome-keyring
+libpam-gnome-keyring
+libsecret-tools
+python3-dnspython
 # D.Ai Forge app sandbox (also used by Flatpak)
 bubblewrap
 

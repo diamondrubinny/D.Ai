@@ -52,7 +52,7 @@ STRINGS = {
     "swap_now": ("Swap: {used} of {total} in use", "זיכרון החלפה: {used} מתוך {total} בשימוש"),
     "disk_now": ("Disk: {free} free of {total}", "דיסק: {free} פנויים מתוך {total}"),
     "summary": ("{apps} apps · {procs} processes", "{apps} אפליקציות · {procs} תהליכים"),
-    "hint": ("Delete: close · Shift+Delete: force close", "Delete: סגירה · Shift+Delete: סגירה בכוח"),
+    "hint": ("Delete: close · Shift+Delete: force close", "סגירה: \u2066Delete\u2069 · סגירה בכוח: \u2066Shift+Delete\u2069"),
     "cancel": ("Cancel", "ביטול"),
     "cpu_short": ("{value}% CPU", "{value}% מעבד"),
 }
@@ -63,13 +63,18 @@ def t(key: str, lang: str | None = None, **kwargs: object) -> str:
     return text(lang, *STRINGS[key], **kwargs) if kwargs else pick(lang, *STRINGS[key])
 
 
+LRI, PDI = "\u2066", "\u2069"   # isolates: "1.2 GB" stays in order inside Hebrew text
+
+
 def size(value: int, lang: str | None = None) -> str:
     """1.2 GB / 350 MB, the way people read it."""
     if value >= 1024 ** 3:
-        return f"{value / 1024 ** 3:.1f} GB"
-    if value >= 1024 ** 2:
-        return f"{value / 1024 ** 2:.0f} MB"
-    return f"{max(value, 0) // 1024} KB"
+        text_ = f"{value / 1024 ** 3:.1f} GB"
+    elif value >= 1024 ** 2:
+        text_ = f"{value / 1024 ** 2:.0f} MB"
+    else:
+        text_ = f"{max(value, 0) // 1024} KB"
+    return f"{LRI}{text_}{PDI}"
 
 
 def count(app: App, lang: str | None = None) -> str:

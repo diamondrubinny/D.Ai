@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=J – Mail
+Name[he]=J – דואר
+GenericName=Mail client
+GenericName[he]=לקוח דואר
+Comment=All your mail in one calm place; Hebrew and screen readers come first
+Comment[he]=כל הדואר במקום אחד ורגוע; עברית וקוראי מסך קודם כל
+Exec=dai-j %u
+TryExec=dai-j
+Icon=dai-j
+Terminal=false
+Categories=Network;Email;
+MimeType=x-scheme-handler/mailto;
+Keywords=mail;email;e-mail;inbox;gmail;imap;מייל;דואר;דואר אלקטרוני;תיבת דואר;
