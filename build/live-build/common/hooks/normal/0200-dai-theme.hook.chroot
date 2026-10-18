@@ -17,6 +17,7 @@ for sheet in lxqt-panel lxqt-notificationd; do
 	cat "$overrides/$sheet.qss" >>"$dst/$sheet.qss"
 done
 cp /usr/share/dai/branding/dai-logo.svg "$dst/mainmenu.svg"
+cp "$overrides/task-active.svg" "$dst/task-active.svg"
 printf 'wallpapers/size=1\nwallpapers/1/file=/usr/share/dai/branding/wallpaper-night.jpg\n' >"$dst/wallpaper.cfg"
 
 gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true

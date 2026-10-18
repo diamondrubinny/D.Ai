@@ -6,9 +6,17 @@
  * Tokens: docs/DESIGN.md §2. Later rules override the base theme.
  * ======================================================================== */
 
+/* The Diamond Bar (docs/TASKBAR.md): a floating island. The panel window is
+ * transparent (WA_TranslucentBackground); the bottom margin leaves a clear
+ * strip under the rounded bar, the top edge catches a little light. */
 LXQtPanel #BackgroundWidget {
-    background: rgba(11, 16, 32, 94%);
-    border-top: 1px solid #2A3563;
+    margin: 0 0 8px 0;
+    padding: 0 6px;
+    border-radius: 18px;
+    border: 1px solid rgba(124, 92, 255, 38%);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 rgba(36, 44, 86, 92%), stop: 0.08 rgba(14, 20, 40, 90%),
+                                stop: 1 rgba(11, 16, 32, 90%));
 }
 
 QToolTip {
@@ -36,11 +44,12 @@ LXQtPanelPlugin > QToolButton:hover {
 /* Start button: the D.Ai diamond (panel.conf: ownIcon). A soft violet glow
  * on hover, a cyan ring when focused from the keyboard. */
 #FancyMenu {
-    margin: 4px 4px 4px 8px;
-    padding: 2px 10px;
-    border: 1px solid transparent;
-    border-radius: 12px;
-    background: transparent;
+    margin: 6px 3px;
+    padding: 2px 9px;
+    border: 1px solid rgba(124, 92, 255, 60%);
+    border-radius: 13px;
+    background: qradialgradient(cx: 0.5, cy: 0.55, radius: 0.75, fx: 0.5, fy: 0.55,
+                                stop: 0 rgba(124, 92, 255, 42%), stop: 1 rgba(34, 211, 238, 6%));
     qproperty-icon: url(mainmenu.svg);
 }
 #FancyMenu:hover {
@@ -96,10 +105,10 @@ LXQtPanelPlugin > QToolButton:hover {
 /* Command field next to Start (D.Ai panel plugin) */
 #DaiCommand QLineEdit,
 QLineEdit#DaiCommandField {
-    margin: 6px 4px;
+    margin: 8px 4px;
     padding: 2px 14px;
-    min-width: 240px;
-    border-radius: 10px;
+    min-width: 300px;
+    border-radius: 12px;
     background: #1C2547;
     border: 1px solid #2A3563;
     color: #E6E9F5;
@@ -108,21 +117,33 @@ QLineEdit#DaiCommandField {
 QLineEdit#DaiCommandField:hover { border: 1px solid #7C5CFF; }
 QLineEdit#DaiCommandField:focus { border: 2px solid #22D3EE; }
 
-/* Window buttons */
+/* Windows as icons with light: the active one glows with the violet→cyan
+ * line (task-active.svg); one that asks for attention gets an amber edge,
+ * never a blinking button. */
+/* Height budget: 56 (panelSize) - 8 (floating gap) - 2 (border) = 46 for every button. */
 #TaskBar QToolButton {
     margin: 5px 2px;
-    padding: 2px 10px;
-    border-radius: 8px;
+    padding: 2px 8px;
+    border-radius: 12px;
     border: 1px solid transparent;
     color: #E6E9F5;
 }
 #TaskBar QToolButton:hover { background: rgba(255, 255, 255, 8%); border: 1px solid #2A3563; }
 #TaskBar QToolButton:on {
-    background: rgba(124, 92, 255, 26%);
-    border: 1px solid rgba(124, 92, 255, 60%);
-    border-bottom: 2px solid #22D3EE;
+    border: none;
+    border-image: url(task-active.svg) 0 0 0 0 stretch stretch;
 }
-#TaskBar QToolButton[urgent="true"] { background: #5B3FD6; color: #FFFFFF; }
+#TaskBar QToolButton:focus { border: 2px solid #22D3EE; }
+#TaskBar QToolButton[urgent="true"] { background: rgba(251, 191, 36, 18%); border: 1px solid #FBBF24; }
+
+/* The "now" group on the right: tray, language, sound, clock, desktop, as one
+ * row of matching segments (symmetric, so it reads right in Hebrew too). */
+#StatusNotifierPlugin, #CustomPlugin, #VolumePlugin, #WorldClockPlugin, #ShowDesktopPlugin {
+    margin: 8px 1px;
+    background: #1C2547;
+    border: 1px solid #2A3563;
+    border-radius: 12px;
+}
 
 /* Keyboard layout, clock */
 #KbIndicator > QLabel:enabled {
