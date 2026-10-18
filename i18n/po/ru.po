@@ -1,0 +1,3262 @@
+# Russian translation of D.Ai OS. DRAFT made with AI assistance: needs review by a native speaker before the language is marked stable. Copyright (c) 2026 Diamond Rubinny (d.Ai). Apache-2.0.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: apps/dai-forge/dai_forge/cli.py:230
+msgid "\n  Testing it in the sandbox…"
+msgstr "\n  Проверяю в песочнице…"
+
+#: apps/dai-forge/dai_forge/cli.py:226
+#, python-brace-format
+msgid "\n  ✗ It crashed when started; Diamond is fixing it ({repair}/2)…"
+msgstr "\n  ✗ Приложение упало при запуске; Diamond исправляет ({repair}/2)…"
+
+#: apps/dai-doctor/dai_doctor/cli.py:88
+msgid "\nEverything looks fine."
+msgstr "\nВсё в порядке."
+
+#: apps/dai-move/dai_move/cli.py:106
+#, python-brace-format
+msgid "\n✓ Copied {copied} files."
+msgstr "\n✓ Скопировано файлов: {copied}."
+
+#: apps/dai-forge/dai_forge/cli.py:259
+#, python-brace-format
+msgid "  In the Start menu as “{title}”. Change it: + change {name}: …  ·  Undo: dai-forge app undo {name}"
+msgstr "  В меню «Пуск» под названием «{title}». Изменить: + change {name}: …  ·  Отменить: dai-forge app undo {name}"
+
+#: apps/dai-forge/dai_forge/cli.py:274
+msgid "  Not activated: it needs the permissions above."
+msgstr "  Не включено: нужны разрешения, указанные выше."
+
+#: apps/dai-forge/dai_forge/cli.py:177
+#, python-brace-format
+msgid "  Not allowed: {pending_permissions}. Change later: dai-forge app permissions {name}"
+msgstr "  Не разрешено: {pending_permissions}. Изменить позже: dai-forge app permissions {name}"
+
+#: apps/dai-move/dai_move/cli.py:86
+msgid "  Saved Wi-Fi networks (passwords stay encrypted by Windows; enter them once): "
+msgstr "  Сохранённые сети Wi-Fi (пароли зашифрованы Windows; введите их один раз): "
+
+#: apps/dai-forge/dai_forge/cli.py:277
+#, python-brace-format
+msgid "  Saved, not active. Later: dai-forge auto resume {name}"
+msgstr "  Сохранено, но не активно. Позже: dai-forge auto resume {name}"
+
+#: apps/dai-move/dai_move/cli.py:77
+#, python-brace-format
+msgid "  Total {copies} files, {_size}"
+msgstr "  Всего файлов: {copies}, {_size}"
+
+#: apps/dai-forge/dai_forge/cli.py:158
+msgid "  Worth knowing about this code:"
+msgstr "  Что стоит знать об этом коде:"
+
+#: apps/dai-move/dai_move/cli.py:83
+#, python-brace-format
+msgid "  {links} bookmarks from Chrome/Edge → ~/Bookmarks-from-Windows.html"
+msgstr "  Закладок из Chrome/Edge: {links} → ~/Bookmarks-from-Windows.html"
+
+#: apps/dai-move/dai_move/cli.py:80
+#, python-brace-format
+msgid "  {renamed} names already exist here and get “(Windows)” — nothing is overwritten"
+msgstr "  Имён, которые здесь уже есть: {renamed}; к ним добавится «(Windows)» — ничего не перезаписывается"
+
+#: apps/dai-forge/dai_forge/cli.py:195
+#, python-brace-format
+msgid "  · Not tested: {detail}"
+msgstr "  · Не проверено: {detail}"
+
+#: apps/dai-forge/dai_forge/cli.py:193
+#, python-brace-format
+msgid "  ⚠ Still crashes when started{fixed}: {last}"
+msgstr "  ⚠ По-прежнему падает при запуске{fixed}: {last}"
+
+#: apps/dai-forge/dai_forge/cli.py:189
+#, python-brace-format
+msgid "  ✓ Tested in the sandbox: it works{fixed}"
+msgstr "  ✓ Проверено в песочнице: работает{fixed}"
+
+#: apps/dai-forge/dai_forge/cli.py:185
+msgid " (after 1 fix by Diamond)"
+msgstr " (после 1 исправления от Diamond)"
+
+#: apps/dai-forge/dai_forge/cli.py:187
+#, python-brace-format
+msgid " (after {repairs} fixes by Diamond)"
+msgstr " (исправлений от Diamond: {repairs})"
+
+#: apps/dai-backup/dai_backup/cli.py:169
+msgid " (not connected)"
+msgstr " (не подключено)"
+
+#: apps/dai-tune/dai_tune/catalog.py:785
+msgid " (your session)"
+msgstr " (ваш сеанс)"
+
+#: apps/dai-heal/dai_heal/text.py:31
+#, python-brace-format
+msgid " ({n} times)"
+msgstr " (раз: {n})"
+
+#: apps/dai-oem/dai_oem/cli.py:33
+msgid " and a new disk encryption password"
+msgstr " и новый пароль шифрования диска"
+
+#: apps/dai-tune/dai_tune/cli.py:185
+msgid "(dry run — nothing was changed)"
+msgstr "(пробный запуск — ничего не изменено)"
+
+#: apps/dai-forge/dai_forge/cli.py:243
+msgid "(dry run — nothing was saved)"
+msgstr "(пробный запуск — ничего не сохранено)"
+
+#: apps/dai-code/dai_code/cli.py:123
+msgid "(dry run — nothing was written)"
+msgstr "(пробный запуск — ничего не записано)"
+
+#: apps/dai-j/dai_j/text.py:25
+msgid "(no subject)"
+msgstr "(без темы)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:175
+#, python-brace-format
+msgid ", {health}% health"
+msgstr ", состояние {health}%"
+
+#: apps/dai-j/dai_j/compose.py:102
+msgid "---------- Forwarded message ----------"
+msgstr "---------- Пересылаемое сообщение ----------"
+
+#: apps/dai-mom/dai_mom/text.py:25
+msgid "1 process"
+msgstr "1 процесс"
+
+#: apps/dai-welcome/dai_welcome/gui.py:54
+msgid "A fast, private and secure system with a built-in assistant that runs on this computer. A few short questions and you are ready — every step can be skipped and changed later."
+msgstr "Быстрая, приватная и безопасная система со встроенным помощником, который работает прямо на этом компьютере. Несколько коротких вопросов — и всё готово. Любой шаг можно пропустить и изменить позже."
+
+#: apps/dai-heal/dai_heal/text.py:35
+msgid "A part of the system that runs in the background stopped. Restarting it usually helps; it needs the administrator password."
+msgstr "Остановилась часть системы, работающая в фоне. Обычно помогает перезапуск; для него нужен пароль администратора."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:229
+msgid "A snapshot of the system was taken before it. Your personal files are not touched."
+msgstr "Перед этим был сделан снимок системы. Ваши личные файлы не затронуты."
+
+#: apps/dai-oem/dai_oem/wizard.py:77
+msgid "A user name in small English letters, digits or -, starting with a letter (and not taken)."
+msgstr "Имя пользователя: строчные английские буквы, цифры или -, начинается с буквы (и ещё не занято)."
+
+#: apps/dai-tune/dai_tune/cli.py:150
+msgid "AI interpretation — review it carefully:"
+msgstr "Толкование ИИ — проверьте внимательно:"
+
+#: apps/dai-forge/dai_forge/cli.py:103
+msgid "AI-written recipe — review every step carefully:"
+msgstr "Рецепт написан ИИ — внимательно проверьте каждый шаг:"
+
+#: apps/dai-oem/dai_oem/wizard.py:46
+msgid "About you"
+msgstr "О вас"
+
+#: apps/dai-j/dai_j/text.py:100
+msgid "Accounts found on this computer"
+msgstr "Учётные записи на этом компьютере"
+
+#: apps/dai-forge/dai_forge/gui.py:101
+msgid "Activate ✦"
+msgstr "Включить ✦"
+
+#: apps/dai-forge/dai_forge/gui.py:102
+#, python-brace-format
+msgid "Active: {when}"
+msgstr "Активно: {when}"
+
+#: apps/dai-j/dai_j/text.py:36
+msgid "Add account"
+msgstr "Добавить учётную запись"
+
+#: apps/dai-j/dai_j/text.py:53
+msgid "Add an e-mail account"
+msgstr "Добавить учётную запись почты"
+
+#: apps/dai-command/dai_command/core.py:391
+msgid "Add or build anything, e.g. +install antivirus · +build an app for…"
+msgstr "Добавьте или создайте что угодно, например +install antivirus · +build an app for…"
+
+#: apps/dai-tune/dai_tune/catalog.py:895
+msgid "Add the Flathub app store"
+msgstr "Добавить магазин приложений Flathub"
+
+#: apps/dai-j/dai_j/text.py:107
+msgid "Add the checked accounts"
+msgstr "Добавить отмеченные учётные записи"
+
+#: apps/dai-j/dai_j/text.py:39
+msgid "Add your e-mail address; J finds the settings by itself."
+msgstr "Введите адрес электронной почты — J сам найдёт настройки."
+
+#: apps/dai-forge/dai_forge/gui.py:123
+msgid "Administrator"
+msgstr "Администратор"
+
+#: apps/dai-j/dai_j/text.py:71
+msgid "Advanced settings"
+msgstr "Дополнительные настройки"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:209
+msgid "Airplane mode or a Wi-Fi key/switch is on."
+msgstr "Включён режим «в самолёте» или клавиша/переключатель Wi-Fi."
+
+#: apps/dai-j/dai_j/text.py:11
+msgid "All inboxes"
+msgstr "Все входящие"
+
+#: apps/dai-j/dai_j/text.py:18
+msgid "All mail"
+msgstr "Вся почта"
+
+#: apps/dai-oem/dai_oem/wizard.py:70
+msgid "All set. Restarting…"
+msgstr "Всё готово. Перезапуск…"
+
+#: apps/dai-forge/dai_forge/gui.py:153
+msgid "Allow access to ~/Documents"
+msgstr "Разрешить доступ к ~/Documents"
+
+#: apps/dai-forge/dai_forge/gui.py:108
+msgid "Allow access to ~/Downloads"
+msgstr "Разрешить доступ к ~/Downloads"
+
+#: apps/dai-forge/dai_forge/gui.py:152
+msgid "Allow internet access"
+msgstr "Разрешить доступ в интернет"
+
+#: apps/dai-tune/dai_tune/catalog.py:230
+#, python-brace-format
+msgid "Allow {kind}"
+msgstr "Разрешить: {kind}"
+
+#: apps/dai-tune/dai_tune/posture.py:29
+msgid "AppArmor application confinement"
+msgstr "Изоляция приложений AppArmor"
+
+#: apps/dai-tune/dai_tune/catalog.py:204
+msgid "Applies to newly connected drives. Do not use if the system itself runs from a USB drive."
+msgstr "Действует для вновь подключаемых дисков. Не используйте, если сама система запущена с USB-накопителя."
+
+#: apps/dai-code/dai_code/cli.py:126
+msgid "Apply this change? [y/N] "
+msgstr "Применить это изменение? [y/N] "
+
+#: apps/dai-welcome/dai_welcome/gui.py:62
+msgid "Apply ✦"
+msgstr "Применить ✦"
+
+#: apps/dai-tune/dai_tune/cli.py:91
+msgid "Apply? [y/N] "
+msgstr "Применить? [y/N] "
+
+#: apps/dai-mom/dai_mom/text.py:13
+msgid "Apps"
+msgstr "Приложения"
+
+#: apps/dai-welcome/dai_welcome/gui.py:99
+msgid "Apps you build with D.Ai Forge run in a sandbox without internet or your files, unless you allow it."
+msgstr "Приложения, созданные в D.Ai Forge, работают в песочнице без интернета и без доступа к вашим файлам, если вы не разрешите."
+
+#: apps/dai-command/dai_command/core.py:382
+msgid "Apps, commands, math…    ? ask    + add / build    > terminal"
+msgstr "Приложения, команды, вычисления…    ? спросить    + добавить / создать    > терминал"
+
+#: apps/dai-j/dai_j/text.py:17
+msgid "Archive"
+msgstr "Архив"
+
+#: apps/dai-command/dai_command/core.py:372
+msgid "Ask D.Ai…"
+msgstr "Спросите D.Ai…"
+
+#: apps/dai-mom/dai_mom/text.py:47
+#, python-brace-format
+msgid "Asked {name} to close."
+msgstr "Приложению {name} отправлен запрос на закрытие."
+
+#: apps/dai-code/dai_code/cli.py:106
+#, python-brace-format
+msgid "Asking Diamond to edit {rel}…"
+msgstr "Прошу Diamond изменить {rel}…"
+
+#: apps/dai-tune/dai_tune/cli.py:143
+msgid "Asking Diamond…"
+msgstr "Спрашиваю Diamond…"
+
+#: apps/dai-welcome/dai_welcome/gui.py:83
+msgid "Assistant — answers questions and helps with the system"
+msgstr "Помощник — отвечает на вопросы и помогает с системой"
+
+#: apps/dai-oem/dai_oem/wizard.py:82
+msgid "At least 8 characters, and confirm you wrote it down."
+msgstr "Не менее 8 символов, и подтвердите, что вы его записали."
+
+#: apps/dai-oem/dai_oem/wizard.py:79
+msgid "At least 8 characters."
+msgstr "Не менее 8 символов."
+
+#: apps/dai-mom/dai_mom/text.py:58
+msgid "At login"
+msgstr "При входе"
+
+#: apps/dai-j/dai_j/text.py:49
+#, python-brace-format
+msgid "Attachments: {names}"
+msgstr "Вложения: {names}"
+
+#: apps/dai-backup/dai_backup/cli.py:178
+msgid "Automatic backups are off. The backup on the drive and the key (~/.config/dai/backup.key) are kept."
+msgstr "Автоматическое резервное копирование выключено. Резервная копия на диске и ключ (~/.config/dai/backup.key) сохранены."
+
+#: apps/dai-tune/dai_tune/posture.py:28
+msgid "Automatic security updates"
+msgstr "Автоматические обновления безопасности"
+
+#: apps/dai-forge/dai_forge/gui.py:133
+#: apps/dai-oem/dai_oem/wizard.py:73
+#: apps/dai-welcome/dai_welcome/gui.py:60
+msgid "Back"
+msgstr "Назад"
+
+#: apps/dai-command/dai_command/core.py:422
+msgid "Back up now"
+msgstr "Создать резервную копию сейчас"
+
+#: apps/dai-backup/dai_backup/cli.py:106
+msgid "Backed up: "
+msgstr "Сохраняются: "
+
+#: apps/dai-mom/dai_mom/text.py:57
+msgid "Background"
+msgstr "В фоне"
+
+#: apps/dai-raz/dai_raz/cli.py:29
+msgid "Background services are on"
+msgstr "Фоновые службы работают"
+
+#: apps/dai-command/dai_command/core.py:423
+msgid "Backup drive connected · Enter"
+msgstr "Диск для резервных копий подключён · Enter"
+
+#: apps/dai-backup/dai_backup/cli.py:129
+#, python-brace-format
+msgid "Backup failed: {exc}"
+msgstr "Ошибка резервного копирования: {exc}"
+
+#: apps/dai-backup/dai_backup/cli.py:67
+msgid "Backup is already set up (dai-backup status). To change it: dai-backup disable, then setup."
+msgstr "Резервное копирование уже настроено (dai-backup status). Чтобы изменить: dai-backup disable, затем setup."
+
+#: apps/dai-backup/dai_backup/cli.py:148
+msgid "Backup is not set up yet: dai-backup setup"
+msgstr "Резервное копирование ещё не настроено: dai-backup setup"
+
+#: apps/dai-tune/dai_tune/catalog.py:1131
+msgid "Balanced power mode"
+msgstr "Сбалансированный режим питания"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:170
+#, python-brace-format
+msgid "Battery at {capacity}%"
+msgstr "Заряд батареи: {capacity}%"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:176
+msgid "Battery is fine"
+msgstr "Батарея в порядке"
+
+#: apps/dai-quick/dai_quick/gui.py:28
+msgid "Battery saver"
+msgstr "Экономия заряда"
+
+#: apps/dai-tune/dai_tune/catalog.py:1129
+msgid "Battery saver mode (longer battery life, a bit slower)"
+msgstr "Режим экономии заряда (батарея работает дольше, система чуть медленнее)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:172
+msgid "Battery saver mode makes it last longer."
+msgstr "Режим экономии заряда продлит работу батареи."
+
+#: apps/dai-heal/dai_heal/text.py:48
+msgid "Before the update this worked, and now it does not (Raz, D.Ai's quality control, checked before and after). Undoing the update brings the system back to how it was; it needs snapshots, which are on when D.Ai was installed on Btrfs. Fixed it another way? Check again."
+msgstr "До обновления это работало, а теперь нет (Raz, контроль качества D.Ai, проверил до и после). Отмена обновления вернёт систему в прежнее состояние; для этого нужны снимки системы, которые включены, если D.Ai установлена на Btrfs. Исправили иначе? Проверьте снова."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:155
+msgid "Biggest folders in your home"
+msgstr "Самые большие папки в вашей домашней папке"
+
+#: apps/dai-privacy/dai_privacy/text.py:25
+msgid "Block the camera (D.Ai Tune)…"
+msgstr "Заблокировать камеру (D.Ai Tune)…"
+
+#: apps/dai-tune/dai_tune/catalog.py:216
+#, python-brace-format
+msgid "Block {kind}"
+msgstr "Заблокировать: {kind}"
+
+#: apps/dai-command/dai_command/core.py:407
+msgid "Bring files and bookmarks from Windows"
+msgstr "Перенести файлы и закладки из Windows"
+
+#: apps/dai-command/dai_command/core.py:400
+msgid "Build app: "
+msgstr "Создать приложение: "
+
+#: apps/dai-command/dai_command/core.py:410
+msgid "Build or add it: "
+msgstr "Создать или добавить: "
+
+#: apps/dai-command/dai_command/core.py:395
+msgid "Build with Diamond · runs in a sandbox · Enter"
+msgstr "Создать с Diamond · работает в песочнице · Enter"
+
+#: apps/dai-forge/dai_forge/cli.py:219
+#, python-brace-format
+msgid "Building a {kind} with Diamond (on this computer)…"
+msgstr "Создаю с Diamond: {kind} (на этом компьютере)…"
+
+#: apps/dai-forge/dai_forge/cli.py:215
+#, python-brace-format
+msgid "Building an automation ({schedule}) with Diamond…"
+msgstr "Создаю автоматизацию ({schedule}) с Diamond…"
+
+#: apps/dai-forge/dai_forge/gui.py:158
+msgid "Building needs Diamond, the local AI (about 1.1 GB, downloaded once and verified)."
+msgstr "Для создания нужен Diamond, локальный ИИ (около 1,1 GB, загружается один раз и проверяется)."
+
+#: apps/dai-mom/dai_mom/text.py:18
+msgid "CPU"
+msgstr "Процессор"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:184
+msgid "Camera"
+msgstr "Камера"
+
+#: apps/dai-j/dai_j/text.py:80
+#: apps/dai-mom/dai_mom/text.py:56
+msgid "Cancel"
+msgstr "Отмена"
+
+#: apps/dai-forge/dai_forge/cli.py:422
+msgid "Cancelled."
+msgstr "Отменено."
+
+#: apps/dai-tune/dai_tune/cli.py:192
+msgid "Cancelled. Nothing was changed."
+msgstr "Отменено. Ничего не изменено."
+
+#: apps/dai-code/dai_code/cli.py:128
+msgid "Cancelled. Nothing was written."
+msgstr "Отменено. Ничего не записано."
+
+#: apps/dai-oem/dai_oem/cli.py:39
+msgid "Cancelled: the computer starts as before."
+msgstr "Отменено: компьютер запустится как раньше."
+
+#: apps/dai-tune/dai_tune/catalog.py:1090
+#, python-brace-format
+msgid "Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only)."
+msgstr "Это нельзя отменить, но ничего нужного не потеряется (удаляются только журналы сверх {JOURNAL_KEEP})."
+
+#: apps/dai-j/dai_j/text.py:88
+msgid "Cannot reach the mail server. Check the Internet connection and the server name."
+msgstr "Не удаётся связаться с почтовым сервером. Проверьте подключение к интернету и имя сервера."
+
+#: apps/dai-j/dai_j/text.py:118
+msgid "Cc"
+msgstr "Копия"
+
+#: apps/dai-forge/dai_forge/gui.py:156
+msgid "Change it…"
+msgstr "Изменить…"
+
+#: apps/dai-heal/dai_heal/text.py:63
+msgid "Check again"
+msgstr "Проверить снова"
+
+#: apps/dai-j/dai_j/text.py:35
+msgid "Check mail"
+msgstr "Проверить почту"
+
+#: apps/dai-j/dai_j/text.py:126
+#, python-brace-format
+msgid "Check these addresses: {bad}"
+msgstr "Проверьте эти адреса: {bad}"
+
+#: apps/dai-mom/dai_mom/text.py:80
+msgid "Checked apps start when you log in. A change takes effect at the next login; the system's own files are never changed."
+msgstr "Отмеченные приложения запускаются при входе в систему. Изменения вступят в силу при следующем входе; системные файлы никогда не меняются."
+
+#: apps/dai-j/dai_j/text.py:44
+msgid "Checking mail…"
+msgstr "Проверяю почту…"
+
+#: apps/dai-doctor/dai_doctor/cli.py:60
+msgid "Checking this computer…"
+msgstr "Проверяю этот компьютер…"
+
+#: apps/dai-j/dai_j/text.py:42
+msgid "Choose a message to read it."
+msgstr "Выберите сообщение, чтобы прочитать его."
+
+#: apps/dai-clip/dai_clip/text.py:18
+msgid "Clear all"
+msgstr "Очистить всё"
+
+#: apps/dai-clip/dai_clip/text.py:11
+#: apps/dai-command/dai_command/core.py:417
+msgid "Clipboard history"
+msgstr "История буфера обмена"
+
+#: apps/dai-mom/dai_mom/text.py:21
+msgid "Close"
+msgstr "Закрыть"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:71
+msgid "Close apps or browser tabs you are not using"
+msgstr "Закройте приложения или вкладки браузера, которыми не пользуетесь"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:95
+msgid "Close or wait for the busiest app"
+msgstr "Закройте самое загруженное приложение или подождите"
+
+#: apps/dai-tune/dai_tune/catalog.py:332
+#, python-brace-format
+msgid "Close port {port}/{proto}"
+msgstr "Закрыть порт {port}/{proto}"
+
+#: apps/dai-mom/dai_mom/text.py:32
+#, python-brace-format
+msgid "Close {name}?"
+msgstr "Закрыть {name}?"
+
+#: apps/dai-forge/dai_forge/cli.py:156
+msgid "Code"
+msgstr "Код"
+
+#: apps/dai-welcome/dai_welcome/gui.py:84
+msgid "Coding — explains and edits code (D.Ai Code, D.Ai Forge)"
+msgstr "Программирование — объясняет и правит код (D.Ai Code, D.Ai Forge)"
+
+#: apps/dai-oem/dai_oem/wizard.py:51
+msgid "Computer name"
+msgstr "Имя компьютера"
+
+#: apps/dai-command/dai_command/core.py:390
+msgid "Configure the system in words, e.g. !block usb"
+msgstr "Настройте систему словами, например !block usb"
+
+#: apps/dai-backup/dai_backup/cli.py:75
+msgid "Connect an external drive and run: dai-backup setup /media/$USER/<drive>"
+msgstr "Подключите внешний диск и выполните: dai-backup setup /media/$USER/<drive>"
+
+#: apps/dai-command/dai_command/core.py:421
+msgid "Connect an external drive · Enter"
+msgstr "Подключите внешний диск · Enter"
+
+#: apps/dai-command/dai_command/core.py:424
+msgid "Connect the backup drive first"
+msgstr "Сначала подключите диск для резервных копий"
+
+#: apps/dai-backup/dai_backup/cli.py:182
+#, python-brace-format
+msgid "Connect the backup drive first ({repo})."
+msgstr "Сначала подключите диск для резервных копий ({repo})."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:195
+msgid "Connected, but printing is not installed yet."
+msgstr "Подключено, но печать ещё не установлена."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:168
+msgid "Consider replacing the battery"
+msgstr "Стоит заменить батарею"
+
+#: apps/dai-oem/dai_oem/cli.py:34
+msgid "Continue? [y/N] "
+msgstr "Продолжить? [y/N] "
+
+#: apps/dai-backup/dai_backup/cli.py:172
+msgid "Copies: "
+msgstr "Копий: "
+
+#: apps/dai-move/dai_move/cli.py:95
+msgid "Copy now? [y/N] "
+msgstr "Скопировать сейчас? [y/N] "
+
+#: apps/dai-forge/dai_forge/gui.py:121
+msgid "Create ✦"
+msgstr "Создать ✦"
+
+#: apps/dai-clip/dai_clip/text.py:26
+msgid "D.Ai Clip is off; the history was cleared. `dai-clip on` turns it back on."
+msgstr "D.Ai Clip выключен; история очищена. `dai-clip on` снова включает его."
+
+#: apps/dai-clip/dai_clip/text.py:28
+msgid "D.Ai Clip is on."
+msgstr "D.Ai Clip включён."
+
+#: apps/dai-clip/dai_clip/text.py:34
+msgid "D.Ai Clip needs a Wayland session with wl-clipboard."
+msgstr "Для D.Ai Clip нужен сеанс Wayland с wl-clipboard."
+
+#: apps/dai-command/dai_command/core.py:418
+msgid "D.Ai Clip · Super+V · in memory only, never passwords · Enter"
+msgstr "D.Ai Clip · Super+V · только в памяти, без паролей · Enter"
+
+#: apps/dai-command/dai_command/core.py:428
+msgid "D.Ai Command input"
+msgstr "Ввод D.Ai Command"
+
+#: apps/dai-command/dai_command/core.py:427
+msgid "D.Ai Doctor · Enter for details and fixes"
+msgstr "D.Ai Doctor · Enter — подробности и исправления"
+
+#: apps/dai-evolve/dai_evolve/cli.py:33
+msgid "D.Ai Evolve is off: nothing is noticed or kept. Turn on again: dai-evolve on"
+msgstr "D.Ai Evolve выключен: ничего не отслеживается и не сохраняется. Включить снова: dai-evolve on"
+
+#: apps/dai-command/dai_command/core.py:394
+msgid "D.Ai Forge · Enter to review and remove (admin)"
+msgstr "D.Ai Forge · Enter — просмотреть и удалить (администратор)"
+
+#: apps/dai-command/dai_command/core.py:393
+msgid "D.Ai Forge · Enter to review and set up (admin)"
+msgstr "D.Ai Forge · Enter — просмотреть и настроить (администратор)"
+
+#: apps/dai-forge/dai_forge/cli.py:551
+msgid "D.Ai Forge — add capabilities, integrations and apps by writing what you need."
+msgstr "D.Ai Forge — добавляйте возможности, интеграции и приложения, просто описав, что вам нужно."
+
+#: apps/dai-quick/dai_quick/gui.py:37
+#, python-brace-format
+msgid "D.Ai Heal found {count} problem(s)"
+msgstr "D.Ai Heal: найдено проблем — {count}"
+
+#: apps/dai-command/dai_command/core.py:415
+msgid "D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter"
+msgstr "D.Ai Heal · объясняет и исправляет с вашего согласия · Super+F1 · Enter"
+
+#: apps/dai-heal/dai_heal/text.py:15
+msgid "D.Ai Help & Repair"
+msgstr "D.Ai Помощь и восстановление"
+
+#: apps/dai-command/dai_command/core.py:408
+msgid "D.Ai Move · shows what will be copied first · nothing is overwritten · Enter"
+msgstr "D.Ai Move · сначала покажет, что будет скопировано · ничего не перезаписывается · Enter"
+
+#: apps/dai-privacy/dai_privacy/text.py:23
+msgid "D.Ai Privacy"
+msgstr "D.Ai Конфиденциальность"
+
+#: apps/dai-command/dai_command/core.py:388
+msgid "D.Ai Tune · Enter to review and apply"
+msgstr "D.Ai Tune · Enter — просмотреть и применить"
+
+#: apps/dai-tune/dai_tune/cli.py:63
+msgid "D.Ai Tune — change plan"
+msgstr "D.Ai Tune — план изменений"
+
+#: apps/dai-tune/dai_tune/cli.py:314
+msgid "D.Ai Tune — configure the system by writing what you need."
+msgstr "D.Ai Tune — настраивайте систему, просто описав, что вам нужно."
+
+#: apps/dai-raz/dai_raz/cli.py:27
+msgid "D.Ai commands start"
+msgstr "Запуск команд D.Ai"
+
+#: apps/dai-evolve/dai_evolve/cli.py:40
+msgid "D.Ai has an idea for you"
+msgstr "У D.Ai есть идея для вас"
+
+#: apps/dai-command/dai_command/core.py:413
+msgid "D.Ai suggests · Enter to review · Delete to hide"
+msgstr "D.Ai предлагает · Enter — посмотреть · Delete — скрыть"
+
+#: apps/dai-raz/dai_raz/cli.py:31
+msgid "D.Ai's files are as installed"
+msgstr "Файлы D.Ai в исходном состоянии"
+
+#: apps/dai-j/dai_j/text.py:24
+msgid "Date"
+msgstr "Дата"
+
+#: apps/dai-j/dai_j/text.py:33
+msgid "Delete"
+msgstr "Удалить"
+
+#: apps/dai-forge/dai_forge/cli.py:420
+#, python-brace-format
+msgid "Delete {title} and its data? [y/N] "
+msgstr "Удалить {title} и его данные? [y/N] "
+
+#: apps/dai-mom/dai_mom/text.py:55
+msgid "Delete: close · Shift+Delete: force close"
+msgstr "Delete: закрыть · Shift+Delete: закрыть принудительно"
+
+#: apps/dai-raz/dai_raz/cli.py:109
+msgid "Deleted."
+msgstr "Удалено."
+
+#: apps/dai-find/dai_find/search.py:26
+msgid "Desktop"
+msgstr "Рабочий стол"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:104
+#, python-brace-format
+msgid "Details: journalctl -u {failed_units}"
+msgstr "Подробности: journalctl -u {failed_units}"
+
+#: apps/dai-heal/dai_heal/text.py:54
+msgid "Diamond adds:"
+msgstr "Diamond добавляет:"
+
+#: apps/dai-tune/dai_tune/cli.py:146
+msgid "Diamond is not available (dai-models install qwen2.5-0.5b)."
+msgstr "Diamond недоступен (dai-models install qwen2.5-0.5b)."
+
+#: apps/dai-command/dai_command/core.py:374
+msgid "Diamond is not ready. Install a model: dai-models install qwen2.5-0.5b"
+msgstr "Diamond не готов. Установите модель: dai-models install qwen2.5-0.5b"
+
+#: apps/dai-forge/dai_forge/gui.py:140
+msgid "Diamond is writing a recipe…"
+msgstr "Diamond пишет рецепт…"
+
+#: apps/dai-forge/dai_forge/gui.py:141
+msgid "Diamond is writing your app — on this computer, nothing leaves it."
+msgstr "Diamond пишет ваше приложение — на этом компьютере, ничего не покидает его."
+
+#: apps/dai-code/dai_code/cli.py:117
+msgid "Diamond proposed no change."
+msgstr "Diamond не предложил изменений."
+
+#: apps/dai-command/dai_command/core.py:373
+msgid "Diamond · Enter to ask (runs on this computer)"
+msgstr "Diamond · Enter — спросить (работает на этом компьютере)"
+
+#: apps/dai-welcome/dai_welcome/gui.py:95
+msgid "Diamond, the AI, runs on this computer. Prompts, files and code are not sent anywhere."
+msgstr "Diamond, ИИ, работает на этом компьютере. Запросы, файлы и код никуда не отправляются."
+
+#: apps/dai-welcome/dai_welcome/gui.py:78
+msgid "Diamond, the local AI, and voice"
+msgstr "Diamond, локальный ИИ, и голос"
+
+#: apps/dai-j/dai_j/text.py:129
+msgid "Discard"
+msgstr "Не сохранять"
+
+#: apps/dai-j/dai_j/text.py:128
+msgid "Discard this message?"
+msgstr "Не сохранять это сообщение?"
+
+#: apps/dai-tune/dai_tune/posture.py:30
+msgid "Disk encryption"
+msgstr "Шифрование диска"
+
+#: apps/dai-oem/dai_oem/wizard.py:53
+msgid "Disk encryption password"
+msgstr "Пароль шифрования диска"
+
+#: apps/dai-oem/dai_oem/wizard.py:67
+msgid "Disk encryption: new password"
+msgstr "Шифрование диска: новый пароль"
+
+#: apps/dai-oem/dai_oem/wizard.py:68
+msgid "Disk encryption: off"
+msgstr "Шифрование диска: выключено"
+
+#: apps/dai-mom/dai_mom/text.py:53
+#, python-brace-format
+msgid "Disk: {free} free of {total}"
+msgstr "Диск: свободно {free} из {total}"
+
+#: apps/dai-quick/dai_quick/gui.py:27
+msgid "Do not disturb"
+msgstr "Не беспокоить"
+
+#: apps/dai-find/dai_find/search.py:25
+msgid "Documents"
+msgstr "Документы"
+
+#: apps/dai-heal/dai_heal/text.py:65
+msgid "Don't ask about this again"
+msgstr "Больше не спрашивать об этом"
+
+#: apps/dai-forge/dai_forge/gui.py:143
+msgid "Done ✓"
+msgstr "Готово ✓"
+
+#: apps/dai-mom/dai_mom/text.py:73
+#, python-brace-format
+msgid "Done: {name}"
+msgstr "Готово: {name}"
+
+#: apps/dai-forge/dai_forge/gui.py:160
+msgid "Download the coding model"
+msgstr "Загрузить модель для программирования"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:139
+msgid "Downloaded package files and old system logs."
+msgstr "Загруженные файлы пакетов и старые системные журналы."
+
+#: apps/dai-forge/dai_forge/gui.py:161
+msgid "Downloading and verifying the model…"
+msgstr "Загружаю и проверяю модель…"
+
+#: apps/dai-find/dai_find/search.py:24
+msgid "Downloads"
+msgstr "Загрузки"
+
+#: apps/dai-welcome/dai_welcome/gui.py:109
+#, python-brace-format
+msgid "Downloads ({total} in total):"
+msgstr "Загрузки (всего {total}):"
+
+#: apps/dai-j/dai_j/text.py:14
+msgid "Drafts"
+msgstr "Черновики"
+
+#: apps/dai-backup/dai_backup/cli.py:169
+msgid "Drive: "
+msgstr "Диск: "
+
+#: apps/dai-j/dai_j/text.py:55
+msgid "E-mail address"
+msgstr "Адрес электронной почты"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:151
+msgid "Empty the trash and clear previews"
+msgstr "Очистить корзину и миниатюры"
+
+#: apps/dai-j/dai_j/text.py:76
+msgid "Encryption"
+msgstr "Шифрование"
+
+#: apps/dai-oem/dai_oem/wizard.py:59
+msgid "Encryption password again"
+msgstr "Повторите пароль шифрования"
+
+#: apps/dai-oem/dai_oem/wizard.py:81
+msgid "English letters, digits and -, up to 63."
+msgstr "Английские буквы, цифры и -, не более 63 символов."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:75
+msgid "Enough free memory"
+msgstr "Достаточно свободной памяти"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:130
+#, python-brace-format
+msgid "Enough free space on {mount}"
+msgstr "Достаточно свободного места на {mount}"
+
+#: apps/dai-command/dai_command/core.py:426
+msgid "Enter for details"
+msgstr "Enter — подробности"
+
+#: apps/dai-command/dai_command/core.py:384
+msgid "Enter open  ·  ↑↓ move  ·  Esc close  ·  Alt+Shift language"
+msgstr "Enter открыть  ·  ↑↓ перемещение  ·  Esc закрыть  ·  Alt+Shift язык"
+
+#: apps/dai-clip/dai_clip/text.py:16
+msgid "Enter paste · Shift+Enter copy only · Delete remove · Esc close"
+msgstr "Enter вставить · Shift+Enter только копировать · Delete удалить · Esc закрыть"
+
+#: apps/dai-command/dai_command/core.py:379
+msgid "Enter to copy"
+msgstr "Enter — скопировать"
+
+#: apps/dai-raz/dai_raz/cli.py:35
+msgid "Every language works"
+msgstr "Все языки работают"
+
+#: apps/dai-welcome/dai_welcome/gui.py:111
+msgid "Every system change can be undone: dai-tune undo"
+msgstr "Любое изменение системы можно отменить: dai-tune undo"
+
+#: apps/dai-tune/dai_tune/catalog.py:675
+#, python-brace-format
+msgid "Every user: the screen locks after at most {minutes} minutes"
+msgstr "Для всех пользователей: экран блокируется не позже чем через {minutes} мин."
+
+#: apps/dai-forge/dai_forge/gui.py:144
+msgid "Everything is set up. You can undo it at any time."
+msgstr "Всё настроено. Отменить можно в любой момент."
+
+#: apps/dai-quick/dai_quick/gui.py:36
+msgid "Everything works"
+msgstr "Всё работает"
+
+#: apps/dai-forge/dai_forge/cli.py:536
+#: apps/dai-tune/dai_tune/cli.py:316
+msgid "Examples:"
+msgstr "Примеры:"
+
+#: apps/dai-tune/dai_tune/catalog.py:321
+msgid "Exposes a service on this computer to other machines."
+msgstr "Открывает доступ к службе на этом компьютере для других устройств."
+
+#: apps/dai-command/dai_command/core.py:402
+msgid "Find files as you remember them: “find the pdf I downloaded last week”"
+msgstr "Ищите файлы так, как вы их помните: «найди pdf, который я скачал на прошлой неделе»"
+
+#: apps/dai-j/dai_j/text.py:60
+msgid "Find settings"
+msgstr "Поиск настроек"
+
+#: apps/dai-welcome/dai_welcome/gui.py:63
+msgid "Finish"
+msgstr "Готово"
+
+#: apps/dai-oem/dai_oem/wizard.py:75
+msgid "Finish ✦"
+msgstr "Готово ✦"
+
+#: apps/dai-oem/dai_oem/cli.py:42
+#, python-brace-format
+msgid "Finished by {owner}; the temporary users are removed at the next start."
+msgstr "Завершено пользователем {owner}; временные пользователи будут удалены при следующем запуске."
+
+#: apps/dai-move/dai_move/cli.py:108
+msgid "Firefox: Bookmarks → Manage bookmarks → Import and Backup → Import Bookmarks from HTML."
+msgstr "Firefox: Закладки → Управление закладками → Импорт и резервные копии → Импорт закладок из HTML-файла."
+
+#: apps/dai-tune/dai_tune/posture.py:26
+msgid "Firewall blocks unsolicited incoming traffic"
+msgstr "Брандмауэр блокирует незапрошенный входящий трафик"
+
+#: apps/dai-heal/dai_heal/text.py:58
+msgid "Fix the app with Diamond"
+msgstr "Исправить приложение с Diamond"
+
+#: apps/dai-command/dai_command/core.py:381
+msgid "Fix to English · Enter to copy"
+msgstr "Исправить на английскую раскладку · Enter — скопировать"
+
+#: apps/dai-command/dai_command/core.py:380
+msgid "Fix to Hebrew · Enter to copy"
+msgstr "Исправить на ивритскую раскладку · Enter — скопировать"
+
+#: apps/dai-command/dai_command/fixlayout.py:62
+#, python-brace-format
+msgid "Fixed: {text}"
+msgstr "Исправлено: {text}"
+
+#: apps/dai-tune/dai_tune/catalog.py:898
+msgid "Flathub apps run sandboxed and update through Flatpak."
+msgstr "Приложения Flathub работают в песочнице и обновляются через Flatpak."
+
+#: apps/dai-j/dai_j/text.py:19
+msgid "Folders"
+msgstr "Папки"
+
+#: apps/dai-backup/dai_backup/cli.py:173
+msgid "Folders: "
+msgstr "Папки: "
+
+#: apps/dai-heal/dai_heal/text.py:20
+msgid "For example: the sound does not work"
+msgstr "Например: не работает звук"
+
+#: apps/dai-mom/dai_mom/text.py:22
+msgid "Force close"
+msgstr "Закрыть принудительно"
+
+#: apps/dai-mom/dai_mom/text.py:30
+#, python-brace-format
+msgid "Force close {name}?"
+msgstr "Закрыть {name} принудительно?"
+
+#: apps/dai-mom/dai_mom/text.py:41
+#, python-brace-format
+msgid "Forcing loses unsaved work. Add --yes to force {name} closed."
+msgstr "При принудительном закрытии несохранённые данные будут потеряны. Добавьте --yes, чтобы принудительно закрыть {name}."
+
+#: apps/dai-j/dai_j/text.py:32
+msgid "Forward"
+msgstr "Переслать"
+
+#: apps/dai-j/dai_j/text.py:62
+#, python-brace-format
+msgid "Found: {host} (secure connection)"
+msgstr "Найдено: {host} (защищённое соединение)"
+
+#: apps/dai-tune/dai_tune/catalog.py:1087
+msgid "Free disk space: downloaded package files and old system logs"
+msgstr "Освободить место на диске: загруженные файлы пакетов и старые системные журналы"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:140
+msgid "Free this space (administrator)"
+msgstr "Освободить это место (администратор)"
+
+#: apps/dai-forge/dai_forge/schedule.py:25
+msgid "Fri"
+msgstr "Пт"
+
+#: apps/dai-j/dai_j/text.py:22
+#: apps/dai-j/dai_j/text.py:116
+msgid "From"
+msgstr "От"
+
+#: apps/dai-move/dai_move/cli.py:72
+#, python-brace-format
+msgid "From Windows user “{name}” ({home}):"
+msgstr "Из пользователя Windows «{name}» ({home}):"
+
+#: apps/dai-command/dai_command/core.py:371
+msgid "From history"
+msgstr "Из истории"
+
+#: apps/dai-j/dai_j/text.py:51
+#, python-brace-format
+msgid "From: {sender}"
+msgstr "От: {sender}"
+
+#: apps/dai-quick/dai_quick/gui.py:38
+msgid "Get help"
+msgstr "Получить помощь"
+
+#: apps/dai-j/dai_j/text.py:64
+msgid "Gmail: use an app password (Google account → Security → 2-Step Verification → App passwords)."
+msgstr "Gmail: используйте пароль приложения (аккаунт Google → Безопасность → Двухэтапная аутентификация → Пароли приложений)."
+
+#: apps/dai-welcome/dai_welcome/gui.py:117
+msgid "Good to know"
+msgstr "Полезно знать"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:183
+msgid "Graphics"
+msgstr "Графика"
+
+#: apps/dai-tune/dai_tune/cli.py:28
+msgid "HIGH RISK"
+msgstr "ВЫСОКИЙ РИСК"
+
+#: apps/dai-oem/dai_oem/wizard.py:44
+msgid "Hello! Let's set up your computer"
+msgstr "Здравствуйте! Давайте настроим ваш компьютер"
+
+#: apps/dai-command/dai_command/core.py:414
+msgid "Help & repair: what is not working?"
+msgstr "Помощь и восстановление: что не работает?"
+
+#: apps/dai-heal/dai_heal/text.py:23
+msgid "Help me fix it"
+msgstr "Помогите это исправить"
+
+#: apps/dai-heal/dai_heal/text.py:83
+msgid "Here is what I checked:"
+msgstr "Вот что я проверил:"
+
+#: apps/dai-heal/dai_heal/text.py:16
+msgid "Hi. Tell me what is not working, or pick a problem I noticed:"
+msgstr "Здравствуйте. Расскажите, что не работает, или выберите проблему, которую я заметил:"
+
+#: apps/dai-privacy/dai_privacy/text.py:26
+msgid "Hide the indicator until next login"
+msgstr "Скрыть индикатор до следующего входа"
+
+#: apps/dai-oem/dai_oem/wizard.py:52
+msgid "How the computer appears on the network."
+msgstr "Как компьютер виден в сети."
+
+#: apps/dai-heal/dai_heal/text.py:84
+msgid "I could not match that to something I can check. Try: “the sound does not work”, “why is it slow?”, “the printer does not work”."
+msgstr "Не удалось понять, что именно проверить. Попробуйте: «не работает звук», «почему тормозит?», «не работает принтер»."
+
+#: apps/dai-heal/dai_heal/text.py:18
+msgid "I did not notice any crash or failed service. Tell me what is not working."
+msgstr "Я не заметил ни сбоев, ни неработающих служб. Расскажите, что не работает."
+
+#: apps/dai-forge/dai_forge/gui.py:137
+msgid "I reviewed all the steps"
+msgstr "Я проверил все шаги"
+
+#: apps/dai-oem/dai_oem/wizard.py:60
+msgid "I wrote it down. Without it nobody, not even a technician, can open my files."
+msgstr "Я записал его. Без него никто, даже специалист, не сможет открыть мои файлы."
+
+#: apps/dai-forge/dai_forge/gui.py:126
+msgid "IDEAS"
+msgstr "ИДЕИ"
+
+#: apps/dai-heal/dai_heal/text.py:80
+msgid "If it keeps happening, report it (nothing is sent without you): https://github.com/diamondrubinny/D.Ai/issues"
+msgstr "Если это повторяется, сообщите об этом (ничего не отправляется без вас): https://github.com/diamondrubinny/D.Ai/issues"
+
+#: apps/dai-j/dai_j/text.py:99
+msgid "Import from another mail app"
+msgstr "Импорт из другой почтовой программы"
+
+#: apps/dai-quick/dai_quick/gui.py:35
+msgid "Improve"
+msgstr "Улучшить"
+
+#: apps/dai-j/dai_j/text.py:12
+msgid "Inbox"
+msgstr "Входящие"
+
+#: apps/dai-j/dai_j/text.py:72
+msgid "Incoming (IMAP)"
+msgstr "Входящая (IMAP)"
+
+#: apps/dai-forge/dai_forge/cli.py:114
+msgid "Install Diamond (the local AI) so it can write one: dai-models install qwen2.5-0.5b"
+msgstr "Установите Diamond (локальный ИИ), чтобы он написал рецепт: dai-models install qwen2.5-0.5b"
+
+#: apps/dai-tune/dai_tune/catalog.py:936
+msgid "Install from Flathub: "
+msgstr "Установить из Flathub: "
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:196
+msgid "Install printing (D.Ai Forge)"
+msgstr "Установить печать (D.Ai Forge)"
+
+#: apps/dai-tune/dai_tune/catalog.py:449
+msgid "Install: "
+msgstr "Установить: "
+
+#: apps/dai-forge/dai_forge/gui.py:110
+#, python-brace-format
+msgid "It crashed when started; Diamond is fixing it ({n}/2)…"
+msgstr "Приложение упало при запуске; Diamond исправляет ({n}/2)…"
+
+#: apps/dai-forge/dai_forge/cli.py:325
+msgid "It has not run yet."
+msgstr "Ещё не запускалось."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:166
+#, python-brace-format
+msgid "It holds {health}% of its original capacity."
+msgstr "Она сохраняет {health}% исходной ёмкости."
+
+#: apps/dai-forge/dai_forge/gui.py:150
+msgid "It is in the Start menu. It runs in a sandbox: no internet and no access to your files unless you allow it."
+msgstr "Оно в меню «Пуск». Работает в песочнице: без интернета и без доступа к вашим файлам, если вы не разрешите."
+
+#: apps/dai-forge/dai_forge/gui.py:103
+#, python-brace-format
+msgid "It runs in the sandbox on its schedule and tells you with a notification. See and stop it: dai-forge auto list · dai-forge auto pause {name}"
+msgstr "Работает в песочнице по расписанию и сообщает вам уведомлением. Посмотреть и остановить: dai-forge auto list · dai-forge auto pause {name}"
+
+#: apps/dai-oem/dai_oem/wizard.py:45
+msgid "It takes two minutes. Choose a language:"
+msgstr "Это займёт две минуты. Выберите язык:"
+
+#: apps/dai-evolve/dai_evolve/cli.py:37
+msgid "It will not be suggested again."
+msgstr "Больше не будет предлагаться."
+
+#: apps/dai-j/dai_j/text.py:92
+msgid "J connects only with encryption."
+msgstr "J подключается только с шифрованием."
+
+#: apps/dai-j/dai_j/text.py:10
+msgid "J – Mail"
+msgstr "J – Почта"
+
+#: apps/dai-welcome/dai_welcome/gui.py:73
+msgid "Keep as it is"
+msgstr "Оставить как есть"
+
+#: apps/dai-clip/dai_clip/text.py:25
+msgid "Keeping the clipboard history again."
+msgstr "История буфера обмена снова сохраняется."
+
+#: apps/dai-tune/dai_tune/catalog.py:721
+msgid "Keyboard layouts: "
+msgstr "Раскладки клавиатуры: "
+
+#: apps/dai-command/dai_command/core.py:425
+msgid "Last backup:"
+msgstr "Последняя резервная копия:"
+
+#: apps/dai-backup/dai_backup/cli.py:170
+msgid "Last backup: "
+msgstr "Последняя резервная копия: "
+
+#: apps/dai-j/dai_j/text.py:125
+msgid "Left to right"
+msgstr "Слева направо"
+
+#: apps/dai-welcome/dai_welcome/gui.py:58
+msgid "Let's start ✦"
+msgstr "Начнём ✦"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:125
+#, python-brace-format
+msgid "Little free space on {mount}"
+msgstr "Мало свободного места на {mount}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:98
+#, python-brace-format
+msgid "Load {load1:.1f} on {cores} cores"
+msgstr "Нагрузка {load1:.1f} (ядер: {cores})"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:92
+#, python-brace-format
+msgid "Load {load1:.1f} on {cores} cores. Busiest: {names}."
+msgstr "Нагрузка {load1:.1f} (ядер: {cores}). Больше всего нагружают: {names}."
+
+#: apps/dai-j/dai_j/text.py:43
+msgid "Loading…"
+msgstr "Загрузка…"
+
+#: apps/dai-welcome/dai_welcome/gui.py:67
+msgid "Lock the screen after 5 minutes and keep automatic security updates on."
+msgstr "Блокировать экран через 5 минут и оставить автоматические обновления безопасности включёнными."
+
+#: apps/dai-tune/dai_tune/catalog.py:646
+#, python-brace-format
+msgid "Lock the screen after {minutes} minutes of inactivity"
+msgstr "Блокировать экран после {minutes} мин. бездействия"
+
+#: apps/dai-j/dai_j/text.py:61
+#, python-brace-format
+msgid "Looking for the settings of {domain}…"
+msgstr "Ищу настройки для {domain}…"
+
+#: apps/dai-mom/dai_mom/text.py:45
+msgid "MOM does not run as root."
+msgstr "MOM не запускается от root."
+
+#: apps/dai-mom/dai_mom/text.py:12
+msgid "MOM – Task manager"
+msgstr "MOM – Диспетчер задач"
+
+#: apps/dai-forge/dai_forge/gui.py:128
+msgid "MY APPS"
+msgstr "МОИ ПРИЛОЖЕНИЯ"
+
+#: apps/dai-j/dai_j/text.py:34
+msgid "Mark unread"
+msgstr "Отметить как непрочитанное"
+
+#: apps/dai-mom/dai_mom/text.py:17
+msgid "Memory"
+msgstr "Память"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:73
+msgid "Memory is almost full"
+msgstr "Память почти заполнена"
+
+#: apps/dai-mom/dai_mom/text.py:51
+#, python-brace-format
+msgid "Memory: {used} of {total} in use"
+msgstr "Память: занято {used} из {total}"
+
+#: apps/dai-j/dai_j/text.py:21
+#: apps/dai-j/dai_j/text.py:120
+msgid "Message"
+msgstr "Сообщение"
+
+#: apps/dai-j/dai_j/text.py:20
+msgid "Messages"
+msgstr "Сообщения"
+
+#: apps/dai-welcome/dai_welcome/gui.py:79
+msgid "Models run on this computer: your questions, code and voice never leave it. Choose what to download now (once, verified by SHA-256 from Hugging Face). You can add more later."
+msgstr "Модели работают на этом компьютере: ваши вопросы, код и голос никуда не уходят. Выберите, что загрузить сейчас (один раз, с проверкой SHA-256, из Hugging Face). Позже можно добавить ещё."
+
+#: apps/dai-forge/dai_forge/schedule.py:24
+msgid "Mon"
+msgstr "Пн"
+
+#: apps/dai-find/dai_find/search.py:28
+msgid "Music"
+msgstr "Музыка"
+
+#: apps/dai-quick/dai_quick/gui.py:29
+msgid "Mute mic"
+msgstr "Выключить микрофон"
+
+#: apps/dai-mom/dai_mom/text.py:16
+msgid "Name"
+msgstr "Название"
+
+#: apps/dai-oem/dai_oem/wizard.py:63
+#, python-brace-format
+msgid "Name: {name}\nUser: {user} (administrator)\nComputer: {host}\n{luks}\n\nAfter “Finish” the computer restarts. The temporary user it came with is deleted."
+msgstr "Имя: {name}\nПользователь: {user} (администратор)\nКомпьютер: {host}\n{luks}\n\nПосле нажатия «Готово» компьютер перезагрузится. Временный пользователь, с которым он поставлялся, будет удалён."
+
+#: apps/dai-tune/dai_tune/catalog.py:1162
+msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it. Up to 10 snapshots are kept."
+msgstr "Нужен системный диск Btrfs. Ваши личные файлы (/home) в него не входят. Хранится до 10 снимков."
+
+#: apps/dai-tune/dai_tune/catalog.py:645
+msgid "Never lock the screen automatically"
+msgstr "Никогда не блокировать экран автоматически"
+
+#: apps/dai-oem/dai_oem/wizard.py:58
+msgid "New encryption password (at least 8 characters)"
+msgstr "Новый пароль шифрования (не менее 8 символов)"
+
+#: apps/dai-j/dai_j/text.py:29
+#: apps/dai-j/dai_j/text.py:115
+msgid "New message"
+msgstr "Новое сообщение"
+
+#: apps/dai-oem/dai_oem/wizard.py:74
+#: apps/dai-welcome/dai_welcome/gui.py:61
+msgid "Next"
+msgstr "Далее"
+
+#: apps/dai-move/dai_move/cli.py:53
+msgid "No Windows user folders found. Connect the Windows drive (or a copy of C:\\Users\\<name>) and open it once in the file manager, then try again.\nA BitLocker-encrypted drive cannot be read here: copy the files to a USB drive from Windows first."
+msgstr "Папки пользователей Windows не найдены. Подключите диск Windows (или копию C:\\Users\\<name>), откройте его один раз в файловом менеджере и попробуйте снова.\nДиск, зашифрованный BitLocker, здесь не прочитать: сначала скопируйте файлы на USB-накопитель из Windows."
+
+#: apps/dai-forge/dai_forge/gui.py:129
+msgid "No apps yet — ask for one above."
+msgstr "Приложений пока нет — попросите выше."
+
+#: apps/dai-forge/dai_forge/cli.py:383
+msgid "No apps yet. Try: dai-forge \"build an app for a shopping list\""
+msgstr "Приложений пока нет. Попробуйте: dai-forge \"build an app for a shopping list\""
+
+#: apps/dai-forge/dai_forge/cli.py:301
+msgid "No automations yet. Try: dai-forge \"every morning tell me how much disk space is free\""
+msgstr "Автоматизаций пока нет. Попробуйте: dai-forge \"every morning tell me how much disk space is free\""
+
+#: apps/dai-backup/dai_backup/cli.py:158
+msgid "No backup for over a week — connect the backup drive."
+msgstr "Резервных копий не было больше недели — подключите диск для резервных копий."
+
+#: apps/dai-welcome/dai_welcome/gui.py:74
+msgid "No changes now. You can always type them in D.Ai Command, e.g. “lock the screen after 5 minutes”."
+msgstr "Сейчас без изменений. Их всегда можно ввести в D.Ai Command, например «блокировать экран через 5 минут»."
+
+#: apps/dai-tune/dai_tune/cli.py:268
+msgid "No changes yet."
+msgstr "Изменений пока нет."
+
+#: apps/dai-code/dai_code/cli.py:140
+msgid "No edits yet."
+msgstr "Правок пока нет."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:216
+msgid "No hardware details available here"
+msgstr "Сведения об оборудовании здесь недоступны"
+
+#: apps/dai-j/dai_j/text.py:58
+msgid "No keyring: the password is kept only until J closes."
+msgstr "Нет связки ключей: пароль хранится только до закрытия J."
+
+#: apps/dai-command/dai_command/core.py:404
+msgid "No matching files"
+msgstr "Подходящих файлов нет"
+
+#: apps/dai-j/dai_j/text.py:41
+msgid "No messages here."
+msgstr "Здесь нет сообщений."
+
+#: apps/dai-privacy/dai_privacy/text.py:22
+#, python-brace-format
+msgid "No microphone or camera use in the last {days} days."
+msgstr "За последние {days} дн. микрофон и камера не использовались."
+
+#: apps/dai-tune/dai_tune/cli.py:299
+#, python-brace-format
+msgid "No organization policies ({POLICY_DIR})."
+msgstr "Нет политик организации ({POLICY_DIR})."
+
+#: apps/dai-j/dai_j/text.py:101
+msgid "No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, Mutt)."
+msgstr "Других почтовых программ с учётными записями не найдено (Thunderbird, Betterbird, Evolution, Claws Mail, Mutt)."
+
+#: apps/dai-tune/dai_tune/posture.py:27
+msgid "No ports open to the whole internet"
+msgstr "Нет портов, открытых для всего интернета"
+
+#: apps/dai-clip/dai_clip/text.py:32
+msgid "No private memory folder (XDG_RUNTIME_DIR); nothing is kept."
+msgstr "Нет личной папки в памяти (XDG_RUNTIME_DIR); ничего не сохраняется."
+
+#: apps/dai-heal/dai_heal/text.py:88
+msgid "No problems noticed."
+msgstr "Проблем не замечено."
+
+#: apps/dai-forge/dai_forge/cli.py:113
+msgid "No recipe matches this request."
+msgstr "Нет рецепта для этого запроса."
+
+#: apps/dai-forge/dai_forge/cli.py:120
+msgid "No recipe matches. Asking Diamond to write one…"
+msgstr "Подходящего рецепта нет. Прошу Diamond написать его…"
+
+#: apps/dai-command/dai_command/core.py:398
+msgid "No recipe yet · Diamond will write one for review · Enter"
+msgstr "Рецепта пока нет · Diamond напишет его для проверки · Enter"
+
+#: apps/dai-evolve/dai_evolve/cli.py:39
+msgid "No requests without a result in the last 30 days."
+msgstr "За последние 30 дней не было запросов без результата."
+
+#: apps/dai-voice/dai_voice/cli.py:28
+msgid "No speech was recognized"
+msgstr "Речь не распознана"
+
+#: apps/dai-evolve/dai_evolve/cli.py:38
+msgid "No such suggestion (run: dai-evolve suggest)."
+msgstr "Такого предложения нет (выполните: dai-evolve suggest)."
+
+#: apps/dai-welcome/dai_welcome/gui.py:93
+msgid "No telemetry, no ads, no account. D.Ai OS does not report anything about you."
+msgstr "Без телеметрии, без рекламы, без учётной записи. D.Ai OS ничего о вас не сообщает."
+
+#: apps/dai-code/dai_code/cli.py:189
+msgid "No uncommitted changes to review."
+msgstr "Нет незафиксированных изменений для проверки."
+
+#: apps/dai-command/dai_command/core.py:411
+msgid "Not found · D.Ai Forge can build it or add it, after your review · Enter"
+msgstr "Не найдено · D.Ai Forge может создать или добавить это после вашей проверки · Enter"
+
+#: apps/dai-j/dai_j/text.py:63
+#, python-brace-format
+msgid "Not found; trying {host}. Check it under Advanced."
+msgstr "Не найдено; пробую {host}. Проверьте в разделе «Дополнительно»."
+
+#: apps/dai-clip/dai_clip/text.py:24
+#, python-brace-format
+msgid "Not keeping anything until {time}."
+msgstr "Ничего не сохраняется до {time}."
+
+#: apps/dai-heal/dai_heal/text.py:64
+#: apps/dai-welcome/dai_welcome/gui.py:59
+msgid "Not now"
+msgstr "Не сейчас"
+
+#: apps/dai-oem/dai_oem/cli.py:40
+msgid "Not prepared."
+msgstr "Не подготовлено."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:108
+msgid "Not restarted for a long time"
+msgstr "Давно не перезагружался"
+
+#: apps/dai-forge/dai_forge/gui.py:116
+#, python-brace-format
+msgid "Not tested: {why}"
+msgstr "Не проверено: {why}"
+
+#: apps/dai-tune/dai_tune/cli.py:139
+msgid "Not understood by the rules. Ask Diamond to interpret? [y/N] "
+msgstr "Правила не распознали запрос. Попросить Diamond истолковать его? [y/N] "
+
+#: apps/dai-command/dai_command/core.py:389
+msgid "Not understood — Enter for examples"
+msgstr "Не понятно — Enter для примеров"
+
+#: apps/dai-tune/dai_tune/cli.py:75
+#, python-brace-format
+msgid "Not understood: “{clause}”"
+msgstr "Не понятно: «{clause}»"
+
+#: apps/dai-mom/dai_mom/text.py:19
+msgid "Notes"
+msgstr "Заметки"
+
+#: apps/dai-mom/dai_mom/text.py:46
+#, python-brace-format
+msgid "Nothing called {name} is running."
+msgstr "Ничего с именем {name} не запущено."
+
+#: apps/dai-find/dai_find/cli.py:54
+msgid "Nothing found."
+msgstr "Ничего не найдено."
+
+#: apps/dai-clip/dai_clip/text.py:13
+msgid "Nothing here yet. What you copy will show up here (never passwords)."
+msgstr "Здесь пока пусто. Всё, что вы скопируете, появится здесь (кроме паролей)."
+
+#: apps/dai-quick/dai_quick/gui.py:39
+msgid "Nothing is recording"
+msgstr "Ничего не записывается"
+
+#: apps/dai-code/dai_code/cli.py:195
+msgid "Nothing is staged (git add first)."
+msgstr "Ничего не подготовлено к фиксации (сначала git add)."
+
+#: apps/dai-privacy/dai_privacy/text.py:19
+msgid "Nothing is using the microphone or camera."
+msgstr "Микрофон и камера не используются."
+
+#: apps/dai-clip/dai_clip/text.py:15
+msgid "Nothing matches."
+msgstr "Совпадений нет."
+
+#: apps/dai-welcome/dai_welcome/gui.py:110
+msgid "Nothing to change — you can finish."
+msgstr "Менять нечего — можно завершать."
+
+#: apps/dai-command/dai_command/fixlayout.py:51
+msgid "Nothing to fix"
+msgstr "Исправлять нечего"
+
+#: apps/dai-forge/dai_forge/cli.py:92
+msgid "Nothing to remove for this recipe."
+msgstr "Для этого рецепта нечего удалять."
+
+#: apps/dai-evolve/dai_evolve/cli.py:32
+msgid "Nothing to suggest right now."
+msgstr "Пока нечего предложить."
+
+#: apps/dai-tune/dai_tune/cli.py:253
+msgid "Nothing to undo."
+msgstr "Отменять нечего."
+
+#: apps/dai-tune/dai_tune/cli.py:201
+msgid "Nothing was changed."
+msgstr "Ничего не изменено."
+
+#: apps/dai-tune/dai_tune/cli.py:181
+msgid "Nothing was changed. Please rephrase the parts above."
+msgstr "Ничего не изменено. Переформулируйте, пожалуйста, части выше."
+
+#: apps/dai-tune/dai_tune/cli.py:178
+msgid "Nothing was changed. See what you can ask: dai-tune help"
+msgstr "Ничего не изменено. Посмотрите, о чём можно попросить: dai-tune help"
+
+#: apps/dai-clip/dai_clip/text.py:30
+msgid "Off (dai-clip on)"
+msgstr "Выключено (dai-clip on)"
+
+#: apps/dai-evolve/dai_evolve/cli.py:35
+msgid "Off. What was kept has been deleted."
+msgstr "Выключено. Всё сохранённое удалено."
+
+#: apps/dai-j/dai_j/compose.py:83
+#, python-brace-format
+msgid "On {stamp}, {sender} wrote:"
+msgstr "{stamp}, {sender} пишет:"
+
+#: apps/dai-clip/dai_clip/text.py:29
+#, python-brace-format
+msgid "On · {n} items · in memory only, never passwords"
+msgstr "Включено · элементов: {n} · только в памяти, без паролей"
+
+#: apps/dai-evolve/dai_evolve/cli.py:36
+msgid "On. Suggestions appear in D.Ai Command (Super+Space)."
+msgstr "Включено. Предложения появляются в D.Ai Command (Super+Space)."
+
+#: apps/dai-forge/dai_forge/gui.py:124
+msgid "Only an administrator can add capabilities. You can still look around."
+msgstr "Добавлять возможности может только администратор. Но осмотреться можно."
+
+#: apps/dai-welcome/dai_welcome/gui.py:76
+msgid "Only an administrator can change system security. Ask the administrator of this computer."
+msgstr "Изменять безопасность системы может только администратор. Обратитесь к администратору этого компьютера."
+
+#: apps/dai-j/dai_j/text.py:104
+msgid "Only the settings are copied; the other app is not changed. J asks for each password the first time it signs in."
+msgstr "Копируются только настройки; другая программа не меняется. При первом входе J спросит пароль для каждой учётной записи."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:66
+#, python-brace-format
+msgid "Only {mem_available} of {mem_total} is free."
+msgstr "Свободно только {mem_available} из {mem_total}."
+
+#: apps/dai-heal/dai_heal/text.py:60
+msgid "Open it again"
+msgstr "Открыть снова"
+
+#: apps/dai-tune/dai_tune/catalog.py:316
+#, python-brace-format
+msgid "Open port {port}/{proto} to ANY network (internet)"
+msgstr "Открыть порт {port}/{proto} для ЛЮБОЙ сети (интернет)"
+
+#: apps/dai-tune/dai_tune/catalog.py:313
+#, python-brace-format
+msgid "Open port {port}/{proto} to the local network only"
+msgstr "Открыть порт {port}/{proto} только для локальной сети"
+
+#: apps/dai-forge/dai_forge/gui.py:155
+msgid "Open the code"
+msgstr "Открыть код"
+
+#: apps/dai-heal/dai_heal/text.py:71
+msgid "Opened again. If it crashes again, I will tell you."
+msgstr "Открыто снова. Если оно снова упадёт, я сообщу."
+
+#: apps/dai-mom/dai_mom/text.py:20
+msgid "Other processes"
+msgstr "Другие процессы"
+
+#: apps/dai-j/dai_j/text.py:73
+msgid "Outgoing (SMTP)"
+msgstr "Исходящая (SMTP)"
+
+#: apps/dai-tune/dai_tune/catalog.py:452
+msgid "Packages come only from the signed Debian/D.Ai repositories."
+msgstr "Пакеты устанавливаются только из подписанных репозиториев Debian/D.Ai."
+
+#: apps/dai-j/dai_j/text.py:56
+msgid "Password"
+msgstr "Пароль"
+
+#: apps/dai-oem/dai_oem/wizard.py:49
+msgid "Password (at least 8 characters)"
+msgstr "Пароль (не менее 8 символов)"
+
+#: apps/dai-oem/dai_oem/wizard.py:50
+msgid "Password again"
+msgstr "Повторите пароль"
+
+#: apps/dai-j/dai_j/text.py:82
+#, python-brace-format
+msgid "Password for {address}"
+msgstr "Пароль для {address}"
+
+#: apps/dai-clip/dai_clip/text.py:31
+#, python-brace-format
+msgid "Paused until {time} · {n} items"
+msgstr "Приостановлено до {time} · элементов: {n}"
+
+#: apps/dai-mom/dai_mom/text.py:14
+msgid "Performance"
+msgstr "Производительность"
+
+#: apps/dai-tune/dai_tune/catalog.py:1132
+msgid "Performance mode (faster, uses more power)"
+msgstr "Режим производительности (быстрее, но расходует больше энергии)"
+
+#: apps/dai-find/dai_find/search.py:27
+msgid "Pictures"
+msgstr "Изображения"
+
+#: apps/dai-quick/dai_quick/gui.py:42
+msgid "Pop-ups are hidden; recording and problems still show on the diamond."
+msgstr "Всплывающие окна скрыты; запись и проблемы по-прежнему видны на значке-бриллианте."
+
+#: apps/dai-j/dai_j/text.py:75
+msgid "Port"
+msgstr "Порт"
+
+#: apps/dai-oem/dai_oem/cli.py:41
+msgid "Prepared: the setup opens at the next start."
+msgstr "Подготовлено: настройка откроется при следующем запуске."
+
+#: apps/dai-forge/dai_forge/gui.py:157
+msgid "Previous version"
+msgstr "Предыдущая версия"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:185
+msgid "Printer"
+msgstr "Принтер"
+
+#: apps/dai-privacy/dai_privacy/text.py:24
+msgid "Privacy log…"
+msgstr "Журнал конфиденциальности…"
+
+#: apps/dai-mom/dai_mom/text.py:50
+#, python-brace-format
+msgid "Processor: {value}%"
+msgstr "Процессор: {value}%"
+
+#: apps/dai-heal/dai_heal/text.py:40
+msgid "Programs usually crash because of damaged settings or a bug. Starting it again often works; if it keeps crashing, putting its settings aside (they are kept) usually fixes it."
+msgstr "Программы обычно падают из-за повреждённых настроек или ошибки. Часто помогает просто запустить снова; если сбои продолжаются, обычно помогает отложить её настройки в сторону (они сохраняются)."
+
+#: apps/dai-raz/dai_raz/cli.py:30
+msgid "Protected settings are intact"
+msgstr "Защищённые настройки не изменены"
+
+#: apps/dai-heal/dai_heal/text.py:59
+msgid "Put its settings aside"
+msgstr "Отложить её настройки"
+
+#: apps/dai-heal/dai_heal/text.py:61
+msgid "Put the old settings back"
+msgstr "Вернуть старые настройки"
+
+#: apps/dai-tune/dai_tune/catalog.py:1061
+#, python-brace-format
+msgid "Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}"
+msgstr "Карантин: {AV_QUARANTINE} (только root). Журнал: {AV_LOG}"
+
+#: apps/dai-forge/dai_forge/gui.py:127
+msgid "READY TO SET UP"
+msgstr "ГОТОВО К НАСТРОЙКЕ"
+
+#: apps/dai-backup/dai_backup/cli.py:103
+msgid "RECOVERY KEY — write it down and keep it safe"
+msgstr "КЛЮЧ ВОССТАНОВЛЕНИЯ — запишите его и храните в надёжном месте"
+
+#: apps/dai-raz/dai_raz/cli.py:99
+msgid "Raz has not checked yet: dai-raz check"
+msgstr "Raz ещё не проверял: dai-raz check"
+
+#: apps/dai-oem/dai_oem/wizard.py:62
+msgid "Ready"
+msgstr "Готово"
+
+#: apps/dai-welcome/dai_welcome/gui.py:106
+msgid "Ready to set up"
+msgstr "Готово к настройке"
+
+#: apps/dai-oem/dai_oem/cli.py:38
+msgid "Ready. Power off and hand it over."
+msgstr "Готово. Выключите компьютер и передайте его владельцу."
+
+#: apps/dai-oem/dai_oem/cli.py:36
+msgid "Ready. Power off and hand it over; the owner needs the temporary encryption password once."
+msgstr "Готово. Выключите компьютер и передайте его владельцу; один раз ему понадобится временный пароль шифрования."
+
+#: apps/dai-forge/dai_forge/cli.py:547
+msgid "Recipes:"
+msgstr "Рецепты:"
+
+#: apps/dai-welcome/dai_welcome/gui.py:66
+msgid "Recommended"
+msgstr "Рекомендуемый"
+
+#: apps/dai-welcome/dai_welcome/gui.py:70
+msgid "Recommended, plus blocking USB storage devices and turning Bluetooth off. Good for computers that hold sensitive data."
+msgstr "Рекомендуемый, плюс блокировка USB-накопителей и отключение Bluetooth. Подходит для компьютеров с конфиденциальными данными."
+
+#: apps/dai-quick/dai_quick/gui.py:40
+#, python-brace-format
+msgid "Recording now: {apps}"
+msgstr "Сейчас записывают: {apps}"
+
+#: apps/dai-voice/dai_voice/qt.py:20
+msgid "Recording… click to finish"
+msgstr "Запись… нажмите, чтобы закончить"
+
+#: apps/dai-mom/dai_mom/text.py:67
+msgid "Refresh"
+msgstr "Обновить"
+
+#: apps/dai-tune/dai_tune/cli.py:188
+msgid "Refusing --yes: AI interpretations always need manual confirmation."
+msgstr "Отказ в --yes: толкования ИИ всегда требуют ручного подтверждения."
+
+#: apps/dai-tune/dai_tune/cli.py:83
+msgid "Refusing --yes: this plan weakens security and needs explicit confirmation."
+msgstr "Отказ в --yes: этот план снижает безопасность и требует явного подтверждения."
+
+#: apps/dai-j/dai_j/text.py:57
+msgid "Remember the password in the keyring"
+msgstr "Запомнить пароль в связке ключей"
+
+#: apps/dai-forge/dai_forge/cli.py:97
+#: apps/dai-forge/dai_forge/gui.py:132
+msgid "Remove"
+msgstr "Удалить"
+
+#: apps/dai-tune/dai_tune/catalog.py:948
+msgid "Remove Flatpak apps: "
+msgstr "Удалить приложения Flatpak: "
+
+#: apps/dai-j/dai_j/text.py:37
+msgid "Remove account"
+msgstr "Удалить учётную запись"
+
+#: apps/dai-j/dai_j/text.py:83
+#, python-brace-format
+msgid "Remove {address} from J? The local copy of its mail and its saved password are deleted. Nothing is deleted on the server."
+msgstr "Удалить {address} из J? Локальная копия почты и сохранённый пароль будут удалены. На сервере ничего не удаляется."
+
+#: apps/dai-tune/dai_tune/catalog.py:463
+msgid "Remove: "
+msgstr "Удалить: "
+
+#: apps/dai-tune/dai_tune/catalog.py:546
+#, python-brace-format
+msgid "Rename this computer to {hostname}"
+msgstr "Переименовать этот компьютер в {hostname}"
+
+#: apps/dai-j/dai_j/text.py:30
+msgid "Reply"
+msgstr "Ответить"
+
+#: apps/dai-j/dai_j/text.py:31
+msgid "Reply all"
+msgstr "Ответить всем"
+
+#: apps/dai-mom/dai_mom/text.py:66
+msgid "Restart"
+msgstr "Перезапустить"
+
+#: apps/dai-tune/dai_tune/catalog.py:1193
+msgid "Restart afterwards. Personal files are not touched. A snapshot of now is taken first, so this can be undone too."
+msgstr "Затем перезагрузите компьютер. Личные файлы не затрагиваются. Сначала делается снимок текущего состояния, так что это тоже можно отменить."
+
+#: apps/dai-heal/dai_heal/text.py:56
+msgid "Restart it (administrator password)"
+msgstr "Перезапустить (пароль администратора)"
+
+#: apps/dai-tune/dai_tune/catalog.py:823
+#, python-brace-format
+msgid "Restart the service {unit}"
+msgstr "Перезапустить службу {unit}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:112
+msgid "Restart when convenient"
+msgstr "Перезагрузите, когда будет удобно"
+
+#: apps/dai-command/dai_command/core.py:429
+msgid "Results"
+msgstr "Результаты"
+
+#: apps/dai-command/dai_command/core.py:405
+msgid "Right now · Enter for the privacy log"
+msgstr "Прямо сейчас · Enter — журнал конфиденциальности"
+
+#: apps/dai-j/dai_j/text.py:124
+msgid "Right to left"
+msgstr "Справа налево"
+
+#: apps/dai-move/dai_move/cli.py:93
+msgid "Run again with --yes to copy."
+msgstr "Запустите снова с --yes, чтобы скопировать."
+
+#: apps/dai-command/dai_command/core.py:378
+msgid "Run in background"
+msgstr "Запустить в фоне"
+
+#: apps/dai-command/dai_command/core.py:377
+msgid "Run in terminal"
+msgstr "Запустить в терминале"
+
+#: apps/dai-oem/dai_oem/cli.py:24
+#, python-brace-format
+msgid "Run it as administrator: sudo dai-oem {cmd}"
+msgstr "Запустите от имени администратора: sudo dai-oem {cmd}"
+
+#: apps/dai-forge/dai_forge/cli.py:262
+msgid "Run it now? [Y/n] "
+msgstr "Запустить сейчас? [Y/n] "
+
+#: apps/dai-forge/dai_forge/cli.py:276
+#, python-brace-format
+msgid "Run it {describe}? [Y/n] "
+msgstr "Запускать {describe}? [Y/n] "
+
+#: apps/dai-forge/dai_forge/gui.py:130
+msgid "Run ▶"
+msgstr "Запустить ▶"
+
+#: apps/dai-forge/dai_forge/gui.py:164
+msgid "Runs on this computer · system changes need the administrator password · every change can be undone"
+msgstr "Работает на этом компьютере · для изменений системы нужен пароль администратора · любое изменение можно отменить"
+
+#: apps/dai-forge/dai_forge/gui.py:107
+#, python-brace-format
+msgid "Runs {when}"
+msgstr "Запускается {when}"
+
+#: apps/dai-tune/dai_tune/posture.py:32
+msgid "SSH off or limited to the local network"
+msgstr "SSH выключен или доступен только из локальной сети"
+
+#: apps/dai-forge/dai_forge/schedule.py:25
+msgid "Sat"
+msgstr "Сб"
+
+#: apps/dai-forge/dai_forge/cli.py:129
+msgid "Save this recipe so you can reuse and share it? [y/N] "
+msgstr "Сохранить этот рецепт, чтобы использовать его снова и делиться им? [y/N] "
+
+#: apps/dai-mom/dai_mom/text.py:83
+#, python-brace-format
+msgid "Saved: {name} {state} at the next login."
+msgstr "Сохранено: {name} {state} при следующем входе."
+
+#: apps/dai-forge/dai_forge/cli.py:132
+#, python-brace-format
+msgid "Saved: {saved}"
+msgstr "Сохранено: {saved}"
+
+#: apps/dai-find/dai_find/cli.py:40
+msgid "Say what to look for: a type, a time, a folder or part of the name."
+msgstr "Скажите, что искать: тип, время, папку или часть имени."
+
+#: apps/dai-tune/dai_tune/catalog.py:1052
+#, python-brace-format
+msgid "Scan /home for viruses ({frequency}) and quarantine infected files"
+msgstr "Проверять /home на вирусы ({frequency}) и помещать заражённые файлы в карантин"
+
+#: apps/dai-tune/dai_tune/posture.py:31
+msgid "Screen locks within 10 minutes"
+msgstr "Экран блокируется в течение 10 минут"
+
+#: apps/dai-clip/dai_clip/text.py:12
+msgid "Search what you copied…"
+msgstr "Поиск по скопированному…"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:204
+#, python-brace-format
+msgid "Search: linux driver {name}"
+msgstr "Поиск: linux driver {name}"
+
+#: apps/dai-welcome/dai_welcome/gui.py:64
+msgid "Security"
+msgstr "Безопасность"
+
+#: apps/dai-welcome/dai_welcome/gui.py:65
+#, python-brace-format
+msgid "Security score now: {score}"
+msgstr "Оценка безопасности сейчас: {score}"
+
+#: apps/dai-quick/dai_quick/gui.py:34
+msgid "Security score unavailable"
+msgstr "Оценка безопасности недоступна"
+
+#: apps/dai-tune/dai_tune/cli.py:279
+#, python-brace-format
+msgid "Security score: {score}/100"
+msgstr "Оценка безопасности: {score}/100"
+
+#: apps/dai-welcome/dai_welcome/gui.py:113
+msgid "Security settings"
+msgstr "Настройки безопасности"
+
+#: apps/dai-welcome/dai_welcome/gui.py:101
+msgid "Security updates from Debian install automatically; D.Ai updates only when you choose to."
+msgstr "Обновления безопасности Debian устанавливаются автоматически; D.Ai обновляется только тогда, когда вы решите."
+
+#: apps/dai-raz/dai_raz/cli.py:33
+msgid "Security updates install by themselves"
+msgstr "Обновления безопасности устанавливаются сами"
+
+#: apps/dai-quick/dai_quick/gui.py:33
+#, python-brace-format
+msgid "Security {score}/100"
+msgstr "Безопасность {score}/100"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:238
+msgid "See what changed: /var/log/apt/history.log"
+msgstr "Что изменилось: /var/log/apt/history.log"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:244
+msgid "See what changed: /var/log/apt/history.log, and report it on GitHub"
+msgstr "Что изменилось: /var/log/apt/history.log; сообщите об этом на GitHub"
+
+#: apps/dai-command/dai_command/fixlayout.py:44
+msgid "Select text, then press Pause"
+msgstr "Выделите текст и нажмите Pause"
+
+#: apps/dai-command/dai_command/fixlayout.py:47
+msgid "Selection is too long"
+msgstr "Выделение слишком длинное"
+
+#: apps/dai-heal/dai_heal/text.py:21
+#: apps/dai-j/dai_j/text.py:121
+msgid "Send"
+msgstr "Отправить"
+
+#: apps/dai-j/dai_j/text.py:122
+msgid "Sending…"
+msgstr "Отправка…"
+
+#: apps/dai-j/dai_j/text.py:13
+msgid "Sent"
+msgstr "Отправленные"
+
+#: apps/dai-j/dai_j/text.py:123
+msgid "Sent."
+msgstr "Отправлено."
+
+#: apps/dai-j/dai_j/text.py:74
+msgid "Server"
+msgstr "Сервер"
+
+#: apps/dai-mom/dai_mom/text.py:62
+msgid "Service"
+msgstr "Служба"
+
+#: apps/dai-tune/dai_tune/catalog.py:511
+#, python-brace-format
+msgid "Set time zone to {timezone}"
+msgstr "Установить часовой пояс {timezone}"
+
+#: apps/dai-forge/dai_forge/cli.py:97
+#: apps/dai-forge/dai_forge/gui.py:131
+msgid "Set up"
+msgstr "Настроить"
+
+#: apps/dai-command/dai_command/core.py:420
+msgid "Set up automatic encrypted backup"
+msgstr "Настроить автоматическое зашифрованное резервное копирование"
+
+#: apps/dai-oem/dai_oem/wizard.py:43
+msgid "Set up your computer"
+msgstr "Настройте компьютер"
+
+#: apps/dai-forge/dai_forge/gui.py:139
+msgid "Setting it up. Enter the administrator password when asked."
+msgstr "Настраиваю. Введите пароль администратора, когда его спросят."
+
+#: apps/dai-welcome/dai_welcome/gui.py:112
+msgid "Setting up…"
+msgstr "Настройка…"
+
+#: apps/dai-oem/dai_oem/wizard.py:69
+msgid "Setting up… do not turn the computer off."
+msgstr "Настройка… не выключайте компьютер."
+
+#: apps/dai-move/dai_move/cli.py:62
+msgid "Several Windows users were found; choose one with --user:"
+msgstr "Найдено несколько пользователей Windows; выберите одного с помощью --user:"
+
+#: apps/dai-evolve/dai_evolve/cli.py:41
+msgid "Show me"
+msgstr "Показать"
+
+#: apps/dai-j/dai_j/text.py:78
+msgid "Sign in"
+msgstr "Войти"
+
+#: apps/dai-j/dai_j/text.py:79
+msgid "Signing in…"
+msgstr "Вход…"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:233
+msgid "Snapshots before updates are off"
+msgstr "Снимки перед обновлениями выключены"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:241
+#, python-brace-format
+msgid "Snapshots need a Btrfs system disk; this one is {unknown}."
+msgstr "Для снимков нужен системный диск Btrfs; у этого — {unknown}."
+
+#: apps/dai-welcome/dai_welcome/gui.py:115
+msgid "Some steps did not complete. You can retry later from the menu (Welcome to D.Ai)."
+msgstr "Некоторые шаги не выполнены. Повторить можно позже из меню (Добро пожаловать в D.Ai)."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:103
+msgid "Some system services failed"
+msgstr "Некоторые системные службы не работают"
+
+#: apps/dai-heal/dai_heal/text.py:22
+msgid "Something stopped working"
+msgstr "Что-то перестало работать"
+
+#: apps/dai-heal/dai_heal/text.py:38
+msgid "Something that runs in the background for you stopped. I can start it again."
+msgstr "Остановилось то, что работает для вас в фоне. Я могу запустить это снова."
+
+#: apps/dai-forge/dai_forge/gui.py:147
+#: apps/dai-welcome/dai_welcome/gui.py:129
+msgid "Something went wrong"
+msgstr "Что-то пошло не так"
+
+#: apps/dai-j/dai_j/text.py:97
+#, python-brace-format
+msgid "Something went wrong: {detail}"
+msgstr "Что-то пошло не так: {detail}"
+
+#: apps/dai-oem/dai_oem/wizard.py:71
+#, python-brace-format
+msgid "Something went wrong: {error}\nNothing was lost. Check the details and try again."
+msgstr "Что-то пошло не так: {error}\nНичего не потеряно. Посмотрите подробности и попробуйте снова."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:184
+msgid "Sound"
+msgstr "Звук"
+
+#: apps/dai-j/dai_j/text.py:16
+msgid "Spam"
+msgstr "Спам"
+
+#: apps/dai-command/dai_command/core.py:385
+#: apps/dai-voice/dai_voice/qt.py:19
+msgid "Speak (local, Whisper)"
+msgstr "Говорите (локально, Whisper)"
+
+#: apps/dai-mom/dai_mom/text.py:64
+msgid "Start"
+msgstr "Запустить"
+
+#: apps/dai-tune/dai_tune/catalog.py:787
+#, python-brace-format
+msgid "Start and enable {unit}"
+msgstr "Запустить и включить {unit}"
+
+#: apps/dai-heal/dai_heal/text.py:57
+msgid "Start it again"
+msgstr "Запустить снова"
+
+#: apps/dai-welcome/dai_welcome/gui.py:127
+msgid "Start using D.Ai"
+msgstr "Начать работу с D.Ai"
+
+#: apps/dai-mom/dai_mom/text.py:63
+msgid "State"
+msgstr "Состояние"
+
+#: apps/dai-mom/dai_mom/text.py:65
+msgid "Stop"
+msgstr "Остановить"
+
+#: apps/dai-tune/dai_tune/catalog.py:788
+#, python-brace-format
+msgid "Stop and disable {unit}"
+msgstr "Остановить и отключить {unit}"
+
+#: apps/dai-tune/dai_tune/catalog.py:1056
+msgid "Stop scheduled virus scans"
+msgstr "Остановить плановые проверки на вирусы"
+
+#: apps/dai-welcome/dai_welcome/gui.py:69
+msgid "Strict"
+msgstr "Строгий"
+
+#: apps/dai-j/dai_j/text.py:23
+#: apps/dai-j/dai_j/text.py:119
+msgid "Subject"
+msgstr "Тема"
+
+#: apps/dai-forge/dai_forge/schedule.py:25
+msgid "Sun"
+msgstr "Вс"
+
+#: apps/dai-heal/dai_heal/text.py:24
+msgid "Super+F1 opens help"
+msgstr "Super+F1 открывает справку"
+
+#: apps/dai-mom/dai_mom/text.py:52
+#, python-brace-format
+msgid "Swap: {used} of {total} in use"
+msgstr "Подкачка: занято {used} из {total}"
+
+#: apps/dai-welcome/dai_welcome/gui.py:107
+msgid "System changes (the administrator password will be requested):"
+msgstr "Изменения системы (будет запрошен пароль администратора):"
+
+#: apps/dai-tune/dai_tune/cli.py:199
+msgid "System changes were rolled back too."
+msgstr "Изменения системы тоже отменены."
+
+#: apps/dai-mom/dai_mom/text.py:78
+msgid "System services change through D.Ai Tune (administrator password, undo)."
+msgstr "Системные службы меняются через D.Ai Tune (пароль администратора, можно отменить)."
+
+#: apps/dai-tune/dai_tune/catalog.py:1158
+msgid "Take a snapshot of the system before every software update"
+msgstr "Делать снимок системы перед каждым обновлением программ"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:236
+msgid "Take snapshots before updates"
+msgstr "Делать снимки перед обновлениями"
+
+#: apps/dai-tune/dai_tune/catalog.py:678
+msgid "Takes effect at each user's next login. Users can choose a shorter time, not a longer one."
+msgstr "Вступает в силу при следующем входе каждого пользователя. Пользователи могут выбрать меньшее время, но не большее."
+
+#: apps/dai-raz/dai_raz/cli.py:28
+msgid "Taskbar plugins are loaded"
+msgstr "Модули панели задач загружены"
+
+#: apps/dai-forge/dai_forge/gui.py:118
+msgid "Tell the computer what it should be able to do — it builds and sets it up for you."
+msgstr "Скажите компьютеру, что он должен уметь, — он всё создаст и настроит за вас."
+
+#: apps/dai-oem/dai_oem/cli.py:35
+msgid "Temporary disk encryption password: "
+msgstr "Временный пароль шифрования диска: "
+
+#: apps/dai-forge/dai_forge/gui.py:109
+msgid "Testing it in the sandbox…"
+msgstr "Проверяю в песочнице…"
+
+#: apps/dai-j/dai_j/text.py:81
+msgid "That does not look like an e-mail address."
+msgstr "Это не похоже на адрес электронной почты."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:165
+msgid "The battery is worn"
+msgstr "Батарея изношена"
+
+#: apps/dai-clip/dai_clip/text.py:23
+msgid "The clipboard history was cleared."
+msgstr "История буфера обмена очищена."
+
+#: apps/dai-forge/dai_forge/cli.py:253
+msgid "The code from Diamond was rejected"
+msgstr "Код от Diamond отклонён"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:81
+msgid "The computer is using swap heavily"
+msgstr "Компьютер активно использует подкачку"
+
+#: apps/dai-welcome/dai_welcome/gui.py:103
+msgid "The disk is encrypted if you chose encryption during installation."
+msgstr "Диск зашифрован, если вы выбрали шифрование при установке."
+
+#: apps/dai-raz/dai_raz/cli.py:32
+msgid "The firewall is on"
+msgstr "Брандмауэр включён"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:225
+#, python-brace-format
+msgid "The last update ({date}) changed {count} package(s). "
+msgstr "Последнее обновление ({date}) изменило пакетов: {count}. "
+
+#: apps/dai-heal/dai_heal/text.py:30
+msgid "The last update broke something D.Ai checks."
+msgstr "Последнее обновление сломало то, что проверяет D.Ai."
+
+#: apps/dai-j/dai_j/text.py:96
+msgid "The message was not sent. It is still here; try again."
+msgstr "Сообщение не отправлено. Оно сохранено здесь; попробуйте снова."
+
+#: apps/dai-welcome/dai_welcome/gui.py:97
+msgid "The microphone records only while you press the voice button; a notification is shown the whole time."
+msgstr "Микрофон записывает, только пока вы нажимаете кнопку голоса; всё это время показывается уведомление."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:91
+msgid "The processor is busy"
+msgstr "Процессор загружен"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:97
+msgid "The processor is not overloaded"
+msgstr "Процессор не перегружен"
+
+#: apps/dai-raz/dai_raz/cli.py:34
+msgid "The security score can be computed"
+msgstr "Оценку безопасности можно вычислить"
+
+#: apps/dai-j/dai_j/text.py:87
+msgid "The server did not accept the user name or password."
+msgstr "Сервер не принял имя пользователя или пароль."
+
+#: apps/dai-j/dai_j/text.py:95
+msgid "The server refused one of the recipients."
+msgstr "Сервер отклонил одного из получателей."
+
+#: apps/dai-j/dai_j/text.py:93
+msgid "The server refused the request."
+msgstr "Сервер отклонил запрос."
+
+#: apps/dai-j/dai_j/text.py:90
+msgid "The server's security certificate is not valid, so J did not connect."
+msgstr "Сертификат безопасности сервера недействителен, поэтому J не стал подключаться."
+
+#: apps/dai-heal/dai_heal/text.py:26
+#, python-brace-format
+msgid "The system service {name} failed."
+msgstr "Системная служба {name} не работает."
+
+#: apps/dai-mom/dai_mom/text.py:60
+msgid "The system's (read-only; change them with D.Ai Tune)"
+msgstr "Системные (только для чтения; меняются через D.Ai Tune)"
+
+#: apps/dai-oem/dai_oem/wizard.py:80
+msgid "The two passwords are not the same."
+msgstr "Пароли не совпадают."
+
+#: apps/dai-forge/dai_forge/gui.py:162
+msgid "There is no ready recipe for this, and Diamond (the local AI) is not installed yet."
+msgstr "Готового рецепта для этого нет, а Diamond (локальный ИИ) ещё не установлен."
+
+#: apps/dai-command/dai_command/core.py:376
+msgid "Thinking…"
+msgstr "Думаю…"
+
+#: apps/dai-forge/dai_forge/cli.py:164
+msgid "This app asks for INTERNET access. Allow? [y/N] "
+msgstr "Этому приложению нужен доступ в ИНТЕРНЕТ. Разрешить? [y/N] "
+
+#: apps/dai-forge/dai_forge/cli.py:167
+msgid "This app asks to read and change ~/Downloads. Allow? [y/N] "
+msgstr "Этому приложению нужно читать и изменять ~/Downloads. Разрешить? [y/N] "
+
+#: apps/dai-forge/dai_forge/cli.py:165
+msgid "This app asks to read and write ~/Documents. Allow? [y/N] "
+msgstr "Этому приложению нужно читать и записывать ~/Documents. Разрешить? [y/N] "
+
+#: apps/dai-welcome/dai_welcome/gui.py:90
+#, python-brace-format
+msgid "This computer: {ram} RAM"
+msgstr "Этот компьютер: {ram} ОЗУ"
+
+#: apps/dai-heal/dai_heal/text.py:44
+msgid "This is an app you built with D.Ai Forge. I can fix it: Diamond reads the error, changes the code, and tests it in the sandbox before you open it. The current version is kept."
+msgstr "Это приложение вы создали в D.Ai Forge. Я могу его исправить: Diamond прочитает ошибку, изменит код и проверит его в песочнице, прежде чем вы его откроете. Текущая версия сохранится."
+
+#: apps/dai-forge/dai_forge/gui.py:135
+msgid "This lowers security. Type “yes” to confirm:"
+msgstr "Это снижает безопасность. Введите «yes» для подтверждения:"
+
+#: apps/dai-j/dai_j/text.py:94
+msgid "This message is no longer on the server."
+msgstr "Этого сообщения больше нет на сервере."
+
+#: apps/dai-tune/dai_tune/cli.py:86
+msgid "This plan WEAKENS security. Type \"yes\" to apply: "
+msgstr "Этот план СНИЖАЕТ безопасность. Введите \"yes\", чтобы применить: "
+
+#: apps/dai-oem/dai_oem/cli.py:25
+#, python-brace-format
+msgid "This prepares the computer for its new owner:\n  • at the next start, a short setup asks for their name, user, password, computer name{luks}\n  • the temporary user {user} and everything in its home folder are deleted after that\n  • package caches, system logs, the machine ID and SSH host keys are reset now\n"
+msgstr "Это подготовит компьютер для нового владельца:\n  • при следующем запуске короткая настройка спросит имя, пользователя, пароль, имя компьютера{luks}\n  • временный пользователь {user} и всё в его домашней папке затем будут удалены\n  • кэши пакетов, системные журналы, идентификатор машины и ключи SSH-хоста сбрасываются сейчас\n"
+
+#: apps/dai-j/dai_j/text.py:67
+msgid "This provider accepts only its own sign-in page, which J does not support yet. Meanwhile, Thunderbird works: type \"+ thunderbird\" in D.Ai Command."
+msgstr "Этот провайдер принимает вход только через свою страницу, которую J пока не поддерживает. А пока работает Thunderbird: введите \"+ thunderbird\" в D.Ai Command."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:234
+msgid "This update cannot be undone automatically, but the next ones can."
+msgstr "Это обновление нельзя отменить автоматически, но следующие — можно."
+
+#: apps/dai-forge/dai_forge/schedule.py:24
+msgid "Thu"
+msgstr "Чт"
+
+#: apps/dai-j/dai_j/text.py:117
+msgid "To"
+msgstr "Кому"
+
+#: apps/dai-j/dai_j/text.py:50
+#, python-brace-format
+msgid "To: {to}"
+msgstr "Кому: {to}"
+
+#: apps/dai-command/dai_command/core.py:387
+#: apps/dai-voice/dai_voice/cli.py:27
+msgid "Transcribing on this computer…"
+msgstr "Расшифровываю речь на этом компьютере…"
+
+#: apps/dai-voice/dai_voice/qt.py:21
+msgid "Transcribing…"
+msgstr "Расшифровка…"
+
+#: apps/dai-j/dai_j/text.py:15
+msgid "Trash"
+msgstr "Корзина"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:148
+#, python-brace-format
+msgid "Trash {trash}, previews {previews}."
+msgstr "Корзина: {trash}, миниатюры: {previews}."
+
+#: apps/dai-forge/dai_forge/gui.py:148
+#: apps/dai-welcome/dai_welcome/gui.py:128
+msgid "Try again"
+msgstr "Попробовать снова"
+
+#: apps/dai-forge/dai_forge/schedule.py:24
+msgid "Tue"
+msgstr "Вт"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:210
+msgid "Turn Wi-Fi on in the network menu or with the Wi-Fi key"
+msgstr "Включите Wi-Fi в меню сети или клавишей Wi-Fi"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:173
+msgid "Turn on battery saver"
+msgstr "Включить экономию заряда"
+
+#: apps/dai-mom/dai_mom/text.py:15
+msgid "Type to find an app…"
+msgstr "Начните вводить название приложения…"
+
+#: apps/dai-oem/dai_oem/wizard.py:76
+msgid "Type your name."
+msgstr "Введите ваше имя."
+
+#: apps/dai-tune/dai_tune/catalog.py:143
+msgid "USB storage devices"
+msgstr "USB-накопители"
+
+#: apps/dai-forge/dai_forge/gui.py:145
+msgid "Undo"
+msgstr "Отменить"
+
+#: apps/dai-tune/dai_tune/catalog.py:1189
+msgid "Undo the last software update (system files go back to before it)"
+msgstr "Отменить последнее обновление программ (системные файлы вернутся к прежнему состоянию)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:231
+msgid "Undo the last update"
+msgstr "Отменить последнее обновление"
+
+#: apps/dai-heal/dai_heal/text.py:62
+msgid "Undo the update (administrator password)"
+msgstr "Отменить обновление (пароль администратора)"
+
+#: apps/dai-forge/dai_forge/gui.py:146
+msgid "Undone. The system is back to how it was."
+msgstr "Отменено. Система в прежнем состоянии."
+
+#: apps/dai-mom/dai_mom/text.py:31
+#, python-brace-format
+msgid "Unsaved work in {name} will be lost."
+msgstr "Несохранённые данные в {name} будут потеряны."
+
+#: apps/dai-j/dai_j/text.py:46
+msgid "Up to date"
+msgstr "Всё актуально"
+
+#: apps/dai-command/dai_command/core.py:401
+msgid "Update app: "
+msgstr "Обновить приложение: "
+
+#: apps/dai-command/dai_command/core.py:396
+msgid "Update this app with Diamond · previous version kept · Enter"
+msgstr "Обновить это приложение с Diamond · предыдущая версия сохранится · Enter"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:240
+msgid "Updates cannot be undone on this disk"
+msgstr "На этом диске обновления нельзя отменить"
+
+#: apps/dai-forge/dai_forge/cli.py:209
+#, python-brace-format
+msgid "Updating {title} with Diamond…"
+msgstr "Обновляю {title} с Diamond…"
+
+#: apps/dai-j/dai_j/text.py:77
+msgid "User name"
+msgstr "Имя пользователя"
+
+#: apps/dai-oem/dai_oem/wizard.py:48
+msgid "User name (English letters, for signing in)"
+msgstr "Имя пользователя (английскими буквами, для входа)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:70
+#, python-brace-format
+msgid "Using the most: {names}."
+msgstr "Больше всего используют: {names}."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:214
+msgid "Usually missing firmware for this chip."
+msgstr "Обычно не хватает прошивки для этого чипа."
+
+#: apps/dai-forge/dai_forge/cli.py:399
+#, python-brace-format
+msgid "Versions kept: {versions}"
+msgstr "Сохранённые версии: {versions}"
+
+#: apps/dai-find/dai_find/search.py:29
+msgid "Videos"
+msgstr "Видео"
+
+#: apps/dai-welcome/dai_welcome/gui.py:85
+msgid "Voice typing — dictate in Hebrew and English (Super+H)"
+msgstr "Голосовой ввод — диктовка на иврите и английском (Super+H)"
+
+#: apps/dai-quick/dai_quick/gui.py:32
+msgid "Volume"
+msgstr "Громкость"
+
+#: apps/dai-tune/dai_tune/cli.py:29
+msgid "WEAKENS security"
+msgstr "СНИЖАЕТ безопасность"
+
+#: apps/dai-forge/dai_forge/schedule.py:24
+msgid "Wed"
+msgstr "Ср"
+
+#: apps/dai-welcome/dai_welcome/gui.py:52
+#: apps/dai-welcome/dai_welcome/gui.py:53
+msgid "Welcome to D.Ai OS"
+msgstr "Добро пожаловать в D.Ai OS"
+
+#: apps/dai-heal/dai_heal/text.py:33
+msgid "What it said:"
+msgstr "Что было сказано:"
+
+#: apps/dai-forge/dai_forge/gui.py:122
+msgid "What should the computer do?"
+msgstr "Что должен делать компьютер?"
+
+#: apps/dai-forge/dai_forge/gui.py:134
+msgid "What will change"
+msgstr "Что изменится"
+
+#: apps/dai-heal/dai_heal/text.py:32
+#, python-brace-format
+msgid "When: {when}"
+msgstr "Когда: {when}"
+
+#: apps/dai-j/dai_j/text.py:127
+msgid "Who is it for? Add an address in To."
+msgstr "Кому отправить? Добавьте адрес в поле «Кому»."
+
+#: apps/dai-quick/dai_quick/gui.py:41
+msgid "Who used it"
+msgstr "Кто использовал"
+
+#: apps/dai-mom/dai_mom/text.py:23
+msgid "Why is it slow?"
+msgstr "Почему тормозит?"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:213
+msgid "Wi-Fi chip found but not ready"
+msgstr "Чип Wi-Fi найден, но не готов"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:208
+msgid "Wi-Fi is switched off"
+msgstr "Wi-Fi выключен"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:183
+msgid "Wired network"
+msgstr "Проводная сеть"
+
+#: apps/dai-backup/dai_backup/cli.py:104
+msgid "Without this key the backup cannot be restored on another computer — by you or anyone else."
+msgstr "Без этого ключа резервную копию нельзя восстановить на другом компьютере — ни вам, ни кому-либо ещё."
+
+#: apps/dai-forge/dai_forge/gui.py:138
+#: apps/dai-heal/dai_heal/text.py:66
+msgid "Working on it…"
+msgstr "Работаю…"
+
+#: apps/dai-forge/dai_forge/gui.py:154
+msgid "Worth knowing about the code:"
+msgstr "Что стоит знать о коде:"
+
+#: apps/dai-forge/dai_forge/gui.py:136
+msgid "Written by Diamond — review every step"
+msgstr "Написано Diamond — проверьте каждый шаг"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:228
+msgid "You can undo the last update"
+msgstr "Последнее обновление можно отменить"
+
+#: apps/dai-welcome/dai_welcome/gui.py:114
+msgid "You're all set ✓"
+msgstr "Всё готово ✓"
+
+#: apps/dai-forge/dai_forge/gui.py:149
+msgid "Your app is ready"
+msgstr "Ваше приложение готово"
+
+#: apps/dai-heal/dai_heal/text.py:29
+#, python-brace-format
+msgid "Your app “{title}” crashed{times}."
+msgstr "Ваше приложение «{title}» упало{times}."
+
+#: apps/dai-heal/dai_heal/text.py:27
+#, python-brace-format
+msgid "Your background service {name} failed."
+msgstr "Ваша фоновая служба {name} не работает."
+
+#: apps/dai-oem/dai_oem/wizard.py:54
+msgid "Your files are encrypted. This password is asked every time the computer starts, before anything else. It replaces the temporary one you got with the computer."
+msgstr "Ваши файлы зашифрованы. Этот пароль спрашивается при каждом запуске компьютера, раньше всего остального. Он заменяет временный пароль, полученный вместе с компьютером."
+
+#: apps/dai-j/dai_j/text.py:38
+msgid "Your mail, in one calm place"
+msgstr "Ваша почта — в одном спокойном месте"
+
+#: apps/dai-oem/dai_oem/wizard.py:47
+msgid "Your name"
+msgstr "Ваше имя"
+
+#: apps/dai-j/dai_j/text.py:54
+msgid "Your name (what people see)"
+msgstr "Ваше имя (его видят другие)"
+
+#: apps/dai-welcome/dai_welcome/gui.py:91
+msgid "Your privacy"
+msgstr "Ваша конфиденциальность"
+
+#: apps/dai-mom/dai_mom/text.py:59
+msgid "Yours"
+msgstr "Ваши"
+
+#: apps/dai-evolve/dai_evolve/scan.py:48
+msgid "a program that opens archives"
+msgstr "программа для открытия архивов"
+
+#: apps/dai-evolve/dai_evolve/scan.py:46
+msgid "a video and music player"
+msgstr "видео- и аудиоплеер"
+
+#: apps/dai-forge/dai_forge/cli.py:34
+#: apps/dai-forge/dai_forge/gui.py:550
+msgid "administrator"
+msgstr "администратор"
+
+#: apps/dai-welcome/dai_welcome/gui.py:88
+msgid "already installed"
+msgstr "уже установлено"
+
+#: apps/dai-evolve/dai_evolve/scan.py:45
+msgid "an e-book reader"
+msgstr "программа для чтения электронных книг"
+
+#: apps/dai-evolve/dai_evolve/scan.py:47
+msgid "an image editor"
+msgstr "графический редактор"
+
+#: apps/dai-evolve/dai_evolve/cli.py:42
+#, python-brace-format
+msgid "and {n} more in D.Ai Command (Super+Space)"
+msgstr "и ещё {n} в D.Ai Command (Super+Space)"
+
+#: apps/dai-forge/dai_forge/cli.py:33
+#: apps/dai-forge/dai_forge/gui.py:550
+msgid "built-in"
+msgstr "встроенный"
+
+#: apps/dai-forge/dai_forge/apps.py:141
+msgid "calls native code directly"
+msgstr "напрямую вызывает машинный код"
+
+#: apps/dai-forge/dai_forge/apps.py:157
+msgid "compiles code at run time"
+msgstr "компилирует код во время работы"
+
+#: apps/dai-forge/dai_forge/apps.py:161
+msgid "deletes whole folders"
+msgstr "удаляет папки целиком"
+
+#: apps/dai-forge/dai_forge/cli.py:213
+msgid "desktop app"
+msgstr "настольное приложение"
+
+#: apps/dai-forge/dai_forge/gui.py:120
+msgid "e.g. install antivirus · build an app for a shopping list"
+msgstr "например install antivirus · build an app for a shopping list"
+
+#: apps/dai-forge/dai_forge/apps.py:155
+msgid "evaluates text as code"
+msgstr "выполняет текст как код (eval)"
+
+#: apps/dai-forge/dai_forge/schedule.py:71
+#, python-brace-format
+msgid "every day at {at}"
+msgstr "каждый день в {at}"
+
+#: apps/dai-forge/dai_forge/schedule.py:75
+msgid "every hour"
+msgstr "каждый час"
+
+#: apps/dai-forge/dai_forge/schedule.py:78
+msgid "every time you log in"
+msgstr "при каждом входе в систему"
+
+#: apps/dai-forge/dai_forge/schedule.py:73
+#, python-brace-format
+msgid "every {day} at {at}"
+msgstr "еженедельно, {day}, в {at}"
+
+#: apps/dai-forge/dai_forge/schedule.py:77
+#, python-brace-format
+msgid "every {every} minutes"
+msgstr "каждые {every} мин."
+
+#: apps/dai-forge/dai_forge/apps.py:156
+#: apps/dai-forge/dai_forge/apps.py:231
+msgid "executes text as code"
+msgstr "выполняет текст как код (exec)"
+
+#: apps/dai-mom/dai_mom/text.py:69
+msgid "failed"
+msgstr "ошибка"
+
+#: apps/dai-move/dai_move/cli.py:76
+msgid "files"
+msgstr "файлы"
+
+#: apps/dai-forge/dai_forge/schedule.py:29
+msgid "friday|fri\\b"
+msgstr "friday|fri\\b"
+
+#: apps/dai-command/dai_command/core.py:685
+#: apps/dai-forge/dai_forge/gui.py:179
+#: apps/dai-tune/dai_tune/cli.py:29
+msgid "hardens security"
+msgstr "повышает безопасность"
+
+#: apps/dai-forge/dai_forge/gui.py:178
+msgid "high risk"
+msgstr "высокий риск"
+
+#: apps/dai-j/dai_j/text.py:47
+msgid "image blocked"
+msgstr "изображение заблокировано"
+
+#: apps/dai-forge/dai_forge/apps.py:151
+#: apps/dai-forge/dai_forge/apps.py:158
+msgid "imports code dynamically"
+msgstr "динамически импортирует код"
+
+#: apps/dai-welcome/dai_welcome/gui.py:87
+msgid "included in the assistant on this computer"
+msgstr "входит в помощника на этом компьютере"
+
+#: apps/dai-clip/dai_clip/text.py:20
+msgid "just now"
+msgstr "только что"
+
+#: apps/dai-forge/dai_forge/cli.py:155
+#: apps/dai-forge/dai_forge/gui.py:166
+msgid "lines"
+msgstr "строки"
+
+#: apps/dai-tune/dai_tune/posture.py:65
+msgid "live session: choose encryption in the installer"
+msgstr "живой сеанс: выберите шифрование в установщике"
+
+#: apps/dai-forge/dai_forge/apps.py:150
+msgid "loads compiled code"
+msgstr "загружает скомпилированный код"
+
+#: apps/dai-forge/dai_forge/apps.py:149
+msgid "loads pickled objects (unsafe with untrusted files)"
+msgstr "загружает объекты pickle (небезопасно с недоверенными файлами)"
+
+#: apps/dai-forge/dai_forge/gui.py:178
+#: apps/dai-tune/dai_tune/cli.py:28
+msgid "low risk"
+msgstr "низкий риск"
+
+#: apps/dai-forge/dai_forge/gui.py:178
+#: apps/dai-tune/dai_tune/cli.py:28
+msgid "medium risk"
+msgstr "средний риск"
+
+#: apps/dai-forge/dai_forge/schedule.py:27
+msgid "monday|mon\\b"
+msgstr "monday|mon\\b"
+
+#: apps/dai-command/dai_command/core.py:687
+#: apps/dai-forge/dai_forge/gui.py:180
+#: apps/dai-tune/dai_tune/cli.py:29
+msgid "neutral"
+msgstr "нейтрально"
+
+#: apps/dai-backup/dai_backup/cli.py:54
+msgid "never"
+msgstr "никогда"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:201
+msgid "no driver"
+msgstr "нет драйвера"
+
+#: apps/dai-forge/dai_forge/cli.py:386
+msgid "no extra permissions"
+msgstr "без дополнительных разрешений"
+
+#: apps/dai-forge/dai_forge/cli.py:204
+msgid "no schedule found"
+msgstr "расписание не найдено"
+
+#: apps/dai-forge/dai_forge/cli.py:496
+msgid "no such recipe"
+msgstr "нет такого рецепта"
+
+#: apps/dai-quick/dai_quick/gui.py:31
+msgid "off"
+msgstr "выкл."
+
+#: apps/dai-quick/dai_quick/gui.py:30
+msgid "on"
+msgstr "вкл."
+
+#: apps/dai-forge/dai_forge/apps.py:148
+msgid "opens terminals"
+msgstr "открывает терминалы"
+
+#: apps/dai-mom/dai_mom/text.py:28
+msgid "part of the session"
+msgstr "часть сеанса"
+
+#: apps/dai-command/dai_command/core.py:406
+msgid "privacy log (30 days, on this computer)"
+msgstr "журнал конфиденциальности (30 дней, на этом компьютере)"
+
+#: apps/dai-mom/dai_mom/text.py:68
+msgid "running"
+msgstr "работает"
+
+#: apps/dai-forge/dai_forge/apps.py:140
+msgid "runs other programs"
+msgstr "запускает другие программы"
+
+#: apps/dai-forge/dai_forge/apps.py:159
+#: apps/dai-forge/dai_forge/apps.py:160
+msgid "runs shell commands"
+msgstr "выполняет команды оболочки"
+
+#: apps/dai-forge/dai_forge/schedule.py:29
+msgid "saturday|sat\\b"
+msgstr "saturday|sat\\b"
+
+#: apps/dai-tune/dai_tune/cli.py:320
+msgid "security score and fixes"
+msgstr "оценка безопасности и исправления"
+
+#: apps/dai-forge/dai_forge/apps.py:147
+msgid "sends e-mail"
+msgstr "отправляет электронную почту"
+
+#: apps/dai-forge/dai_forge/apps.py:163
+msgid "signals other processes"
+msgstr "посылает сигналы другим процессам"
+
+#: apps/dai-j/dai_j/text.py:109
+msgid "signs in only through the provider's page (not supported yet)"
+msgstr "вход только через страницу провайдера (пока не поддерживается)"
+
+#: apps/dai-j/dai_j/text.py:28
+msgid "starred"
+msgstr "помечено звёздочкой"
+
+#: apps/dai-mom/dai_mom/text.py:71
+msgid "starting"
+msgstr "запускается"
+
+#: apps/dai-forge/dai_forge/apps.py:152
+#: apps/dai-forge/dai_forge/apps.py:162
+msgid "starts processes"
+msgstr "запускает процессы"
+
+#: apps/dai-mom/dai_mom/text.py:70
+msgid "stopped"
+msgstr "остановлено"
+
+#: apps/dai-forge/dai_forge/schedule.py:30
+msgid "sunday|sun\\b"
+msgstr "sunday|sun\\b"
+
+#: apps/dai-forge/dai_forge/gui.py:177
+#: apps/dai-tune/dai_tune/cli.py:27
+msgid "system"
+msgstr "система"
+
+#: apps/dai-forge/dai_forge/cli.py:213
+msgid "terminal tool"
+msgstr "инструмент для терминала"
+
+#: apps/dai-tune/dai_tune/catalog.py:144
+msgid "the camera"
+msgstr "камера"
+
+#: apps/dai-welcome/dai_welcome/gui.py:89
+msgid "this computer has little memory; it may be slow"
+msgstr "на этом компьютере мало памяти; он может работать медленно"
+
+#: apps/dai-forge/dai_forge/schedule.py:28
+msgid "thursday|thu\\b"
+msgstr "thursday|thu\\b"
+
+#: apps/dai-forge/dai_forge/schedule.py:27
+msgid "tuesday|tue\\b"
+msgstr "tuesday|tue\\b"
+
+#: apps/dai-tune/dai_tune/cli.py:322
+msgid "undo the last change"
+msgstr "отменить последнее изменение"
+
+#: apps/dai-j/dai_j/text.py:27
+msgid "unread"
+msgstr "непрочитанное"
+
+#: apps/dai-j/dai_j/text.py:111
+msgid "used without encryption; J connects only with encryption"
+msgstr "используется без шифрования; J подключается только с шифрованием"
+
+#: apps/dai-tune/dai_tune/cli.py:27
+msgid "user"
+msgstr "пользователь"
+
+#: apps/dai-forge/dai_forge/apps.py:142
+#: apps/dai-forge/dai_forge/apps.py:143
+#: apps/dai-forge/dai_forge/apps.py:144
+#: apps/dai-forge/dai_forge/apps.py:145
+#: apps/dai-forge/dai_forge/apps.py:146
+msgid "uses the network"
+msgstr "использует сеть"
+
+#: apps/dai-command/dai_command/core.py:686
+#: apps/dai-forge/dai_forge/gui.py:179
+msgid "weakens security"
+msgstr "снижает безопасность"
+
+#: apps/dai-forge/dai_forge/cli.py:213
+msgid "web app"
+msgstr "веб-приложение"
+
+#: apps/dai-forge/dai_forge/schedule.py:28
+msgid "wednesday|wed\\b"
+msgstr "wednesday|wed\\b"
+
+#: apps/dai-tune/dai_tune/cli.py:321
+msgid "what was changed"
+msgstr "что было изменено"
+
+#: apps/dai-mom/dai_mom/text.py:85
+msgid "will not start"
+msgstr "не будет запускаться"
+
+#: apps/dai-mom/dai_mom/text.py:84
+msgid "will start"
+msgstr "будет запускаться"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:198
+msgid "works"
+msgstr "в порядке"
+
+#: apps/dai-forge/dai_forge/cli.py:148
+msgid "writing code…"
+msgstr "пишу код…"
+
+#: apps/dai-forge/dai_forge/cli.py:36
+msgid "written by Diamond"
+msgstr "написано Diamond"
+
+#: apps/dai-forge/dai_forge/gui.py:177
+msgid "your account"
+msgstr "ваша учётная запись"
+
+#: apps/dai-forge/dai_forge/cli.py:35
+#: apps/dai-forge/dai_forge/gui.py:551
+msgid "your recipe"
+msgstr "ваш рецепт"
+
+#: apps/dai-j/dai_j/text.py:108
+#, python-brace-format
+msgid "{address} · from {source} · {host}"
+msgstr "{address} · из {source} · {host}"
+
+#: apps/dai-mom/dai_mom/text.py:54
+#, python-brace-format
+msgid "{apps} apps · {procs} processes"
+msgstr "Приложений: {apps} · процессов: {procs}"
+
+#: apps/dai-privacy/dai_privacy/text.py:21
+#, python-brace-format
+msgid "{app} stopped using the {device}"
+msgstr "{app} больше не использует: {device}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:177
+#, python-brace-format
+msgid "{capacity}% charged{health}"
+msgstr "Заряд {capacity}%{health}"
+
+#: apps/dai-j/dai_j/text.py:113
+#, python-brace-format
+msgid "{count} account(s) added. Check mail to sign in."
+msgstr "Добавлено учётных записей: {count}. Нажмите «Проверить почту», чтобы войти."
+
+#: apps/dai-j/dai_j/text.py:48
+#, python-brace-format
+msgid "{count} image(s) blocked, to stop tracking."
+msgstr "Заблокировано изображений: {count} — для защиты от слежки."
+
+#: apps/dai-j/dai_j/text.py:45
+#, python-brace-format
+msgid "{count} new message(s)"
+msgstr "Новых сообщений: {count}"
+
+#: apps/dai-mom/dai_mom/text.py:24
+#, python-brace-format
+msgid "{count} processes"
+msgstr "Процессов: {count}"
+
+#: apps/dai-backup/dai_backup/cli.py:82
+#, python-brace-format
+msgid "{drive} is not a writable folder"
+msgstr "{drive} — не папка, доступная для записи"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:132
+#, python-brace-format
+msgid "{free} free of {total}"
+msgstr "Свободно {free} из {total}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:127
+#, python-brace-format
+msgid "{free} free of {total}."
+msgstr "Свободно {free} из {total}."
+
+#: apps/dai-privacy/dai_privacy/text.py:20
+#, python-brace-format
+msgid "{icon} {app} is using the {device}"
+msgstr "{icon} {app} использует: {device}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:76
+#, python-brace-format
+msgid "{mem_available} free"
+msgstr "Свободно: {mem_available}"
+
+#: apps/dai-mom/dai_mom/text.py:43
+#, python-brace-format
+msgid "{name} belongs to the system; MOM only closes your own apps."
+msgstr "{name} относится к системе; MOM закрывает только ваши приложения."
+
+#: apps/dai-heal/dai_heal/text.py:28
+#, python-brace-format
+msgid "{name} crashed{times}."
+msgstr "{name}: сбой{times}."
+
+#: apps/dai-mom/dai_mom/text.py:74
+#, python-brace-format
+msgid "{name} did not change; it may need a restart of the session."
+msgstr "{name} не изменилось; возможно, нужно перезапустить сеанс."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:202
+#, python-brace-format
+msgid "{name} has no driver loaded, so it will probably not work."
+msgstr "Для {name} не загружен драйвер, поэтому оно, скорее всего, не будет работать."
+
+#: apps/dai-mom/dai_mom/text.py:49
+#, python-brace-format
+msgid "{name} has not closed yet. Force close?"
+msgstr "{name} ещё не закрылось. Закрыть принудительно?"
+
+#: apps/dai-mom/dai_mom/text.py:37
+#, python-brace-format
+msgid "{name} is part of the session and cannot be forced closed."
+msgstr "{name} — часть сеанса, его нельзя закрыть принудительно."
+
+#: apps/dai-mom/dai_mom/text.py:76
+#, python-brace-format
+msgid "{name} is part of the session and is not stopped from here."
+msgstr "{name} — часть сеанса, отсюда его не остановить."
+
+#: apps/dai-mom/dai_mom/text.py:39
+#, python-brace-format
+msgid "{name} is part of the session. Add --yes to close it anyway."
+msgstr "{name} — часть сеанса. Добавьте --yes, чтобы всё равно закрыть."
+
+#: apps/dai-mom/dai_mom/text.py:33
+#, python-brace-format
+msgid "{name} is part of the session. Closing it can end the session or stop the sound and the taskbar until you log in again."
+msgstr "{name} — часть сеанса. Если закрыть его, сеанс может завершиться или пропадут звук и панель задач до следующего входа."
+
+#: apps/dai-mom/dai_mom/text.py:48
+#, python-brace-format
+msgid "{name} was forced closed."
+msgstr "{name} закрыто принудительно."
+
+#: apps/dai-mom/dai_mom/text.py:29
+#, python-brace-format
+msgid "{name}, {memory} memory, {cpu} percent CPU"
+msgstr "{name}, память {memory}, процессор {cpu} процентов"
+
+#: apps/dai-clip/dai_clip/text.py:22
+#, python-brace-format
+msgid "{n} h ago"
+msgstr "{n} ч назад"
+
+#: apps/dai-clip/dai_clip/text.py:19
+#, python-brace-format
+msgid "{n} lines"
+msgstr "Строк: {n}"
+
+#: apps/dai-clip/dai_clip/text.py:21
+#, python-brace-format
+msgid "{n} min ago"
+msgstr "{n} мин назад"
+
+#: apps/dai-raz/dai_raz/checks.py:188
+#, python-brace-format
+msgid "{n} new"
+msgstr "Новых: {n}"
+
+#: apps/dai-code/dai_code/cli.py:100
+#, python-brace-format
+msgid "{rel} is larger than {limit} KB; edit a smaller file or a part of it"
+msgstr "{rel} больше {limit} KB; измените файл поменьше или его часть"
+
+#: apps/dai-backup/dai_backup/cli.py:86
+#, python-brace-format
+msgid "{repo} already exists; it is not overwritten."
+msgstr "{repo} уже существует; он не перезаписывается."
+
+#: apps/dai-welcome/dai_welcome/gui.py:86
+#, python-brace-format
+msgid "{size} download · needs {ram} RAM"
+msgstr "Загрузка {size} · нужно {ram} ОЗУ"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:137
+#, python-brace-format
+msgid "{system_caches} can be freed in the system"
+msgstr "В системе можно освободить {system_caches}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:109
+#, python-brace-format
+msgid "{uptime_days:.0f} days. A restart applies installed updates and frees memory."
+msgstr "Дней: {uptime_days:.0f}. Перезагрузка применит установленные обновления и освободит память."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:83
+#, python-brace-format
+msgid "{used} in swap: things slow down when it is used."
+msgstr "В подкачке {used}: когда она используется, всё замедляется."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py:145
+#, python-brace-format
+msgid "{user_caches} in the trash and picture previews"
+msgstr "{user_caches} в корзине и миниатюрах изображений"
+
+#: apps/dai-mom/dai_mom/text.py:86
+#, python-brace-format
+msgid "{value}% CPU"
+msgstr "Процессор {value}%"
+
+#: apps/dai-forge/dai_forge/gui.py:114
+msgid "⚠ It still crashes when started. Try “change” with more details, or a larger model."
+msgstr "⚠ По-прежнему падает при запуске. Попробуйте «change» с подробностями или модель побольше."
+
+#: apps/dai-forge/dai_forge/cli.py:285
+#, python-brace-format
+msgid "✓ Active: {describe}. Stop: dai-forge auto pause {name}  ·  Log: dai-forge auto log {name}"
+msgstr "✓ Активно: {describe}. Остановить: dai-forge auto pause {name}  ·  Журнал: dai-forge auto log {name}"
+
+#: apps/dai-code/dai_code/cli.py:131
+#, python-brace-format
+msgid "✓ Applied ({id}). Undo: dai-code undo"
+msgstr "✓ Применено ({id}). Отменить: dai-code undo"
+
+#: apps/dai-tune/dai_tune/cli.py:203
+msgid "✓ Applied. To undo: dai-tune undo"
+msgstr "✓ Применено. Отменить: dai-tune undo"
+
+#: apps/dai-backup/dai_backup/cli.py:124
+msgid "✓ Backed up: "
+msgstr "✓ Сохранено: "
+
+#: apps/dai-backup/dai_backup/cli.py:102
+msgid "✓ Encrypted backup created on"
+msgstr "✓ Зашифрованная резервная копия создана в"
+
+#: apps/dai-heal/dai_heal/text.py:77
+msgid "✓ Everything passes again."
+msgstr "✓ Всё снова проходит проверку."
+
+#: apps/dai-forge/dai_forge/cli.py:501
+#, python-brace-format
+msgid "✓ Exported to {rest}"
+msgstr "✓ Экспортировано в {rest}"
+
+#: apps/dai-heal/dai_heal/text.py:68
+msgid "✓ Fixed: it is running again."
+msgstr "✓ Исправлено: снова работает."
+
+#: apps/dai-doctor/dai_doctor/cli.py:86
+#, python-brace-format
+msgid "✓ Freed {size}"
+msgstr "✓ Освобождено {size}"
+
+#: apps/dai-forge/dai_forge/cli.py:520
+#, python-brace-format
+msgid "✓ Imported {id} → {saved}"
+msgstr "✓ Импортировано {id} → {saved}"
+
+#: apps/dai-heal/dai_heal/text.py:72
+#, python-brace-format
+msgid "✓ Its settings were moved aside to {detail}. Open it again to start fresh."
+msgstr "✓ Его настройки перемещены в {detail}. Откройте его снова, чтобы начать с чистого листа."
+
+#: apps/dai-forge/dai_forge/cli.py:316
+#, python-brace-format
+msgid "✓ Paused. Resume: dai-forge auto resume {name}"
+msgstr "✓ Приостановлено. Возобновить: dai-forge auto resume {name}"
+
+#: apps/dai-forge/dai_forge/cli.py:529
+#: apps/dai-forge/dai_forge/cli.py:429
+msgid "✓ Removed"
+msgstr "✓ Удалено"
+
+#: apps/dai-backup/dai_backup/cli.py:201
+#, python-brace-format
+msgid "✓ Restored into {target}"
+msgstr "✓ Восстановлено в {target}"
+
+#: apps/dai-code/dai_code/cli.py:176
+#, python-brace-format
+msgid "✓ Restored {file}"
+msgstr "✓ Восстановлен {file}"
+
+#: apps/dai-forge/dai_forge/cli.py:411
+#, python-brace-format
+msgid "✓ Revoked {rest}"
+msgstr "✓ Отозвано: {rest}"
+
+#: apps/dai-forge/dai_forge/gui.py:111
+msgid "✓ Tested in the sandbox: it works"
+msgstr "✓ Проверено в песочнице: работает"
+
+#: apps/dai-forge/dai_forge/gui.py:112
+#, python-brace-format
+msgid "✓ Tested in the sandbox: it works (the AI fixed {n} problem(s))"
+msgstr "✓ Проверено в песочнице: работает (ИИ исправил проблем: {n})"
+
+#: apps/dai-heal/dai_heal/text.py:69
+#, python-brace-format
+msgid "✓ The app was fixed and passed the test in the sandbox ({detail}). Open it from the Start menu."
+msgstr "✓ Приложение исправлено и прошло проверку в песочнице ({detail}). Откройте его из меню «Пуск»."
+
+#: apps/dai-backup/dai_backup/cli.py:197
+msgid "✓ The backup is healthy and restorable."
+msgstr "✓ Резервная копия в порядке и пригодна для восстановления."
+
+#: apps/dai-heal/dai_heal/text.py:74
+msgid "✓ The old settings are back."
+msgstr "✓ Старые настройки возвращены."
+
+#: apps/dai-heal/dai_heal/text.py:75
+msgid "✓ The update was undone. Restart the computer to finish."
+msgstr "✓ Обновление отменено. Перезагрузите компьютер, чтобы завершить."
+
+#: apps/dai-tune/dai_tune/cli.py:261
+msgid "✓ Undone: "
+msgstr "✓ Отменено: "
+
+#: apps/dai-forge/dai_forge/cli.py:404
+#, python-brace-format
+msgid "✓ {name} is back to version {version}"
+msgstr "✓ {name} возвращено к версии {version}"
+
+#: apps/dai-forge/dai_forge/cli.py:515
+#, python-brace-format
+msgid "✗ '{id}' is a {source} recipe and cannot be replaced."
+msgstr "✗ '{id}' — рецепт ({source}), его нельзя заменить."
+
+#: apps/dai-heal/dai_heal/text.py:78
+msgid "✗ It is still failing. Here is what it says now:"
+msgstr "✗ По-прежнему не работает. Вот что выводится сейчас:"
+
+#: apps/dai-forge/dai_forge/cli.py:462
+msgid "✗ No schedule understood (e.g. \"every day at 18:00\")"
+msgstr "✗ Расписание не понято (например, \"every day at 18:00\")"
+
+#: apps/dai-forge/dai_forge/cli.py:74
+msgid "✗ Only an administrator (a member of the sudo group) can do this."
+msgstr "✗ Это может сделать только администратор (участник группы sudo)."
+
+#: apps/dai-forge/dai_forge/cli.py:526
+msgid "✗ Only your own recipes can be removed."
+msgstr "✗ Удалять можно только свои рецепты."
+
+#: apps/dai-heal/dai_heal/text.py:79
+#, python-brace-format
+msgid "✗ That did not work: {detail}"
+msgstr "✗ Не получилось: {detail}"
+
+#: apps/dai-forge/dai_forge/cli.py:345
+msgid "✗ bubblewrap is missing; apps never run outside the sandbox."
+msgstr "✗ bubblewrap отсутствует; приложения никогда не запускаются вне песочницы."
+
+#: apps/dai-command/dai_command/core.py:386
+msgid "🎙 Listening… click the microphone again to finish"
+msgstr "🎙 Слушаю… нажмите на микрофон ещё раз, чтобы закончить"
+
+#: apps/dai-voice/dai_voice/cli.py:26
+msgid "🎙 Recording… press again to finish"
+msgstr "🎙 Запись… нажмите ещё раз, чтобы закончить"
+
+#: apps/dai-mom/dai_mom/text.py:27
+msgid "🔴 recording"
+msgstr "🔴 запись"
+
+#: apps/dai-mom/dai_mom/text.py:26
+msgid "🛡 sandbox"
+msgstr "🛡 песочница"
