@@ -35,7 +35,7 @@ NAME_RE = re.compile(r"^[a-z][a-z0-9-]{1,30}$")
 KINDS = {"gui": "app.py", "cli": "app.py", "web": "index.html"}
 MAX_CODE = 64 * 1024
 MAX_VERSIONS = 20
-PERMISSIONS = ("network", "documents")
+PERMISSIONS = ("network", "documents", "downloads")
 
 CSP = (
     '<meta http-equiv="Content-Security-Policy" content="default-src \'self\' \'unsafe-inline\' data: blob:; '
@@ -61,6 +61,7 @@ class App:
     request: str = ""
     generator: str = "ai"
     tested: str = ""  # passed | failed | skipped (docs/EVOLVE.md: the Workshop runs it before you do)
+    schedule: dict = field(default_factory=dict)  # automations: dai_forge.schedule.Schedule.to_json()
 
     @property
     def entry(self) -> str:
@@ -94,7 +95,12 @@ class App:
             "request": self.request,
             "generator": self.generator,
             "tested": self.tested,
+            **({"schedule": self.schedule} if self.schedule else {}),
         }
+
+    @property
+    def is_automation(self) -> bool:
+        return bool(self.schedule)
 
 
 def _now() -> str:
@@ -283,7 +289,15 @@ def load(name: str) -> App:
         request=str(data.get("request", ""))[:500],
         generator=str(data.get("generator", "ai"))[:20],
         tested=data.get("tested") if data.get("tested") in ("passed", "failed", "skipped") else "",
+        schedule=_schedule(data.get("schedule")),
     )
+
+
+def _schedule(value: Any) -> dict:
+    from .schedule import Schedule
+
+    parsed = Schedule.from_json(value)
+    return parsed.to_json() if parsed else {}
 
 
 def list_apps() -> list[App]:
@@ -335,6 +349,7 @@ def save(
     request: str = "",
     generator: str = "ai",
     tested: str = "",
+    schedule: dict | None = None,
 ) -> tuple[App, list[Finding]]:
     """Create a new app or a new version of an existing one.
 
@@ -360,6 +375,10 @@ def save(
     app.updated = _now()
     app.request = request[:500]
     app.tested = tested
+    if schedule is not None:
+        if kind != "cli":
+            raise AppError("only terminal-style scripts can run on a schedule")
+        app.schedule = _schedule(schedule)
     if kind == "web":
         code = apply_csp(code, network=app.approved.get("network", False))
     _write(app.code_path, code)
@@ -431,6 +450,11 @@ ICONS = {"gui": "applications-other", "cli": "utilities-terminal", "web": "appli
 
 
 def write_desktop_entry(app: App) -> Path:
+    if app.is_automation:  # runs on its schedule, not from the menu (dai-forge auto list)
+        path = desktop_file(app.name)
+        if path.exists():
+            path.unlink()
+        return path
     lines = [
         "[Desktop Entry]",
         "Type=Application",
@@ -493,9 +517,10 @@ def sandbox_argv(app: App, env: dict[str, str] | None = None) -> list[str]:
             "--ro-bind-try", "/run/NetworkManager/resolv.conf", "/run/NetworkManager/resolv.conf",
             "--ro-bind-try", "/run/systemd/resolve", "/run/systemd/resolve",
         ]
-    if app.approved.get("documents"):
-        documents = str(Path(home) / "Documents")
-        argv += ["--bind", documents, documents]
+    for permission, folder in (("documents", "Documents"), ("downloads", "Downloads")):
+        if app.approved.get(permission):
+            path = str(Path(home) / folder)
+            argv += ["--bind", path, path]
     if app.kind == "gui":
         display = env.get("WAYLAND_DISPLAY", "wayland-0")
         if "/" in display:
@@ -523,8 +548,9 @@ def run_argv(app: App, env: dict[str, str] | None = None) -> list[str]:
     if app.kind == "web":
         # The browser's own sandbox applies; the CSP blocks the network unless approved.
         return ["xdg-open", app.code_path.as_uri()]
-    if app.approved.get("documents"):
-        (Path.home() / "Documents").mkdir(exist_ok=True)
+    for permission, folder in (("documents", "Documents"), ("downloads", "Downloads")):
+        if app.approved.get(permission):
+            (Path.home() / folder).mkdir(exist_ok=True)
     paths.app_data_dir(app.name).mkdir(parents=True, exist_ok=True, mode=0o700)
     return sandbox_argv(app, env)
 

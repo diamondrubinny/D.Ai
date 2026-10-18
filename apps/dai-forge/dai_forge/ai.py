@@ -74,6 +74,7 @@ APP_SCHEMA: dict[str, Any] = {
         "title": {"type": "string", "maxLength": 60},
         "network": {"type": "boolean"},
         "documents": {"type": "boolean"},
+        "downloads": {"type": "boolean"},
         "code": {"type": "string", "maxLength": MAX_CODE},
     },
     "required": ["name", "title", "network", "documents", "code"],
@@ -98,6 +99,15 @@ KIND_RULES = {
         "Write ONE complete Python 3 command-line program using the standard library only "
         "(input/print, argparse when useful). Start with '#!/usr/bin/env python3' and a main() function. "
     ),
+    "automation": (
+        "Write ONE complete Python 3 script using the standard library only. It runs UNATTENDED on a schedule: "
+        "never call input(), finish within a few minutes, and make it safe to run again (idempotent). "
+        "To tell the user something, print a line that starts with 'NOTIFY: ' followed by a short message in "
+        "the user's language; it becomes a desktop notification (at most 3 per run). Other output goes to a log. "
+        "Its ~/Downloads is visible only with downloads=true and ~/Documents only with documents=true. "
+        "Never delete anything outside those folders, and prefer moving files to a subfolder over deleting them. "
+        "Start with '#!/usr/bin/env python3' and a main() function. "
+    ),
     "web": (
         "Write ONE complete HTML5 document with inline CSS and JavaScript, no external files, fonts or CDNs. "
         "Use <html lang=\"he\" dir=\"rtl\"> for Hebrew. Store data in localStorage. Accessibility: semantic "
@@ -110,7 +120,7 @@ def app_messages(request: str, kind: str, current: str | None = None) -> list[di
     system = (
         "You are D.Ai Forge, the app builder of D.Ai OS. " + KIND_RULES[kind] + COMMON_RULES +
         "Reply only with JSON: name (short id, a-z 0-9 -), title (short, in the user's language), "
-        "network (bool), documents (bool), code (the complete file)."
+        "network (bool), documents (bool), downloads (bool), code (the complete file)."
     )
     if current is None:
         user = f"Build this: {request}"
@@ -168,6 +178,7 @@ def generate_app(request: str, kind: str, current: str | None = None, chat: Chat
         "title": str(data.get("title") or name)[:60],
         "network": data.get("network") is True,
         "documents": data.get("documents") is True,
+        "downloads": data.get("downloads") is True,
         "code": code,
     }
 
