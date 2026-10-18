@@ -3503,9 +3503,6 @@ msgstr "جارٍ نسخ {count} مجلدات. ملفات التطبيق الآخ
 msgid "Import mail kept on this computer"
 msgstr "استيراد البريد المحفوظ على هذا الحاسوب"
 
-#: apps/dai-j/dai_j/text.py
-msgid "No mail from Thunderbird, Betterbird or Evolution was found on this computer."
-msgstr "لم يُعثر على بريد من Thunderbird أو Betterbird أو Evolution على هذا الحاسوب."
 
 #: apps/dai-j/dai_j/text.py
 msgid "On this computer"
@@ -3627,3 +3624,7 @@ msgstr "وحده مدير الحاسوب يستطيع إضافة لغة إلى �
 #: apps/dai-welcome/dai_welcome/gui.py
 msgid "Security settings and language"
 msgstr "إعدادات الأمان واللغة"
+
+#: apps/dai-j/dai_j/text.py
+msgid "No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer."
+msgstr "لم يُعثر على هذا الحاسوب على بريد من Thunderbird أو Betterbird أو Evolution أو KMail."

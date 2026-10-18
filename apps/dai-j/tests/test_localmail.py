@@ -59,6 +59,14 @@ class ImportTests(unittest.TestCase):
         maildir.add(seen)
         sub = maildir.add_folder("Projects")
         sub.add(mailbox.MaildirMessage(message("Project plan")))
+        kmail = self.home / ".local/share/local-mail"
+        (kmail / ".inbox.directory").mkdir(parents=True)
+        inbox = mailbox.Maildir(kmail / "inbox", create=True)
+        flagged = mailbox.MaildirMessage(message("KMail flagged"))
+        flagged.set_flags("SF")
+        inbox.add(flagged)
+        mailbox.Maildir(kmail / ".inbox.directory/Bills", create=True).add(mailbox.MaildirMessage(message("Bill")))
+        (kmail / ".hidden").mkdir()
         self.store = Store(Path(self.tmp.name) / "mail.sqlite")
         self.addCleanup(self.store.close)
 
@@ -66,7 +74,8 @@ class ImportTests(unittest.TestCase):
         names = {s.name: s.kind for s in localmail.find_sources(self.home)}
         self.assertEqual(names, {"Thunderbird/Local Folders/Inbox": "mbox",
                                  "Thunderbird/Local Folders/Inbox/Work": "mbox",
-                                 "Evolution/Inbox": "maildir", "Evolution/Projects": "maildir"})
+                                 "Evolution/Inbox": "maildir", "Evolution/Projects": "maildir",
+                                 "KMail/inbox": "maildir", "KMail/inbox/Bills": "maildir"})
 
     def test_copies_once_with_flags_and_never_touches_the_source(self):
         before = digest(self.home)
@@ -86,6 +95,9 @@ class ImportTests(unittest.TestCase):
             localmail.import_source(self.store, source)
         evolution = {r["subject"]: r["seen"] for r in self.store.listing([localmail.LOCAL], folder="Evolution/Inbox")}
         self.assertEqual(evolution, {"Evolution seen": 1})
+        kmail = self.store.listing([localmail.LOCAL], folder="KMail/inbox")
+        self.assertEqual([(r["subject"], r["seen"], r["flagged"]) for r in kmail], [("KMail flagged", 1, 1)])
+        self.assertEqual(len(self.store.listing([localmail.LOCAL], folder="KMail/inbox/Bills")), 1)
         self.assertEqual(digest(self.home), before)  # the other apps' files are only read
         self.assertEqual(oct(os.stat(self.store.path).st_mode & 0o777), "0o600")
 

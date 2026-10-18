@@ -1851,9 +1851,9 @@ msgstr ""
 msgid "No keyring: the password is kept only until J closes."
 msgstr ""
 
-#. he: לא נמצא במחשב דואר של Thunderbird, ‏Betterbird או Evolution.
+#. he: לא נמצא במחשב דואר של Thunderbird, ‏Betterbird, ‏Evolution או KMail.
 #: apps/dai-j/dai_j/text.py:101
-msgid "No mail from Thunderbird, Betterbird or Evolution was found on this computer."
+msgid "No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer."
 msgstr ""
 
 #. he: לא נמצאו קבצים מתאימים

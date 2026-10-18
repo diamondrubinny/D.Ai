@@ -554,7 +554,7 @@ class ImportDialog(QDialog):
                                 wordWrap=True))
         self.list = QListWidget()
         self.list.setAccessibleName(t("import_title", lang))
-        names = {"thunderbird": "Thunderbird", "betterbird": "Betterbird", "evolution": "Evolution",
+        names = {"thunderbird": "Thunderbird", "betterbird": "Betterbird", "evolution": "Evolution", "kmail": "KMail",
                  "claws": "Claws Mail", "mutt": "Mutt"}
         for account in found:
             host = account.incoming.host if account.incoming else "?"

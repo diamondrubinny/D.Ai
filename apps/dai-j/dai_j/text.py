@@ -98,8 +98,8 @@ STRINGS = {
     # Import (docs/MAIL.md §3.1)
     "import": ("Import from another mail app", "ייבוא מתוכנת דואר אחרת"),
     "import_mail": ("Import mail kept on this computer", "ייבוא הדואר ששמור במחשב"),
-    "import_mail_none": ("No mail from Thunderbird, Betterbird or Evolution was found on this computer.",
-                         "לא נמצא במחשב דואר של Thunderbird, ‏Betterbird או Evolution."),
+    "import_mail_none": ("No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer.",
+                         "לא נמצא במחשב דואר של Thunderbird, ‏Betterbird, ‏Evolution או KMail."),
     "import_mail_running": ("Copying {count} folders. The other app's files are only read…",
                             "מעתיקים {count} תיקיות. הקבצים של התוכנה האחרת רק נקראים…"),
     "import_mail_done": ("{added} messages copied into {folders} local folders.",

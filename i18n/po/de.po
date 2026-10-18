@@ -3503,9 +3503,6 @@ msgstr "{count} Ordner werden kopiert. Die Dateien der anderen App werden nur ge
 msgid "Import mail kept on this computer"
 msgstr "Auf diesem Computer gespeicherte E-Mails importieren"
 
-#: apps/dai-j/dai_j/text.py
-msgid "No mail from Thunderbird, Betterbird or Evolution was found on this computer."
-msgstr "Auf diesem Computer wurden keine E-Mails von Thunderbird, Betterbird oder Evolution gefunden."
 
 #: apps/dai-j/dai_j/text.py
 msgid "On this computer"
@@ -3627,3 +3624,7 @@ msgstr "Nur ein Administrator kann diesem Computer eine Sprache hinzufügen."
 #: apps/dai-welcome/dai_welcome/gui.py
 msgid "Security settings and language"
 msgstr "Sicherheitseinstellungen und Sprache"
+
+#: apps/dai-j/dai_j/text.py
+msgid "No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer."
+msgstr "Auf diesem Computer wurde keine Post von Thunderbird, Betterbird, Evolution oder KMail gefunden."

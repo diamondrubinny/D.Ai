@@ -90,6 +90,26 @@ def evolution_folders(home: Path) -> list[Source]:
     return found
 
 
+def kmail_folders(home: Path) -> list[Source]:
+    """KMail's local folders (Akonadi's Maildir resource): ~/.local/share/local-mail/<folder>, with subfolders in
+    ".<folder>.directory/". KMail writes the read and flagged state into the file names (":2,S")."""
+    root = home / ".local/share/local-mail"
+    found: list[Source] = []
+
+    def walk(directory: Path, prefix: str, depth: int) -> None:
+        if depth > 8 or not directory.is_dir():
+            return
+        for path in sorted(directory.iterdir()):
+            if path.name.startswith(".") or path.is_symlink() or not _is_maildir(path):
+                continue
+            name = f"{prefix}/{path.name}"
+            found.append(Source("kmail", _clean_name(name), path, "maildir"))
+            walk(directory / f".{path.name}.directory", name, depth + 1)
+
+    walk(root, "KMail", 0)
+    return found
+
+
 def find_sources(home: Path | None = None) -> list[Source]:
     from .importers import thunderbird_profiles
 
@@ -97,7 +117,7 @@ def find_sources(home: Path | None = None) -> list[Source]:
     found: list[Source] = []
     for app, prefs in thunderbird_profiles(home):
         found += mozilla_folders(app, prefs.parent)
-    return found + evolution_folders(home)
+    return found + evolution_folders(home) + kmail_folders(home)
 
 
 def source_for_path(path: Path) -> Source | None:

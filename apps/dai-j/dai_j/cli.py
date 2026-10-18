@@ -7,7 +7,7 @@
   dai-j discover ADDRESS     which servers J would use for an address, as JSON (nothing is signed in)
   dai-j import [--add]       accounts found in Thunderbird, Betterbird, Evolution, Claws Mail and Mutt
                              (read-only; --add adds them to J; passwords are asked at the first sign-in)
-  dai-j import-mail [PATH]    copy the mail Thunderbird, Betterbird or Evolution keep on this computer (or one
+  dai-j import-mail [PATH]    copy the mail Thunderbird, Betterbird, Evolution or KMail keep on this computer (or one
                              mbox file / Maildir folder) into J's local folders; the other app's files are only read
   dai-j --version
 """
