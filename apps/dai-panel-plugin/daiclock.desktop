@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Service
+ServiceTypes=LXQtPanel/Plugin
+Name=D.Ai Clock
+Name[he]=השעון של D.Ai
+Comment=The time; a click opens D.Ai Quick
+Comment[he]=השעה; לחיצה פותחת את D.Ai Quick
+Icon=preferences-system-time

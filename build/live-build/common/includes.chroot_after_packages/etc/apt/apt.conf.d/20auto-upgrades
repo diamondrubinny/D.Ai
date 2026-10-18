@@ -1,0 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Diamond Rubinny (d.Ai)
+// D.Ai OS: refresh package lists and install security updates daily.
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";

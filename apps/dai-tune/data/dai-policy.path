@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Apply organization policies as soon as an administrator adds or changes one.
+[Unit]
+Description=Watch D.Ai organization policies
+
+[Path]
+PathChanged=/etc/dai/policy.d
+Unit=dai-policy.service
+
+[Install]
+WantedBy=paths.target

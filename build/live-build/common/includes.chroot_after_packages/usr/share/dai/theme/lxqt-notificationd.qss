@@ -1,0 +1,13 @@
+/* SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2026 Diamond Rubinny (d.Ai) */
+
+/* D.Ai Night — notifications */
+Notification {
+    color: #E6E9F5;
+    background: rgba(11, 16, 32, 96%);
+    border: 1px solid #2A3563;
+    border-left: 3px solid #7C5CFF;
+    border-radius: 10px;
+}
+QLabel { color: #E6E9F5; }
+#appLabel { color: #B8A6FF; }

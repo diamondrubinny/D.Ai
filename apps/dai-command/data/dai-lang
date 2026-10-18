@@ -1,0 +1,72 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# dai-lang: keyboard layout switching with a known state.
+#
+# labwc has no IPC that reports the active layout, so D.Ai switches layouts
+# itself: the active one is written to labwc's environment.d and applied with
+# "labwc --reconfigure". The panel indicator shows "dai-lang --label".
+#
+#   dai-lang [--label] | toggle | set <layout> | list
+set -eu
+
+cfg="${XDG_CONFIG_HOME:-$HOME/.config}/labwc"
+state="$cfg/environment.d/50-dai-lang.env"
+
+layouts="$(sed -n 's/^DAI_LAYOUTS=//p' "$cfg/environment" 2>/dev/null | tail -n 1)"
+[ -n "$layouts" ] || layouts="us,il"
+first="${layouts%%,*}"
+current="$(sed -n 's/^XKB_DEFAULT_LAYOUT=//p' "$state" 2>/dev/null | tail -n 1)"
+[ -n "$current" ] || current="$first"
+
+label() {
+	case "$1" in
+		il) echo "HE" ;;
+		us) echo "EN" ;;
+		ua) echo "UA" ;;
+		*) echo "$1" | tr '[:lower:]' '[:upper:]' ;;
+	esac
+}
+
+in_list() {
+	case ",$layouts," in
+		*",$1,"*) return 0 ;;
+		*) return 1 ;;
+	esac
+}
+
+set_layout() {
+	case "$1" in
+		[a-z][a-z]) ;;
+		*) echo "dai-lang: invalid layout: $1" >&2; exit 2 ;;
+	esac
+	in_list "$1" || { echo "dai-lang: $1 is not in DAI_LAYOUTS ($layouts)" >&2; exit 2; }
+	mkdir -p "${state%/*}"
+	printf 'XKB_DEFAULT_LAYOUT=%s\n' "$1" >"$state.tmp"
+	mv "$state.tmp" "$state"
+	labwc --reconfigure >/dev/null 2>&1 || true
+}
+
+next_layout() {
+	found=0
+	old_ifs="$IFS"
+	IFS=,
+	for layout in $layouts; do
+		if [ "$found" = 1 ]; then
+			IFS="$old_ifs"
+			echo "$layout"
+			return
+		fi
+		[ "$layout" = "$current" ] && found=1
+	done
+	IFS="$old_ifs"
+	echo "$first"
+}
+
+case "${1:---label}" in
+	--label) label "$current" ;;
+	toggle | next) set_layout "$(next_layout)" ;;
+	set) set_layout "${2:?usage: dai-lang set <layout>}" ;;
+	list) echo "$layouts" ;;
+	*) echo "usage: dai-lang [--label | toggle | set <layout> | list]" >&2; exit 2 ;;
+esac

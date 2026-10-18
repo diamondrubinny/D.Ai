@@ -1,0 +1,30 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Ruby</title>
+  <desc>Ruby, the D.Ai browser: a cut ruby with a shield of light, rose to crimson.</desc>
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.4"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#FF3D6E" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FF3D6E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="33" r="31" fill="url(#glow)"/>
+  <g stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="0.6" stroke-linejoin="round">
+    <polygon points="4,24 20,9 18,24" fill="#FF6B8F"/>
+    <polygon points="20,9 32,24 18,24" fill="#F0476F"/>
+    <polygon points="20,9 44,9 32,24" fill="#FFB3C4"/>
+    <polygon points="44,9 46,24 32,24" fill="#E23A62"/>
+    <polygon points="44,9 60,24 46,24" fill="#C81E4B"/>
+    <polygon points="4,24 18,24 32,59" fill="#B0173F"/>
+    <polygon points="18,24 32,24 32,59" fill="#D92556"/>
+    <polygon points="32,24 46,24 32,59" fill="#9E1239"/>
+    <polygon points="46,24 60,24 32,59" fill="#7A0D2C"/>
+  </g>
+  <polygon points="4,24 20,9 44,9 60,24 32,59" fill="url(#sheen)"/>
+  <path d="M54 3 L55.3 7.7 L60 9 L55.3 10.3 L54 15 L52.7 10.3 L48 9 L52.7 7.7 Z" fill="#FFFFFF" opacity="0.95"/>
+</svg>

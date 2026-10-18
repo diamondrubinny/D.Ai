@@ -1,0 +1,8 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>D.Ai Command</title>
+  <rect x="4" y="10" width="56" height="44" rx="10" fill="#1C2547" stroke="#22D3EE" stroke-width="3"/>
+  <path d="M16 24 L26 32 L16 40" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 41 H46" stroke="#B8A6FF" stroke-width="5" stroke-linecap="round"/>
+</svg>

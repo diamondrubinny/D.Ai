@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "id": "scanner",
+  "name": {
+    "en": "Scanners",
+    "he": "סורקים"
+  },
+  "description": {
+    "en": "Scanner support (SANE, driverless eSCL/AirScan) and Document Scanner.",
+    "he": "תמיכה בסורקים (SANE, ‏eSCL/AirScan בלי דרייבר) ותוכנת סריקה."
+  },
+  "match": {
+    "en": [
+      "scanner",
+      "scanning",
+      "scan documents"
+    ],
+    "he": [
+      "סורק",
+      "סורקים",
+      "סריקה",
+      "לסרוק"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "sane-utils",
+          "sane-airscan",
+          "simple-scan"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

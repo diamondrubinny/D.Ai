@@ -1,0 +1,14 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Snapshots before updates, switched on once on a newly installed Btrfs system
+# (docs/SNAPSHOTS.md stage 2). The same settings as D.Ai Tune's snapshots.enable;
+# "dai-tune 'turn off snapshots before updates'" removes them. Does nothing on
+# ext4, in the live session, or when a config already exists.
+set -eu
+command -v snapper >/dev/null 2>&1 || exit 0
+[ "$(findmnt -n -o FSTYPE --target /)" = btrfs ] || exit 0
+[ -e /etc/snapper/configs/root ] && exit 0
+snapper --no-dbus -c root create-config /
+snapper --no-dbus -c root set-config NUMBER_LIMIT=10 NUMBER_LIMIT_IMPORTANT=4 TIMELINE_CREATE=no
+echo "dai: snapshots before updates are on"

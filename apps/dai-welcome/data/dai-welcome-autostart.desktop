@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Opens D.Ai Welcome once, on the first login of an installed system
+# (never in the live session). See docs/WELCOME.md.
+[Desktop Entry]
+Type=Application
+Name=D.Ai Welcome (first run)
+Exec=dai-welcome --first-run
+TryExec=dai-welcome
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

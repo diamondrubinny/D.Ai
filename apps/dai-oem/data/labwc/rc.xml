@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- D.Ai OEM first-boot session: the setup window only, no panel, no shortcuts. -->
+<labwc_config>
+  <core><decoration>server</decoration></core>
+  <placement><policy>center</policy></placement>
+  <keyboard>
+    <!-- One harmless binding, so labwc does not add its default shortcuts (terminal, menus). -->
+    <keybind key="XF86WakeUp"><action name="None" /></keybind>
+  </keyboard>
+  <!-- No desktop menus (labwc's default root menu offers a terminal). -->
+  <mouse>
+    <context name="Root">
+      <mousebind button="Left" action="Press"><action name="None" /></mousebind>
+      <mousebind button="Right" action="Press"><action name="None" /></mousebind>
+      <mousebind button="Middle" action="Press"><action name="None" /></mousebind>
+    </context>
+  </mouse>
+  <windowRules>
+    <windowRule identifier="dai-oem-setup" serverDecoration="no" />
+  </windowRules>
+</labwc_config>

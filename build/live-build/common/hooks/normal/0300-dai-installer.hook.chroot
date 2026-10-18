@@ -1,0 +1,41 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Installer: Debian's tested Calamares configuration (calamares-settings-debian,
+# including LUKS full-disk encryption) with D.Ai branding and the D.Ai live user.
+set -eu
+
+conf=/etc/calamares/settings.conf
+[ -f "$conf" ] || { echo "dai-installer: $conf not found (calamares-settings-debian missing?)" >&2; exit 1; }
+[ -f /etc/calamares/branding/dai/branding.desc ] || { echo "dai-installer: D.Ai branding missing" >&2; exit 1; }
+
+sed -i 's/^branding:.*/branding: dai/' "$conf"
+grep -q '^branding: dai$' "$conf" || { echo "dai-installer: could not select the dai branding" >&2; exit 1; }
+
+# The live session user is "dai" (build-iso.sh: username=dai); the installed
+# system must not keep it.
+mkdir -p /etc/calamares/modules
+printf '%s\n' '# Set by D.Ai OS: remove the live session user from the installed system.' '---' 'username: dai' \
+	>/etc/calamares/modules/removeuser.conf
+
+# Btrfs by default (docs/SNAPSHOTS.md stage 2, approved): the same automatic
+# partitioning and LUKS encryption, on Btrfs so snapper can take a snapshot
+# before every update. ext4 and XFS stay available in manual partitioning.
+# No swap partition by default: zram is set up (/etc/systemd/zram-generator.conf).
+cat >/etc/calamares/modules/partition.conf <<'EOF'
+# Set by D.Ai OS (docs/SNAPSHOTS.md)
+---
+efi:
+    mountPoint: "/boot/efi"
+efiSystemPartition: "/boot/efi"
+userSwapChoices:
+    - none
+    - small
+    - suspend
+initialSwapChoice: none
+drawNestedPartitions: false
+alwaysShowPartitionLabels: true
+defaultFileSystemType: "btrfs"
+availableFileSystemTypes: ["btrfs", "ext4", "xfs"]
+enableLuksAutomatedPartitioning: true
+EOF

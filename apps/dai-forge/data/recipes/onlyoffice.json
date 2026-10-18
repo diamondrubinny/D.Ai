@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "id": "onlyoffice",
+  "name": {
+    "en": "ONLYOFFICE (Word/Excel/PowerPoint compatible)",
+    "he": "ONLYOFFICE (תואם Word/Excel/PowerPoint)"
+  },
+  "description": {
+    "en": "An office suite focused on Microsoft Office file compatibility, from Flathub. LibreOffice stays installed.",
+    "he": "חבילת משרד שמתמקדת בתאימות לקבצי Microsoft Office, מ־Flathub. ‏LibreOffice נשאר מותקן."
+  },
+  "match": {
+    "en": [
+      "onlyoffice",
+      "microsoft office",
+      "ms office",
+      "microsoft word",
+      "microsoft excel",
+      "docx files",
+      "office compatible"
+    ],
+    "he": [
+      "אופיס",
+      "וורד",
+      "אקסל",
+      "פאוורפוינט",
+      "אונלי אופיס"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "org.onlyoffice.desktopeditors"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

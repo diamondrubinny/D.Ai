@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai Backup (encrypted, to the backup drive when it is connected)
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/BACKUP.md
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/dai-backup auto
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=yes
+PrivateTmp=yes

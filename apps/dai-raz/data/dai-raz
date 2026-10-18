@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Raz: quality control of D.Ai itself (installed as /usr/bin/dai-raz).
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_raz.cli import main; sys.exit(main(["dai-raz", *sys.argv[1:]]))' "$@"

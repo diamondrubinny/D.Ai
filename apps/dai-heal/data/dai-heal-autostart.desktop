@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Notices crashes and failed services and offers help (docs/EVOLVE.md §4).
+# Read-only; nothing is fixed without you.
+[Desktop Entry]
+Type=Application
+Name=D.Ai Heal
+Name[he]=D.Ai עזרה ותיקון
+Exec=dai-heal watch
+TryExec=dai-heal
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

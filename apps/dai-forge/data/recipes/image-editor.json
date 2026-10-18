@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "id": "image-editor",
+  "name": {
+    "en": "Image editor",
+    "he": "עורך תמונות"
+  },
+  "description": {
+    "en": "GIMP: edit photos and images, opens XCF, PSD and TGA.",
+    "he": "GIMP: עריכת תמונות וגרפיקה, פותח XCF, ‏PSD ו־TGA."
+  },
+  "match": {
+    "en": [
+      "gimp",
+      "image editor",
+      "photo editor",
+      "edit photos",
+      "photoshop",
+      "psd"
+    ],
+    "he": [
+      "עורך תמונות",
+      "עריכת תמונות",
+      "לערוך תמונות",
+      "פוטושופ",
+      "gimp"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "gimp"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

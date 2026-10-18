@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OS update source: only D.Ai's own packages may come from it.
+# Even with a compromised archive, it cannot replace Debian packages.
+Package: dai-*
+Pin: release o=D.Ai
+Pin-Priority: 500
+
+Package: *
+Pin: release o=D.Ai
+Pin-Priority: -1
