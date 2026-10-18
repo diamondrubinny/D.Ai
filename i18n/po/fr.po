@@ -3628,3 +3628,31 @@ msgstr "Paramètres de sécurité et langue"
 #: apps/dai-j/dai_j/text.py
 msgid "No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer."
 msgstr "Aucun courrier de Thunderbird, Betterbird, Evolution ou KMail n'a été trouvé sur cet ordinateur."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent: a recipient has no key on this computer, or it is not confirmed. Import their key (Kleopatra or gpg), or send without encryption."
+msgstr "Non envoyé : un destinataire n'a pas de clé sur cet ordinateur, ou elle n'est pas confirmée. Importez sa clé (Kleopatra ou gpg), ou envoyez sans chiffrement."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent: there is no key of yours for this address on this computer to sign with."
+msgstr "Non envoyé : il n'y a pas de clé à vous pour cette adresse sur cet ordinateur pour signer."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent: GnuPG could not sign or encrypt (the key's password was not given?)."
+msgstr "Non envoyé : GnuPG n'a pas pu signer ou chiffrer (le mot de passe de la clé n'a pas été donné ?)."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Sign (OpenPGP)"
+msgstr "Signer (OpenPGP)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Recipients can check that it came from you and was not changed."
+msgstr "Les destinataires pourront vérifier qu'il vient de vous et n'a pas été modifié."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Encrypt"
+msgstr "Chiffrer"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Only the recipients can read it, with their keys. The subject stays visible."
+msgstr "Seuls les destinataires pourront le lire, avec leurs clés. L'objet reste visible."

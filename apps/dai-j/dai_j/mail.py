@@ -309,8 +309,10 @@ class Imap:
                                   imaplib.Time2Internaldate(time.time()), raw))
 
 
-def send(server: Server, password: str, message: EmailMessage, factory=None) -> None:
-    """Sends over SMTP with TLS; the server sees the envelope from the message headers."""
+def send(server: Server, password: str, message: EmailMessage | bytes, factory=None,
+         envelope: tuple[str, list[str]] | None = None) -> None:
+    """Sends over SMTP with TLS. A message already made into bytes (signed or encrypted) goes exactly as it is,
+    with the envelope given; otherwise the server sees the envelope from the message headers."""
     try:
         if factory is not None:
             smtp = factory(server)
@@ -327,7 +329,12 @@ def send(server: Server, password: str, message: EmailMessage, factory=None) -> 
         raise MailError("unreachable") from None
     try:
         smtp.login(server.username, password)
-        smtp.send_message(message)
+        if isinstance(message, bytes):
+            if envelope is None or not envelope[1]:
+                raise MailError("recipients")
+            smtp.sendmail(envelope[0], envelope[1], message)
+        else:
+            smtp.send_message(message)
     except smtplib.SMTPAuthenticationError:
         raise MailError("login") from None
     except smtplib.SMTPRecipientsRefused:

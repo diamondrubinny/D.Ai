@@ -3628,3 +3628,31 @@ msgstr "Настройки безопасности и язык"
 #: apps/dai-j/dai_j/text.py
 msgid "No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer."
 msgstr "На этом компьютере не найдена почта Thunderbird, Betterbird, Evolution или KMail."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent: a recipient has no key on this computer, or it is not confirmed. Import their key (Kleopatra or gpg), or send without encryption."
+msgstr "Не отправлено: у одного из получателей нет ключа на этом компьютере, или он не подтверждён. Импортируйте его ключ (Kleopatra или gpg) или отправьте без шифрования."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent: there is no key of yours for this address on this computer to sign with."
+msgstr "Не отправлено: на этом компьютере нет вашего ключа для этого адреса, чтобы подписать."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent: GnuPG could not sign or encrypt (the key's password was not given?)."
+msgstr "Не отправлено: GnuPG не смог подписать или зашифровать (пароль ключа не введён?)."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Sign (OpenPGP)"
+msgstr "Подписать (OpenPGP)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Recipients can check that it came from you and was not changed."
+msgstr "Получатели смогут проверить, что письмо от вас и не изменено."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Encrypt"
+msgstr "Зашифровать"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Only the recipients can read it, with their keys. The subject stays visible."
+msgstr "Прочитать смогут только получатели, своими ключами. Тема остаётся видимой."

@@ -23,7 +23,9 @@ def signed_mail(inner: bytes, signature: bytes) -> bytes:
 
 
 @unittest.skipUnless(shutil.which("gpg"), "gpg is not installed")
-class GnuPGTests(unittest.TestCase):
+class KeyHome(unittest.TestCase):
+    """A throwaway GnuPG home with one key, Dana's."""
+
     @classmethod
     def setUpClass(cls):
         cls.home = tempfile.mkdtemp()
@@ -44,6 +46,10 @@ class GnuPGTests(unittest.TestCase):
                                "--detach-sign", "--digest-algo", "SHA256"], input=data, capture_output=True,
                               check=True).stdout
 
+
+
+@unittest.skipUnless(shutil.which("gpg"), "gpg is not installed")
+class GnuPGTests(KeyHome):
     def test_a_good_signature(self):
         raw = signed_mail(INNER, self.sign(INNER))
         self.assertEqual(pgp.kind(raw), "signed")
@@ -110,6 +116,78 @@ class WithoutGnuPGTests(unittest.TestCase):
         result = pgp._status(out, smime=False)
         self.assertEqual((result.state, result.who), ("good", "Dana <evil>"))
         self.assertFalse(result.trusted)  # a good signature from a key nobody vouched for
+
+
+@unittest.skipUnless(shutil.which("gpg"), "gpg is not installed")
+class SendingTests(KeyHome):
+    """Signing and encrypting what is sent (docs/MAIL.md §15), checked with J's own reading side."""
+
+    def draft(self, to="Dana Test <dana@example.org>", **flags):
+        from dai_j import compose
+
+        return compose.Draft("Dana Test", "dana@example.org", to, subject="Plan",
+                             paragraphs=[("שלום, this is the plan.", "rtl"), ("Second line", "ltr")], **flags)
+
+    def test_signed_is_good_and_still_reads(self):
+        from dai_j import compose, mail
+
+        raw = pgp.protect(compose.build(self.draft()), sign=True, encrypt=False)
+        self.assertEqual(pgp.kind(raw), "signed")
+        self.assertNotRegex(raw, rb"[^\x00-\x7f]")  # 7-bit safe, so no server re-encodes what was signed
+        self.assertNotRegex(raw, rb"(?<!\r)\n")    # canonical CRLF
+        check = pgp.verify(raw)
+        self.assertEqual((check.state, check.trusted), ("good", True))
+        self.assertIn("this is the plan", mail.parse_body(raw).text)
+        self.assertIn(b"Subject: Plan", raw)
+        tampered = raw.replace(b"Second line", b"Second lime")
+        self.assertEqual(pgp.verify(tampered).state, "bad")
+
+    def test_encrypted_and_signed_decrypt_to_the_message(self):
+        from dai_j import compose, mail
+
+        for sign in (False, True):
+            raw = pgp.protect(compose.build(self.draft()), sign=sign, encrypt=True)
+            self.assertEqual(pgp.kind(raw), "encrypted")
+            self.assertNotIn(b"this is the plan", raw)
+            inner = pgp.decrypt(raw)
+            self.assertIn("this is the plan", mail.parse_body(inner).text)
+
+    def test_a_recipient_without_a_key_stops_it(self):
+        from dai_j import compose
+
+        with self.assertRaises(pgp.ProtectError) as caught:
+            pgp.protect(compose.build(self.draft(to="nobody@example.net")), sign=False, encrypt=True)
+        self.assertEqual(str(caught.exception), "recipient_key")
+        message = compose.build(compose.Draft("X", "x@example.net", "dana@example.org", paragraphs=[("hi", "auto")]))
+        with self.assertRaises(pgp.ProtectError) as caught:
+            pgp.protect(message, sign=True, encrypt=False)
+        self.assertEqual(str(caught.exception), "own_key")
+
+    def test_engine_sends_exactly_those_bytes(self):
+        from dai_j import accounts, discover, engine
+
+        sent = []
+
+        class FakeSmtp:
+            def login(self, user, password):
+                pass
+
+            def sendmail(self, sender, rcpt, raw):
+                sent.append((sender, rcpt, raw))
+
+            def quit(self):
+                pass
+
+        server = discover.Server("smtp.example.org", 465, "ssl", "dana@example.org")
+        account = accounts.Account(address="dana@example.org", name="Dana Test", incoming=server, outgoing=server)
+        engine.send(account, "pw", self.draft(sign=True), smtp_factory=lambda s: FakeSmtp())
+        sender, rcpt, raw = sent[0]
+        self.assertEqual((sender, rcpt), ("dana@example.org", ["dana@example.org"]))
+        self.assertEqual(pgp.verify(raw).state, "good")
+        with self.assertRaisesRegex(Exception, "pgp_recipient_key"):
+            engine.send(account, "pw", self.draft(to="nobody@example.net", encrypt=True),
+                        smtp_factory=lambda s: FakeSmtp())
+        self.assertEqual(len(sent), 1)  # nothing left the computer
 
 
 class WindowTests(unittest.TestCase):

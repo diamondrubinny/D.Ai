@@ -93,6 +93,20 @@ STRINGS = {
     "e_server": ("The server refused the request.", "השרת סירב לבקשה."),
     "e_gone": ("This message is no longer on the server.", "ההודעה הזו כבר לא בשרת."),
     "e_recipients": ("The server refused one of the recipients.", "השרת סירב לאחד הנמענים."),
+    "e_pgp_recipient_key": ("Not sent: a recipient has no key on this computer, or it is not confirmed. Import their "
+                            "key (Kleopatra or gpg), or send without encryption.",
+                            "לא נשלח: לאחד הנמענים אין מפתח במחשב הזה, או שהוא לא מאושר. ייבאו את המפתח שלו "
+                            "(Kleopatra או gpg), או שלחו בלי הצפנה."),
+    "e_pgp_own_key": ("Not sent: there is no key of yours for this address on this computer to sign with.",
+                      "לא נשלח: אין במחשב הזה מפתח שלכם לכתובת הזו, לחתימה."),
+    "e_pgp_gpg": ("Not sent: GnuPG could not sign or encrypt (the key's password was not given?).",
+                  "לא נשלח: GnuPG לא הצליח לחתום או להצפין (הסיסמה של המפתח לא הוזנה?)."),
+    "pgp_sign": ("Sign (OpenPGP)", "חתימה (OpenPGP)"),
+    "pgp_sign_tip": ("Recipients can check that it came from you and was not changed.",
+                     "הנמענים יוכלו לבדוק שההודעה מכם ושלא שונתה."),
+    "pgp_encrypt": ("Encrypt", "הצפנה"),
+    "pgp_encrypt_tip": ("Only the recipients can read it, with their keys. The subject stays visible.",
+                        "רק הנמענים יוכלו לקרוא, עם המפתחות שלהם. הנושא נשאר גלוי."),
     "e_send": ("The message was not sent. It is still here; try again.", "ההודעה לא נשלחה. היא עדיין כאן; נסו שוב."),
     "e_unknown": ("Something went wrong: {detail}", "משהו השתבש: {detail}"),
     # Import (docs/MAIL.md §3.1)

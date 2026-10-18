@@ -32,6 +32,8 @@ class Draft:
     paragraphs: list[tuple[str, str]] = field(default_factory=list)   # (text, "rtl" | "ltr" | "auto")
     in_reply_to: str = ""
     references: str = ""
+    sign: bool = False       # OpenPGP/MIME (docs/MAIL.md §15)
+    encrypt: bool = False
 
 
 def recipients(field_text: str) -> tuple[list[tuple[str, str]], list[str]]:

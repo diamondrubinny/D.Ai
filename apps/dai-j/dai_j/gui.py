@@ -10,6 +10,7 @@ work runs in the background; the window never waits for a server.
 
 from __future__ import annotations
 
+import shutil
 import time
 import urllib.parse
 from pathlib import Path
@@ -364,6 +365,13 @@ class ComposeWindow(QWidget):
         tools.addWidget(self.rtl)
         tools.addWidget(self.ltr)
         tools.addStretch(1)
+        self.sign_box = QCheckBox(t("pgp_sign", lang))
+        self.encrypt_box = QCheckBox(t("pgp_encrypt", lang))
+        for box, tip in ((self.sign_box, "pgp_sign_tip"), (self.encrypt_box, "pgp_encrypt_tip")):
+            box.setToolTip(t(tip, lang))
+            box.setAccessibleDescription(t(tip, lang))
+            box.setVisible(shutil.which("gpg") is not None)  # docs/MAIL.md §15: through the system's GnuPG
+            tools.addWidget(box)
         layout.addLayout(tools)
 
         self.body = QTextEdit()
@@ -434,7 +442,8 @@ class ComposeWindow(QWidget):
     def draft(self) -> compose.Draft:
         return compose.Draft(sender_name="", sender_address="", to=self.to.text(), cc=self.cc.text(),
                              subject=self.subject.text(), paragraphs=self.paragraphs(),
-                             in_reply_to=getattr(self, "in_reply_to", ""), references=getattr(self, "references", ""))
+                             in_reply_to=getattr(self, "in_reply_to", ""), references=getattr(self, "references", ""),
+                             sign=self.sign_box.isChecked(), encrypt=self.encrypt_box.isChecked())
 
     def account(self) -> acc.Account | None:
         wanted = self.account_box.currentData()

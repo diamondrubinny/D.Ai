@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
-"""Signed and encrypted mail (docs/MAIL.md §14): OpenPGP (RFC 3156) and S/MIME signatures, OpenPGP decryption.
+"""Signed and encrypted mail (docs/MAIL.md §14-15): OpenPGP (RFC 3156) and S/MIME signatures, OpenPGP decryption,
+and signing and encrypting what is sent (OpenPGP/MIME).
 
 Everything goes through the system's own GnuPG (gpg, gpgsm) with fixed
 arguments and no shell; J holds no keys and no cryptography of its own. The
@@ -11,14 +12,18 @@ saved: J's store keeps only what arrived.
 
 from __future__ import annotations
 
+import copy
 import email
 import email.policy
 import os
 import re
+import secrets
 import subprocess
 import tempfile
 import unicodedata
 from dataclasses import dataclass
+from email.message import EmailMessage
+from email.utils import getaddresses
 from pathlib import Path
 from typing import Callable
 
@@ -150,3 +155,107 @@ def decrypt(raw: bytes, run: Callable = subprocess.run) -> bytes | None:
     if not message.is_multipart():  # inline: the clear text, wrapped as a plain message to show
         return b"Content-Type: text/plain; charset=utf-8\r\n\r\n" + inner
     return inner
+
+
+# --------------------------------------------------------------------------
+# Sending: OpenPGP/MIME (RFC 3156 §5 signed, §4 encrypted, §6.2 both at once)
+# --------------------------------------------------------------------------
+
+SIGN_TIMEOUT = 180          # gpg-agent may be waiting for the passphrase
+ADDRESS = re.compile(r"^[^@\s<>,;\"']{1,64}@[A-Za-z0-9.-]{1,253}$")
+
+
+class ProtectError(ValueError):
+    """Why a message could not be signed or encrypted; nothing was sent."""
+
+
+def _boundary() -> str:
+    return "=-dai-j-" + secrets.token_hex(12)
+
+
+def _headers(message: EmailMessage, content_type: str) -> bytes:
+    """The outer headers (everything but Content-*), then MIME-Version and the new Content-Type, in CRLF form."""
+    policy = email.policy.SMTP
+    out = b"".join(policy.fold_binary(name, value) for name, value in message.items()
+                   if not name.lower().startswith("content-") and name.lower() != "mime-version")
+    return out + b"MIME-Version: 1.0\r\n" + policy.fold_binary("Content-Type", content_type)
+
+
+def _inner(message: EmailMessage) -> bytes:
+    """The body as a MIME part (its Content-* headers and content), canonical CRLF and 7-bit safe."""
+    part = copy.deepcopy(message)
+    for name in list(part.keys()):
+        if not name.lower().startswith("content-"):
+            del part[name]
+    for leaf in part.walk():
+        if not leaf.is_multipart() and leaf.get("Content-Transfer-Encoding", "").lower() in ("8bit", "binary"):
+            payload = leaf.get_content()
+            leaf.set_content(payload, subtype=leaf.get_content_subtype(), cte="quoted-printable")
+    raw = part.as_bytes(policy=email.policy.SMTP)
+    return re.sub(rb"(?<!\r)\n", b"\r\n", raw)
+
+
+def _addresses(message: EmailMessage) -> list[str]:
+    found = [address for _, address in getaddresses(message.get_all("To", []) + message.get_all("Cc", []))]
+    return [a for a in dict.fromkeys(found) if ADDRESS.match(a)]
+
+
+def _gpg(args: list[str], data: bytes, run: Callable) -> bytes:
+    try:
+        result = run(["gpg", "--batch", "--no-tty", "--status-fd", "2", "--armor", *args], input=data,
+                     capture_output=True, timeout=SIGN_TIMEOUT, env={**os.environ, "LC_ALL": "C"})
+    except (OSError, subprocess.SubprocessError):
+        raise ProtectError("gpg") from None
+    status = (result.stderr or b"").decode("utf-8", "replace")
+    if result.returncode != 0 or not result.stdout:
+        if "INV_RECP" in status or "NO_PUBKEY" in status:
+            raise ProtectError("recipient_key")
+        if "INV_SGNR" in status or "NO_SECKEY" in status or "secret key not available" in status:
+            raise ProtectError("own_key")
+        raise ProtectError("gpg")
+    return result.stdout
+
+
+def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = subprocess.run) -> bytes:
+    """The message, signed and/or encrypted with the sender's and the recipients' keys, as the bytes to send.
+
+    Signing uses the sender's own key (gpg-agent asks for its passphrase in its own window). Encrypting needs a
+    key for every recipient, and is also made to the sender, so the copy in "Sent" stays readable. The Subject and
+    the addresses stay outside, readable by the servers on the way, as in every OpenPGP/MIME mail.
+    """
+    sender = next((a for _, a in getaddresses(message.get_all("From", [])) if ADDRESS.match(a)), "")
+    if not sender:
+        raise ProtectError("own_key")
+    inner = _inner(message)
+    if encrypt:
+        recipients = _addresses(message)
+        if not recipients:
+            raise ProtectError("recipient_key")
+        args = ["--encrypt", *(arg for a in [*recipients, sender] for arg in ("--recipient", a))]
+        if sign:
+            args = ["--sign", "--local-user", sender, *args]
+        armored = _gpg(args, inner, run)
+        boundary = _boundary()
+        content_type = f'multipart/encrypted; protocol="application/pgp-encrypted"; boundary="{boundary}"'
+        b = boundary.encode()
+        body = (b"This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\r\n--" + b + b"\r\n"
+                b"Content-Type: application/pgp-encrypted\r\nContent-Description: PGP/MIME version identification"
+                b"\r\n\r\nVersion: 1\r\n\r\n--" + b + b"\r\n"
+                b'Content-Type: application/octet-stream; name="encrypted.asc"\r\n'
+                b'Content-Disposition: inline; filename="encrypted.asc"\r\n\r\n'
+                + armored.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n") + b"\r\n--" + b + b"--\r\n")
+        return _headers(message, content_type) + b"\r\n" + body
+    if not sign:
+        return message.as_bytes(policy=email.policy.SMTP)
+    signature = _gpg(["--detach-sign", "--digest-algo", "SHA256", "--local-user", sender], inner, run)
+    boundary = _boundary()
+    content_type = (f'multipart/signed; micalg=pgp-sha256; protocol="application/pgp-signature"; '
+                    f'boundary="{boundary}"')
+    b = boundary.encode()
+    body = (b"This is an OpenPGP/MIME signed message (RFC 4880 and 3156)\r\n--" + b + b"\r\n" + inner
+            + b"\r\n--" + b + b"\r\n"
+            b'Content-Type: application/pgp-signature; name="signature.asc"\r\n'
+            b"Content-Description: OpenPGP digital signature\r\n\r\n"
+            + signature.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n") + b"\r\n--" + b + b"--\r\n")
+    return _headers(message, content_type) + b"\r\n" + body
+

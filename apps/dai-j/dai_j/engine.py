@@ -83,11 +83,21 @@ def send(account: Account, password: str, draft: compose.Draft, smtp_factory=Non
     draft.sender_name = draft.sender_name or account.name
     draft.sender_address = account.address
     message = compose.build(draft)
-    mail.send(account.outgoing, password, message, smtp_factory)
+    raw = None
+    if draft.sign or draft.encrypt:  # before anything leaves: a missing key stops it here
+        from . import pgp
+
+        try:
+            raw = pgp.protect(message, draft.sign, draft.encrypt)
+        except pgp.ProtectError as exc:
+            raise mail.MailError(f"pgp_{exc}") from None
+    rcpt = [a for _, a in compose.recipients(draft.to)[0] + compose.recipients(draft.cc)[0]]
+    mail.send(account.outgoing, password, raw if raw is not None else message, smtp_factory,
+              envelope=(account.address, rcpt))
     sent = account.folders.get("sent")
     if sent and not account.incoming.host.endswith("gmail.com"):  # Gmail files sent mail by itself
         try:
             with mail.Imap(account.incoming, password, imap_factory) as imap:
-                imap.append(sent, message.as_bytes())
+                imap.append(sent, raw if raw is not None else message.as_bytes())
         except mail.MailError:
             pass  # it was sent; only the copy in "Sent" is missing

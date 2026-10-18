@@ -161,7 +161,7 @@ msgid ", {health}% health"
 msgstr ""
 
 #. he: ---------- הודעה שהועברה ----------
-#: apps/dai-j/dai_j/compose.py:102
+#: apps/dai-j/dai_j/compose.py:104
 msgid "---------- Forwarded message ----------"
 msgstr ""
 
@@ -206,7 +206,7 @@ msgid "About you"
 msgstr ""
 
 #. he: חשבונות שנמצאו במחשב הזה
-#: apps/dai-j/dai_j/text.py:140
+#: apps/dai-j/dai_j/text.py:154
 msgid "Accounts found on this computer"
 msgstr ""
 
@@ -242,7 +242,7 @@ msgid "Add the Flathub app store"
 msgstr ""
 
 #. he: הוספת החשבונות המסומנים
-#: apps/dai-j/dai_j/text.py:147
+#: apps/dai-j/dai_j/text.py:161
 msgid "Add the checked accounts"
 msgstr ""
 
@@ -600,7 +600,7 @@ msgid "Cannot reach the mail server. Check the Internet connection and the serve
 msgstr ""
 
 #. he: עותק
-#: apps/dai-j/dai_j/text.py:158
+#: apps/dai-j/dai_j/text.py:172
 msgid "Cc"
 msgstr ""
 
@@ -620,7 +620,7 @@ msgid "Check mail"
 msgstr ""
 
 #. he: בדקו את הכתובות האלה: {bad}
-#: apps/dai-j/dai_j/text.py:166
+#: apps/dai-j/dai_j/text.py:180
 #, python-brace-format
 msgid "Check these addresses: {bad}"
 msgstr ""
@@ -636,7 +636,7 @@ msgid "Checking mail…"
 msgstr ""
 
 #. he: בודקים את החתימה…
-#: apps/dai-j/dai_j/text.py:121
+#: apps/dai-j/dai_j/text.py:135
 msgid "Checking the signature…"
 msgstr ""
 
@@ -767,13 +767,13 @@ msgid "Copy now? [y/N] "
 msgstr ""
 
 #. he: מעתיקים {count} תיקיות. הקבצים של התוכנה האחרת רק נקראים…
-#: apps/dai-j/dai_j/text.py:103
+#: apps/dai-j/dai_j/text.py:117
 #, python-brace-format
 msgid "Copying {count} folders. The other app's files are only read…"
 msgstr ""
 
 #. he: לא הצלחנו לפענח: המפתח לא במחשב הזה, או שהסיסמה לא הוזנה.
-#: apps/dai-j/dai_j/text.py:119
+#: apps/dai-j/dai_j/text.py:133
 msgid "Could not decrypt: the key is not on this computer, or the password was not given."
 msgstr ""
 
@@ -904,12 +904,12 @@ msgid "Date"
 msgstr ""
 
 #. he: פענוח והצגה
-#: apps/dai-j/dai_j/text.py:114
+#: apps/dai-j/dai_j/text.py:128
 msgid "Decrypt and show"
 msgstr ""
 
 #. he: מפענחים… (ייתכן שהסיסמה של המפתח תתבקש בחלון נפרד)
-#: apps/dai-j/dai_j/text.py:115
+#: apps/dai-j/dai_j/text.py:129
 msgid "Decrypting… (your key's password may be asked in its own window)"
 msgstr ""
 
@@ -967,7 +967,7 @@ msgid "Diamond is not available, so this comes from the facts alone."
 msgstr ""
 
 #. he: ‏Diamond לא זמין. התקינו מודל: בשורת הפקודה, ? והשאלה.
-#: apps/dai-j/dai_j/text.py:132
+#: apps/dai-j/dai_j/text.py:146
 msgid "Diamond is not available. Install a model: D.Ai Command, ? and the question."
 msgstr ""
 
@@ -977,7 +977,7 @@ msgid "Diamond is not ready. Install a model: dai-models install qwen2.5-0.5b"
 msgstr ""
 
 #. he: ‏Diamond קורא את ההודעה…
-#: apps/dai-j/dai_j/text.py:131
+#: apps/dai-j/dai_j/text.py:145
 msgid "Diamond is reading the message…"
 msgstr ""
 
@@ -1017,12 +1017,12 @@ msgid "Diamond, the local AI, and voice"
 msgstr ""
 
 #. he: ויתור
-#: apps/dai-j/dai_j/text.py:169
+#: apps/dai-j/dai_j/text.py:183
 msgid "Discard"
 msgstr ""
 
 #. he: לוותר על ההודעה הזו?
-#: apps/dai-j/dai_j/text.py:168
+#: apps/dai-j/dai_j/text.py:182
 msgid "Discard this message?"
 msgstr ""
 
@@ -1105,7 +1105,7 @@ msgid "Downloads ({total} in total):"
 msgstr ""
 
 #. he: טיוטת תשובה (Diamond)
-#: apps/dai-j/dai_j/text.py:130
+#: apps/dai-j/dai_j/text.py:144
 msgid "Draft a reply (Diamond)"
 msgstr ""
 
@@ -1127,6 +1127,11 @@ msgstr ""
 #. he: לרוקן את סל המחזור ולנקות תצוגות מקדימות
 #: apps/dai-doctor/dai_doctor/diagnose.py:152
 msgid "Empty the trash and clear previews"
+msgstr ""
+
+#. he: הצפנה
+#: apps/dai-j/dai_j/text.py:107
+msgid "Encrypt"
 msgstr ""
 
 #. he: הצפנה
@@ -1359,7 +1364,7 @@ msgstr ""
 
 #. he: מאת
 #: apps/dai-j/dai_j/text.py:22
-#: apps/dai-j/dai_j/text.py:156
+#: apps/dai-j/dai_j/text.py:170
 msgid "From"
 msgstr ""
 
@@ -1481,12 +1486,12 @@ msgid "If it keeps happening, report it (nothing is sent without you): https://g
 msgstr ""
 
 #. he: ייבוא מתוכנת דואר אחרת
-#: apps/dai-j/dai_j/text.py:99
+#: apps/dai-j/dai_j/text.py:113
 msgid "Import from another mail app"
 msgstr ""
 
 #. he: ייבוא הדואר ששמור במחשב
-#: apps/dai-j/dai_j/text.py:100
+#: apps/dai-j/dai_j/text.py:114
 msgid "Import mail kept on this computer"
 msgstr ""
 
@@ -1626,12 +1631,12 @@ msgid "Last backup: "
 msgstr ""
 
 #. he: מאוחר יותר היום (בעוד 3 שעות)
-#: apps/dai-j/dai_j/text.py:134
+#: apps/dai-j/dai_j/text.py:148
 msgid "Later today (in 3 hours)"
 msgstr ""
 
 #. he: משמאל לימין
-#: apps/dai-j/dai_j/text.py:165
+#: apps/dai-j/dai_j/text.py:179
 msgid "Left to right"
 msgstr ""
 
@@ -1729,7 +1734,7 @@ msgstr ""
 
 #. he: הודעה
 #: apps/dai-j/dai_j/text.py:21
-#: apps/dai-j/dai_j/text.py:160
+#: apps/dai-j/dai_j/text.py:174
 msgid "Message"
 msgstr ""
 
@@ -1786,7 +1791,7 @@ msgstr ""
 
 #. he: הודעה חדשה
 #: apps/dai-j/dai_j/text.py:29
-#: apps/dai-j/dai_j/text.py:155
+#: apps/dai-j/dai_j/text.py:169
 msgid "New message"
 msgstr ""
 
@@ -1797,7 +1802,7 @@ msgid "Next"
 msgstr ""
 
 #. he: בשבוע הבא (יום שני ב־8:00)
-#: apps/dai-j/dai_j/text.py:136
+#: apps/dai-j/dai_j/text.py:150
 msgid "Next week (Monday 8:00)"
 msgstr ""
 
@@ -1852,7 +1857,7 @@ msgid "No keyring: the password is kept only until J closes."
 msgstr ""
 
 #. he: לא נמצא במחשב דואר של Thunderbird, ‏Betterbird, ‏Evolution או KMail.
-#: apps/dai-j/dai_j/text.py:101
+#: apps/dai-j/dai_j/text.py:115
 msgid "No mail from Thunderbird, Betterbird, Evolution or KMail was found on this computer."
 msgstr ""
 
@@ -1879,7 +1884,7 @@ msgid "No organization policies ({POLICY_DIR})."
 msgstr ""
 
 #. he: לא נמצאה תוכנת דואר אחרת עם חשבונות (Thunderbird, ‏Betterbird, ‏Evolution, ‏Claws Mail, ‏Mutt).
-#: apps/dai-j/dai_j/text.py:141
+#: apps/dai-j/dai_j/text.py:155
 msgid "No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, Mutt)."
 msgstr ""
 
@@ -1972,8 +1977,23 @@ msgid "Not restarted for a long time"
 msgstr ""
 
 #. he: לא נשלח. ההודעה עדיין כאן.
-#: apps/dai-j/dai_j/text.py:139
+#: apps/dai-j/dai_j/text.py:153
 msgid "Not sent. The message is still here."
+msgstr ""
+
+#. he: לא נשלח: GnuPG לא הצליח לחתום או להצפין (הסיסמה של המפתח לא הוזנה?).
+#: apps/dai-j/dai_j/text.py:102
+msgid "Not sent: GnuPG could not sign or encrypt (the key's password was not given?)."
+msgstr ""
+
+#. he: לא נשלח: לאחד הנמענים אין מפתח במחשב הזה, או שהוא לא מאושר. ייבאו את המפתח שלו (Kleopatra או gpg), או שלחו בלי הצפנה.
+#: apps/dai-j/dai_j/text.py:96
+msgid "Not sent: a recipient has no key on this computer, or it is not confirmed. Import their key (Kleopatra or gpg), or send without encryption."
+msgstr ""
+
+#. he: לא נשלח: אין במחשב הזה מפתח שלכם לכתובת הזו, לחתימה.
+#: apps/dai-j/dai_j/text.py:100
+msgid "Not sent: there is no key of yours for this address on this computer to sign with."
 msgstr ""
 
 #. he: לא נבדקה: {why}
@@ -2116,12 +2136,12 @@ msgid "Off. What was kept has been deleted."
 msgstr ""
 
 #. he: במחשב הזה
-#: apps/dai-j/dai_j/text.py:107
+#: apps/dai-j/dai_j/text.py:121
 msgid "On this computer"
 msgstr ""
 
 #. he: ב־{stamp}, {sender} כתב/ה:
-#: apps/dai-j/dai_j/compose.py:83
+#: apps/dai-j/dai_j/compose.py:85
 #, python-brace-format
 msgid "On {stamp}, {sender} wrote:"
 msgstr ""
@@ -2152,8 +2172,13 @@ msgstr ""
 msgid "Only an administrator can change system security. Ask the administrator of this computer."
 msgstr ""
 
+#. he: רק הנמענים יוכלו לקרוא, עם המפתחות שלהם. הנושא נשאר גלוי.
+#: apps/dai-j/dai_j/text.py:108
+msgid "Only the recipients can read it, with their keys. The subject stays visible."
+msgstr ""
+
 #. he: רק ההגדרות מועתקות, והתוכנה האחרת לא משתנה. J יבקש כל סיסמה בכניסה הראשונה.
-#: apps/dai-j/dai_j/text.py:144
+#: apps/dai-j/dai_j/text.py:158
 msgid "Only the settings are copied; the other app is not changed. J asks for each password the first time it signs in."
 msgstr ""
 
@@ -2380,6 +2405,11 @@ msgstr ""
 msgid "Recipes:"
 msgstr ""
 
+#. he: הנמענים יוכלו לבדוק שההודעה מכם ושלא שונתה.
+#: apps/dai-j/dai_j/text.py:105
+msgid "Recipients can check that it came from you and was not changed."
+msgstr ""
+
 #. he: מומלץ
 #: apps/dai-welcome/dai_welcome/gui.py:71
 msgid "Recommended"
@@ -2501,7 +2531,7 @@ msgid "Right now · Enter for the privacy log"
 msgstr ""
 
 #. he: מימין לשמאל
-#: apps/dai-j/dai_j/text.py:164
+#: apps/dai-j/dai_j/text.py:178
 msgid "Right to left"
 msgstr ""
 
@@ -2602,7 +2632,7 @@ msgid "Screen locks within 10 minutes"
 msgstr ""
 
 #. he: חיפוש בדואר…
-#: apps/dai-j/dai_j/text.py:109
+#: apps/dai-j/dai_j/text.py:123
 msgid "Search mail…"
 msgstr ""
 
@@ -2687,18 +2717,18 @@ msgstr ""
 
 #. he: שליחה
 #: apps/dai-heal/dai_heal/text.py:21
-#: apps/dai-j/dai_j/text.py:161
+#: apps/dai-j/dai_j/text.py:175
 msgid "Send"
 msgstr ""
 
 #. he: נשלח בעוד {seconds} שנ' · ביטול (Esc)
-#: apps/dai-j/dai_j/text.py:138
+#: apps/dai-j/dai_j/text.py:152
 #, python-brace-format
 msgid "Sending in {seconds} s · Undo (Esc)"
 msgstr ""
 
 #. he: שולח…
-#: apps/dai-j/dai_j/text.py:162
+#: apps/dai-j/dai_j/text.py:176
 msgid "Sending…"
 msgstr ""
 
@@ -2708,7 +2738,7 @@ msgid "Sent"
 msgstr ""
 
 #. he: נשלח.
-#: apps/dai-j/dai_j/text.py:163
+#: apps/dai-j/dai_j/text.py:177
 msgid "Sent."
 msgstr ""
 
@@ -2775,13 +2805,18 @@ msgstr ""
 msgid "Show me"
 msgstr ""
 
+#. he: חתימה (OpenPGP)
+#: apps/dai-j/dai_j/text.py:104
+msgid "Sign (OpenPGP)"
+msgstr ""
+
 #. he: כניסה
 #: apps/dai-j/dai_j/text.py:78
 msgid "Sign in"
 msgstr ""
 
 #. he: נחתם במפתח שלא נמצא במחשב הזה, ולכן אי אפשר לבדוק.
-#: apps/dai-j/dai_j/text.py:127
+#: apps/dai-j/dai_j/text.py:141
 msgid "Signed with a key that is not on this computer, so it cannot be checked."
 msgstr ""
 
@@ -2802,12 +2837,12 @@ msgid "Snapshots need a Btrfs system disk; this one is {unknown}."
 msgstr ""
 
 #. he: נודניק
-#: apps/dai-j/dai_j/text.py:110
+#: apps/dai-j/dai_j/text.py:124
 msgid "Snooze"
 msgstr ""
 
 #. he: נדחה עד {when}. ההודעה תחזור כלא נקראה.
-#: apps/dai-j/dai_j/text.py:137
+#: apps/dai-j/dai_j/text.py:151
 #, python-brace-format
 msgid "Snoozed until {when}. It will come back unread."
 msgstr ""
@@ -2839,7 +2874,7 @@ msgid "Something went wrong"
 msgstr ""
 
 #. he: משהו השתבש: {detail}
-#: apps/dai-j/dai_j/text.py:97
+#: apps/dai-j/dai_j/text.py:111
 #, python-brace-format
 msgid "Something went wrong: {detail}"
 msgstr ""
@@ -2944,12 +2979,12 @@ msgstr ""
 
 #. he: נושא
 #: apps/dai-j/dai_j/text.py:23
-#: apps/dai-j/dai_j/text.py:159
+#: apps/dai-j/dai_j/text.py:173
 msgid "Subject"
 msgstr ""
 
 #. he: סיכום (Diamond)
-#: apps/dai-j/dai_j/text.py:111
+#: apps/dai-j/dai_j/text.py:125
 msgid "Summarize (Diamond)"
 msgstr ""
 
@@ -3066,7 +3101,7 @@ msgid "The last update broke something D.Ai checks."
 msgstr ""
 
 #. he: ההודעה לא נשלחה. היא עדיין כאן; נסו שוב.
-#: apps/dai-j/dai_j/text.py:96
+#: apps/dai-j/dai_j/text.py:110
 msgid "The message was not sent. It is still here; try again."
 msgstr ""
 
@@ -3111,7 +3146,7 @@ msgid "The server's security certificate is not valid, so J did not connect."
 msgstr ""
 
 #. he: אי אפשר היה לבדוק את החתימה.
-#: apps/dai-j/dai_j/text.py:129
+#: apps/dai-j/dai_j/text.py:143
 msgid "The signature could not be checked."
 msgstr ""
 
@@ -3209,7 +3244,7 @@ msgid "Thu"
 msgstr ""
 
 #. he: אל
-#: apps/dai-j/dai_j/text.py:157
+#: apps/dai-j/dai_j/text.py:171
 msgid "To"
 msgstr ""
 
@@ -3220,7 +3255,7 @@ msgid "To: {to}"
 msgstr ""
 
 #. he: מחר ב־8:00
-#: apps/dai-j/dai_j/text.py:135
+#: apps/dai-j/dai_j/text.py:149
 msgid "Tomorrow at 8:00"
 msgstr ""
 
@@ -3290,7 +3325,7 @@ msgstr ""
 
 #. he: ביטול השינוי
 #: apps/dai-forge/dai_forge/gui.py:145
-#: apps/dai-j/dai_j/text.py:108
+#: apps/dai-j/dai_j/text.py:122
 msgid "Undo"
 msgstr ""
 
@@ -3431,7 +3466,7 @@ msgid "When: {when}"
 msgstr ""
 
 #. he: למי ההודעה? הוסיפו כתובת בשדה אל.
-#: apps/dai-j/dai_j/text.py:167
+#: apps/dai-j/dai_j/text.py:181
 msgid "Who is it for? Add an address in To."
 msgstr ""
 
@@ -3850,7 +3885,7 @@ msgid "signals other processes"
 msgstr ""
 
 #. he: נכנס רק דרך הדף של הספק (עוד לא נתמך)
-#: apps/dai-j/dai_j/text.py:149
+#: apps/dai-j/dai_j/text.py:163
 msgid "signs in only through the provider's page (not supported yet)"
 msgstr ""
 
@@ -3922,7 +3957,7 @@ msgid "unread"
 msgstr ""
 
 #. he: השתמש בחיבור לא מוצפן; J מתחבר רק עם הצפנה
-#: apps/dai-j/dai_j/text.py:151
+#: apps/dai-j/dai_j/text.py:165
 msgid "used without encryption; J connects only with encryption"
 msgstr ""
 
@@ -3998,13 +4033,13 @@ msgid "your recipe"
 msgstr ""
 
 #. he: {added} הודעות הועתקו ל־{folders} תיקיות מקומיות.
-#: apps/dai-j/dai_j/text.py:105
+#: apps/dai-j/dai_j/text.py:119
 #, python-brace-format
 msgid "{added} messages copied into {folders} local folders."
 msgstr ""
 
 #. he: {address} · מ־{source} · {host}
-#: apps/dai-j/dai_j/text.py:148
+#: apps/dai-j/dai_j/text.py:162
 #, python-brace-format
 msgid "{address} · from {source} · {host}"
 msgstr ""
@@ -4028,7 +4063,7 @@ msgid "{capacity}% charged{health}"
 msgstr ""
 
 #. he: נוספו חשבונות: {count}. בדקו דואר כדי להיכנס.
-#: apps/dai-j/dai_j/text.py:153
+#: apps/dai-j/dai_j/text.py:167
 #, python-brace-format
 msgid "{count} account(s) added. Check mail to sign in."
 msgstr ""
@@ -4346,13 +4381,13 @@ msgid "✓ Revoked {rest}"
 msgstr ""
 
 #. he: ✓ נחתם על ידי {who} ולא שונה, אבל עוד לא אישרתם שהמפתח הזה באמת שלהם.
-#: apps/dai-j/dai_j/text.py:123
+#: apps/dai-j/dai_j/text.py:137
 #, python-brace-format
 msgid "✓ Signed by {who} and not changed, but you have not confirmed that this key is theirs."
 msgstr ""
 
 #. he: ✓ נחתם על ידי {who}, וההודעה לא שונתה.
-#: apps/dai-j/dai_j/text.py:122
+#: apps/dai-j/dai_j/text.py:136
 #, python-brace-format
 msgid "✓ Signed by {who}, and the message was not changed."
 msgstr ""
@@ -4439,7 +4474,7 @@ msgid "✗ That did not work: {detail}"
 msgstr ""
 
 #. he: ✗ החתימה לא תואמת: ההודעה שונתה אחרי שנחתמה.
-#: apps/dai-j/dai_j/text.py:125
+#: apps/dai-j/dai_j/text.py:139
 msgid "✗ The signature does not match: the message was changed after it was signed."
 msgstr ""
 
@@ -4459,12 +4494,12 @@ msgid "🎙 Recording… press again to finish"
 msgstr ""
 
 #. he: 🔒 ההודעה מוצפנת. רק אתם יכולים לקרוא אותה, עם המפתח שלכם.
-#: apps/dai-j/dai_j/text.py:112
+#: apps/dai-j/dai_j/text.py:126
 msgid "🔒 This message is encrypted. Only you can read it, with your key."
 msgstr ""
 
 #. he: 🔓 פוענח לקריאה עכשיו. ההודעה לא נשמרת מפוענחת.
-#: apps/dai-j/dai_j/text.py:117
+#: apps/dai-j/dai_j/text.py:131
 msgid "🔓 Decrypted to read now. It is not saved decrypted."
 msgstr ""
 
