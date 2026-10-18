@@ -482,6 +482,16 @@ def main() -> int:
          "sudo /usr/lib/dai/dai-raz-guard post; LANG=C.UTF-8 dai-heal status | grep -c 'last update broke' | sed 's/^/HEAL_AFTER=/'",
          True, lambda o: "REGRESSIONS ['files']" in o and "HEAL_SHOWS=1" in o and "HEAL_AFTER=0" in o
          and re.search(r"^\s*2\s*$", o, re.M) is not None, 180),
+        # MOM stage 2 (docs/MOM.md): the user's services and the system's, and a login app turned off and on again
+        # with the user's own file (the system's file is never touched).
+        ("mom: background and login apps", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom services | head -n 40; "
+         "S=$(md5sum /etc/xdg/autostart/dai-clip.desktop); dai-mom startup off dai-clip.desktop | grep dai-clip; "
+         "dai-mom startup on dai-clip.desktop | grep dai-clip; test -e ~/.config/autostart/dai-clip.desktop || "
+         "echo USER_FILE_GONE; [ \"$S\" = \"$(md5sum /etc/xdg/autostart/dai-clip.desktop)\" ] && echo SYSTEM_UNTOUCHED",
+         True, lambda o: re.search(r"^user\s+active\s+dai-daid\.socket", o, re.M) is not None
+         and re.search(r"^system\s+active\s+nftables\.service", o, re.M) is not None
+         and "off dai-clip.desktop" in o and "on  dai-clip.desktop" in o and "USER_FILE_GONE" in o
+         and "SYSTEM_UNTOUCHED" in o, 60),
         # J (docs/MAIL.md stage 1): installed, finds Gmail's servers from the address alone, can keep passwords in
         # the keyring (secret-tool + a Secret Service on D-Bus), and is the handler for mailto: links.
         ("j: mail client", "dai-j --version; dai-j discover dana@gmail.com; "

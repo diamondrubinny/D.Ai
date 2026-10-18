@@ -7,6 +7,9 @@
   dai-mom close NAME|PID [--force] [--yes]
                                     close an app; forcing and parts of the session need --yes,
                                     and parts of the session can never be forced
+  dai-mom services                  what runs in the background (yours, then the system's)
+  dai-mom startup [on|off NAME.desktop]
+                                    the apps that start at login, or turn one on or off
   dai-mom --version
 """
 
@@ -69,6 +72,26 @@ def main(argv: list[str] | None = None) -> int:
         else:
             for app in found:
                 print(describe(app, lang))
+        return 0
+    if command == "services":
+        from . import background as bg
+
+        for user in (True, False):
+            for service in bg.services(user=user):
+                owner = "user" if user else "system"
+                print(f"{owner:6} {service.active:10} {service.unit}  {service.description}")
+        return 0
+    if command == "startup":
+        from . import background as bg
+
+        if len(rest) == 2 and rest[0] in ("on", "off"):
+            try:
+                bg.set_login_item(rest[1], rest[0] == "on")
+            except (bg.Refused, OSError) as exc:
+                print(exc, file=sys.stderr)
+                return 1
+        for item in bg.login_items(lang):
+            print(f"{'on ' if item.enabled else 'off'} {item.id}  {item.name}")
         return 0
     if command == "close":
         names = [a for a in rest if not a.startswith("--")]

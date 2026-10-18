@@ -117,7 +117,8 @@ def _ask(parent: QWidget, title: str, body: str, action: str, lang: str) -> bool
 
 class MomWindow(QMainWindow):
     def __init__(self, lang: str | None = None, source: Callable[[], tuple[list, Perf]] | None = None,
-                 closer=actions.close, ask=_ask, spawn=_spawn, interval: int = 2000) -> None:
+                 closer=actions.close, ask=_ask, spawn=_spawn, interval: int = 2000, services_runner=None,
+                 autostart: tuple[Path | None, list[Path] | None] = (None, None)) -> None:
         super().__init__()
         self.lang = lang or ui_lang()
         self.source = source or LiveSource(self.lang)
@@ -132,8 +133,16 @@ class MomWindow(QMainWindow):
         self.resize(820, 560)
 
         self.tabs = QTabWidget()
+        from .background import _run
+        from .pages import BackgroundPage, StartupPage
+
+        self.background = BackgroundPage(self.lang, services_runner or _run)
+        self.startup = StartupPage(self.lang, *autostart)
         self.tabs.addTab(self._apps_page(), t("apps", self.lang))
+        self.tabs.addTab(self.background, t("background", self.lang))
+        self.tabs.addTab(self.startup, t("startup", self.lang))
         self.tabs.addTab(self._performance_page(), t("performance", self.lang))
+        self.tabs.currentChanged.connect(self._tab_shown)
         self.setCentralWidget(self.tabs)
 
         self.timer = QTimer(self, interval=interval)
@@ -206,6 +215,11 @@ class MomWindow(QMainWindow):
                                                  'dai-doctor slow; echo; read -r -p "Enter ↵" _']))
         layout.addWidget(slow, 0, Qt.AlignmentFlag.AlignLeading)
         return page
+
+    def _tab_shown(self, index: int) -> None:
+        page = self.tabs.widget(index)
+        if page in (self.background, self.startup):
+            page.refresh()  # services and login apps change rarely: read them when the tab is opened
 
     # Data
 

@@ -2,6 +2,7 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 import os
 import signal
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -310,6 +311,138 @@ class WindowTests(Base):
         self.assertEqual(window.layoutDirection(), Qt.LayoutDirection.RightToLeft)
         self.assertEqual(window.windowTitle(), "MOM – מנהל המשימות")
         self.assertEqual(window.items["firefox-esr"].text(0), "פיירפוקס")
+
+
+SYSTEMCTL_USER = """\
+● dai-daid.socket          loaded active   listening Diamond, the local AI (socket)
+  dai-evolve.timer         loaded active   waiting   D.Ai Evolve daily scan
+  dai-evolve.service       loaded inactive dead      D.Ai Evolve
+  pipewire.service         loaded active   running   PipeWire Multimedia Service
+  syncthing.service        loaded failed   failed    Syncthing
+  old.service              not-found inactive dead   old.service
+  tracker.service          loaded inactive dead      Something stopped
+"""
+SYSTEMCTL_SYSTEM = """\
+  nftables.service         loaded active   exited    nftables
+  cups.service             loaded active   running   CUPS Scheduler
+  bluetooth.service        loaded inactive dead      Bluetooth service
+"""
+
+
+class FakeSystemctl:
+    def __init__(self):
+        self.calls = []
+        self.active = {"syncthing.service": "failed"}
+
+    def __call__(self, argv):
+        self.calls.append(argv)
+        if "list-units" in argv:
+            out = SYSTEMCTL_USER if "--user" in argv else SYSTEMCTL_SYSTEM
+        elif argv[2] in ("start", "restart"):
+            self.active[argv[3]] = "active"
+            out = ""
+        elif argv[2] == "stop":
+            self.active[argv[3]] = "inactive"
+            out = ""
+        else:
+            out = self.active.get(argv[3], "active") + "\n"
+        return subprocess.CompletedProcess(argv, 0, out, "")
+
+
+class BackgroundTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+
+    def test_services_yours_and_the_systems(self):
+        from dai_mom import background as bg
+
+        fake = FakeSystemctl()
+        mine = {s.unit: s for s in bg.services(fake, user=True)}
+        self.assertEqual(list(mine)[:3], ["dai-daid.socket", "dai-evolve.timer", "dai-evolve.service"])  # D.Ai first
+        self.assertNotIn("old.service", mine)
+        self.assertNotIn("tracker.service", mine)  # stopped and not ours: not shown
+        self.assertTrue(mine["pipewire.service"].protected)
+        system = {s.unit for s in bg.services(fake, user=False)}
+        self.assertEqual(system, {"nftables.service", "cups.service"})
+
+    def test_control_only_yours_and_never_the_session(self):
+        from dai_mom import background as bg
+
+        fake = FakeSystemctl()
+        mine = {s.unit: s for s in bg.services(fake, user=True)}
+        self.assertTrue(bg.control(mine["syncthing.service"], "restart", fake))
+        self.assertIn(["systemctl", "--user", "restart", "syncthing.service"], fake.calls)
+        with self.assertRaisesRegex(bg.Refused, "protected"):
+            bg.control(mine["pipewire.service"], "stop", fake)
+        system = bg.services(fake, user=False)[0]
+        with self.assertRaisesRegex(bg.Refused, "system"):
+            bg.control(system, "restart", fake)
+        with self.assertRaisesRegex(bg.Refused, "action"):
+            bg.control(mine["syncthing.service"], "mask", fake)
+        evil = bg.Service("x;rm -rf ~.service", "", "active", "running", True)
+        with self.assertRaisesRegex(bg.Refused, "name"):
+            bg.control(evil, "stop", fake)
+
+    def test_login_apps_off_and_on_without_touching_the_system(self):
+        from dai_mom import background as bg
+
+        system_dir, user_dir = self.root / "etc/xdg/autostart", self.root / "home/.config/autostart"
+        desktop(system_dir, "dai-clip", "Name=Clipboard history\nName[he]=היסטוריית העתקות\nExec=dai-clip watch\n")
+        desktop(system_dir, "gnome-only", "Name=GNOME thing\nOnlyShowIn=GNOME;\nExec=x\n")
+        desktop(system_dir, "nm-applet", "Name=Network\nExec=nm-applet\n")
+        original = (system_dir / "dai-clip.desktop").read_text()
+        items = {i.id: i for i in bg.login_items("he", user_dir, [system_dir])}
+        self.assertEqual(sorted(items), ["dai-clip.desktop", "nm-applet.desktop"])  # not for this desktop: hidden
+        self.assertEqual(items["dai-clip.desktop"].name, "היסטוריית העתקות")
+        bg.set_login_item("nm-applet.desktop", False, user_dir, [system_dir])
+        self.assertIn("Hidden=true", (user_dir / "nm-applet.desktop").read_text())
+        self.assertFalse({i.id: i for i in bg.login_items("en", user_dir, [system_dir])}["nm-applet.desktop"].enabled)
+        bg.set_login_item("nm-applet.desktop", True, user_dir, [system_dir])
+        self.assertFalse((user_dir / "nm-applet.desktop").exists())  # back to the system's own file
+        self.assertEqual((system_dir / "dai-clip.desktop").read_text(), original)
+        with self.assertRaisesRegex(bg.Refused, "name"):
+            bg.set_login_item("../../etc/passwd", False, user_dir, [system_dir])
+
+
+class StageTwoWindowTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        try:
+            from PyQt6.QtWidgets import QApplication
+        except ImportError:
+            raise unittest.SkipTest("PyQt6 is missing")
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_tabs_refresh_when_shown_and_act(self):
+        from dai_mom import gui
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        system_dir = Path(tmp.name) / "autostart"
+        desktop(system_dir, "nm-applet", "Name=Network\nExec=nm-applet\n")
+        fake = FakeSystemctl()
+        window = gui.MomWindow("en", source=lambda: ([], gui.Perf()), closer=lambda *a, **k: None, interval=0,
+                               services_runner=fake, autostart=(Path(tmp.name) / "user", [system_dir]))
+        self.assertEqual([window.tabs.tabText(i) for i in range(window.tabs.count())],
+                         ["Apps", "Background", "At login", "Performance"])
+        window.tabs.setCurrentIndex(1)
+        yours = window.background.tree.topLevelItem(0)
+        self.assertEqual(yours.text(0), "Yours")
+        failed = next(yours.child(i) for i in range(yours.childCount()) if yours.child(i).text(2) == "syncthing.service")
+        window.background.tree.setCurrentItem(failed)
+        self.assertTrue(window.background.buttons["start"].isEnabled())
+        window.background.act("restart")
+        self.assertIn("Done", window.background.status.text())
+        window.tabs.setCurrentIndex(2)
+        item = window.startup.list.item(0)
+        from PyQt6.QtCore import Qt
+
+        item.setCheckState(Qt.CheckState.Unchecked)
+        self.assertIn("will not start", window.startup.status.text())
+        self.assertTrue((Path(tmp.name) / "user/nm-applet.desktop").exists())
 
 
 class CliTests(unittest.TestCase):
