@@ -141,7 +141,7 @@ QLineEdit#DaiCommand:focus, QLineEdit#DaiCommandField:focus { border: 2px solid 
 
 /* The "now" group on the right: tray, language, sound, clock, desktop, as one
  * row of matching segments (symmetric, so it reads right in Hebrew too). */
-#StatusNotifierPlugin, #CustomPlugin, #VolumePlugin, #WorldClockPlugin, #ShowDesktopPlugin {
+#StatusNotifierPlugin, #CustomPlugin, #VolumePlugin, #WorldClockPlugin, #DaiClockPlugin, #ShowDesktopPlugin {
     margin: 8px 1px;
     background: #1C2547;
     border: 1px solid #2A3563;
@@ -157,6 +157,10 @@ QLineEdit#DaiCommand:focus, QLineEdit#DaiCommandField:focus { border: 2px solid 
 }
 #WorldClockContent { color: #E6E9F5; font-weight: bold; }
 #WorldClock:hover { background: rgba(124, 92, 255, 22%); border: 1px solid rgba(124, 92, 255, 55%); border-radius: 8px; }
+
+/* The clock: opens D.Ai Quick */
+QToolButton#DaiClock { color: #E6E9F5; font-weight: bold; padding: 0 10px; border: none; border-radius: 11px; background: transparent; }
+QToolButton#DaiClock:hover { background: #5B3FD6; color: #FFFFFF; }
 
 /* Menus and popups */
 QMenu {

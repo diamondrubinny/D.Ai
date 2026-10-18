@@ -371,6 +371,11 @@ msgstr ""
 msgid "Battery is fine"
 msgstr ""
 
+#. he: חיסכון בסוללה
+#: apps/dai-quick/dai_quick/gui.py:28
+msgid "Battery saver"
+msgstr ""
+
 #. he: מצב חיסכון בסוללה (סוללה ארוכה יותר, קצת יותר איטי)
 #: apps/dai-tune/dai_tune/catalog.py:1129
 msgid "Battery saver mode (longer battery life, a bit slower)"
@@ -623,6 +628,12 @@ msgstr ""
 msgid "D.Ai Forge — add capabilities, integrations and apps by writing what you need."
 msgstr ""
 
+#. he: D.Ai Heal מצא תקלות ({count})
+#: apps/dai-quick/dai_quick/gui.py:37
+#, python-brace-format
+msgid "D.Ai Heal found {count} problem(s)"
+msgstr ""
+
 #. he: D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter
 #: apps/dai-command/dai_command/core.py:415
 msgid "D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter"
@@ -703,6 +714,11 @@ msgstr ""
 #. he: הצפנת דיסק: כבויה
 #: apps/dai-oem/dai_oem/wizard.py:68
 msgid "Disk encryption: off"
+msgstr ""
+
+#. he: לא להפריע
+#: apps/dai-quick/dai_quick/gui.py:27
+msgid "Do not disturb"
 msgstr ""
 
 #. he: מסמכים
@@ -813,6 +829,11 @@ msgstr ""
 msgid "Everything is set up. You can undo it at any time."
 msgstr ""
 
+#. he: הכל עובד
+#: apps/dai-quick/dai_quick/gui.py:36
+msgid "Everything works"
+msgstr ""
+
 #. he: דוגמאות:
 #: apps/dai-forge/dai_forge/cli.py:536
 #: apps/dai-tune/dai_tune/cli.py:316
@@ -917,6 +938,11 @@ msgstr ""
 msgid "From history"
 msgstr ""
 
+#. he: לקבל עזרה
+#: apps/dai-quick/dai_quick/gui.py:38
+msgid "Get help"
+msgstr ""
+
 #. he: כדאי לדעת
 #: apps/dai-welcome/dai_welcome/gui.py:117
 msgid "Good to know"
@@ -995,6 +1021,11 @@ msgstr ""
 #. he: אם זה ממשיך, דווחו (שום דבר לא נשלח בלעדיכם): https://github.com/diamondrubinny/D.Ai/issues
 #: apps/dai-heal/dai_heal/text.py:68
 msgid "If it keeps happening, report it (nothing is sent without you): https://github.com/diamondrubinny/D.Ai/issues"
+msgstr ""
+
+#. he: לשפר
+#: apps/dai-quick/dai_quick/gui.py:35
+msgid "Improve"
 msgstr ""
 
 #. he: התקנה מ־Flathub: 
@@ -1157,6 +1188,11 @@ msgstr ""
 #. he: מוזיקה
 #: apps/dai-find/dai_find/search.py:28
 msgid "Music"
+msgstr ""
+
+#. he: השתקת מיק׳
+#: apps/dai-quick/dai_quick/gui.py:29
+msgid "Mute mic"
 msgstr ""
 
 #. he: שם: {name} משתמש: {user} (מנהל) מחשב: {host} {luks}  אחרי „סיום” המחשב יופעל מחדש. המשתמש הזמני שהגיע עם המחשב יימחק.
@@ -1362,6 +1398,11 @@ msgstr ""
 msgid "Nothing here yet. What you copy will show up here (never passwords)."
 msgstr ""
 
+#. he: שום דבר לא מקליט
+#: apps/dai-quick/dai_quick/gui.py:39
+msgid "Nothing is recording"
+msgstr ""
+
 #. he: אין שינויים ב־stage (הריצו git add).
 #: apps/dai-code/dai_code/cli.py:195
 msgid "Nothing is staged (git add first)."
@@ -1512,6 +1553,11 @@ msgstr ""
 msgid "Pictures"
 msgstr ""
 
+#. he: ההתראות מוסתרות; הקלטה ותקלות עדיין מוצגות על היהלום.
+#: apps/dai-quick/dai_quick/gui.py:42
+msgid "Pop-ups are hidden; recording and problems still show on the diamond."
+msgstr ""
+
 #. he: הוכן: האשף ייפתח בהפעלה הבאה.
 #: apps/dai-oem/dai_oem/cli.py:41
 msgid "Prepared: the setup opens at the next start."
@@ -1596,6 +1642,12 @@ msgstr ""
 #. he: כמו מומלץ, ובנוסף חסימת דיסק און קי וכיבוי Bluetooth. מתאים למחשבים עם מידע רגיש.
 #: apps/dai-welcome/dai_welcome/gui.py:70
 msgid "Recommended, plus blocking USB storage devices and turning Bluetooth off. Good for computers that hold sensitive data."
+msgstr ""
+
+#. he: מקליט עכשיו: {apps}
+#: apps/dai-quick/dai_quick/gui.py:40
+#, python-brace-format
+msgid "Recording now: {apps}"
 msgstr ""
 
 #. he: מקליט… לחצו לסיום
@@ -1773,6 +1825,11 @@ msgstr ""
 msgid "Security score now: {score}"
 msgstr ""
 
+#. he: ציון האבטחה לא זמין
+#: apps/dai-quick/dai_quick/gui.py:34
+msgid "Security score unavailable"
+msgstr ""
+
 #. he: ציון אבטחה: {score}/100
 #: apps/dai-tune/dai_tune/cli.py:279
 #, python-brace-format
@@ -1787,6 +1844,12 @@ msgstr ""
 #. he: עדכוני אבטחה של Debian מותקנים אוטומטית. עדכוני D.Ai רק כשאתם בוחרים.
 #: apps/dai-welcome/dai_welcome/gui.py:101
 msgid "Security updates from Debian install automatically; D.Ai updates only when you choose to."
+msgstr ""
+
+#. he: אבטחה {score}/100
+#: apps/dai-quick/dai_quick/gui.py:33
+#, python-brace-format
+msgid "Security {score}/100"
 msgstr ""
 
 #. he: מה השתנה: /var/log/apt/history.log
@@ -2262,6 +2325,11 @@ msgstr ""
 msgid "Voice typing — dictate in Hebrew and English (Super+H)"
 msgstr ""
 
+#. he: עוצמת שמע
+#: apps/dai-quick/dai_quick/gui.py:32
+msgid "Volume"
+msgstr ""
+
 #. he: מחליש אבטחה
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "WEAKENS security"
@@ -2297,6 +2365,11 @@ msgstr ""
 #: apps/dai-heal/dai_heal/text.py:31
 #, python-brace-format
 msgid "When: {when}"
+msgstr ""
+
+#. he: מי השתמש
+#: apps/dai-quick/dai_quick/gui.py:41
+msgid "Who used it"
 msgstr ""
 
 #. he: נמצא כרטיס Wi-Fi אבל הוא לא מוכן
@@ -2590,6 +2663,16 @@ msgstr ""
 #. he: אין מתכון כזה
 #: apps/dai-forge/dai_forge/cli.py:496
 msgid "no such recipe"
+msgstr ""
+
+#. he: כבוי
+#: apps/dai-quick/dai_quick/gui.py:31
+msgid "off"
+msgstr ""
+
+#. he: פועל
+#: apps/dai-quick/dai_quick/gui.py:30
+msgid "on"
 msgstr ""
 
 #. he: פותח טרמינלים
