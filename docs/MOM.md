@@ -82,6 +82,12 @@
 | `apps/dai-mom/dai_mom/cli.py` | ‏`dai-mom`, ‏`dai-mom list [--json]`, ‏`dai-mom close NAME [--force] [--yes]`. מופע אחד למשתמש |
 | ‏labwc ‏`rc.xml` | ‏`Ctrl+Shift+Esc` פותח את MOM |
 
+![MOM: אפליקציות](screenshots/mom-he.png)
+
+![MOM: ביצועים](screenshots/mom-perf-he.png)
+
+*(צילום מהבדיקות, offscreen. ב־CI נוסף `mom.png` מתוך המערכת.)*
+
 **בדיקות:**
 - **יחידה:** 20 בדיקות עם ‎/proc‎ מזויף: שמות עם רווחים וסוגריים, ‏pid שנוצל מחדש לא נפגע, קיבוץ, עברית, רשימה מוגנת, החלון ותהליך אמיתי שנסגר (כמשתמש רגיל).
 - **‏VM:** ‏`mom: closes apps, protects the session`: תהליך בדיקה נסגר, ו־labwc מסרב לסגירה בכוח (קוד 3) ונשאר חי. צילום מסך `mom.png`.
