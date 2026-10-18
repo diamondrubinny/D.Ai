@@ -1053,7 +1053,7 @@ msgid "Disk encryption: off"
 msgstr ""
 
 #. he: סיסמת ההצפנה של הדיסק: 
-#: apps/dai-tune/dai_tune/rescue.py:171
+#: apps/dai-tune/dai_tune/rescue.py:204
 msgid "Disk passphrase: "
 msgstr ""
 
@@ -1884,7 +1884,7 @@ msgid "No hardware details available here"
 msgstr ""
 
 #. he: לא נמצאה מערכת D.Ai מותקנת (מחיצת Btrfs או מוצפנת שלא בשימוש).
-#: apps/dai-tune/dai_tune/rescue.py:160
+#: apps/dai-tune/dai_tune/rescue.py:193
 msgid "No installed D.Ai system was found (a Btrfs or encrypted partition that is not in use)."
 msgstr ""
 
@@ -3143,7 +3143,7 @@ msgid "The last update broke something D.Ai checks."
 msgstr ""
 
 #. he: העדכון האחרון היה ב־{when} (תמונות מצב {pre}..{post}).
-#: apps/dai-tune/dai_tune/rescue.py:185
+#: apps/dai-tune/dai_tune/rescue.py:218
 #, python-brace-format
 msgid "The last update was on {when} (snapshots {pre}..{post})."
 msgstr ""
@@ -3287,7 +3287,7 @@ msgid "This provider accepts only its own sign-in page, which J does not support
 msgstr ""
 
 #. he: למערכת הזו אין תמונות מצב של עדכונים, ולכן אין מה לבטל מכאן.
-#: apps/dai-tune/dai_tune/rescue.py:181
+#: apps/dai-tune/dai_tune/rescue.py:214
 msgid "This system has no update snapshots, so there is nothing to undo from here."
 msgstr ""
 
@@ -3393,7 +3393,7 @@ msgid "Undo"
 msgstr ""
 
 #. he: לבטל אותו עכשיו? [כ/ל] 
-#: apps/dai-tune/dai_tune/rescue.py:189
+#: apps/dai-tune/dai_tune/rescue.py:222
 msgid "Undo it now? [y/N] "
 msgstr ""
 
@@ -3534,7 +3534,7 @@ msgid "When: {when}"
 msgstr ""
 
 #. he: איזו? 
-#: apps/dai-tune/dai_tune/rescue.py:167
+#: apps/dai-tune/dai_tune/rescue.py:200
 msgid "Which one? "
 msgstr ""
 
@@ -4304,7 +4304,7 @@ msgid "{n} new"
 msgstr ""
 
 #. he: ‏{path} אינה מערכת D.Ai מותקנת.
-#: apps/dai-tune/dai_tune/rescue.py:176
+#: apps/dai-tune/dai_tune/rescue.py:209
 #, python-brace-format
 msgid "{path} is not an installed D.Ai system."
 msgstr ""
@@ -4503,15 +4503,15 @@ msgstr ""
 msgid "✓ The old settings are back."
 msgstr ""
 
+#. he: ✓ המערכת חזרה למצב שלפני העדכון. הפעילו מחדש בלי ה־USB. המערכת כפי שהייתה נשמרה בדיסק בשם {kept}.
+#: apps/dai-tune/dai_tune/rescue.py:226
+#, python-brace-format
+msgid "✓ The system is back to how it was before that update. Restart without the USB. The system as it was is kept on the disk as {kept}."
+msgstr ""
+
 #. he: ✓ העדכון בוטל. הפעילו מחדש את המחשב כדי לסיים.
 #: apps/dai-heal/dai_heal/text.py:75
 msgid "✓ The update was undone. Restart the computer to finish."
-msgstr ""
-
-#. he: ✓ בוטל. הפעילו מחדש בלי ה־USB. (כדי לחזור למצב שלפני השחזור: תמונת מצב {safety}.)
-#: apps/dai-tune/dai_tune/rescue.py:193
-#, python-brace-format
-msgid "✓ Undone. Restart without the USB. (To go back to how it was before this rescue: snapshot {safety}.)"
 msgstr ""
 
 #. he: ✓ בוטל: 

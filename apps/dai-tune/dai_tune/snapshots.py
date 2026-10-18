@@ -20,9 +20,8 @@ NUMBER_LIMIT = "10"
 APT_DESCRIPTION = "apt"
 
 
-def snapper(config: str, *args: str, root: str = "") -> list[str]:
-    """snapper without D-Bus; with `root`, on a system that is not running (D.Ai Rescue, from the USB)."""
-    return ["snapper", "--no-dbus", *(["--root", root] if root else []), "-c", config, *args]
+def snapper(config: str, *args: str) -> list[str]:
+    return ["snapper", "--no-dbus", "-c", config, *args]
 
 
 def filesystem(ctx: Context, path: str = "/") -> str:
@@ -55,8 +54,8 @@ def disable(ctx: Context, config: str = CONFIG) -> None:
         ctx.run(snapper(config, "delete-config"))
 
 
-def listing(ctx: Context, config: str = CONFIG, root: str = "") -> list[dict]:
-    result = ctx.run(snapper(config, "--jsonout", "list", root=root))
+def listing(ctx: Context, config: str = CONFIG) -> list[dict]:
+    result = ctx.run(snapper(config, "--jsonout", "list"))
     try:
         data = json.loads(result.stdout)
     except ValueError as exc:
@@ -76,22 +75,22 @@ def last_update(rows: list[dict]) -> tuple[int, int] | None:
     return None
 
 
-def create_safety(ctx: Context, config: str = CONFIG, root: str = "") -> int:
+def create_safety(ctx: Context, config: str = CONFIG) -> int:
     """A snapshot of right now, so undoing the update can be undone too."""
     result = ctx.run(snapper(config, "create", "-t", "single", "-d", "dai: before undoing an update",
-                             "-c", "number", "-p", root=root))
+                             "-c", "number", "-p"))
     try:
         return int(result.stdout.strip().splitlines()[-1])
     except (IndexError, ValueError) as exc:
         raise ActionError("snapper did not report the snapshot number") from exc
 
 
-def undo_update(ctx: Context, config: str = CONFIG, root: str = "") -> tuple[int, int]:
-    pair = last_update(listing(ctx, config, root))
+def undo_update(ctx: Context, config: str = CONFIG) -> tuple[int, int]:
+    pair = last_update(listing(ctx, config))
     if pair is None:
         raise ActionError("there is no update snapshot to go back to yet")
     pre, post = pair
-    ctx.run(snapper(config, "undochange", f"{pre}..{post}", root=root))
+    ctx.run(snapper(config, "undochange", f"{pre}..{post}"))
     return pair
 
 

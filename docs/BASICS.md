@@ -14,16 +14,22 @@
 
 ## 2. Next (in order)
 
-1. 🔧 **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.** (The first VM check failed in its own setup: `snapper create-config --root` checks the filesystem of the live system, so `--fstype btrfs` was added, as installers do.)
+1. 🔧 **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.**
    - **Why not the boot menu:** `grub-btrfs` does not exist in Debian 13.
    - **What it does:**
      - Finds the installed disk (a Btrfs or LUKS partition that is not in use) and opens it. The passphrase goes to cryptsetup on stdin.
-     - Runs the snapper of the installed system (`--root`) and shows when the last update was.
-     - After confirmation, undoes that update. First it takes a safety snapshot, so the rescue itself can be undone too.
+     - Reads snapper's snapshots straight from the disk (`@/.snapshots/N/info.xml`) and shows when the last update was.
+     - After confirmation, the whole system goes back to its snapshot from before that update:
+       - a writable copy of the "pre" snapshot becomes `@`;
+       - the system as it was is kept whole as `@.before-rescue-<time>`;
+       - the snapshots move into the new `@`.
+     - **Only `btrfs` and `mv` from the USB.** Nothing runs inside the installed system.
+     - To undo the rescue: rename the subvolumes back.
      - At the end the disk is always unmounted and closed again.
+   - **What was learned in CI:** the first version ran snapper with `--root` on the installed disk. On the VM it turned out that snapper looks at the filesystem of the system it runs on (the overlay of the live USB) and not at the disk. That is dangerous for an undo, so snapper is not used for it at all.
    - **Checks:**
-     - **Unit:** finding disks, the passphrase only on stdin, closing even after a wrong passphrase, nothing changes without confirmation.
-     - **VM** (`rescue: undo an update from the USB`): a real "installed system" on a Btrfs image, a pretend update, then `dai-rescue`. The file goes back, and a safety snapshot exists.
+     - **Unit:** finding disks, the passphrase only on stdin, closing even after a wrong passphrase, reading snapper's files, the exact order of the commands, nothing changes without confirmation.
+     - **VM** (`rescue: undo an update from the USB`): an "installed system" on a Btrfs image, with snapper's layout and read-only snapshots. After `dai-rescue` the file is as before the update, the old system is kept with its file from after the update, and the snapshots stay.
 2. 🔧 **Packages and shortcuts:** in an optional list (`basics.list.optional`), so a package Debian 13 does not have is left out rather than breaking the build.
    - **Firmware updates:** `fwupd`.
    - **Video and audio codecs:** GStreamer, including `libav`.

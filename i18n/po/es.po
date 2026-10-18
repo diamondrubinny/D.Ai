@@ -3729,5 +3729,5 @@ msgstr "{path} no es un sistema D.Ai instalado."
 
 #: apps/dai-tune/dai_tune/rescue.py
 #, python-brace-format
-msgid "✓ Undone. Restart without the USB. (To go back to how it was before this rescue: snapshot {safety}.)"
-msgstr "✓ Deshecho. Reinicia sin el USB. (Para volver a como estaba antes de este rescate: instantánea {safety}.)"
+msgid "✓ The system is back to how it was before that update. Restart without the USB. The system as it was is kept on the disk as {kept}."
+msgstr "✓ El sistema volvió a como estaba antes de esa actualización. Reinicia sin el USB. El sistema tal como estaba se guarda en el disco como {kept}."

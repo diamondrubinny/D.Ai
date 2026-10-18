@@ -402,20 +402,25 @@ def main() -> int:
          lambda o: "FS btrfs" in o and "ENABLED True" in o and re.search(r"UNDONE \(\d+, \d+\) before update", o) is not None
          and "REDONE after update" in o and "DISABLED True" in o
          and ("Undo the last software update" in o or "ביטול העדכון האחרון" in o), 180),
-        # D.Ai Rescue (docs/BASICS.md): an "installed" system on a Btrfs image (with "@" and its own snapper), a
-        # pretend update, then dai-rescue from outside it undoes the update, and a safety snapshot is left.
+        # D.Ai Rescue (docs/BASICS.md): an "installed" system on a Btrfs image ("@" with snapper's layout: a
+        # read-only "pre" snapshot from before an update and a "post" one after it), then dai-rescue from outside
+        # brings "@" back to before the update, keeps the old system whole, and the snapshots stay.
         # A subshell: `set -e` and the variables must not reach the shell the later checks run in.
         ("rescue: undo an update from the USB", "( set -e; I=/tmp/inst.img; M=/mnt/dai-inst; truncate -s 600M $I; "
          "sudo mkfs.btrfs -q $I; sudo mkdir -p $M; sudo mount -o loop $I $M; sudo btrfs -q subvolume create $M/@; "
-         "sudo mkdir -p $M/@/etc/default; sudo cp /etc/os-release $M/@/etc/; sudo cp -r /etc/snapper $M/@/etc/; "
-         "sudo cp /etc/default/snapper $M/@/etc/default/ 2>/dev/null || true; "
-         "S='sudo snapper --no-dbus --root '$M/@' -c root'; $S create-config --fstype btrfs / ; "
-         "echo before | sudo tee $M/@/app.conf >/dev/null; P=$($S create -t pre -d apt -p); "
-         "echo after | sudo tee $M/@/app.conf >/dev/null; $S create -t post --pre-number $P -d apt; sudo umount $M; "
+         "sudo mkdir -p $M/@/etc; sudo cp /etc/os-release $M/@/etc/; echo before | sudo tee $M/@/app.conf >/dev/null; "
+         "sudo btrfs -q subvolume create $M/@/.snapshots; sudo mkdir $M/@/.snapshots/1 $M/@/.snapshots/2; "
+         "sudo btrfs -q subvolume snapshot -r $M/@ $M/@/.snapshots/1/snapshot; "
+         "printf '<snapshot><type>pre</type><num>1</num><date>2026-10-17 21:00:00</date><description>apt</description>"
+         "</snapshot>' | sudo tee $M/@/.snapshots/1/info.xml >/dev/null; echo after | sudo tee $M/@/app.conf >/dev/null; "
+         "sudo btrfs -q subvolume snapshot -r $M/@ $M/@/.snapshots/2/snapshot; "
+         "printf '<snapshot><type>post</type><num>2</num><date>2026-10-17 21:01:00</date><description>apt</description>"
+         "<pre_num>1</pre_num></snapshot>' | sudo tee $M/@/.snapshots/2/info.xml >/dev/null; sudo umount $M; "
          "D=$(sudo losetup -f --show $I); set +e; sudo dai-rescue --device $D --undo-last-update --yes </dev/null; "
          "echo RESCUE_RC=$?; sudo mount -o subvolid=5 $D $M; printf 'FILE='; cat $M/@/app.conf; "
-         "$S list | tail -n 2; sudo umount $M; sudo losetup -d $D; rm -f $I )", True,
-         lambda o: "RESCUE_RC=0" in o and "FILE=before" in o and "dai: before undoing an update" in o, 180),
+         "printf 'KEPT='; cat $M/@.before-rescue-*/app.conf; printf 'SNAPSHOTS='; ls $M/@/.snapshots | tr '\\n' ' '; "
+         "echo; sudo umount $M; sudo losetup -d $D; rm -f $I )", True,
+         lambda o: "RESCUE_RC=0" in o and "FILE=before" in o and "KEPT=after" in o and "SNAPSHOTS=1 2" in o, 180),
         # Automations (docs/EVOLVE.md §2): a real user timer, a sandboxed run, NOTIFY → notification and log.
         ("forge: automation on a timer", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
          "printf 'import shutil\\nfree = shutil.disk_usage(\"/\").free // 2**30\\nprint(f\"NOTIFY: {free} GB free\")\\n' > /tmp/disk.py; "

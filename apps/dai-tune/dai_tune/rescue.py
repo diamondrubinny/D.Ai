@@ -4,8 +4,9 @@
 starts after an update.
 
   1. find the installed system: a Btrfs partition (opened first when it is encrypted with LUKS) with "@"
-  2. list its update snapshots (snapper, on that disk: --root)
-  3. undo the last update, after a safety snapshot of how it is now (so the rescue itself can be undone)
+  2. list its update snapshots (read from snapper's files on that disk)
+  3. go back to the snapshot from before the last update; the system as it was is kept whole, so the rescue
+     itself can be undone
 
 Root only. Nothing is changed before the person confirms; the passphrase goes to cryptsetup on stdin and is
 never written anywhere. The disk is unmounted and closed again at the end, whatever happened.
@@ -22,7 +23,7 @@ from pathlib import Path
 from typing import Callable
 
 from . import snapshots
-from .context import ActionError, Context
+from .context import ActionError
 
 MAPPER = "dai-rescue"
 DEVICE = re.compile(r"^/dev/[A-Za-z0-9/_.-]{1,64}$")
@@ -110,29 +111,61 @@ class Opened:
         return str(candidate) if (candidate / "etc/os-release").is_file() else ""
 
 
-def _ctx() -> Context:
-    return Context(root=Path("/"), home=Path("/root"))
+MAX_INFO = 64 * 1024  # snapper's info.xml is a few hundred bytes
 
 
-def updates(opened: Opened, ctx: Context | None = None) -> list[dict]:
-    """The installed system's snapshots, newest last (empty when snapshots were never turned on)."""
+def updates(opened: Opened) -> list[dict]:
+    """The installed system's snapshots, read from snapper's own files on the disk (@/.snapshots/N/info.xml),
+    as snapper would list them. Nothing runs inside the installed system."""
+    import xml.etree.ElementTree as ET
+
     root = opened.root
-    if not root or not (Path(root) / "etc/snapper/configs" / snapshots.CONFIG).is_file():
-        return []
-    return snapshots.listing(ctx or _ctx(), snapshots.CONFIG, root)
-
-
-def undo_last_update(opened: Opened, ctx: Context | None = None) -> tuple[int, int, int]:
-    """(pre, post, safety): the last update undone, after a snapshot of how it was, to undo the rescue."""
-    ctx = ctx or _ctx()
-    root = opened.root
+    rows: list[dict] = []
     if not root:
+        return rows
+    for info in sorted(Path(root, ".snapshots").glob("*/info.xml")):
+        if not info.parent.name.isdigit() or info.is_symlink() or info.stat().st_size > MAX_INFO:
+            continue
+        try:
+            node = ET.fromstring(info.read_bytes())
+        except (OSError, ET.ParseError):
+            continue
+        row = {"number": int(info.parent.name), "type": node.findtext("type", ""),
+               "description": node.findtext("description", ""), "date": node.findtext("date", "")}
+        pre = node.findtext("pre_num", "")
+        if pre.isdigit():
+            row["pre-number"] = int(pre)
+        if (info.parent / "snapshot").is_dir():
+            rows.append(row)
+    return sorted(rows, key=lambda r: r["number"])
+
+
+def undo_last_update(opened: Opened, stamp: str = "") -> tuple[int, int, str]:
+    """(pre, post, kept): the whole system back to its snapshot from before the last update.
+
+    A writable copy of the "pre" snapshot becomes "@"; the system as it was is kept whole, renamed to
+    "@.before-rescue-<time>", and the snapshots move into the new "@" so they stay. To undo the rescue,
+    rename them back. Uses only btrfs and mv from the USB: nothing runs inside the installed system.
+    """
+    import time
+
+    if not opened.root:
         raise ActionError("no installed D.Ai system on this disk")
-    if snapshots.last_update(updates(opened, ctx)) is None:
+    pair = snapshots.last_update(updates(opened))
+    if pair is None:
         raise ActionError("there is no update snapshot on this disk to go back to")
-    safety = snapshots.create_safety(ctx, snapshots.CONFIG, root)
-    pre, post = snapshots.undo_update(ctx, snapshots.CONFIG, root)
-    return pre, post, safety
+    pre, post = pair
+    top = Path(opened.top)
+    kept = f"@.before-rescue-{stamp or time.strftime('%Y%m%d-%H%M%S')}"
+    source, fresh = top / "@" / ".snapshots" / str(pre) / "snapshot", top / "@.dai-rescue-new"
+    if (top / kept).exists() or fresh.exists():
+        raise ActionError("a rescue is already in progress on this disk")
+    opened._do(["btrfs", "subvolume", "snapshot", str(source), str(fresh)])  # writable, from the read-only one
+    opened._do(["mv", "-T", str(top / "@"), str(top / kept)])
+    opened._do(["mv", "-T", str(fresh), str(top / "@")])
+    opened._do(["rmdir", str(top / "@" / ".snapshots")])  # the empty folder a snapshot has for a nested subvolume
+    opened._do(["mv", "-T", str(top / kept / ".snapshots"), str(top / "@" / ".snapshots")])
+    return pre, post, kept
 
 
 # --------------------------------------------------------------------------
@@ -189,10 +222,10 @@ def main(argv: list[str] | None = None, run: Callable = subprocess.run, ask: Cal
             if "--yes" not in args and ask(pick(lang, "Undo it now? [y/N] ", "לבטל אותו עכשיו? [כ/ל] ")).strip() \
                     .casefold() not in ("y", "yes", "כ", "כן"):
                 return 1
-            pre, post, safety = undo_last_update(opened)
-            say("✓ Undone. Restart without the USB. (To go back to how it was before this rescue: "
-                "snapshot {safety}.)", "✓ בוטל. הפעילו מחדש בלי ה־USB. (כדי לחזור למצב שלפני השחזור: "
-                "תמונת מצב {safety}.)", safety=safety)
+            pre, post, kept = undo_last_update(opened)
+            say("✓ The system is back to how it was before that update. Restart without the USB. The system as it "
+                "was is kept on the disk as {kept}.", "✓ המערכת חזרה למצב שלפני העדכון. הפעילו מחדש בלי ה־USB. "
+                "המערכת כפי שהייתה נשמרה בדיסק בשם {kept}.", kept=kept)
             return 0
     except ActionError as exc:
         print(f"✗ {exc}", file=sys.stderr)

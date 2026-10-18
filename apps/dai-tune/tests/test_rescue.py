@@ -9,7 +9,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
-from dai_tune import rescue, snapshots
+from dai_tune import rescue
 from dai_tune.context import ActionError
 
 LSBLK = {"blockdevices": [
@@ -66,33 +66,54 @@ class RescueTests(unittest.TestCase):
             with rescue.Opened(rescue.Disk("/dev/nvme0n1p2", "crypto_LUKS"), None, Recorder()):
                 pass
 
-    def test_undo_from_the_cli(self):
+    def test_reads_snapper_files_and_swaps_back_to_the_pre_snapshot(self):
         run = Recorder()
+        with rescue.Opened(rescue.Disk("/dev/sdb2", "btrfs"), None, run) as opened:
+            top = Path(opened.top)
+            (top / "@/etc").mkdir(parents=True)
+            (top / "@/etc/os-release").write_text("ID=debian\n")
+            for number, kind, extra in ((7, "pre", ""), (8, "post", "<pre_num>7</pre_num>"),
+                                        (9, "single", ""), (10, "pre", "")):
+                folder = top / "@/.snapshots" / str(number)
+                (folder / "snapshot").mkdir(parents=True)
+                (folder / "info.xml").write_text(f"<?xml version=\"1.0\"?><snapshot><type>{kind}</type><num>{number}"
+                                                 f"</num><date>2026-10-17 21:0{number % 10}:00</date>"
+                                                 f"<description>apt</description>{extra}</snapshot>")
+            (top / "@/.snapshots/11").mkdir()
+            (top / "@/.snapshots/11/info.xml").write_text("<not xml")  # broken files are skipped
+            rows = rescue.updates(opened)
+            self.assertEqual([r["number"] for r in rows], [7, 8, 9, 10])
+            self.assertEqual(rows[1]["pre-number"], 7)
+            self.assertEqual(rescue.undo_last_update(opened, stamp="T"), (7, 8, "@.before-rescue-T"))
+        commands = [c[0] for c in run.calls if c[0][0] in ("btrfs", "mv", "rmdir")]
+        self.assertEqual(commands, [
+            ["btrfs", "subvolume", "snapshot", f"{top}/@/.snapshots/7/snapshot", f"{top}/@.dai-rescue-new"],
+            ["mv", "-T", f"{top}/@", f"{top}/@.before-rescue-T"],
+            ["mv", "-T", f"{top}/@.dai-rescue-new", f"{top}/@"],
+            ["rmdir", f"{top}/@/.snapshots"],
+            ["mv", "-T", f"{top}/@.before-rescue-T/.snapshots", f"{top}/@/.snapshots"],
+        ])
+
+    def test_undo_from_the_cli(self):
         rows = [{"number": 7, "type": "pre", "description": "apt"},
                 {"number": 8, "type": "post", "pre-number": 7, "description": "apt", "date": "2026-10-17 21:04"}]
         out = io.StringIO()
         with mock.patch.object(rescue.Opened, "root", new_callable=mock.PropertyMock, return_value="/x/@"), \
                 mock.patch.object(rescue, "updates", return_value=rows), \
-                mock.patch.object(snapshots, "create_safety", return_value=9) as safety, \
-                mock.patch.object(snapshots, "undo_update", return_value=(7, 8)) as undo, redirect_stdout(out):
-            code = rescue.main(["dai-rescue", "--undo-last-update", "--yes"], run=run, secret=lambda prompt: "pw")
+                mock.patch.object(rescue, "undo_last_update", return_value=(7, 8, "@.before-rescue-T")) as undo, \
+                redirect_stdout(out):
+            code = rescue.main(["dai-rescue", "--undo-last-update", "--yes"], run=Recorder(), secret=lambda p: "pw")
         self.assertEqual(code, 0, out.getvalue())
         self.assertIn("2026-10-17 21:04", out.getvalue())
-        self.assertIn("snapshot 9", out.getvalue())
-        self.assertEqual(safety.call_args.args[2], "/x/@")  # on the installed system, not the USB
-        self.assertEqual(undo.call_args.args[2], "/x/@")
+        self.assertIn("@.before-rescue-T", out.getvalue())
+        undo.assert_called_once()
         with mock.patch.object(rescue.Opened, "root", new_callable=mock.PropertyMock, return_value="/x/@"), \
                 mock.patch.object(rescue, "updates", return_value=rows), \
-                mock.patch.object(snapshots, "undo_update") as undo, redirect_stdout(io.StringIO()):
+                mock.patch.object(rescue, "undo_last_update") as undo, redirect_stdout(io.StringIO()):
             code = rescue.main(["dai-rescue", "--undo-last-update"], run=Recorder(), ask=lambda p: "n",
-                               secret=lambda prompt: "pw")
+                               secret=lambda p: "pw")
         self.assertEqual(code, 1)
         undo.assert_not_called()  # nothing changes before the person says yes
-
-    def test_snapper_targets_the_offline_root(self):
-        self.assertEqual(snapshots.snapper("root", "list", root="/x/@"),
-                         ["snapper", "--no-dbus", "--root", "/x/@", "-c", "root", "list"])
-        self.assertEqual(snapshots.snapper("root", "list"), ["snapper", "--no-dbus", "-c", "root", "list"])
 
     def test_nothing_found(self):
         empty = lambda argv, **kw: subprocess.CompletedProcess(argv, 0, '{"blockdevices": []}', "")  # noqa: E731
