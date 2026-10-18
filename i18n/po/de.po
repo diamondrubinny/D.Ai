@@ -3696,3 +3696,38 @@ msgstr "{name} wird in J importiert…"
 #: apps/dai-move/dai_move/cli.py
 msgid "✓ Outlook mail is in J, under “On this computer”."
 msgstr "✓ Die Outlook-Post ist in J, unter „Auf diesem Computer“."
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "Disk passphrase: "
+msgstr "Passphrase des Datenträgers: "
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "No installed D.Ai system was found (a Btrfs or encrypted partition that is not in use)."
+msgstr "Kein installiertes D.Ai-System gefunden (eine Btrfs- oder verschlüsselte Partition, die nicht in Gebrauch ist)."
+
+#: apps/dai-tune/dai_tune/rescue.py
+#, python-brace-format
+msgid "The last update was on {when} (snapshots {pre}..{post})."
+msgstr "Das letzte Update war am {when} (Schnappschüsse {pre}..{post})."
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "This system has no update snapshots, so there is nothing to undo from here."
+msgstr "Dieses System hat keine Update-Schnappschüsse, daher gibt es von hier aus nichts rückgängig zu machen."
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "Undo it now? [y/N] "
+msgstr "Jetzt rückgängig machen? [y/N] "
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "Which one? "
+msgstr "Welche? "
+
+#: apps/dai-tune/dai_tune/rescue.py
+#, python-brace-format
+msgid "{path} is not an installed D.Ai system."
+msgstr "{path} ist kein installiertes D.Ai-System."
+
+#: apps/dai-tune/dai_tune/rescue.py
+#, python-brace-format
+msgid "✓ Undone. Restart without the USB. (To go back to how it was before this rescue: snapshot {safety}.)"
+msgstr "✓ Rückgängig gemacht. Ohne USB neu starten. (Zurück zum Zustand vor dieser Rettung: Schnappschuss {safety}.)"

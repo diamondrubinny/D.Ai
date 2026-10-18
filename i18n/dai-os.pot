@@ -1052,6 +1052,11 @@ msgstr ""
 msgid "Disk encryption: off"
 msgstr ""
 
+#. he: סיסמת ההצפנה של הדיסק: 
+#: apps/dai-tune/dai_tune/rescue.py:171
+msgid "Disk passphrase: "
+msgstr ""
+
 #. he: דיסק: {free} פנויים מתוך {total}
 #: apps/dai-mom/dai_mom/text.py:83
 #, python-brace-format
@@ -1876,6 +1881,11 @@ msgstr ""
 #. he: אין כאן פרטי חומרה
 #: apps/dai-doctor/dai_doctor/diagnose.py:217
 msgid "No hardware details available here"
+msgstr ""
+
+#. he: לא נמצאה מערכת D.Ai מותקנת (מחיצת Btrfs או מוצפנת שלא בשימוש).
+#: apps/dai-tune/dai_tune/rescue.py:160
+msgid "No installed D.Ai system was found (a Btrfs or encrypted partition that is not in use)."
 msgstr ""
 
 #. he: אין מחזיק מפתחות: הסיסמה נשמרת רק עד שסוגרים את J.
@@ -3132,6 +3142,12 @@ msgstr ""
 msgid "The last update broke something D.Ai checks."
 msgstr ""
 
+#. he: העדכון האחרון היה ב־{when} (תמונות מצב {pre}..{post}).
+#: apps/dai-tune/dai_tune/rescue.py:185
+#, python-brace-format
+msgid "The last update was on {when} (snapshots {pre}..{post})."
+msgstr ""
+
 #. he: ההודעה לא נשלחה. היא עדיין כאן; נסו שוב.
 #: apps/dai-j/dai_j/text.py:112
 msgid "The message was not sent. It is still here; try again."
@@ -3270,6 +3286,11 @@ msgstr ""
 msgid "This provider accepts only its own sign-in page, which J does not support yet. Meanwhile, Thunderbird works: type \"+ thunderbird\" in D.Ai Command."
 msgstr ""
 
+#. he: למערכת הזו אין תמונות מצב של עדכונים, ולכן אין מה לבטל מכאן.
+#: apps/dai-tune/dai_tune/rescue.py:181
+msgid "This system has no update snapshots, so there is nothing to undo from here."
+msgstr ""
+
 #. he: את העדכון הזה אי אפשר לבטל אוטומטית, אבל את הבאים כן.
 #: apps/dai-doctor/dai_doctor/diagnose.py:235
 msgid "This update cannot be undone automatically, but the next ones can."
@@ -3369,6 +3390,11 @@ msgstr ""
 #: apps/dai-forge/dai_forge/gui.py:145
 #: apps/dai-j/dai_j/text.py:132
 msgid "Undo"
+msgstr ""
+
+#. he: לבטל אותו עכשיו? [כ/ל] 
+#: apps/dai-tune/dai_tune/rescue.py:189
+msgid "Undo it now? [y/N] "
 msgstr ""
 
 #. he: ביטול העדכון האחרון (קבצי המערכת חוזרים למצב שלפניו)
@@ -3505,6 +3531,11 @@ msgstr ""
 #: apps/dai-heal/dai_heal/text.py:32
 #, python-brace-format
 msgid "When: {when}"
+msgstr ""
+
+#. he: איזו? 
+#: apps/dai-tune/dai_tune/rescue.py:167
+msgid "Which one? "
 msgstr ""
 
 #. he: למי ההודעה? הוסיפו כתובת בשדה אל.
@@ -4272,6 +4303,12 @@ msgstr ""
 msgid "{n} new"
 msgstr ""
 
+#. he: ‏{path} אינה מערכת D.Ai מותקנת.
+#: apps/dai-tune/dai_tune/rescue.py:176
+#, python-brace-format
+msgid "{path} is not an installed D.Ai system."
+msgstr ""
+
 #. he: {rel} גדול מ־{limit}KB; ערכו קובץ קטן יותר
 #: apps/dai-code/dai_code/cli.py:100
 #, python-brace-format
@@ -4469,6 +4506,12 @@ msgstr ""
 #. he: ✓ העדכון בוטל. הפעילו מחדש את המחשב כדי לסיים.
 #: apps/dai-heal/dai_heal/text.py:75
 msgid "✓ The update was undone. Restart the computer to finish."
+msgstr ""
+
+#. he: ✓ בוטל. הפעילו מחדש בלי ה־USB. (כדי לחזור למצב שלפני השחזור: תמונת מצב {safety}.)
+#: apps/dai-tune/dai_tune/rescue.py:193
+#, python-brace-format
+msgid "✓ Undone. Restart without the USB. (To go back to how it was before this rescue: snapshot {safety}.)"
 msgstr ""
 
 #. he: ✓ בוטל: 

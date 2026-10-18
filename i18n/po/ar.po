@@ -3696,3 +3696,38 @@ msgstr "جارٍ استيراد {name} إلى J…"
 #: apps/dai-move/dai_move/cli.py
 msgid "✓ Outlook mail is in J, under “On this computer”."
 msgstr "✓ بريد Outlook موجود في J، تحت ”على هذا الحاسوب“."
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "Disk passphrase: "
+msgstr "كلمة مرور تشفير القرص: "
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "No installed D.Ai system was found (a Btrfs or encrypted partition that is not in use)."
+msgstr "لم يُعثر على نظام D.Ai مثبّت (قسم Btrfs أو قسم مشفّر غير مستخدم)."
+
+#: apps/dai-tune/dai_tune/rescue.py
+#, python-brace-format
+msgid "The last update was on {when} (snapshots {pre}..{post})."
+msgstr "كان آخر تحديث في {when} (اللقطات {pre}..{post})."
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "This system has no update snapshots, so there is nothing to undo from here."
+msgstr "لا توجد لهذا النظام لقطات للتحديثات، لذا لا شيء يمكن التراجع عنه من هنا."
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "Undo it now? [y/N] "
+msgstr "التراجع عنه الآن؟ [y/N] "
+
+#: apps/dai-tune/dai_tune/rescue.py
+msgid "Which one? "
+msgstr "أيّها؟ "
+
+#: apps/dai-tune/dai_tune/rescue.py
+#, python-brace-format
+msgid "{path} is not an installed D.Ai system."
+msgstr "‏{path} ليس نظام D.Ai مثبّتًا."
+
+#: apps/dai-tune/dai_tune/rescue.py
+#, python-brace-format
+msgid "✓ Undone. Restart without the USB. (To go back to how it was before this rescue: snapshot {safety}.)"
+msgstr "✓ تم التراجع. أعد التشغيل بدون USB. (للعودة إلى ما كان قبل هذا الإنقاذ: اللقطة {safety}.)"
