@@ -3260,3 +3260,15 @@ msgstr "🔴 Aufnahme"
 #: apps/dai-mom/dai_mom/text.py:26
 msgid "🛡 sandbox"
 msgstr "🛡 Sandbox"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "microphone"
+msgstr "Mikrofon"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "camera"
+msgstr "Kamera"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "camera or screen sharing"
+msgstr "Kamera oder Bildschirmfreigabe"

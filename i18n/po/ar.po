@@ -3260,3 +3260,15 @@ msgstr "🔴 تسجيل"
 #: apps/dai-mom/dai_mom/text.py:26
 msgid "🛡 sandbox"
 msgstr "🛡 بيئة معزولة"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "microphone"
+msgstr "الميكروفون"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "camera"
+msgstr "الكاميرا"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "camera or screen sharing"
+msgstr "الكاميرا أو مشاركة الشاشة"

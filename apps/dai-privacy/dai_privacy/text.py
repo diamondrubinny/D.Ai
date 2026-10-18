@@ -11,10 +11,11 @@ from .sensors import Use
 
 DEVICES = {
     # Hebrew forms follow "ב": "משתמש במיקרופון".
-    "mic": ("microphone", "מיקרופון", "🎙"),
-    "camera": ("camera", "מצלמה", "📷"),
-    "video": ("camera or screen sharing", "מצלמה או בשיתוף מסך", "📷"),
+    "mic": ("microphone", "מיקרופון"),
+    "camera": ("camera", "מצלמה"),
+    "video": ("camera or screen sharing", "מצלמה או בשיתוף מסך"),
 }
+ICONS = {"mic": "🎙", "camera": "📷", "video": "📷"}
 STRINGS = {
     "nothing": ("Nothing is using the microphone or camera.", "שום דבר לא משתמש במיקרופון או במצלמה."),
     "uses": ("{icon} {app} is using the {device}", "{icon} {app} משתמש ב{device}"),
@@ -36,5 +37,6 @@ def t(key: str, language: str, **kwargs: object) -> str:
 
 
 def describe(use: Use, language: str, stopped: bool = False) -> str:
-    en, he, icon = DEVICES.get(use.device, DEVICES["video"])
-    return t("stopped" if stopped else "uses", language, icon=icon, app=use.app, device=pick(language, en, he))
+    device = use.device if use.device in DEVICES else "video"
+    return t("stopped" if stopped else "uses", language, icon=ICONS[device], app=use.app,
+             device=pick(language, *DEVICES[device]))

@@ -3260,3 +3260,15 @@ msgstr "🔴 enregistrement"
 #: apps/dai-mom/dai_mom/text.py:26
 msgid "🛡 sandbox"
 msgstr "🛡 bac à sable"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "microphone"
+msgstr "microphone"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "camera"
+msgstr "caméra"
+
+#: apps/dai-privacy/dai_privacy/text.py
+msgid "camera or screen sharing"
+msgstr "caméra ou partage d'écran"
