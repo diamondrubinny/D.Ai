@@ -78,6 +78,14 @@ system-config-printer
 
 # Browser and apps
 firefox-esr
+# Ruby's interface languages (docs/BROWSER.md, docs/I18N.md)
+firefox-esr-l10n-he
+firefox-esr-l10n-ar
+firefox-esr-l10n-ru
+firefox-esr-l10n-es-es
+firefox-esr-l10n-fr
+firefox-esr-l10n-de
+firefox-esr-l10n-pt-br
 flatpak
 # D.Ai Forge app sandbox (also used by Flatpak)
 bubblewrap

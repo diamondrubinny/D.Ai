@@ -103,6 +103,9 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-mom/tests -t apps/dai-mom -v
 
+      - name: Unit tests (dai-ruby, the browser's policies, menu entry and start page)
+        run: python3 -m unittest discover -s apps/dai-ruby/tests -t apps/dai-ruby -v
+
       - name: Unit tests (dai-voice)
         env:
           PYTHONPATH: apps/dai-i18n:apps/dai-ai

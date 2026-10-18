@@ -439,6 +439,27 @@ def main() -> int:
          "grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and '"wifi"' in o and '"volume"' in o and '"security"' in o
          and re.search(r"CLOCK=[1-9]", o) is not None and "DND_ON True" in o and "DND_OFF False" in o, 60),
+        # Ruby (docs/BROWSER.md stage 1): Firefox ESR reads D.Ai's policies (root-owned), the menu shows one
+        # browser named Ruby, the Hebrew interface is installed, and a headless start installs uBlock Origin and
+        # Containers from Mozilla's add-on site (which proves the policies are active). Without a network the
+        # add-ons cannot download; the check then says so instead of failing.
+        ("ruby: private browsing policies", "python3 -c 'import json; p = json.load(open(\"/etc/firefox/policies/"
+         "policies.json\"))[\"policies\"]; print(\"POLICIES\", len(p), p[\"HttpsOnlyMode\"])'; "
+         "stat -c 'OWNER %U %a' /etc/firefox/policies/policies.json; "
+         "echo DIVERTED=$(dpkg-divert --list | grep -c 'firefox-esr.desktop.debian'); "
+         "grep -m1 '^Name=' /usr/share/applications/firefox-esr.desktop; "
+         "dpkg -s firefox-esr-l10n-he >/dev/null 2>&1 && echo HEBREW_UI; "
+         "rm -rf /tmp/ruby-test; mkdir /tmp/ruby-test; "
+         "(timeout 150 firefox-esr --headless --no-remote --profile /tmp/ruby-test about:blank >/tmp/ruby.log 2>&1 &); "
+         "for i in $(seq 120); do grep -q '@testpilot-containers' /tmp/ruby-test/extensions.json 2>/dev/null "
+         "&& grep -q 'uBlock0@raymondhill.net' /tmp/ruby-test/extensions.json && break; sleep 1; done; "
+         "grep -q 'uBlock0@raymondhill.net' /tmp/ruby-test/extensions.json 2>/dev/null && echo UBLOCK; "
+         "grep -q '@testpilot-containers' /tmp/ruby-test/extensions.json 2>/dev/null && echo CONTAINERS; "
+         "python3 -c 'import urllib.request; urllib.request.urlopen(\"https://addons.mozilla.org/\", timeout=10)' "
+         ">/dev/null 2>&1 && echo NETWORK || echo NO_NETWORK; pkill -f ruby-test; tail -n 5 /tmp/ruby.log", True,
+         lambda o: re.search(r"POLICIES \d+ enabled", o) is not None and "OWNER root 644" in o
+         and "DIVERTED=1" in o and "Name=Ruby" in o and "HEBREW_UI" in o
+         and ("UBLOCK" in o and "CONTAINERS" in o or "NO_NETWORK" in o), 200),
         # MOM (docs/MOM.md stage 1): closes the user's own app, refuses to force a part of the session, and
         # groups processes into apps. A copy of sleep with its own name, so nothing else in the session is hit.
         ("mom: closes apps, protects the session", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom --version; "

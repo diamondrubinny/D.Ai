@@ -5,7 +5,7 @@
   <menu id="root-menu" label="">
     <item label="Terminal"><action name="Execute" command="qterminal" /></item>
     <item label="File Manager"><action name="Execute" command="pcmanfm-qt" /></item>
-    <item label="Web Browser"><action name="Execute" command="firefox-esr" /></item>
+    <item label="Ruby (web browser)"><action name="Execute" command="firefox-esr" /></item>
     <separator />
     <item label="Settings"><action name="Execute" command="lxqt-config" /></item>
     <item label="Screen Reader (Orca)"><action name="Execute" command="orca --replace" /></item>
