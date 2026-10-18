@@ -3678,3 +3678,21 @@ msgstr "Signieren"
 #: apps/dai-j/dai_j/text.py
 msgid "Recipients can check that it came from you and was not changed. With your OpenPGP key, or your S/MIME certificate when you have no OpenPGP key."
 msgstr "Empfänger können prüfen, dass sie von Ihnen stammt und nicht verändert wurde. Mit Ihrem OpenPGP-Schlüssel oder Ihrem S/MIME-Zertifikat, wenn Sie keinen OpenPGP-Schlüssel haben."
+
+#: apps/dai-move/dai_move/cli.py
+#, python-brace-format
+msgid "  Outlook mail: {count} files → J's local folders (read through readpst, never changed)"
+msgstr "  Outlook-Post: {count} Dateien → lokale Ordner von J (über readpst gelesen, nie verändert)"
+
+#: apps/dai-move/dai_move/cli.py
+msgid "J is not installed: the Outlook files were not imported."
+msgstr "J ist nicht installiert: Die Outlook-Dateien wurden nicht importiert."
+
+#: apps/dai-move/dai_move/cli.py
+#, python-brace-format
+msgid "Importing {name} into J…"
+msgstr "{name} wird in J importiert…"
+
+#: apps/dai-move/dai_move/cli.py
+msgid "✓ Outlook mail is in J, under “On this computer”."
+msgstr "✓ Die Outlook-Post ist in J, unter „Auf diesem Computer“."

@@ -179,7 +179,7 @@
 | ‏**Evolution** | ‏`~/.local/share/evolution/mail/local` ‏(Maildir, כולל תת־תיקיות `.Name`) |
 | ‏**KMail** | התיקיות המקומיות של Akonadi: ‏`~/.local/share/local-mail/<folder>` ‏(Maildir, ותת־תיקיות ב־`.<folder>.directory/`). "נקרא" ו"מסומן" לפי שם הקובץ (`:2,SF`) |
 | **קובץ או תיקייה** | ‏`dai-j import-mail PATH`: קובץ mbox אחד, או תיקיית Maildir |
-| ‏**Outlook** (`.pst`, ‏`.ost`) | ‏`dai-j import-mail archive.pst`: ‏`readpst` (‏pst-utils, על התמונה) ממיר לתיקייה זמנית פרטית (0700), ‏J מייבא כל mbox ו־Maildir שנוצרו בה, והתיקייה נמחקת. קובץ ה־PST רק נקרא. מזוהה לפי החתימה `!BDN`, לא לפי הסיומת |
+| ‏**Outlook** (`.pst`, ‏`.ost`), גם דרך **D.Ai Move** | ‏`dai-j import-mail archive.pst`: ‏`readpst` (‏pst-utils, על התמונה) ממיר לתיקייה זמנית פרטית (0700), ‏J מייבא כל mbox ו־Maildir שנוצרו בה, והתיקייה נמחקת. קובץ ה־PST רק נקרא. מזוהה לפי החתימה `!BDN`, לא לפי הסיומת. ‏D.Ai Move מוצא אותם ב־`Documents/Outlook Files` וב־`AppData/Local/Microsoft/Outlook` של משתמש ה־Windows, ומייבא אותם ל־J אחרי ההעתקה שאושרה |
 
 - **איך:**
   - הכפתור **"ייבוא הדואר ששמור במחשב"** בסרגל, או `dai-j import-mail`.
@@ -199,7 +199,7 @@
   - **‏VM:** ‏`j: mail kept on this computer`.
 - ⏳ **עוד לא:**
   - ‏Geary: אין לו תיקיות מקומיות. הוא שומר רק עותק של IMAP, והדואר עצמו בשרת, ולכן מספיק להוסיף את החשבון ב־J.
-  - ייבוא PST מתוך D.Ai Move, אנשי קשר ומסננים.
+  - אנשי קשר ומסננים.
   - ‏PST אמיתי נבדק עד עכשיו רק עם `readpst` מדומה. ההמרה עצמה היא של pst-utils.
   - העברת הודעה מתיקייה מקומית לחשבון IMAP.
 

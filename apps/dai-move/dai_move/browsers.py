@@ -72,3 +72,21 @@ def wifi_names(windows_root: Path) -> list[str]:
         if match:
             names.add(html.unescape(match.group(1)))
     return sorted(names)
+
+
+# Outlook keeps mail in .pst files (and .ost, a copy of an Exchange or Outlook.com mailbox) in these places.
+OUTLOOK = ("Documents/Outlook Files", "AppData/Local/Microsoft/Outlook")
+
+
+def outlook_files(home: Path) -> list[Path]:
+    """The Outlook data files of a Windows user, to hand to J (docs/MAIL.md §11). Only read; no symlinks."""
+    found = []
+    for relative in OUTLOOK:
+        folder = home / relative
+        if not folder.is_dir() or folder.is_symlink():
+            continue
+        for path in sorted(folder.iterdir()):
+            if path.suffix.lower() in (".pst", ".ost") and path.is_file() and not path.is_symlink():
+                found.append(path)
+    return found
+

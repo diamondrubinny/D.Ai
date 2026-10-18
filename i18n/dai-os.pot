@@ -22,7 +22,7 @@ msgid "\nEverything looks fine."
 msgstr ""
 
 #. he:  ✓ הועתקו {copied} קבצים.
-#: apps/dai-move/dai_move/cli.py:106
+#: apps/dai-move/dai_move/cli.py:113
 #, python-brace-format
 msgid "\n✓ Copied {copied} files."
 msgstr ""
@@ -44,8 +44,14 @@ msgstr ""
 msgid "  Not allowed: {pending_permissions}. Change later: dai-forge app permissions {name}"
 msgstr ""
 
+#. he:   דואר של Outlook: {count} קבצים → התיקיות המקומיות של J (נקראים דרך readpst, ולא משתנים)
+#: apps/dai-move/dai_move/cli.py:93
+#, python-brace-format
+msgid "  Outlook mail: {count} files → J's local folders (read through readpst, never changed)"
+msgstr ""
+
 #. he:   רשתות Wi-Fi שמורות (הסיסמאות נשארות מוצפנות אצל Windows, צריך להזין אותן פעם אחת): 
-#: apps/dai-move/dai_move/cli.py:86
+#: apps/dai-move/dai_move/cli.py:89
 msgid "  Saved Wi-Fi networks (passwords stay encrypted by Windows; enter them once): "
 msgstr ""
 
@@ -56,7 +62,7 @@ msgid "  Saved, not active. Later: dai-forge auto resume {name}"
 msgstr ""
 
 #. he:   סך הכל {copies} קבצים, {_size}
-#: apps/dai-move/dai_move/cli.py:77
+#: apps/dai-move/dai_move/cli.py:80
 #, python-brace-format
 msgid "  Total {copies} files, {_size}"
 msgstr ""
@@ -67,13 +73,13 @@ msgid "  Worth knowing about this code:"
 msgstr ""
 
 #. he:   {links} סימניות מ־Chrome/Edge → ‏~/Bookmarks-from-Windows.html
-#: apps/dai-move/dai_move/cli.py:83
+#: apps/dai-move/dai_move/cli.py:86
 #, python-brace-format
 msgid "  {links} bookmarks from Chrome/Edge → ~/Bookmarks-from-Windows.html"
 msgstr ""
 
 #. he:   {renamed} שמות כבר קיימים כאן ויקבלו „(Windows)”. שום דבר לא נדרס
-#: apps/dai-move/dai_move/cli.py:80
+#: apps/dai-move/dai_move/cli.py:83
 #, python-brace-format
 msgid "  {renamed} names already exist here and get “(Windows)” — nothing is overwritten"
 msgstr ""
@@ -762,7 +768,7 @@ msgid "Copies: "
 msgstr ""
 
 #. he: להעתיק עכשיו? [כ/ל] 
-#: apps/dai-move/dai_move/cli.py:95
+#: apps/dai-move/dai_move/cli.py:102
 msgid "Copy now? [y/N] "
 msgstr ""
 
@@ -1254,7 +1260,7 @@ msgid "Finished by {owner}; the temporary users are removed at the next start."
 msgstr ""
 
 #. he: ‏Firefox: סימניות → ניהול סימניות → ייבוא וגיבוי → ייבוא סימניות מ־HTML.
-#: apps/dai-move/dai_move/cli.py:108
+#: apps/dai-move/dai_move/cli.py:115
 msgid "Firefox: Bookmarks → Manage bookmarks → Import and Backup → Import Bookmarks from HTML."
 msgstr ""
 
@@ -1369,7 +1375,7 @@ msgid "From"
 msgstr ""
 
 #. he: ממשתמש ה־Windows ‏„{name}” ‏({home}):
-#: apps/dai-move/dai_move/cli.py:72
+#: apps/dai-move/dai_move/cli.py:75
 #, python-brace-format
 msgid "From Windows user “{name}” ({home}):"
 msgstr ""
@@ -1500,6 +1506,12 @@ msgstr ""
 msgid "Import mail kept on this computer"
 msgstr ""
 
+#. he: מייבאים את {name} ל־J…
+#: apps/dai-move/dai_move/cli.py:130
+#, python-brace-format
+msgid "Importing {name} into J…"
+msgstr ""
+
 #. he: לשפר
 #: apps/dai-quick/dai_quick/gui.py:35
 msgid "Improve"
@@ -1598,6 +1610,11 @@ msgstr ""
 #. he: J מתחבר רק עם הצפנה.
 #: apps/dai-j/dai_j/text.py:92
 msgid "J connects only with encryption."
+msgstr ""
+
+#. he: J לא מותקן: קובצי ה־Outlook לא יובאו.
+#: apps/dai-move/dai_move/cli.py:127
+msgid "J is not installed: the Outlook files were not imported."
 msgstr ""
 
 #. he: J – דואר
@@ -1817,7 +1834,7 @@ msgid "Next week (Monday 8:00)"
 msgstr ""
 
 #. he: לא נמצאו תיקיות משתמש של Windows. חברו את כונן ה־Windows (או העתק של C:\Users\<שם>), פתחו אותו פעם אחת במנהל הקבצים, ונסו שוב. כונן שמוצפן ב־BitLocker אי אפשר לקרוא כאן: העתיקו קודם את הקבצים לדיסק און קי מתוך Windows.
-#: apps/dai-move/dai_move/cli.py:53
+#: apps/dai-move/dai_move/cli.py:55
 msgid "No Windows user folders found. Connect the Windows drive (or a copy of C:\\Users\\<name>) and open it once in the file manager, then try again.\nA BitLocker-encrypted drive cannot be read here: copy the files to a USB drive from Windows first."
 msgstr ""
 
@@ -2551,7 +2568,7 @@ msgid "Right to left"
 msgstr ""
 
 #. he: הריצו שוב עם ‎--yes כדי להעתיק.
-#: apps/dai-move/dai_move/cli.py:93
+#: apps/dai-move/dai_move/cli.py:100
 msgid "Run again with --yes to copy."
 msgstr ""
 
@@ -2805,7 +2822,7 @@ msgid "Setting up… do not turn the computer off."
 msgstr ""
 
 #. he: נמצאו כמה משתמשי Windows. בחרו אחד עם ‎--user:
-#: apps/dai-move/dai_move/cli.py:62
+#: apps/dai-move/dai_move/cli.py:64
 msgid "Several Windows users were found; choose one with --user:"
 msgstr ""
 
@@ -3731,7 +3748,7 @@ msgid "failed"
 msgstr ""
 
 #. he: קבצים
-#: apps/dai-move/dai_move/cli.py:76
+#: apps/dai-move/dai_move/cli.py:79
 msgid "files"
 msgstr ""
 
@@ -4373,6 +4390,11 @@ msgstr ""
 #: apps/dai-heal/dai_heal/text.py:72
 #, python-brace-format
 msgid "✓ Its settings were moved aside to {detail}. Open it again to start fresh."
+msgstr ""
+
+#. he: ✓ הדואר של Outlook נמצא ב־J, תחת „במחשב הזה”.
+#: apps/dai-move/dai_move/cli.py:139
+msgid "✓ Outlook mail is in J, under “On this computer”."
 msgstr ""
 
 #. he: ✓ הושהתה. חידוש: dai-forge auto resume {name}

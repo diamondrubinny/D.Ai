@@ -9,6 +9,8 @@
 
 from __future__ import annotations
 
+import shutil
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -16,7 +18,7 @@ from pathlib import Path
 from dai_i18n import text, ui_lang
 
 from . import __author__, __version__
-from .browsers import bookmarks_html, wifi_names
+from .browsers import bookmarks_html, outlook_files, wifi_names
 from .core import FOLDERS, execute, find_users, mount_points, plan
 
 
@@ -68,6 +70,7 @@ def main(argv: list[str] | None = None) -> int:
     per_folder = Counter(dest.relative_to(home).parts[0] for _, dest in work.copies)
     links_html, links = bookmarks_html(user.home)
     networks = wifi_names(user.root)
+    mail_files = outlook_files(user.home)
 
     print(_l("From Windows user “{name}” ({home}):", "ממשתמש ה־Windows \u200f„{name}” \u200f({home}):",
              name=user.name, home=user.home))
@@ -86,6 +89,10 @@ def main(argv: list[str] | None = None) -> int:
         print(_l("  Saved Wi-Fi networks (passwords stay encrypted by Windows; enter them once): ",
                  "  רשתות Wi-Fi שמורות (הסיסמאות נשארות מוצפנות אצל Windows, צריך להזין אותן פעם אחת): ")
               + ", ".join(networks))
+    if mail_files:
+        print(_l("  Outlook mail: {count} files → J's local folders (read through readpst, never changed)",
+                 "  דואר של Outlook: {count} קבצים → התיקיות המקומיות של J (נקראים דרך readpst, ולא משתנים)",
+                 count=len(mail_files)))
     if "--dry-run" in flags:
         return 0
     if "--yes" not in flags:
@@ -107,9 +114,30 @@ def main(argv: list[str] | None = None) -> int:
     if links:
         print(_l("Firefox: Bookmarks → Manage bookmarks → Import and Backup → Import Bookmarks from HTML.",
                  "‏Firefox: סימניות → ניהול סימניות → ייבוא וגיבוי → ייבוא סימניות מ־HTML."))
+    if mail_files:
+        errors += import_mail(mail_files)
     for error in errors[:10]:
         print(f"  ✗ {error}", file=sys.stderr)
     return 0 if not errors else 1
+
+
+def import_mail(files: list[Path], run=subprocess.run, which=shutil.which) -> list[str]:
+    """Each Outlook file into J (dai-j import-mail), one at a time; what failed, for the summary."""
+    if which("dai-j") is None:
+        return [_l("J is not installed: the Outlook files were not imported.", "J לא מותקן: קובצי ה־Outlook לא יובאו.")]
+    failed = []
+    for path in files:
+        print(_l("Importing {name} into J…", "מייבאים את {name} ל־J…", name=path.name))
+        try:
+            done = run(["dai-j", "import-mail", str(path)], capture_output=True, text=True, timeout=3600)
+        except (OSError, subprocess.SubprocessError):
+            failed.append(path.name)
+            continue
+        if done.returncode != 0:
+            failed.append(f"{path.name}: {(done.stderr or '').strip()[:200]}")
+    if not failed:
+        print(_l("✓ Outlook mail is in J, under “On this computer”.", "✓ הדואר של Outlook נמצא ב־J, תחת „במחשב הזה”."))
+    return failed
 
 
 if __name__ == "__main__":

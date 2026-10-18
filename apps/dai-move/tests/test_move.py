@@ -119,6 +119,26 @@ class CliTests(MoveTestCase):
         self.assertIn("Copied 5 files", out)
         self.assertIn("NETSCAPE", (self.home / "Bookmarks-from-Windows.html").read_text())
 
+    def test_outlook_files_go_to_j(self):
+        from dai_move.browsers import outlook_files
+
+        user = self.drive / "Users" / "Dana"
+        pst = user / "Documents/Outlook Files/dana@example.org.pst"
+        pst.parent.mkdir(parents=True)
+        pst.write_bytes(b"!BDN")
+        ost = user / "AppData/Local/Microsoft/Outlook/dana.OST"
+        ost.parent.mkdir(parents=True)
+        ost.write_bytes(b"!BDN")
+        (ost.parent / "settings.xml").write_text("<x/>")
+        self.assertEqual(outlook_files(user), [pst, ost])
+        code, out = self.run_cli(str(self.drive), "--dry-run")
+        self.assertIn("Outlook mail: 2 files", out)
+        calls = []
+        ok = lambda argv, **kw: calls.append(argv) or mock.Mock(returncode=0, stderr="")  # noqa: E731
+        self.assertEqual(cli.import_mail([pst, ost], run=ok, which=lambda name: "/usr/bin/dai-j"), [])
+        self.assertEqual(calls, [["dai-j", "import-mail", str(pst)], ["dai-j", "import-mail", str(ost)]])
+        self.assertEqual(len(cli.import_mail([pst], which=lambda name: None)), 1)  # no J: said, not silent
+
     def test_nothing_found(self):
         code, out = self.run_cli(str(self.home / "nothing"))
         self.assertEqual(code, 1)
