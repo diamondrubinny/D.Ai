@@ -105,8 +105,8 @@ STRINGS = {
     "pgp_sign_tip": ("Recipients can check that it came from you and was not changed.",
                      "הנמענים יוכלו לבדוק שההודעה מכם ושלא שונתה."),
     "pgp_encrypt": ("Encrypt", "הצפנה"),
-    "pgp_encrypt_tip": ("Only the recipients can read it, with their keys. The subject stays visible.",
-                        "רק הנמענים יוכלו לקרוא, עם המפתחות שלהם. הנושא נשאר גלוי."),
+    "pgp_encrypt_tip": ("Only the recipients can read it, subject included, with their keys. The addresses stay "
+                        "visible.", "רק הנמענים יוכלו לקרוא, כולל הנושא, עם המפתחות שלהם. הכתובות נשארות גלויות."),
     "e_send": ("The message was not sent. It is still here; try again.", "ההודעה לא נשלחה. היא עדיין כאן; נסו שוב."),
     "e_unknown": ("Something went wrong: {detail}", "משהו השתבש: {detail}"),
     # Import (docs/MAIL.md §3.1)

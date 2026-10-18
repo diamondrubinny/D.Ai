@@ -130,6 +130,14 @@ def verify(raw: bytes, run: Callable = subprocess.run) -> Signature | None:
     return _status(result.stdout, smime)
 
 
+def protected_subject(inner: bytes) -> str:
+    """The real subject a decrypted message carries inside (protected headers), or ""."""
+    part = email.message_from_bytes(inner[:MAX_INPUT], policy=email.policy.default)
+    if (part.get_param("protected-headers") or "") != "v1":
+        return ""
+    return _clean(str(part.get("Subject", "")))
+
+
 def decrypt(raw: bytes, run: Callable = subprocess.run) -> bytes | None:
     """The inner message of an OpenPGP-encrypted mail, or None. Shown, never saved."""
     if kind(raw) not in ("encrypted", "inline_encrypted"):
@@ -181,12 +189,23 @@ def _headers(message: EmailMessage, content_type: str) -> bytes:
     return out + b"MIME-Version: 1.0\r\n" + policy.fold_binary("Content-Type", content_type)
 
 
+PROTECTED = ("From", "To", "Cc", "Subject", "Date", "Message-ID", "In-Reply-To", "References")
+HIDDEN_SUBJECT = "..."
+
+
 def _inner(message: EmailMessage) -> bytes:
-    """The body as a MIME part (its Content-* headers and content), canonical CRLF and 7-bit safe."""
+    """The body as a MIME part (its Content-* headers and content), canonical CRLF and 7-bit safe.
+
+    The part also carries the real From, To, Cc, Subject and Date, marked protected-headers="v1": signed with the
+    body, and inside the encryption, so the real subject travels only there."""
     part = copy.deepcopy(message)
     for name in list(part.keys()):
         if not name.lower().startswith("content-"):
             del part[name]
+    for name in PROTECTED:
+        for value in message.get_all(name, []):
+            part[name] = value
+    part.set_param("protected-headers", "v1")
     for leaf in part.walk():
         if not leaf.is_multipart() and leaf.get("Content-Transfer-Encoding", "").lower() in ("8bit", "binary"):
             payload = leaf.get_content()
@@ -244,7 +263,10 @@ def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = su
                 b'Content-Type: application/octet-stream; name="encrypted.asc"\r\n'
                 b'Content-Disposition: inline; filename="encrypted.asc"\r\n\r\n'
                 + armored.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n") + b"\r\n--" + b + b"--\r\n")
-        return _headers(message, content_type) + b"\r\n" + body
+        outer = copy.deepcopy(message)
+        del outer["Subject"]
+        outer["Subject"] = HIDDEN_SUBJECT  # the servers on the way see "...", the recipients the real one
+        return _headers(outer, content_type) + b"\r\n" + body
     if not sign:
         return message.as_bytes(policy=email.policy.SMTP)
     signature = _gpg(["--detach-sign", "--digest-algo", "SHA256", "--local-user", sender], inner, run)

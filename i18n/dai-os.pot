@@ -2172,9 +2172,9 @@ msgstr ""
 msgid "Only an administrator can change system security. Ask the administrator of this computer."
 msgstr ""
 
-#. he: רק הנמענים יוכלו לקרוא, עם המפתחות שלהם. הנושא נשאר גלוי.
+#. he: רק הנמענים יוכלו לקרוא, כולל הנושא, עם המפתחות שלהם. הכתובות נשארות גלויות.
 #: apps/dai-j/dai_j/text.py:108
-msgid "Only the recipients can read it, with their keys. The subject stays visible."
+msgid "Only the recipients can read it, subject included, with their keys. The addresses stay visible."
 msgstr ""
 
 #. he: רק ההגדרות מועתקות, והתוכנה האחרת לא משתנה. J יבקש כל סיסמה בכניסה הראשונה.

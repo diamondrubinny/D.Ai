@@ -992,6 +992,10 @@ class MainWindow(QMainWindow):
                 return
             self.decrypt_button.hide()
             self.show_body(mail.parse_body(inner))  # shown only: the store keeps what arrived, still encrypted
+            subject = pgp.protected_subject(inner)  # the real one travels only inside the encryption
+            if subject:
+                lines = self.header.text().split("\n")
+                self.header.setText("\n".join(lines[:-1] + [subject]))
             self.security.setText(t("decrypted", self.lang))
         self.runner.start(lambda: pgp.decrypt(raw), done, lambda e: done(None))
 

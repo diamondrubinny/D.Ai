@@ -3654,5 +3654,5 @@ msgid "Encrypt"
 msgstr "Зашифровать"
 
 #: apps/dai-j/dai_j/text.py
-msgid "Only the recipients can read it, with their keys. The subject stays visible."
-msgstr "Прочитать смогут только получатели, своими ключами. Тема остаётся видимой."
+msgid "Only the recipients can read it, subject included, with their keys. The addresses stay visible."
+msgstr "Прочитать смогут только получатели, включая тему, своими ключами. Адреса остаются видимыми."

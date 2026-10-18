@@ -149,8 +149,12 @@ class SendingTests(KeyHome):
             raw = pgp.protect(compose.build(self.draft()), sign=sign, encrypt=True)
             self.assertEqual(pgp.kind(raw), "encrypted")
             self.assertNotIn(b"this is the plan", raw)
+            self.assertIn(b"\r\nSubject: ...\r\n", raw)  # protected headers: the real subject only inside
+            self.assertNotIn(b"Plan", raw)
             inner = pgp.decrypt(raw)
             self.assertIn("this is the plan", mail.parse_body(inner).text)
+            self.assertEqual(pgp.protected_subject(inner), "Plan")
+        self.assertEqual(pgp.protected_subject(b"Content-Type: text/plain\r\nSubject: forged\r\n\r\nx"), "")
 
     def test_a_recipient_without_a_key_stops_it(self):
         from dai_j import compose
@@ -251,9 +255,12 @@ class WindowTests(unittest.TestCase):
             with mock.patch.object(pgp, "decrypt", return_value=None):
                 window.decrypt_current()
             self.assertIn("Could not decrypt", window.security.text())
-            with mock.patch.object(pgp, "decrypt", return_value=INNER):
+            protected = (b'Content-Type: text/plain; charset=utf-8; protected-headers="v1"\r\nSubject: The real one\r\n\r\n'
+                         b"this is signed\r\n")
+            with mock.patch.object(pgp, "decrypt", return_value=protected):
                 window.decrypt_current()
             self.assertIn("this is signed", window.reader.toPlainText())
+            self.assertEqual(window.header.text().split("\n")[-1], "The real one")
             self.assertFalse(window.decrypt_button.isVisibleTo(window))
             row = window.current
             kept = window.store.body(localmail.LOCAL, row["folder"], row["uid"])
