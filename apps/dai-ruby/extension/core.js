@@ -79,9 +79,44 @@ function toggleRemembered(list, site, on) {
   return [...set].filter(Boolean).sort();
 }
 
+// Diamond (docs/BROWSER.md §11): what may leave the page, and only to the local AI.
+const DIAMOND_ACTIONS = ["summarize", "explain", "translate", "simplify"];
+const MAX_PAGE_TEXT = 12000;
+/**
+ * The page's visible text, from a DOM node (or anything shaped like one), up to `limit` characters.
+ * Self-contained: background.js runs it in the page as `(${visibleText})(document.body, limit)`.
+ */
+function visibleText(root, limit) {
+  // Never read: forms and anything a person types into (passwords included), code, and what is hidden.
+  const SKIP = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE", "FORM", "INPUT", "TEXTAREA", "SELECT", "OPTION",
+    "IFRAME", "OBJECT", "EMBED", "CANVAS", "SVG", "HEAD"]);
+  const BLOCK = new Set(["P", "DIV", "LI", "TR", "H1", "H2", "H3", "H4", "H5", "H6", "BR", "SECTION", "ARTICLE",
+    "BLOCKQUOTE", "PRE", "TD", "TH", "DT", "DD", "HEADER", "FOOTER", "MAIN"]);
+  const out = [];
+  let size = 0;
+  const walk = (node) => {
+    if (!node || size >= limit) return;
+    if (node.nodeType === 3) {
+      const text = String(node.nodeValue || "");
+      out.push(text);
+      size += text.length;
+      return;
+    }
+    if (node.nodeType !== 1) return;
+    const tag = String(node.tagName || "").toUpperCase();
+    const attr = (name) => (typeof node.getAttribute === "function" ? node.getAttribute(name) : null);
+    if (SKIP.has(tag) || node.hidden || attr("aria-hidden") === "true" || attr("contenteditable") !== null
+        && attr("contenteditable") !== "false") return;
+    for (const child of node.childNodes || []) walk(child);
+    if (BLOCK.has(tag)) out.push("\n");
+  };
+  walk(root);
+  return out.join("").replace(/[ \t\u00a0]+/g, " ").replace(/\s*\n\s*/g, "\n").trim().slice(0, limit);
+}
+
 if (typeof module !== "undefined") {
   module.exports = {
     SPACES, MAX_SNAPSHOTS, siteOf, siteOfUrl, cookiesToForget, sitesToForget, hostnamesFor, cookieUrl,
-    addSnapshot, restorable, toggleRemembered,
+    addSnapshot, restorable, toggleRemembered, DIAMOND_ACTIONS, MAX_PAGE_TEXT, visibleText,
   };
 }

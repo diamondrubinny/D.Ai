@@ -87,5 +87,35 @@
   },
   "local_only": {
     "message": "הכל נשאר במחשב הזה."
+  },
+  "diamond": {
+    "message": "‏Diamond, במחשב הזה"
+  },
+  "diamond_summarize": {
+    "message": "סיכום"
+  },
+  "diamond_explain": {
+    "message": "הסבר"
+  },
+  "diamond_translate": {
+    "message": "תרגום"
+  },
+  "diamond_simplify": {
+    "message": "פישוט"
+  },
+  "diamond_hint": {
+    "message": "רק הטקסט הגלוי של הדף עובר ל־Diamond, ה־AI המקומי. טפסים ומה שהקלדתם לא נקראים אף פעם, ושום דבר לא יוצא מהמחשב."
+  },
+  "diamond_working": {
+    "message": "‏Diamond קורא את הדף…"
+  },
+  "diamond_unavailable": {
+    "message": "‏Diamond לא זמין. התקינו מודל: בשורת הפקודה, ? והשאלה."
+  },
+  "diamond_not_page": {
+    "message": "‏Diamond עוזר רק בדפי אינטרנט."
+  },
+  "diamond_empty": {
+    "message": "בדף הזה אין טקסט לקרוא."
   }
 }

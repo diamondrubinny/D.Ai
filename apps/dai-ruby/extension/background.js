@@ -131,6 +131,25 @@ browser.alarms.create("snapshot", { periodInMinutes: 5 });
 browser.alarms.onAlarm.addListener((alarm) => { if (alarm.name === "snapshot") takeSnapshot(); });
 
 // The popup asks; only these messages are answered.
+// Diamond, only when asked (docs/BROWSER.md §11): the visible text of the current tab, never its forms, goes to
+// the local AI through the native host, which only Ruby may start. Private windows never get here.
+const DIAMOND_HOST = "io.github.dai_os.ruby_diamond";
+
+async function askDiamond(action, lang) {
+  if (!DIAMOND_ACTIONS.includes(action)) return { ok: false, error: "invalid" };
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  if (!tab || tab.incognito || !siteOfUrl(tab.url || "")) return { ok: false, error: "not_a_page" };
+  const [text] = await browser.tabs.executeScript(tab.id, {
+    code: `(${visibleText.toString()})(document.body, ${MAX_PAGE_TEXT});`,
+  });
+  if (!text) return { ok: false, error: "empty" };
+  try {
+    return await browser.runtime.sendNativeMessage(DIAMOND_HOST, { action, text: String(text), lang });
+  } catch (error) {
+    return { ok: false, error: "unavailable" };
+  }
+}
+
 browser.runtime.onMessage.addListener(async (message, sender) => {
   if (sender.id !== browser.runtime.id) return null;
   const { remembered, snapshots, cleaning } = await settings();
@@ -156,6 +175,8 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       return true;
     case "restore":
       return restore(Number(message.index));
+    case "diamond":
+      return askDiamond(String(message.action), String(message.lang || "en"));
     default:
       return null;
   }

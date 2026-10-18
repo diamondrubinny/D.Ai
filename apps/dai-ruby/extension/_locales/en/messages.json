@@ -87,5 +87,35 @@
   },
   "local_only": {
     "message": "Everything stays on this computer."
+  },
+  "diamond": {
+    "message": "Diamond, on this computer"
+  },
+  "diamond_summarize": {
+    "message": "Summarize"
+  },
+  "diamond_explain": {
+    "message": "Explain"
+  },
+  "diamond_translate": {
+    "message": "Translate"
+  },
+  "diamond_simplify": {
+    "message": "Simplify"
+  },
+  "diamond_hint": {
+    "message": "Only the page's visible text goes to Diamond, the local AI. Forms and what you typed are never read, and nothing leaves the computer."
+  },
+  "diamond_working": {
+    "message": "Diamond is reading the page…"
+  },
+  "diamond_unavailable": {
+    "message": "Diamond is not available. Install a model: D.Ai Command, ? and the question."
+  },
+  "diamond_not_page": {
+    "message": "Diamond can help on web pages only."
+  },
+  "diamond_empty": {
+    "message": "This page has no text to read."
   }
 }

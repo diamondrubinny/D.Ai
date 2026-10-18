@@ -73,4 +73,16 @@ document.querySelectorAll("[data-space]").forEach((button) => {
   button.addEventListener("click", () => ask({ type: "space", key: button.dataset.space }));
 });
 
+// Diamond: the answer is shown as text, never as HTML (textContent), whatever the page or the model wrote.
+document.querySelectorAll("[data-diamond]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const out = $("diamond-out");
+    out.textContent = say("diamond_working");
+    const lang = browser.i18n.getUILanguage().slice(0, 2);
+    const answer = await ask({ type: "diamond", action: button.dataset.diamond, lang });
+    out.textContent = answer && answer.ok ? answer.text : say(`diamond_${(answer && answer.error) || "unavailable"}`)
+      || say("diamond_unavailable");
+  });
+});
+
 load();

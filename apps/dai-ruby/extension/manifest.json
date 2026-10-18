@@ -2,17 +2,37 @@
   "manifest_version": 2,
   "name": "__MSG_name__",
   "description": "__MSG_description__",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "default_locale": "en",
   "author": "Diamond Rubinny (d.Ai)",
   "homepage_url": "https://github.com/diamondrubinny/D.Ai/blob/main/docs/BROWSER.md",
   "browser_specific_settings": {
-    "gecko": { "id": "ruby@dai-os.github.io", "strict_min_version": "128.0" }
+    "gecko": {
+      "id": "ruby@dai-os.github.io",
+      "strict_min_version": "128.0"
+    }
   },
-  "icons": { "48": "icons/ruby.svg", "96": "icons/ruby.svg" },
-  "permissions": ["cookies", "browsingData", "tabs", "storage", "alarms", "contextualIdentities", "<all_urls>"],
+  "icons": {
+    "48": "icons/ruby.svg",
+    "96": "icons/ruby.svg"
+  },
+  "permissions": [
+    "cookies",
+    "browsingData",
+    "tabs",
+    "storage",
+    "alarms",
+    "contextualIdentities",
+    "<all_urls>",
+    "nativeMessaging"
+  ],
   "incognito": "not_allowed",
-  "background": { "scripts": ["core.js", "background.js"] },
+  "background": {
+    "scripts": [
+      "core.js",
+      "background.js"
+    ]
+  },
   "browser_action": {
     "default_title": "__MSG_shield__",
     "default_popup": "popup/popup.html",
@@ -20,9 +40,28 @@
     "default_area": "navbar"
   },
   "commands": {
-    "space-work": { "suggested_key": { "default": "Alt+Shift+1" }, "description": "__MSG_space_work__" },
-    "space-home": { "suggested_key": { "default": "Alt+Shift+2" }, "description": "__MSG_space_home__" },
-    "space-school": { "suggested_key": { "default": "Alt+Shift+3" }, "description": "__MSG_space_school__" },
-    "_execute_browser_action": { "suggested_key": { "default": "Alt+Shift+R" } }
+    "space-work": {
+      "suggested_key": {
+        "default": "Alt+Shift+1"
+      },
+      "description": "__MSG_space_work__"
+    },
+    "space-home": {
+      "suggested_key": {
+        "default": "Alt+Shift+2"
+      },
+      "description": "__MSG_space_home__"
+    },
+    "space-school": {
+      "suggested_key": {
+        "default": "Alt+Shift+3"
+      },
+      "description": "__MSG_space_school__"
+    },
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+R"
+      }
+    }
   }
 }

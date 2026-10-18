@@ -35,6 +35,17 @@
     <h2 id="sessions-title" data-i18n="sessions"></h2>
     <ul id="sessions"></ul>
   </section>
+  <section aria-labelledby="diamond-title">
+    <h2 id="diamond-title" data-i18n="diamond"></h2>
+    <div class="spaces">
+      <button type="button" data-diamond="summarize" data-i18n="diamond_summarize"></button>
+      <button type="button" data-diamond="explain" data-i18n="diamond_explain"></button>
+      <button type="button" data-diamond="translate" data-i18n="diamond_translate"></button>
+      <button type="button" data-diamond="simplify" data-i18n="diamond_simplify"></button>
+    </div>
+    <p id="diamond-out" class="answer" dir="auto" aria-live="polite"></p>
+    <p class="muted" data-i18n="diamond_hint"></p>
+  </section>
   <p id="status" role="status" aria-live="polite"></p>
   <p class="muted" data-i18n="local_only"></p>
 </main>

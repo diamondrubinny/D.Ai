@@ -155,5 +155,54 @@ test("both languages have every message, with the same placeholders", () => {
   for (const [, key] of html.matchAll(/data-i18n="([a-z_]+)"/g)) assert.ok(en[key], key);
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, "manifest.json"), "utf8"));
   assert.equal(manifest.incognito, "not_allowed");
-  assert.ok(!JSON.stringify(manifest).includes("nativeMessaging"));  // Diamond comes in stage 3, separately reviewed
+  assert.ok(manifest.permissions.includes("nativeMessaging"));  // stage 3: Diamond, and only through Ruby's own host
+  const code = ["background.js", "core.js", "popup/popup.js"].map((f) => fs.readFileSync(path.join(dir, f), "utf8")).join("\n");
+  assert.deepEqual([...code.matchAll(/sendNativeMessage\(([^,]+),/g)].map((m) => m[1].trim()), ["DIAMOND_HOST"]);
+  assert.ok(!/innerHTML|insertAdjacentHTML|outerHTML/.test(code));  // answers and pages are shown as text only
+});
+
+test("the page's visible text, never its forms or hidden parts", () => {
+  const text = (value) => ({ nodeType: 3, nodeValue: value });
+  const el = (tagName, childNodes, attrs = {}) => ({ nodeType: 1, tagName, childNodes, hidden: !!attrs.hidden,
+    getAttribute: (name) => (name in attrs ? attrs[name] : null) });
+  const page = el("BODY", [
+    el("H1", [text("Bank")]),
+    el("P", [text("Your   balance")]),
+    el("FORM", [el("LABEL", [text("Password")]), el("INPUT", [])]),
+    el("DIV", [text("a private note")], { contenteditable: "true" }),
+    el("DIV", [text("menu")], { "aria-hidden": "true" }),
+    el("DIV", [text("old")], { hidden: true }),
+    el("SCRIPT", [text("steal()")]),
+    el("P", [text("Thanks")]),
+  ]);
+  assert.equal(core.visibleText(page, 1000), "Bank\nYour balance\nThanks");
+  assert.equal(core.visibleText(el("P", [text("x".repeat(50))]), 10).length, 10);
+  // It runs alone in the page: nothing from core.js may be needed.
+  const alone = new Function(`return (${core.visibleText.toString()})`)();
+  assert.equal(alone(page, 1000), "Bank\nYour balance\nThanks");
+});
+
+test("Diamond only when asked, only for the open web page, through Ruby's host", async () => {
+  const fake = fakeBrowser();
+  const sent = [];
+  fake.browser.tabs.executeScript = async (id, details) => { sent.push(["script", id, details.code.length > 0]); return ["Hello page"]; };
+  fake.browser.runtime.sendNativeMessage = async (host, message) => { sent.push(["native", host, message]); return { ok: true, text: "Hi" }; };
+  fake.state.tabs = [{ id: 3, url: "https://news.example/a", incognito: false }];
+  await loadBackground(fake);
+  const ruby = { id: "ruby@dai-os.github.io" };
+  assert.deepEqual(await fake.listeners.message({ type: "diamond", action: "summarize", lang: "he" }, ruby),
+                   { ok: true, text: "Hi" });
+  const plain = (value) => JSON.parse(JSON.stringify(value));  // objects made inside the vm come from another realm
+  assert.deepEqual(plain(sent.at(-1)), ["native", "io.github.dai_os.ruby_diamond",
+                                        { action: "summarize", text: "Hello page", lang: "he" }]);
+  assert.deepEqual(plain(await fake.listeners.message({ type: "diamond", action: "rm -rf" }, ruby)),
+                   { ok: false, error: "invalid" });
+  assert.equal(await fake.listeners.message({ type: "diamond", action: "summarize" }, { id: "evil@example" }), null);
+  fake.state.tabs = [{ id: 4, url: "about:preferences", incognito: false }];
+  assert.deepEqual(plain(await fake.listeners.message({ type: "diamond", action: "explain" }, ruby)),
+                   { ok: false, error: "not_a_page" });
+  fake.state.tabs = [{ id: 5, url: "https://bank.example", incognito: false }];
+  fake.browser.runtime.sendNativeMessage = async () => { throw new Error("No such native application"); };
+  assert.deepEqual(plain(await fake.listeners.message({ type: "diamond", action: "explain" }, ruby)),
+                   { ok: false, error: "unavailable" });
 });

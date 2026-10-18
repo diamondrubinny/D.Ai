@@ -1,0 +1,7 @@
+{
+  "name": "io.github.dai_os.ruby_diamond",
+  "description": "Diamond, D.Ai OS's local AI, for Ruby's buttons (summarize, explain, translate, simplify). Diamond Rubinny (d.Ai)",
+  "path": "/usr/lib/dai/dai-ruby-diamond",
+  "type": "stdio",
+  "allowed_extensions": ["ruby@dai-os.github.io"]
+}

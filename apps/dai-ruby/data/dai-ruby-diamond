@@ -1,0 +1,5 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Firefox's native messaging host for Ruby's "Diamond" buttons (docs/BROWSER.md §11).
+exec /usr/bin/python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_ruby.host import main; sys.exit(main())'

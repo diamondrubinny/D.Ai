@@ -581,6 +581,17 @@ def main() -> int:
          "stat -c %a ~/.local/share/dai-j/mail.sqlite; rm -rf ~/.thunderbird", True,
          lambda o: '"added":1,"skipped":1' in o and '"added":0,"skipped":2' in o and "SOURCE_UNTOUCHED" in o
          and re.search(r"^600$", o, re.M) is not None, 60),
+        # Ruby stage 3 (docs/BROWSER.md §11): Firefox finds the native host, only Ruby may start it, it refuses an
+        # action outside its list, and answers (or says Diamond is unavailable) without crashing.
+        ("ruby: Diamond's native host", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "M=/usr/lib/mozilla/native-messaging-hosts/io.github.dai_os.ruby_diamond.json; "
+         "python3 -c 'import json, sys; m = json.load(open(sys.argv[1])); print(\"ALLOWED\", m[\"allowed_extensions\"])' $M; "
+         "for req in '{\"action\": \"shell\", \"text\": \"id\"}' '{\"action\": \"summarize\", \"text\": \"Hello\"}'; do "
+         "python3 -c 'import json, struct, sys; d = sys.argv[1].encode(); sys.stdout.buffer.write(struct.pack(\"<I\", len(d)) + d)' \"$req\" "
+         "| timeout 120 /usr/lib/dai/dai-ruby-diamond | python3 -c 'import json, struct, sys; r = sys.stdin.buffer.read(); "
+         "n = struct.unpack(\"<I\", r[:4])[0]; print(\"ANSWER\", json.loads(r[4:4 + n]))'; done", True,
+         lambda o: "ALLOWED ['ruby@dai-os.github.io']" in o and "ANSWER {'ok': False, 'error': 'invalid'}" in o
+         and ("ANSWER {'ok': True" in o or "ANSWER {'ok': False, 'error': 'unavailable'}" in o), 150),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "

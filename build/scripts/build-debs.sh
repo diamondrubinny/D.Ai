@@ -319,6 +319,12 @@ build_ruby() { # Ruby (docs/BROWSER.md): D.Ai's browsing experience on Debian's 
   install -m 0644 "$ruby/firefox-esr.desktop" "$root/usr/share/applications/firefox-esr.desktop"
   install -m 0644 "$ruby/start.html" "$root/usr/share/dai/ruby/start.html"
   install -m 0644 "$ruby/dai-ruby.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-ruby.svg"
+  # Stage 3 (docs/BROWSER.md §11): the native messaging host for the Diamond buttons; Firefox starts it only
+  # for Ruby's extension (allowed_extensions), from the system-wide host folder.
+  copy_package "$REPO_ROOT/apps/dai-ruby/dai_ruby" "$root"
+  install -m 0755 "$ruby/dai-ruby-diamond" "$root/usr/lib/dai/dai-ruby-diamond"
+  install -D -m 0644 "$ruby/io.github.dai_os.ruby_diamond.json" \
+    "$root/usr/lib/mozilla/native-messaging-hosts/io.github.dai_os.ruby_diamond.json"
   # Stage 2 (docs/BROWSER.md §10): with the signed extension, Ruby cleans by itself and keeps the sites the
   # user remembers, so Firefox's own clean-everything-on-close is turned off. Without it: stage 1 as is.
   if [[ -n "${DAI_RUBY_XPI:-}" && -f "$DAI_RUBY_XPI" ]]; then
