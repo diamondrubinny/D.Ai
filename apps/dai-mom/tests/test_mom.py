@@ -258,6 +258,11 @@ class WindowTests(Base):
 
         return gui.MomWindow(lang, source=source, closer=closer, ask=ask, spawn=lambda argv: None, interval=0)
 
+    def test_every_control_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        for lang in ("he", "en"):
+            assert_accessible(self, self.window(lang))
+
     def test_apps_rows_speak_plainly(self):
         from PyQt6.QtCore import Qt
 

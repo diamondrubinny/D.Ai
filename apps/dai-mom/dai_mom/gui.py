@@ -38,10 +38,10 @@ QTabBar::tab { background: transparent; color: #9AA3C7; padding: 8px 16px; borde
 QTabBar::tab:selected { color: #FFFFFF; border-bottom: 2px solid #7C5CFF; }
 QTabBar::tab:focus { color: #22D3EE; }
 QLineEdit { background: #141B33; border: 1px solid #2A3563; border-radius: 10px; padding: 6px 10px; }
-QLineEdit:focus, QTreeWidget:focus, QPushButton:focus { border: 2px solid #22D3EE; }
-QTreeWidget { background: #141B33; border: 1px solid #2A3563; border-radius: 12px; alternate-background-color: #18203D; }
-QTreeWidget::item { padding: 4px 2px; }
-QTreeWidget::item:selected { background: #5B3FD6; color: #FFFFFF; }
+QLineEdit:focus, QTreeWidget:focus, QListWidget:focus, QPushButton:focus { border: 2px solid #22D3EE; }
+QTreeWidget, QListWidget { background: #141B33; border: 1px solid #2A3563; border-radius: 12px; alternate-background-color: #18203D; }
+QTreeWidget::item, QListWidget::item { padding: 4px 2px; }
+QTreeWidget::item:selected, QListWidget::item:selected { background: #5B3FD6; color: #FFFFFF; }
 QHeaderView::section { background: #141B33; color: #B8A6FF; border: 0; padding: 6px; font-weight: 600; }
 QPushButton { background: #1C2547; border: 1px solid #2A3563; border-radius: 10px; padding: 6px 14px; }
 QPushButton:hover { border: 1px solid #7C5CFF; }

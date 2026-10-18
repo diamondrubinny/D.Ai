@@ -195,6 +195,11 @@ except ImportError:  # pragma: no cover
 
 @unittest.skipIf(VoiceButton is None, "PyQt6 is not installed")
 class ButtonTests(VoiceTestCase):
+    def test_the_button_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        app = QApplication.instance() or QApplication([])
+        assert_accessible(self, VoiceButton(program="true"))
+
     def test_click_to_record_click_to_transcribe(self):
         import time
         app = QApplication.instance() or QApplication([])

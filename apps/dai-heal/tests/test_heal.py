@@ -258,6 +258,14 @@ class ChatTests(HealCase):
                 break
         QTest.qWait(30)
 
+    def test_every_control_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        problem = P.Problem("forge-app", "prices", 1_800_000_000, "ValueError: boom", extra={"title": "Prices"})
+        for lang in ("he_IL.UTF-8", "en_US.UTF-8"):
+            with mock.patch.dict(os.environ, {"LANG": lang}):
+                assert_accessible(self, self.window([problem], focus=problem.key))
+        assert_accessible(self, self.window([]))  # nothing to fix: the calm page
+
     def test_problem_fix_and_verify_in_hebrew(self):
         from PyQt6.QtCore import Qt
         problem = P.Problem("forge-app", "prices", 1_800_000_000, "Traceback (most recent call last):\nValueError: boom",

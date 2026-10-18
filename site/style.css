@@ -28,7 +28,7 @@ h1 .grad { background: linear-gradient(90deg, var(--soft), var(--accent-2)); -we
 .lead { color: var(--muted); font-size: 1.2rem; margin: 0 0 1.5rem; }
 .cta { display: flex; gap: .75rem; flex-wrap: wrap; }
 .btn { display: inline-block; padding: .8rem 1.4rem; border-radius: 12px; text-decoration: none; font-weight: 700; border: 1px solid var(--border); color: var(--text); background: var(--surface); }
-.btn.primary { background: linear-gradient(90deg, #5B3FD6, #4C8DF0); border: none; color: #fff; }
+.btn.primary { background: linear-gradient(90deg, #5B3FD6, #2F6BD0); border: none; color: #fff; }
 .hero figure { margin: 0; }
 .shot { width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,.45); }
 section { padding: 2.5rem 0; }

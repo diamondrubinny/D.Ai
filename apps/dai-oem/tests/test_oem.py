@@ -396,6 +396,14 @@ class WizardTests(OemTestCase):
         window.password.setText("correct horse 9")
         window.password2.setText("correct horse 9")
 
+    def test_every_page_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        assert_accessible(self, self.make())
+
+    def test_every_page_is_accessible_with_encryption(self):
+        from dai_raz.a11y import assert_accessible
+        assert_accessible(self, self.make(encrypted=True))  # one machine per test: prepare() runs once
+
     def test_hebrew_flow(self):
         from PyQt6.QtCore import Qt
         from PyQt6.QtTest import QTest

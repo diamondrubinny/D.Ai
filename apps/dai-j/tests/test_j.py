@@ -380,6 +380,22 @@ class WindowTests(unittest.TestCase):
         return gui.MainWindow(lang, self.directory, keyring, gui.Runner(inline=True), ask_password=lambda a: None,
                               sync_on_start=False)
 
+    def test_every_window_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        from dai_j import gui, importers
+
+        account = accounts.Account("dana@example.com", "Dana", discover.Server("h.example", 993, "ssl", "d"),
+                                   discover.Server("h.example", 465, "ssl", "d"))
+        found = importers.Found("thunderbird", "dana@example.org", "Dana",
+                                discover.Server("imap.example.org", 993, "ssl", "dana"),
+                                discover.Server("smtp.example.org", 587, "starttls", "dana"))
+        keyring = accounts.Keyring(which=lambda name: None)
+        for lang in ("he", "en"):
+            assert_accessible(self, self.window(lang))
+            assert_accessible(self, gui.SetupDialog(lang, keyring, gui.Runner(inline=True)))
+            assert_accessible(self, gui.ComposeWindow(lang, [account], lambda a: "pw", gui.Runner(inline=True)))
+            assert_accessible(self, gui.ImportDialog(lang, [found]))
+
     def test_first_start_invites_to_add_an_account(self):
         window = self.window()
         self.assertEqual(window.stack.currentIndex(), 0)

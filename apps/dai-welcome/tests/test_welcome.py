@@ -223,6 +223,12 @@ class WindowTests(WelcomeTestCase):
         self.assertTrue(json.loads(core.state_path(self.home).read_text())["skipped"])
         self.assertFalse(win.isVisible())
 
+    def test_every_page_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        for lang in ("he", "en"):
+            assert_accessible(self, self.window(lang))
+            assert_accessible(self, self.window(lang, admin=False))
+
     def test_hebrew_and_accessible_names(self):
         win = self.window(lang="he")
         self.assertIn("ברוכים הבאים", self.texts(win))

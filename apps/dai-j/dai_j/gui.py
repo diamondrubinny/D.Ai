@@ -37,9 +37,9 @@ QWidget { color: #E6E9F5; font-size: 10.5pt; }
 QToolBar { background: #0B1020; border: 0; spacing: 6px; padding: 6px; }
 QToolButton { background: #1C2547; border: 1px solid #2A3563; border-radius: 10px; padding: 5px 12px; }
 QToolButton:hover { border: 1px solid #7C5CFF; }
-QToolButton:focus, QPushButton:focus, QLineEdit:focus, QTextEdit:focus, QTreeWidget:focus, QTextBrowser:focus,
+QToolButton:focus, QPushButton:focus, QLineEdit:focus, QTextEdit:focus, QTreeWidget:focus, QListWidget:focus, QTextBrowser:focus,
 QComboBox:focus, QSpinBox:focus, QCheckBox:focus { border: 2px solid #22D3EE; }
-QTreeWidget, QTextBrowser, QTextEdit, QLineEdit, QComboBox, QSpinBox { background: #141B33; border: 1px solid #2A3563;
+QTreeWidget, QListWidget, QTextBrowser, QTextEdit, QLineEdit, QComboBox, QSpinBox { background: #141B33; border: 1px solid #2A3563;
     border-radius: 10px; padding: 4px; selection-background-color: #5B3FD6; }
 QTreeWidget::item { padding: 5px 2px; }
 QTreeWidget::item:selected { background: #5B3FD6; color: #FFFFFF; }
@@ -584,6 +584,8 @@ class MainWindow(QMainWindow):
                 action.setToolTip(f"{t(key, self.lang)} · {shortcut}")
             action.triggered.connect(handler)
             bar.addAction(action)
+            if not shortcut:  # no key of its own: Tab reaches it instead
+                bar.widgetForAction(action).setFocusPolicy(Qt.FocusPolicy.TabFocus)
             self.actions_by_key[key] = action
 
     def _empty_page(self) -> QWidget:

@@ -38,6 +38,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Qt for the window tests (every window passes Raz's accessibility audit)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq python3-pyqt6 >/dev/null
       - name: ShellCheck
         run: |
           shellcheck --version
@@ -80,7 +82,7 @@ jobs:
 
       - name: Unit tests (dai-quick, quick settings, with the window)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-status:apps/dai-tune:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-status:apps/dai-tune:apps/dai-ai:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-quick/tests -t apps/dai-quick -v
 
@@ -91,7 +93,7 @@ jobs:
 
       - name: Unit tests (dai-forge, with a real bubblewrap sandbox when available)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-tune:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-tune:apps/dai-ai:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq bubblewrap python3-pyqt6 >/dev/null || true
@@ -99,7 +101,7 @@ jobs:
 
       - name: Unit tests (dai-mom, the task manager, with a fake /proc and the window)
         env:
-          PYTHONPATH: apps/dai-mom:apps/dai-i18n:apps/dai-status
+          PYTHONPATH: apps/dai-mom:apps/dai-i18n:apps/dai-status:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-mom/tests -t apps/dai-mom -v
 
@@ -108,13 +110,15 @@ jobs:
 
       - name: Unit tests (dai-j, the mail client, against a local IMAP server, with the windows)
         env:
-          PYTHONPATH: apps/dai-j:apps/dai-i18n
+          PYTHONPATH: apps/dai-j:apps/dai-i18n:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-j/tests -t apps/dai-j -v
 
-      - name: Unit tests (dai-raz, D.Ai's own checks, against a fake system)
+      - name: Unit tests (dai-raz, D.Ai's own checks against a fake system, and the accessibility audit)
         env:
           PYTHONPATH: apps/dai-raz:apps/dai-i18n:apps/dai-tune:apps/dai-ai
+          QT_QPA_PLATFORM: offscreen
+          DAI_REQUIRE_QT: "1"
         run: python3 -m unittest discover -s apps/dai-raz/tests -t apps/dai-raz -v
 
       - name: Unit tests (Ruby's extension - cleaning, remembering, spaces, snapshots - against a fake browser)
@@ -122,7 +126,7 @@ jobs:
 
       - name: Unit tests (dai-voice)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-voice/tests -t apps/dai-voice -v
 
@@ -133,7 +137,7 @@ jobs:
 
       - name: Unit tests (dai-welcome)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-ai:apps/dai-tune:apps/dai-forge:apps/dai-voice
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai:apps/dai-tune:apps/dai-forge:apps/dai-voice:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-welcome/tests -t apps/dai-welcome -v
 
@@ -167,13 +171,13 @@ jobs:
 
       - name: Unit tests (dai-clip, with the history window and D.Ai Command)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-clip/tests -t apps/dai-clip -v
 
       - name: Unit tests (dai-heal, with the repair chat, D.Ai Forge and D.Ai Doctor)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-command
+          PYTHONPATH: apps/dai-i18n:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-command:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-heal/tests -t apps/dai-heal -v
 
@@ -185,7 +189,7 @@ jobs:
 
       - name: Unit tests (dai-oem, with the first-boot wizard and a real cryptsetup on an image file)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-forge:apps/dai-tune:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq cryptsetup-bin python3-pyqt6 >/dev/null || true
@@ -194,7 +198,7 @@ jobs:
 
       - name: Unit tests (dai-command)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-tune:apps/dai-raz
         run: python3 -m unittest discover -s apps/dai-command/tests -t apps/dai-command -v
 
   llama:

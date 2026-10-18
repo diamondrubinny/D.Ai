@@ -340,6 +340,10 @@ class WindowTests(unittest.TestCase):
     def key(self, key, modifiers=Qt.KeyboardModifier.NoModifier):
         self.window.handle_key(QKeyEvent(QKeyEvent.Type.KeyPress, key, modifiers))
 
+    def test_every_control_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        assert_accessible(self, self.window)
+
     def test_rtl_newest_first(self):
         self.assertEqual(self.window.layoutDirection(), Qt.LayoutDirection.RightToLeft)
         self.assertEqual(self.window.list.count(), 3)

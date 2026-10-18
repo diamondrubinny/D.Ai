@@ -67,7 +67,7 @@ QPushButton:hover {{ border: 1px solid {ACCENT}; background: rgba(124, 92, 255, 
 QPushButton:focus {{ border: 2px solid {ACCENT_2}; }}
 QPushButton:disabled {{ color: #5D668C; border: 1px solid {BORDER}; background: {BG_800}; }}
 QPushButton#Primary {{ color: #FFFFFF; font-weight: 700; border: none;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT_STRONG}, stop:1 #4C8DF0); }}
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT_STRONG}, stop:1 #2F6BD0); }}  /* white text: 5:1 at the blue end (AA) */
 QPushButton#Primary:hover {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {ACCENT_2}); }}
 QPushButton#Primary:disabled {{ background: {SURFACE}; color: #5D668C; }}
 QPushButton#Chip {{ border-radius: 15px; padding: 6px 14px; background: rgba(28, 37, 71, 0.85); }}

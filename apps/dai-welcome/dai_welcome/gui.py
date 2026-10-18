@@ -36,7 +36,7 @@ APP_ID = "dai-welcome"
 STEPS = ("welcome", "security", "ai", "privacy", "summary")
 
 STYLE = FORGE_STYLE.replace("QWidget#Forge", "QWidget#Welcome") + f"""
-QLabel#Dot {{ color: {BORDER}; font-size: 12pt; }}
+QLabel#Dot {{ color: #66709A; font-size: 12pt; }}  /* a step still to come: 3.8:1 (WCAG 1.4.11) */
 QLabel#DotOn {{ color: {ACCENT_2}; font-size: 12pt; }}
 QLabel#Hero {{ font-size: 24pt; font-weight: 700; }}
 QRadioButton {{ spacing: 10px; font-weight: 600; }}

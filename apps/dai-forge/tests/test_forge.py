@@ -629,6 +629,12 @@ class WindowTests(ForgeTestCase):
         self.window.admin = True
         self.addCleanup(self.window.deleteLater)
 
+    def test_every_control_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        self.qt.setStyleSheet(gui.STYLE)  # as main() does
+        self.addCleanup(self.qt.setStyleSheet, "")
+        assert_accessible(self, self.window)
+
     def wait(self, timeout=10):
         import time
         deadline = time.monotonic() + timeout

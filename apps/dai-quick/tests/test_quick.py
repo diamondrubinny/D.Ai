@@ -126,6 +126,11 @@ class WindowTests(unittest.TestCase):
                 mock.patch.object(Controls, "status", staticmethod(lambda: status or {})):
             return gui.QuickWindow(self.controls, lang, spawn=self.spawned.append, close_on_blur=False)
 
+    def test_every_control_is_accessible(self):
+        from dai_raz.a11y import assert_accessible
+        for lang in ("he", "en"):
+            assert_accessible(self, self.window(lang))
+
     def test_tiles_mirror_the_system(self):
         window = self.window()
         self.assertEqual(sorted(window.tiles), ["dnd", "mic", "saver", "wifi"])  # no Bluetooth adapter: no tile
