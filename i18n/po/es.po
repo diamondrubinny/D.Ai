@@ -3485,3 +3485,11 @@ msgstr "Añadir {name} a este equipo ({locale})"
 #, python-brace-format
 msgid "Show D.Ai in {name} from the next login"
 msgstr "Mostrar D.Ai en {name} desde el próximo inicio de sesión"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Fix to Russian · Enter to copy"
+msgstr "Corregir a ruso · Enter para copiar"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Fix to Arabic · Enter to copy"
+msgstr "Corregir a árabe · Enter para copiar"

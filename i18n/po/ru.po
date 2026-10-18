@@ -3485,3 +3485,11 @@ msgstr "Добавить язык «{name}» на этот компьютер ({
 #, python-brace-format
 msgid "Show D.Ai in {name} from the next login"
 msgstr "Показывать D.Ai на языке «{name}» со следующего входа"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Fix to Russian · Enter to copy"
+msgstr "Исправить на русский · Enter — копировать"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Fix to Arabic · Enter to copy"
+msgstr "Исправить на арабский · Enter — копировать"

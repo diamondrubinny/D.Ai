@@ -278,52 +278,89 @@ def format_number(value: float) -> str:
 
 
 # --------------------------------------------------------------------------
-# Wrong keyboard layout fixer (US QWERTY <-> Israeli SI-1452)
+# Wrong keyboard layout fixer: US QWERTY <-> Hebrew (SI-1452), Russian (ЙЦУКЕН) and Arabic (PC), as in
+# /usr/share/X11/xkb/symbols/{il,ru,ara}. Arabic's B key types one character, the ligature ﻻ (U+FEFB).
 # --------------------------------------------------------------------------
 
 _US = "qwertyuiopasdfghjkl;'zxcvbnm,./"
 _IL = "/'קראטוןםפשדגכעיחלךף,זסבהנמצתץ."
 US_TO_HE = dict(zip(_US, _IL))
 HE_TO_US = {he: us for us, he in US_TO_HE.items()}
-_HEBREW_LETTER = re.compile(r"[א-ת]")
+_RU_KEYS, _RU = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./", "ёйцукенгшщзхъфывапролджэячсмитьбю."
+_ARA_KEYS, _ARA = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./", "ذضصثقفغعهخحجدشسيبلاتنمكطئءؤرﻻىةوزظ"
+LAYOUTS = {   # xkb layout -> (US key -> character, character -> US key, the letters of that script, language)
+    "il": (US_TO_HE, HE_TO_US, re.compile(r"[א-ת]"), "he"),
+    "ru": (dict(zip(_RU_KEYS, _RU)), {c: k for k, c in zip(_RU_KEYS, _RU) if c != "."}, re.compile(r"[а-яё]",
+                                                                                                  re.IGNORECASE), "ru"),
+    "ara": (dict(zip(_ARA_KEYS, _ARA)), {c: k for k, c in zip(_ARA_KEYS, _ARA)}, re.compile(r"[\u0621-\u064a\ufefb]"),
+            "ar"),
+}
+_HEBREW_LETTER = LAYOUTS["il"][2]
 _LATIN_LETTER = re.compile(r"[a-z]", re.IGNORECASE)
 
 
-def fix_layout(text: str) -> tuple[str, str] | None:
+def other_layout(environment: Path | None = None) -> str:
+    """The person's own non-Latin layout (DAI_LAYOUTS in labwc's environment, as D.Ai Tune sets it)."""
+    layouts = os.environ.get("DAI_LAYOUTS", "")
+    path = environment or Path.home() / ".config/labwc/environment"
+    try:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("DAI_LAYOUTS="):
+                layouts = line.split("=", 1)[1]
+    except OSError:
+        pass
+    return next((code for code in layouts.split(",") if code in LAYOUTS), "il")
+
+
+def _script(text: str) -> tuple[str | None, int]:
+    """The non-Latin layout whose letters are in text (the most of them), and how many."""
+    counts = {code: len(table[2].findall(text)) for code, table in LAYOUTS.items()}
+    code = max(counts, key=lambda c: counts[c])
+    return (code, counts[code]) if counts[code] else (None, 0)
+
+
+def _from_latin(text: str, code: str, keep_others: bool) -> str:
+    keys = LAYOUTS[code][0]
+    return "".join(keys.get(ch.lower(), ch) if (not keep_others or _LATIN_LETTER.match(ch) or ch in "`;',./[]")
+                   else ch for ch in text)
+
+
+def fix_layout(text: str, layout: str | None = None) -> tuple[str, str] | None:
     """Convert text typed in the wrong layout.
 
-    Returns (converted_text, target_language) where target_language is
-    'he' or 'en', or None when the text is not a candidate.
+    Returns (converted_text, target_language): "en", or the language of the person's other layout ("he",
+    "ru" or "ar"); None when the text is not a candidate.
     """
     stripped = text.strip()
     if len(stripped) < 2:
         return None
-    has_he = bool(_HEBREW_LETTER.search(stripped))
+    code, letters = _script(stripped)
     has_en = bool(_LATIN_LETTER.search(stripped))
-    if has_en and not has_he:
-        converted = "".join(US_TO_HE.get(ch.lower(), ch) for ch in stripped)
-        return (converted, "he") if _HEBREW_LETTER.search(converted) else None
-    if has_he and not has_en:
-        converted = "".join(HE_TO_US.get(ch, ch) for ch in stripped)
+    if has_en and not letters:
+        target = layout or other_layout()
+        converted = "".join(LAYOUTS[target][0].get(ch.lower(), ch) for ch in stripped)
+        return (converted, LAYOUTS[target][3]) if LAYOUTS[target][2].search(converted) else None
+    if letters and not has_en:
+        converted = "".join(LAYOUTS[code][1].get(ch, ch) for ch in stripped)
         return (converted, "en") if _LATIN_LETTER.search(converted) else None
     return None
 
 
-def convert_layout(text: str) -> str | None:
+def convert_layout(text: str, layout: str | None = None) -> str | None:
     """Convert a whole selection to the other layout (for the global fixer).
 
     Unlike fix_layout() this accepts mixed text: the direction follows the
     majority script, and characters without a mapping are kept as they are.
     Returns None when there is nothing to convert.
     """
-    he = len(_HEBREW_LETTER.findall(text))
+    code, letters = _script(text)
     en = len(_LATIN_LETTER.findall(text))
-    if he == en == 0:
+    if letters == en == 0:
         return None
-    if en >= he:
-        converted = "".join(US_TO_HE.get(ch.lower(), ch) if _LATIN_LETTER.match(ch) or ch in ";',./" else ch for ch in text)
+    if en >= letters:
+        converted = _from_latin(text, layout or other_layout(), keep_others=True)
     else:
-        converted = "".join(HE_TO_US.get(ch, ch) for ch in text)
+        converted = "".join(LAYOUTS[code][1].get(ch, ch) for ch in text)
     return converted if converted != text else None
 
 
@@ -379,6 +416,8 @@ _STRINGS = {
     "copy": ("Enter to copy", "Enter להעתקה"),
     "fix_he": ("Fix to Hebrew · Enter to copy", "תיקון לעברית · Enter להעתקה"),
     "fix_en": ("Fix to English · Enter to copy", "תיקון לאנגלית · Enter להעתקה"),
+    "fix_ru": ("Fix to Russian · Enter to copy", "תיקון לרוסית · Enter להעתקה"),
+    "fix_ar": ("Fix to Arabic · Enter to copy", "תיקון לערבית · Enter להעתקה"),
     "placeholder": ("Apps, commands, math…    ? ask    + add / build    > terminal",
                     "אפליקציות, פקודות, חישובים…    ? שאלה    + הוספה / בנייה    > טרמינל"),
     "hints": ("Enter open  ·  ↑↓ move  ·  Esc close  ·  Alt+Shift language", "הפעלה Enter  ·  ניווט ↑↓  ·  סגירה Esc  ·  שפה Alt+Shift"),
@@ -511,7 +550,7 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
 
     if not actions and (fixed := fix_layout(text)):
         converted, lang = fixed
-        actions.append(Action("layout", converted, tr("fix_he" if lang == "he" else "fix_en"), "edit-paste", converted))  # i18n: ok (the keyboard layout)
+        actions.append(Action("layout", converted, tr(f"fix_{lang}"), "edit-paste", converted))
 
     first = text.split()[0]
     if shutil.which(first):

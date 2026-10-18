@@ -3,7 +3,8 @@
 """dai-fixlayout: fix text typed in the wrong keyboard layout, in any app.
 
 Select the text, press Pause (or Super+Alt+L): the selection is converted
-(akuo -> שלום, יקךךם -> hello) and pasted over itself. Only the selection is
+(akuo -> שלום, ghbdtn -> привет, יקךךם -> hello) and pasted over itself. Latin
+text goes to the person's own layout (Hebrew, Russian or Arabic). Only the selection is
 read, only when the key is pressed, and nothing is stored.
 
 Uses wl-clipboard (wl-paste/wl-copy) and wtype on Wayland.
@@ -11,14 +12,13 @@ Uses wl-clipboard (wl-paste/wl-copy) and wtype on Wayland.
 
 from __future__ import annotations
 
-import re
 import shutil
 import subprocess
 import sys
 
 from dai_i18n import pick, text
 
-from .core import convert_layout, ui_language
+from .core import _script, convert_layout, ui_language
 
 MAX_CHARS = 4000
 
@@ -58,7 +58,8 @@ def main(argv: list[str]) -> int:
     _run(["wtype", "-M", "ctrl", "v", "-m", "ctrl"])
     # Keep typing in the language that was meant.
     if shutil.which("dai-lang"):
-        _run(["dai-lang", "set", "il" if re.search(r"[\u05d0-\u05ea]", fixed) else "us"])
+        layout, letters = _script(fixed)
+        _run(["dai-lang", "set", layout if letters else "us"])
     _notify(text(lang, "Fixed: {text}", "תוקן: {text}", text=fixed))
     return 0
 

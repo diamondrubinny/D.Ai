@@ -151,6 +151,25 @@ class LayoutFixTests(unittest.TestCase):
         self.assertEqual(core.convert_layout("akuo 123"), "שלום 123")
         self.assertIsNone(core.convert_layout("123 !?"))
 
+    def test_russian_and_arabic_layouts(self):
+        # Tables as in xkb (symbols/ru "common", symbols/ara "basic").
+        self.assertEqual(core.fix_layout("ghbdtn", layout="ru"), ("привет", "ru"))
+        self.assertEqual(core.fix_layout("руддщ"), ("hello", "en"))
+        self.assertEqual(core.convert_layout("vfvf vskf hfve", layout="ru"), "мама мыла раму")
+        self.assertEqual(core.fix_layout("lvpfh", layout="ara"), ("مرحبا", "ar"))
+        self.assertEqual(core.fix_layout("اثممخ"), ("hello", "en"))
+        self.assertEqual(core.convert_layout("bh", layout="ara"), "ﻻا")  # B is the ligature key
+        self.assertEqual(core.fix_layout("akuo", layout="il"), ("שלום", "he"))
+
+    def test_the_other_layout_comes_from_the_persons_keyboards(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env = Path(tmp) / "environment"
+            env.write_text("XKB_DEFAULT_LAYOUT=us\nDAI_LAYOUTS=us,ru,il\n")
+            self.assertEqual(core.other_layout(env), "ru")
+            env.write_text("DAI_LAYOUTS=ara,us\n")
+            self.assertEqual(core.other_layout(env), "ara")
+            self.assertEqual(core.other_layout(Path(tmp) / "missing"), "il")  # D.Ai's default
+
     def test_fixlayout_print_mode(self):
         from dai_command import fixlayout
 

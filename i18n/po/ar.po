@@ -3485,3 +3485,11 @@ msgstr "إتاحة {name} على هذا الحاسوب ({locale})"
 #, python-brace-format
 msgid "Show D.Ai in {name} from the next login"
 msgstr "عرض D.Ai باللغة {name} من تسجيل الدخول التالي"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Fix to Russian · Enter to copy"
+msgstr "تصحيح إلى الروسية · Enter للنسخ"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Fix to Arabic · Enter to copy"
+msgstr "تصحيح إلى العربية · Enter للنسخ"
