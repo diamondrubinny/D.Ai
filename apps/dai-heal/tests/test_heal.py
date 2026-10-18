@@ -136,6 +136,45 @@ class FixTests(HealCase):
         self.assertFalse(F.apply(F.Fix("relaunch", "/tmp/x"), P.Problem("crash", "x"), spawn=spawned.append).ok)
 
 
+class RegressionTests(HealCase):
+    """Raz's update guard found something the last update broke (docs/RAZ.md §3)."""
+
+    def write(self, regressions, stamp=1760000000):
+        path = self.home / "regressions.json"
+        path.write_text(json.dumps({"time": stamp, "change": "Upgrade: firefox-esr:amd64 (140.3, 140.4)",
+                                    "regressions": regressions}))
+        return path
+
+    def test_one_problem_per_update_with_what_broke(self):
+        path = self.write([{"id": "files", "detail": "4 files", "items": ["/etc/x: writable by others"]},
+                           {"id": "bad id; rm", "items": ["x"]}])
+        found = P.regressions(path)
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0].kind, "regression")
+        self.assertIn("files: /etc/x: writable by others", found[0].detail)
+        self.assertEqual(found[0].extra["checks"], ["files"])  # an unexpected id is dropped
+        self.assertEqual([f.kind for f in F.fixes_for(found[0])], ["recheck", "undo-update"])
+        self.assertEqual(P.regressions(self.write([])), [])
+        self.assertEqual(P.regressions(self.home / "missing.json"), [])
+
+    def test_check_again_hides_it_once_it_passes(self):
+        path = self.write([{"id": "files", "items": ["/etc/x: writable by others"]}])
+        problem = P.regressions(path)[0]
+        failing = F.apply(F.Fix("recheck", "files"), problem, recheck=lambda ids: ["files: still"])
+        self.assertEqual((failing.ok, failing.key), (False, "still_failing"))
+        self.assertEqual(len(P.regressions(path)), 1)
+        passing = F.apply(F.Fix("recheck", "files"), problem, recheck=lambda ids: [])
+        self.assertEqual((passing.ok, passing.key), (True, "recheck_ok"))
+        self.assertEqual(P.regressions(path), [])
+
+    def test_undo_goes_through_tune(self):
+        asked = []
+        outcome = F.apply(F.Fix("undo-update", "undo the last update"), P.Problem("regression", "1"),
+                          tune=lambda sentence: asked.append(sentence) or (True, ""))
+        self.assertEqual(asked, ["undo the last update"])
+        self.assertEqual(outcome.key, "update_undone")
+
+
 class WatchTests(HealCase):
     def setUp(self):
         super().setUp()

@@ -27,6 +27,7 @@ STRINGS = {
     "p_user-service": ("Your background service {name} failed.", "שירות הרקע שלך {name} נכשל."),
     "p_crash": ("{name} crashed{times}.", "{name} קרסה{times}."),
     "p_forge-app": ("Your app “{title}” crashed{times}.", "האפליקציה שלך „{title}” קרסה{times}."),
+    "p_regression": ("The last update broke something D.Ai checks.", "העדכון האחרון שבר משהו ש־D.Ai בודקת."),
     "times": (" ({n} times)", " ({n} פעמים)"),
     "when": ("When: {when}", "מתי: {when}"),
     "error": ("What it said:", "מה היא אמרה:"),
@@ -44,6 +45,12 @@ STRINGS = {
                     "the code, and tests it in the sandbox before you open it. The current version is kept.",
                     "זו אפליקציה שבנית עם D.Ai Forge. אפשר לתקן אותה: Diamond קורא את השגיאה, משנה את הקוד "
                     "ובודק אותה בארגז החול לפני שתפתחו אותה. הגרסה הנוכחית נשמרת."),
+    "x_regression": ("Before the update this worked, and now it does not (Raz, D.Ai's quality control, checked "
+                     "before and after). Undoing the update brings the system back to how it was; it needs "
+                     "snapshots, which are on when D.Ai was installed on Btrfs. Fixed it another way? Check again.",
+                     "לפני העדכון זה עבד, ועכשיו לא (Raz, בקרת האיכות של D.Ai, בדק לפני ואחרי). ביטול העדכון "
+                     "מחזיר את המערכת למצב שהיה. זה דורש צילומי מצב, שפועלים כש־D.Ai הותקנה על Btrfs. תיקנתם "
+                     "בדרך אחרת? בדקו שוב."),
     "ai_says": ("Diamond adds:", "Diamond מוסיף:"),
     # fixes
     "f_tune": ("Restart it (administrator password)", "הפעלה מחדש (סיסמת מנהל)"),
@@ -52,6 +59,8 @@ STRINGS = {
     "f_reset-settings": ("Put its settings aside", "העברת ההגדרות הצידה"),
     "f_relaunch": ("Open it again", "פתיחה מחדש"),
     "f_restore-settings": ("Put the old settings back", "החזרת ההגדרות הישנות"),
+    "f_undo-update": ("Undo the update (administrator password)", "ביטול העדכון (סיסמת מנהל)"),
+    "f_recheck": ("Check again", "בדיקה חוזרת"),
     "not_now": ("Not now", "לא עכשיו"),
     "never": ("Don't ask about this again", "לא לשאול על זה שוב"),
     "working": ("Working on it…", "מטפל בזה…"),
@@ -63,6 +72,9 @@ STRINGS = {
     "settings_reset": ("✓ Its settings were moved aside to {detail}. Open it again to start fresh.",
                        "✓ ההגדרות הועברו הצידה אל {detail}. פתחו אותה שוב כדי להתחיל מחדש."),
     "settings_restored": ("✓ The old settings are back.", "✓ ההגדרות הישנות חזרו."),
+    "update_undone": ("✓ The update was undone. Restart the computer to finish.",
+                      "✓ העדכון בוטל. הפעילו מחדש את המחשב כדי לסיים."),
+    "recheck_ok": ("✓ Everything passes again.", "✓ הכל עובר שוב."),
     "still_failing": ("✗ It is still failing. Here is what it says now:", "✗ זה עדיין נכשל. זה מה שהוא אומר עכשיו:"),
     "fix_failed": ("✗ That did not work: {detail}", "✗ זה לא הצליח: {detail}"),
     "report": ("If it keeps happening, report it (nothing is sent without you): "

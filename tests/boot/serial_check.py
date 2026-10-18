@@ -472,6 +472,16 @@ def main() -> int:
          "dai-raz last --json | python3 -c 'import json, sys; d = json.load(sys.stdin); "
          "print(\"RAZ_KEPT\", len(d[\"results\"]))'; stat -c 'RAZ_DIR %a' ~/.local/state/dai/raz", True,
          lambda o: "RAZ_EXIT=0" in o and "RAZ_KEPT 9" in o and "RAZ_DIR 700" in o and "✗" not in o, 120),
+        # Raz stage 2, the update guard (docs/RAZ.md §3): apt knows the hook; a setting broken "by an update"
+        # becomes a regression that Heal shows, and once it is repaired the next run clears it.
+        ("raz: update guard", "export XDG_RUNTIME_DIR=/run/user/$(id -u); apt-config dump | grep -c dai-raz-guard; "
+         "P=/etc/firefox/policies/policies.json; sudo /usr/lib/dai/dai-raz-guard pre; sudo chmod o+w $P; "
+         "sudo /usr/lib/dai/dai-raz-guard post; python3 -c 'import json; d = json.load(open(\"/var/lib/dai/raz/"
+         "regressions.json\")); print(\"REGRESSIONS\", [r[\"id\"] for r in d[\"regressions\"]])'; "
+         "LANG=C.UTF-8 dai-heal status | grep -c 'last update broke' | sed 's/^/HEAL_SHOWS=/'; sudo chmod o-w $P; "
+         "sudo /usr/lib/dai/dai-raz-guard post; LANG=C.UTF-8 dai-heal status | grep -c 'last update broke' | sed 's/^/HEAL_AFTER=/'",
+         True, lambda o: "REGRESSIONS ['files']" in o and "HEAL_SHOWS=1" in o and "HEAL_AFTER=0" in o
+         and re.search(r"^\s*2\s*$", o, re.M) is not None, 180),
         # J (docs/MAIL.md stage 1): installed, finds Gmail's servers from the address alone, can keep passwords in
         # the keyring (secret-tool + a Secret Service on D-Bus), and is the handler for mailto: links.
         ("j: mail client", "dai-j --version; dai-j discover dana@gmail.com; "

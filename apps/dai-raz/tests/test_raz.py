@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from dai_raz import checks, cli
+from dai_raz import checks, cli, guard
 
 
 class Fake:
@@ -117,6 +117,52 @@ class CheckTests(unittest.TestCase):
         with mock.patch.object(checks, "CHECKS", (boom, checks.languages)):
             results = checks.run_all(self.fake.system())
         self.assertEqual([r.status for r in results], ["failed", "ok"])
+
+
+class GuardTests(unittest.TestCase):
+    """The update guard: the same checks before and after apt (docs/RAZ.md §3)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.fake = Fake(self.root / "system")
+        self.state = self.root / "state"
+        self.history = self.root / "history.log"
+        self.history.write_text("Start-Date: 2026-10-01\nUpgrade: old (1, 2)\nEnd-Date: x\n\n"
+                                "Start-Date: 2026-10-18  10:00:00\nCommandline: apt upgrade\n"
+                                "Upgrade: firefox-esr:amd64 (140.3, 140.4), dai-apps:all (0.1, 0.2)\nEnd-Date: y\n")
+
+    def test_a_regression_is_found_and_written_for_heal(self):
+        guard.pre(self.state, self.fake.system())  # the protected files are missing before and after: not new
+        self.fake.nftables = "inactive"  # the update broke the firewall
+        self.fake.missing.add("dai-mom")
+        found = guard.post(self.state, self.fake.system(), self.history)
+        self.assertEqual(sorted(r["id"] for r in found), ["commands", "firewall"])
+        data = json.loads((self.state / "regressions.json").read_text())
+        self.assertIn("firefox-esr:amd64 (140.3, 140.4)", data["change"])
+        self.assertNotIn("old (1, 2)", data["change"])  # only the last apt run
+        self.assertEqual((self.state / "regressions.json").stat().st_mode & 0o777, 0o644)
+
+    def test_only_new_problems_count(self):
+        before = [{"id": "commands", "status": "failed", "items": ["dai-mom: missing"]},
+                  {"id": "firewall", "status": "failed", "items": []}]
+        after = [checks.Result("commands", "components", "failed", "", ["dai-mom: missing", "dai-j: missing"]),
+                 checks.Result("firewall", "security", "failed"),
+                 checks.Result("updates", "security", "failed")]
+        self.assertEqual(guard.compare(before, after),
+                         [{"id": "commands", "detail": "", "items": ["dai-j: missing"]}])  # updates: no "before"
+
+    def test_never_outside_a_booted_system_and_never_as_a_user(self):
+        with mock.patch.object(guard, "pre", side_effect=AssertionError("must not run")):
+            with mock.patch("os.geteuid", return_value=1000):
+                self.assertEqual(guard.main(["g", "pre"]), 0)
+            with mock.patch("os.geteuid", return_value=0), mock.patch.object(guard, "booted", return_value=False):
+                self.assertEqual(guard.main(["g", "pre"]), 0)
+        with mock.patch("os.geteuid", return_value=0), mock.patch.object(guard, "booted", return_value=True), \
+                mock.patch.object(guard, "pre", side_effect=RuntimeError("bug")):
+            self.assertEqual(guard.main(["g", "pre"]), 0)  # an error never blocks apt
+        self.assertEqual(guard.main(["g", "sideways"]), 2)
 
 
 class CliTests(unittest.TestCase):

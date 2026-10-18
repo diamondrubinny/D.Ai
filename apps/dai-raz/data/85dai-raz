@@ -1,0 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Diamond Rubinny (d.Ai)
+// Raz's update guard (docs/RAZ.md §3): D.Ai's checks before and after every package change.
+// It never blocks an update: errors and slowness (2 minutes at most) are ignored.
+DPkg::Pre-Invoke { "if [ -x /usr/lib/dai/dai-raz-guard ]; then timeout 120 /usr/lib/dai/dai-raz-guard pre >/dev/null 2>&1 || true; fi"; };
+DPkg::Post-Invoke { "if [ -x /usr/lib/dai/dai-raz-guard ]; then timeout 120 /usr/lib/dai/dai-raz-guard post >/dev/null 2>&1 || true; fi"; };

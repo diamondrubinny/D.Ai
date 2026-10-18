@@ -7,6 +7,8 @@
   forge-repair    the Workshop fixes the app from its error, tests it, keeps the old version
   reset-settings  move ~/.config/<program> aside (kept, can be put back)
   relaunch        start the program again
+  undo-update     after an update broke something: D.Ai Tune's "undo the last update" (snapshots)
+  recheck         run Raz's checks again; when they pass, the problem is done
 
 The local AI may explain a problem; it never adds a fix or runs a command.
 """
@@ -22,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
-from .problems import Problem, Runner, run
+from .problems import Problem, Runner, resolve_update, run
 
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$")
 PROGRAM_DIRS = ("/usr/bin/", "/usr/games/", "/usr/local/bin/")
@@ -50,6 +52,8 @@ def fixes_for(problem: Problem, home: Path | None = None) -> list[Fix]:
         return [Fix("user-restart", problem.name)]
     if problem.kind == "forge-app":
         return [Fix("forge-repair", problem.name)]
+    if problem.kind == "regression":
+        return [Fix("recheck", ",".join(problem.extra.get("checks", []))), Fix("undo-update", "undo the last update")]
     if problem.kind == "crash":
         fixes = []
         exe = str(problem.extra.get("exe", ""))
@@ -72,7 +76,8 @@ def _system_unit_ok(unit: str, runner: Runner) -> bool:
 def apply(fix: Fix, problem: Problem, runner: Runner = run, home: Path | None = None,
           tune: Callable[[str], tuple[bool, str]] | None = None,
           repair: Callable[[str, str], tuple[bool, str]] | None = None,
-          spawn: Callable[[list[str]], None] | None = None) -> Outcome:
+          spawn: Callable[[list[str]], None] | None = None,
+          recheck: Callable[[list[str]], list[str]] | None = None) -> Outcome:
     """Apply one fix and check the result. tune/repair/spawn are injectable for tests and the window."""
     home = home or Path.home()
     if fix.kind == "tune":
@@ -83,6 +88,15 @@ def apply(fix: Fix, problem: Problem, runner: Runner = run, home: Path | None = 
             return Outcome(False, "still_failing", runner(["systemctl", "status", "--no-pager", "-n", "5",
                                                            problem.name]).stdout[-1500:])
         return Outcome(True, "fixed")
+    if fix.kind == "undo-update":
+        ok, message = (tune or _tune_cli)("undo the last update")
+        return Outcome(ok, "update_undone" if ok else "fix_failed", message)
+    if fix.kind == "recheck":
+        still = (recheck or _recheck)(fix.payload.split(","))
+        if still:
+            return Outcome(False, "still_failing", "\n".join(still))
+        resolve_update(problem.name)  # passes again: no longer shown
+        return Outcome(True, "recheck_ok")
     if fix.kind == "user-restart":
         if not re.match(r"^[A-Za-z0-9@._:-]+\.service$", fix.payload):
             return Outcome(False, "fix_failed", "invalid unit")
@@ -121,6 +135,17 @@ def apply(fix: Fix, problem: Problem, runner: Runner = run, home: Path | None = 
         (spawn or _spawn)([fix.payload])
         return Outcome(True, "relaunched")
     return Outcome(False, "fix_failed", f"unknown fix {fix.kind}")
+
+
+def _recheck(ids: list[str]) -> list[str]:
+    """Raz's checks again, as the user; what still fails."""
+    try:
+        from dai_raz import checks
+    except ImportError:
+        return ["Raz is not installed"]
+    wanted = {i for i in ids if i}
+    results = [r for r in checks.run_all() if r.id in wanted]
+    return [f"{r.id}: " + "; ".join(r.items or [r.detail]) for r in results if r.status == "failed"]
 
 
 def _spawn(argv: list[str]) -> None:

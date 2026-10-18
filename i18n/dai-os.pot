@@ -118,7 +118,7 @@ msgid " (your session)"
 msgstr ""
 
 #. he:  ({n} פעמים)
-#: apps/dai-heal/dai_heal/text.py:30
+#: apps/dai-heal/dai_heal/text.py:31
 #, python-brace-format
 msgid " ({n} times)"
 msgstr ""
@@ -170,7 +170,7 @@ msgid "A fast, private and secure system with a built-in assistant that runs on 
 msgstr ""
 
 #. he: רכיב של המערכת שרץ ברקע נעצר. הפעלה מחדש בדרך כלל עוזרת, ונדרשת סיסמת מנהל.
-#: apps/dai-heal/dai_heal/text.py:34
+#: apps/dai-heal/dai_heal/text.py:35
 msgid "A part of the system that runs in the background stopped. Restarting it usually helps; it needs the administrator password."
 msgstr ""
 
@@ -458,6 +458,11 @@ msgstr ""
 msgid "Battery saver mode makes it last longer."
 msgstr ""
 
+#. he: לפני העדכון זה עבד, ועכשיו לא (Raz, בקרת האיכות של D.Ai, בדק לפני ואחרי). ביטול העדכון מחזיר את המערכת למצב שהיה. זה דורש צילומי מצב, שפועלים כש־D.Ai הותקנה על Btrfs. תיקנתם בדרך אחרת? בדקו שוב.
+#: apps/dai-heal/dai_heal/text.py:48
+msgid "Before the update this worked, and now it does not (Raz, D.Ai's quality control, checked before and after). Undoing the update brings the system back to how it was; it needs snapshots, which are on when D.Ai was installed on Btrfs. Fixed it another way? Check again."
+msgstr ""
+
 #. he: התיקיות הגדולות בבית שלכם
 #: apps/dai-doctor/dai_doctor/diagnose.py:155
 msgid "Biggest folders in your home"
@@ -566,6 +571,11 @@ msgstr ""
 #. he: לשנות…
 #: apps/dai-forge/dai_forge/gui.py:156
 msgid "Change it…"
+msgstr ""
+
+#. he: בדיקה חוזרת
+#: apps/dai-heal/dai_heal/text.py:63
+msgid "Check again"
 msgstr ""
 
 #. he: בדיקת דואר
@@ -852,7 +862,7 @@ msgid "Details: journalctl -u {failed_units}"
 msgstr ""
 
 #. he: Diamond מוסיף:
-#: apps/dai-heal/dai_heal/text.py:47
+#: apps/dai-heal/dai_heal/text.py:54
 msgid "Diamond adds:"
 msgstr ""
 
@@ -943,7 +953,7 @@ msgid "Documents"
 msgstr ""
 
 #. he: לא לשאול על זה שוב
-#: apps/dai-heal/dai_heal/text.py:56
+#: apps/dai-heal/dai_heal/text.py:65
 msgid "Don't ask about this again"
 msgstr ""
 
@@ -1118,7 +1128,7 @@ msgid "Firewall blocks unsolicited incoming traffic"
 msgstr ""
 
 #. he: תיקון האפליקציה עם Diamond
-#: apps/dai-heal/dai_heal/text.py:51
+#: apps/dai-heal/dai_heal/text.py:58
 msgid "Fix the app with Diamond"
 msgstr ""
 
@@ -1265,7 +1275,7 @@ msgid "Help me fix it"
 msgstr ""
 
 #. he: זה מה שבדקתי:
-#: apps/dai-heal/dai_heal/text.py:71
+#: apps/dai-heal/dai_heal/text.py:83
 msgid "Here is what I checked:"
 msgstr ""
 
@@ -1285,7 +1295,7 @@ msgid "How the computer appears on the network."
 msgstr ""
 
 #. he: לא הצלחתי לקשר את זה למשהו שאני יודע לבדוק. נסו: „הצליל לא עובד”, „למה המחשב איטי?”, „המדפסת לא עובדת”.
-#: apps/dai-heal/dai_heal/text.py:72
+#: apps/dai-heal/dai_heal/text.py:84
 msgid "I could not match that to something I can check. Try: “the sound does not work”, “why is it slow?”, “the printer does not work”."
 msgstr ""
 
@@ -1310,7 +1320,7 @@ msgid "IDEAS"
 msgstr ""
 
 #. he: אם זה ממשיך, דווחו (שום דבר לא נשלח בלעדיכם): https://github.com/diamondrubinny/D.Ai/issues
-#: apps/dai-heal/dai_heal/text.py:68
+#: apps/dai-heal/dai_heal/text.py:80
 msgid "If it keeps happening, report it (nothing is sent without you): https://github.com/diamondrubinny/D.Ai/issues"
 msgstr ""
 
@@ -1660,7 +1670,7 @@ msgid "No private memory folder (XDG_RUNTIME_DIR); nothing is kept."
 msgstr ""
 
 #. he: לא נמצאו בעיות.
-#: apps/dai-heal/dai_heal/text.py:76
+#: apps/dai-heal/dai_heal/text.py:88
 msgid "No problems noticed."
 msgstr ""
 
@@ -1722,7 +1732,7 @@ msgid "Not keeping anything until {time}."
 msgstr ""
 
 #. he: לא עכשיו
-#: apps/dai-heal/dai_heal/text.py:55
+#: apps/dai-heal/dai_heal/text.py:64
 #: apps/dai-welcome/dai_welcome/gui.py:59
 msgid "Not now"
 msgstr ""
@@ -1884,7 +1894,7 @@ msgid "Only {mem_available} of {mem_total} is free."
 msgstr ""
 
 #. he: פתיחה מחדש
-#: apps/dai-heal/dai_heal/text.py:53
+#: apps/dai-heal/dai_heal/text.py:60
 msgid "Open it again"
 msgstr ""
 
@@ -1906,7 +1916,7 @@ msgid "Open the code"
 msgstr ""
 
 #. he: נפתחה מחדש. אם היא תקרוס שוב, אגיד לכם.
-#: apps/dai-heal/dai_heal/text.py:62
+#: apps/dai-heal/dai_heal/text.py:71
 msgid "Opened again. If it crashes again, I will tell you."
 msgstr ""
 
@@ -2004,7 +2014,7 @@ msgid "Processor: {value}%"
 msgstr ""
 
 #. he: תוכנות קורסות בדרך כלל בגלל הגדרות פגומות או באג. הפעלה מחדש עוזרת לא פעם, ואם זה חוזר, העברת ההגדרות שלה הצידה (הן נשמרות) בדרך כלל מתקנת.
-#: apps/dai-heal/dai_heal/text.py:39
+#: apps/dai-heal/dai_heal/text.py:40
 msgid "Programs usually crash because of damaged settings or a bug. Starting it again often works; if it keeps crashing, putting its settings aside (they are kept) usually fixes it."
 msgstr ""
 
@@ -2014,12 +2024,12 @@ msgid "Protected settings are intact"
 msgstr ""
 
 #. he: העברת ההגדרות הצידה
-#: apps/dai-heal/dai_heal/text.py:52
+#: apps/dai-heal/dai_heal/text.py:59
 msgid "Put its settings aside"
 msgstr ""
 
 #. he: החזרת ההגדרות הישנות
-#: apps/dai-heal/dai_heal/text.py:54
+#: apps/dai-heal/dai_heal/text.py:61
 msgid "Put the old settings back"
 msgstr ""
 
@@ -2154,7 +2164,7 @@ msgid "Restart afterwards. Personal files are not touched. A snapshot of now is 
 msgstr ""
 
 #. he: הפעלה מחדש (סיסמת מנהל)
-#: apps/dai-heal/dai_heal/text.py:49
+#: apps/dai-heal/dai_heal/text.py:56
 msgid "Restart it (administrator password)"
 msgstr ""
 
@@ -2453,7 +2463,7 @@ msgid "Something stopped working"
 msgstr ""
 
 #. he: משהו שרץ ברקע בשבילך נעצר. אפשר להפעיל אותו מחדש.
-#: apps/dai-heal/dai_heal/text.py:37
+#: apps/dai-heal/dai_heal/text.py:38
 msgid "Something that runs in the background for you stopped. I can start it again."
 msgstr ""
 
@@ -2498,7 +2508,7 @@ msgid "Start and enable {unit}"
 msgstr ""
 
 #. he: הפעלה מחדש
-#: apps/dai-heal/dai_heal/text.py:50
+#: apps/dai-heal/dai_heal/text.py:57
 msgid "Start it again"
 msgstr ""
 
@@ -2631,6 +2641,11 @@ msgstr ""
 msgid "The last update ({date}) changed {count} package(s). "
 msgstr ""
 
+#. he: העדכון האחרון שבר משהו ש־D.Ai בודקת.
+#: apps/dai-heal/dai_heal/text.py:30
+msgid "The last update broke something D.Ai checks."
+msgstr ""
+
 #. he: ההודעה לא נשלחה. היא עדיין כאן; נסו שוב.
 #: apps/dai-j/dai_j/text.py:96
 msgid "The message was not sent. It is still here; try again."
@@ -2719,7 +2734,7 @@ msgid "This computer: {ram} RAM"
 msgstr ""
 
 #. he: זו אפליקציה שבנית עם D.Ai Forge. אפשר לתקן אותה: Diamond קורא את השגיאה, משנה את הקוד ובודק אותה בארגז החול לפני שתפתחו אותה. הגרסה הנוכחית נשמרת.
-#: apps/dai-heal/dai_heal/text.py:43
+#: apps/dai-heal/dai_heal/text.py:44
 msgid "This is an app you built with D.Ai Forge. I can fix it: Diamond reads the error, changes the code, and tests it in the sandbox before you open it. The current version is kept."
 msgstr ""
 
@@ -2843,6 +2858,11 @@ msgstr ""
 msgid "Undo the last update"
 msgstr ""
 
+#. he: ביטול העדכון (סיסמת מנהל)
+#: apps/dai-heal/dai_heal/text.py:62
+msgid "Undo the update (administrator password)"
+msgstr ""
+
 #. he: בוטל. המערכת חזרה למצב הקודם.
 #: apps/dai-forge/dai_forge/gui.py:146
 msgid "Undone. The system is back to how it was."
@@ -2939,7 +2959,7 @@ msgid "Welcome to D.Ai OS"
 msgstr ""
 
 #. he: מה היא אמרה:
-#: apps/dai-heal/dai_heal/text.py:32
+#: apps/dai-heal/dai_heal/text.py:33
 msgid "What it said:"
 msgstr ""
 
@@ -2954,7 +2974,7 @@ msgid "What will change"
 msgstr ""
 
 #. he: מתי: {when}
-#: apps/dai-heal/dai_heal/text.py:31
+#: apps/dai-heal/dai_heal/text.py:32
 #, python-brace-format
 msgid "When: {when}"
 msgstr ""
@@ -2996,7 +3016,7 @@ msgstr ""
 
 #. he: עובד על זה…
 #: apps/dai-forge/dai_forge/gui.py:138
-#: apps/dai-heal/dai_heal/text.py:57
+#: apps/dai-heal/dai_heal/text.py:66
 msgid "Working on it…"
 msgstr ""
 
@@ -3680,6 +3700,11 @@ msgstr ""
 msgid "✓ Encrypted backup created on"
 msgstr ""
 
+#. he: ✓ הכל עובר שוב.
+#: apps/dai-heal/dai_heal/text.py:77
+msgid "✓ Everything passes again."
+msgstr ""
+
 #. he: ✓ יוצא אל {rest}
 #: apps/dai-forge/dai_forge/cli.py:501
 #, python-brace-format
@@ -3687,7 +3712,7 @@ msgid "✓ Exported to {rest}"
 msgstr ""
 
 #. he: ✓ תוקן: זה עובד שוב.
-#: apps/dai-heal/dai_heal/text.py:59
+#: apps/dai-heal/dai_heal/text.py:68
 msgid "✓ Fixed: it is running again."
 msgstr ""
 
@@ -3704,7 +3729,7 @@ msgid "✓ Imported {id} → {saved}"
 msgstr ""
 
 #. he: ✓ ההגדרות הועברו הצידה אל {detail}. פתחו אותה שוב כדי להתחיל מחדש.
-#: apps/dai-heal/dai_heal/text.py:63
+#: apps/dai-heal/dai_heal/text.py:72
 #, python-brace-format
 msgid "✓ Its settings were moved aside to {detail}. Open it again to start fresh."
 msgstr ""
@@ -3751,7 +3776,7 @@ msgid "✓ Tested in the sandbox: it works (the AI fixed {n} problem(s))"
 msgstr ""
 
 #. he: ✓ האפליקציה תוקנה ועברה בדיקה בארגז החול ({detail}). פתחו אותה מתפריט התחל.
-#: apps/dai-heal/dai_heal/text.py:60
+#: apps/dai-heal/dai_heal/text.py:69
 #, python-brace-format
 msgid "✓ The app was fixed and passed the test in the sandbox ({detail}). Open it from the Start menu."
 msgstr ""
@@ -3762,8 +3787,13 @@ msgid "✓ The backup is healthy and restorable."
 msgstr ""
 
 #. he: ✓ ההגדרות הישנות חזרו.
-#: apps/dai-heal/dai_heal/text.py:65
+#: apps/dai-heal/dai_heal/text.py:74
 msgid "✓ The old settings are back."
+msgstr ""
+
+#. he: ✓ העדכון בוטל. הפעילו מחדש את המחשב כדי לסיים.
+#: apps/dai-heal/dai_heal/text.py:75
+msgid "✓ The update was undone. Restart the computer to finish."
 msgstr ""
 
 #. he: ✓ בוטל: 
@@ -3784,7 +3814,7 @@ msgid "✗ '{id}' is a {source} recipe and cannot be replaced."
 msgstr ""
 
 #. he: ✗ זה עדיין נכשל. זה מה שהוא אומר עכשיו:
-#: apps/dai-heal/dai_heal/text.py:66
+#: apps/dai-heal/dai_heal/text.py:78
 msgid "✗ It is still failing. Here is what it says now:"
 msgstr ""
 
@@ -3804,7 +3834,7 @@ msgid "✗ Only your own recipes can be removed."
 msgstr ""
 
 #. he: ✗ זה לא הצליח: {detail}
-#: apps/dai-heal/dai_heal/text.py:67
+#: apps/dai-heal/dai_heal/text.py:79
 #, python-brace-format
 msgid "✗ That did not work: {detail}"
 msgstr ""

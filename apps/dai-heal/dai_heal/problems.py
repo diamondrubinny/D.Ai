@@ -6,6 +6,7 @@
   user-service  one of the user's services failed  systemctl --user --failed
   crash         a program crashed                  coredumpctl (metadata only, never the dump)
   forge-app     an app built with D.Ai Forge crashed  ~/.local/state/dai/heal/forge-*.json
+  regression    an update broke one of D.Ai's checks  /var/lib/dai/raz/regressions.json (docs/RAZ.md §3)
 """
 
 from __future__ import annotations
@@ -122,8 +123,49 @@ def forge_crashes(directory: Path | None = None) -> list[Problem]:
     return problems
 
 
+RAZ_REGRESSIONS = Path("/var/lib/dai/raz/regressions.json")
+RAZ_ID = re.compile(r"^[a-z_]{1,32}$")
+
+
+def regressions(path: Path = RAZ_REGRESSIONS) -> list[Problem]:
+    """What the last update broke, as Raz's update guard found it. One problem per update."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    found = [r for r in data.get("regressions", []) if isinstance(r, dict) and RAZ_ID.match(str(r.get("id", "")))] \
+        if isinstance(data, dict) else []
+    stamp = float(data.get("time", 0) or 0)
+    if not found or str(int(stamp)) in resolved_updates():
+        return []
+    lines = []
+    for item in found[:9]:
+        details = [str(i)[:160] for i in item.get("items", [])[:5] if isinstance(i, str)]
+        lines.append(f"{item['id']}: " + ("; ".join(details) if details else str(item.get("detail", ""))[:160]))
+    change = str(data.get("change", ""))[:600]
+    return [Problem("regression", str(int(stamp)), stamp, "\n".join(lines),
+                    extra={"checks": [r["id"] for r in found[:9]], "change": change})]
+
+
+def resolved_updates(directory: Path | None = None) -> set[str]:
+    """Updates whose regressions passed Raz's checks again (marked by the "Check again" fix)."""
+    try:
+        data = json.loads(((directory or state_dir()) / "raz-resolved.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+    return {str(x) for x in data} if isinstance(data, list) else set()
+
+
+def resolve_update(name: str, directory: Path | None = None) -> None:
+    directory = directory or state_dir()
+    directory.mkdir(parents=True, exist_ok=True)
+    kept = sorted(resolved_updates(directory) | {name})[-50:]
+    (directory / "raz-resolved.json").write_text(json.dumps(kept), encoding="utf-8")
+
+
 def collect(runner: Runner = run, since: float | None = None) -> list[Problem]:
-    problems = failed_units(runner) + failed_units(runner, user=True) + crashes(runner, since) + forge_crashes()
+    problems = (failed_units(runner) + failed_units(runner, user=True) + crashes(runner, since) + forge_crashes()
+                + regressions())
     return sorted(problems, key=lambda p: p.when, reverse=True)
 
 

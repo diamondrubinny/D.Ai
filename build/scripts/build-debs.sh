@@ -212,6 +212,9 @@ build_apps() {
   # Raz (docs/RAZ.md): D.Ai checks itself.
   copy_package "$REPO_ROOT/apps/dai-raz/dai_raz" "$root"
   install -m 0755 "$REPO_ROOT/apps/dai-raz/data/dai-raz" "$root/usr/bin/dai-raz"
+  # The update guard (docs/RAZ.md §3): apt runs it before and after dpkg.
+  install -m 0755 "$REPO_ROOT/apps/dai-raz/data/dai-raz-guard" "$root/usr/lib/dai/dai-raz-guard"
+  install -D -m 0644 "$REPO_ROOT/apps/dai-raz/data/85dai-raz" "$root/etc/apt/apt.conf.d/85dai-raz"
 
   # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
   local evolve="$REPO_ROOT/apps/dai-evolve"
