@@ -56,6 +56,9 @@ jobs:
       - name: Packages and update repository (signature, redirect, pinning; Debian trixie container)
         run: docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie bash tests/apt/apt-repo-test.sh
 
+      - name: Copyright notices, license, trademark policy and terms
+        run: python3 -m unittest tests/legal/test_legal.py -v
+
       - name: Website (Hebrew RTL, AA contrast, no trackers, links)
         run: python3 -m unittest tests/site/test_site.py -v
 

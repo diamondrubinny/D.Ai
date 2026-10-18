@@ -44,7 +44,7 @@ def contrast(a, b):
 
 class SiteTests(unittest.TestCase):
     def test_pages_exist(self):
-        self.assertEqual({p.name for p in PAGES}, {"index.html", "privacy.html", "accessibility.html"})
+        self.assertEqual({p.name for p in PAGES}, {"index.html", "privacy.html", "accessibility.html", "terms.html"})
 
     def test_language_direction_and_basics(self):
         for path in PAGES:
