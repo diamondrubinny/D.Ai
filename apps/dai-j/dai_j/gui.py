@@ -18,7 +18,7 @@ from typing import Callable
 from PyQt6.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QKeySequence, QShortcut, QTextBlockFormat, QTextCursor
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFormLayout, QGroupBox,
-                             QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMainWindow, QMessageBox, QPushButton,
+                             QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QPushButton,
                              QSpinBox, QSplitter, QStackedWidget, QTextBrowser, QTextEdit, QToolBar, QTreeWidget,
                              QTreeWidgetItem, QVBoxLayout, QWidget)
 
@@ -300,11 +300,21 @@ class SetupDialog(QDialog):
 
 # Writing
 
+UNDO_SECONDS = 10
+
+
 class ComposeWindow(QWidget):
     def __init__(self, lang: str, accounts: list[acc.Account], password_for: Callable[[acc.Account], str | None],
-                 runner: Runner, draft: compose.Draft | None = None, sender=engine.send, on_sent=None) -> None:
+                 runner: Runner, draft: compose.Draft | None = None, sender=engine.send, on_sent=None,
+                 undo_seconds: int = UNDO_SECONDS) -> None:
         super().__init__()
         self.lang = lang
+        self.undo_seconds = undo_seconds
+        self.pending = QTimer(self, singleShot=True)  # "undo send": the message leaves when this fires
+        self.countdown = QTimer(self, interval=1000)
+        self.left = 0
+        self.waiting = None  # what the timer sends: one at a time, connected once (never sent twice)
+        self.pending.timeout.connect(self._fire)
         self.accounts = accounts
         self.password_for = password_for
         self.runner = runner
@@ -355,6 +365,11 @@ class ComposeWindow(QWidget):
         self.send_button = QPushButton(embed(t("send", lang), lang), objectName="Primary")
         self.send_button.setToolTip("Ctrl+Enter")
         self.send_button.clicked.connect(self.send)
+        self.undo_button = QPushButton(embed(t("undo_send", lang), lang))
+        self.undo_button.setToolTip(t("undo_send", lang) + " · Esc")
+        self.undo_button.clicked.connect(self.undo_send)
+        self.undo_button.hide()
+        bottom.addWidget(self.undo_button)
         bottom.addWidget(self.send_button)
         layout.addLayout(bottom)
 
@@ -362,7 +377,8 @@ class ComposeWindow(QWidget):
         QShortcut(QKeySequence("Ctrl+Enter"), self, self.send)
         QShortcut(QKeySequence("Ctrl+Shift+R"), self, lambda: self.set_direction(Qt.LayoutDirection.RightToLeft))
         QShortcut(QKeySequence("Ctrl+Shift+L"), self, lambda: self.set_direction(Qt.LayoutDirection.LeftToRight))
-        QShortcut(QKeySequence(Qt.Key.Key_Escape), self, self.close)
+        QShortcut(QKeySequence(Qt.Key.Key_Escape), self, lambda: self.undo_send() if self.pending.isActive() else self.close())
+        self.countdown.timeout.connect(self._tick)
         if draft is not None:
             self.load(draft)
 
@@ -431,6 +447,41 @@ class ComposeWindow(QWidget):
         if account is None or password is None:
             return
         self.send_button.setEnabled(False)
+        if self.undo_seconds > 0:  # a few seconds to take it back; nothing has left the computer yet
+            self.left = self.undo_seconds
+            self.waiting = (account, password, draft)
+            self.pending.start(self.undo_seconds * 1000)
+            self.countdown.start()
+            self.undo_button.show()
+            self.undo_button.setFocus()
+            self._tick(first=True)
+            return
+        self._deliver(account, password, draft)
+
+    def _tick(self, first: bool = False) -> None:
+        if not first:
+            self.left -= 1
+        self._say(t("sending_in", self.lang, seconds=max(self.left, 0)))
+
+    def undo_send(self) -> None:
+        if not self.pending.isActive():
+            return
+        self.pending.stop()
+        self.countdown.stop()
+        self.waiting = None
+        self.undo_button.hide()
+        self.send_button.setEnabled(True)
+        self.send_button.setFocus()
+        self._say(t("send_undone", self.lang))
+
+    def _fire(self) -> None:
+        waiting, self.waiting = self.waiting, None
+        if waiting is not None:
+            self._deliver(*waiting)
+
+    def _deliver(self, account, password, draft) -> None:
+        self.countdown.stop()
+        self.undo_button.hide()
         self._say(t("sending", self.lang))
 
         def done(_result) -> None:
@@ -452,6 +503,11 @@ class ComposeWindow(QWidget):
         self.status.setText(text)
 
     def closeEvent(self, event) -> None:  # noqa: N802
+        if self.pending.isActive():  # closing while "undo send" counts down: it is sent now, as asked, and the
+            self.pending.stop()      # window closes by itself once the message has left
+            self._fire()
+            event.ignore()
+            return
         if not self.sent and self.body.toPlainText().strip() and self.isVisible():
             box = QMessageBox(QMessageBox.Icon.Question, t("compose_title", self.lang), t("discard", self.lang),
                               parent=self)
@@ -559,6 +615,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self._mail_page())
         self.setCentralWidget(self.stack)
         self.refresh_views()
+        self._wake_later()  # messages snoozed in an earlier session come back on time
         self.timer = QTimer(self, interval=SYNC_EVERY)
         self.timer.timeout.connect(self.sync_all)
         if sync_on_start:
@@ -578,6 +635,7 @@ class MainWindow(QMainWindow):
                                        ("forward", "Ctrl+Shift+F", self.forward), ("delete", "Delete", self.delete),
                                        ("mark_unread", "Ctrl+U", self.mark_unread), ("refresh", "F5", self.sync_all),
                                        ("add_account", "", self.add_account), ("import", "", lambda: self.import_accounts()),
+                                       ("snooze", "", lambda: self.snooze_menu()),
                                        ("import_mail", "", lambda: self.import_mail())):
             action = QAction(t(key, self.lang), self)
             if shortcut:
@@ -632,7 +690,7 @@ class MainWindow(QMainWindow):
         self.list.currentItemChanged.connect(lambda *_: self.open_current())
         for key, handler in (("C", self.new_message), ("R", lambda: self.reply(False)), ("A", lambda: self.reply(True)),
                              ("F", self.forward), ("#", self.delete), ("U", self.mark_unread),
-                             ("J", lambda: self._step(1)), ("K", lambda: self._step(-1))):
+                             ("J", lambda: self._step(1)), ("K", lambda: self._step(-1)), ("B", self.snooze_menu)):
             shortcut = QShortcut(QKeySequence(key), self.list, handler)
             shortcut.setContext(Qt.ShortcutContext.WidgetShortcut)
 
@@ -651,8 +709,20 @@ class MainWindow(QMainWindow):
         column.addWidget(self.header)
         column.addWidget(self.notice)
         column.addWidget(self.reader, 1)
+        middle = QWidget(objectName="Page")
+        stack = QVBoxLayout(middle)
+        stack.setContentsMargins(0, 0, 0, 0)
+        self.search = QLineEdit(placeholderText=t("search", self.lang))
+        self.search.setAccessibleName(t("search", self.lang))
+        self.search.setToolTip(t("search", self.lang) + " · Ctrl+F")
+        self.search.setClearButtonEnabled(True)
+        self.search.textChanged.connect(lambda *_: self.show_folder())
+        self.search.returnPressed.connect(self.list.setFocus)
+        QShortcut(QKeySequence.StandardKey.Find, self, self.search.setFocus)
+        stack.addWidget(self.search)
+        stack.addWidget(self.list, 1)
         splitter.addWidget(self.folders)
-        splitter.addWidget(self.list)
+        splitter.addWidget(middle)
         splitter.addWidget(right)
         splitter.setSizes([220, 420, 460])
         self.statusBar().showMessage("")
@@ -720,8 +790,12 @@ class MainWindow(QMainWindow):
         if not key:
             return
         kind, name, account_id = key
-        rows = (self.store.listing([a.id for a in self.accounts], role=name) if kind == "role"
-                else self.store.listing([account_id], folder=name))
+        query = self.search.text().strip() if hasattr(self, "search") else ""
+        if len(query) >= 2:  # every account and the local folders, newest first
+            rows = self.store.search([a.id for a in self.accounts] + [localmail.LOCAL], query)
+        else:
+            rows = (self.store.listing([a.id for a in self.accounts], role=name) if kind == "role"
+                    else self.store.listing([account_id], folder=name))
         for row in rows:
             item = QTreeWidgetItem([row["sender"] or row["sender_address"] or "",
                                     row["subject"] or t("no_subject", self.lang), when(row["date"], self.lang)])
@@ -959,6 +1033,35 @@ class MainWindow(QMainWindow):
         self.runner.start(lambda: engine.delete(account, password, self.db, row["folder"], row["uid"]),
                           lambda _: self.show_folder(),
                           lambda e: self.statusBar().showMessage(error(e, self.lang)))
+
+    def snooze_menu(self) -> None:
+        if self.current is None:
+            return
+        menu = QMenu(self)
+        for choice in ("later", "tomorrow", "week"):
+            action = menu.addAction(t(f"snooze_{choice}", self.lang))
+            action.triggered.connect(lambda _=False, c=choice: self.snooze(c))
+        menu.exec(self.mapToGlobal(self.list.geometry().center()))
+
+    def snooze(self, choice: str) -> None:
+        """Out of sight until then; back unread. Only on this computer: the server keeps the message as it is."""
+        from .store import snooze_time
+
+        row = self.current
+        if row is None:
+            return
+        until = snooze_time(choice)
+        self._step(1)
+        self.store.snooze(row["account"], row["folder"], row["uid"], until)
+        self.statusBar().showMessage(t("snoozed", self.lang, when=when(until, self.lang)), 8000)
+        self.refresh_views()
+        self._wake_later()
+
+    def _wake_later(self) -> None:
+        """Show a snoozed message again when its time comes, even if J stays open."""
+        wake = self.store.next_wake()
+        if wake is not None:
+            QTimer.singleShot(int(max(1.0, min(wake - time.time(), 86400.0)) * 1000) + 500, self.refresh_views)
 
     def mark_unread(self) -> None:
         row = self.current

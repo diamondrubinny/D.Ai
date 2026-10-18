@@ -477,7 +477,7 @@ class WindowTests(unittest.TestCase):
                                    discover.Server("h.example", 465, "ssl", "d"))
         calls = []
         window = gui.ComposeWindow("he", [account], lambda a: "pw", gui.Runner(inline=True),
-                                   sender=lambda a, p, d: calls.append(d))
+                                   sender=lambda a, p, d: calls.append(d), undo_seconds=0)
         window.to.setText("avi@example.org")
         window.body.setPlainText("שלום\nHello")
         from PyQt6.QtGui import QTextCursor
@@ -493,6 +493,50 @@ class WindowTests(unittest.TestCase):
         window.send()
         window.send()  # a second press while sending does nothing
         self.assertEqual(len(calls), 1)
+
+    def test_undo_send(self):
+        from dai_j import gui
+
+        account = accounts.Account("dana@example.com", "Dana", discover.Server("h.example", 993, "ssl", "d"),
+                                   discover.Server("h.example", 465, "ssl", "d"))
+        calls = []
+        window = gui.ComposeWindow("en", [account], lambda a: "pw", gui.Runner(inline=True),
+                                   sender=lambda a, p, d: calls.append(d), undo_seconds=10)
+        self.addCleanup(window.deleteLater)
+        window.to.setText("avi@example.org")
+        window.body.setPlainText("Hi")
+        window.send()
+        self.assertEqual(calls, [])  # nothing has left the computer yet
+        self.assertTrue(window.pending.isActive())
+        self.assertIn("10", window.status.text())
+        window.send()  # pressing again during the countdown does nothing
+        window.undo_send()
+        self.assertEqual(calls, [])
+        self.assertTrue(window.send_button.isEnabled())
+        window.send()
+        window._tick()
+        self.assertIn("9", window.status.text())
+        window.pending.stop()
+        window.pending.timeout.emit()  # the ten seconds are over
+        self.assertEqual(len(calls), 1)
+        window.pending.timeout.emit()
+        self.assertEqual(len(calls), 1)  # never twice
+
+    def test_closing_during_the_countdown_sends(self):
+        from dai_j import gui
+
+        account = accounts.Account("dana@example.com", "Dana", discover.Server("h.example", 993, "ssl", "d"),
+                                   discover.Server("h.example", 465, "ssl", "d"))
+        calls = []
+        window = gui.ComposeWindow("en", [account], lambda a: "pw", gui.Runner(inline=True),
+                                   sender=lambda a, p, d: calls.append(d), undo_seconds=10)
+        window.show()
+        window.to.setText("avi@example.org")
+        window.body.setPlainText("Hi")
+        window.send()
+        window.close()
+        self.assertEqual(len(calls), 1)
+        self.assertTrue(window.sent)
 
 
 if __name__ == "__main__":

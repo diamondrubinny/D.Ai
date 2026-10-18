@@ -109,6 +109,69 @@ class ImportTests(unittest.TestCase):
         self.assertEqual((result.added, result.skipped), (0, 1))
 
 
+class SearchTests(unittest.TestCase):
+    def test_every_word_literally_newest_first(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / "mail.sqlite")
+            self.addCleanup(store.close)
+            path = Path(tmp) / "a.mbox"
+            box = mailbox.mbox(path)
+            for subject, body in (("דוח רבעוני 100%", "plain body about budgets"), ("Lunch", "see you at noon"),
+                                  ("Report_final", "attached")):
+                box.add(mailbox.mboxMessage(message(subject, body=body)))
+            box.flush()
+            box.close()
+            localmail.import_source(store, localmail.source_for_path(path))
+            subjects = lambda q: [r["subject"] for r in store.search([localmail.LOCAL], q)]  # noqa: E731
+            self.assertEqual(subjects("דוח"), ["דוח רבעוני 100%"])
+            self.assertEqual(subjects("budgets"), ["דוח רבעוני 100%"])  # the body, when kept as plain text
+            self.assertEqual(subjects("dana noon"), ["Lunch"])  # every word, anywhere
+            self.assertEqual(subjects("100%"), ["דוח רבעוני 100%"])
+            self.assertEqual(subjects("%"), ["דוח רבעוני 100%"])  # % is a character, not "anything"
+            self.assertEqual(subjects("t_f"), ["Report_final"])
+            self.assertEqual(subjects("x_y"), [])  # _ is not "any one character"
+            self.assertEqual(store.search([], "dana"), [])
+
+
+class SnoozeTests(unittest.TestCase):
+    def test_out_of_sight_until_its_time_then_back_unread(self):
+        import time
+        from dai_j.store import snooze_time
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / "mail.sqlite")
+            self.addCleanup(store.close)
+            path = Path(tmp) / "a.mbox"
+            box = mailbox.mbox(path)
+            m = mailbox.mboxMessage(message("Pay the bill"))
+            m.set_flags("RO")
+            box.add(m)
+            box.flush()
+            box.close()
+            folder = localmail.import_source(store, localmail.source_for_path(path)).folders[0]
+            uid = store.listing([localmail.LOCAL], folder=folder)[0]["uid"]
+            store.snooze(localmail.LOCAL, folder, uid, time.time() + 3600)
+            self.assertEqual(store.listing([localmail.LOCAL], folder=folder), [])
+            self.assertEqual(store.search([localmail.LOCAL], "bill"), [])
+            self.assertAlmostEqual(store.next_wake(), time.time() + 3600, delta=5)
+            store.snooze(localmail.LOCAL, folder, uid, time.time() - 1)  # its time came
+            rows = store.listing([localmail.LOCAL], folder=folder)
+            self.assertEqual([(r["subject"], r["seen"]) for r in rows], [("Pay the bill", 0)])
+            store.remove(localmail.LOCAL, folder, uid)
+            self.assertIsNone(store.next_wake())
+
+    def test_the_three_choices(self):
+        import time
+        from dai_j.store import snooze_time
+
+        friday = time.mktime((2026, 10, 16, 15, 30, 0, 0, 0, -1))  # a Friday afternoon
+        self.assertEqual(snooze_time("later", friday), friday + 3 * 3600)
+        self.assertEqual(time.localtime(snooze_time("tomorrow", friday))[:5], (2026, 10, 17, 8, 0))
+        self.assertEqual(time.localtime(snooze_time("week", friday))[:5], (2026, 10, 19, 8, 0))  # Monday
+        monday = time.mktime((2026, 10, 19, 9, 0, 0, 0, 0, -1))
+        self.assertEqual(time.localtime(snooze_time("week", monday))[:3], (2026, 10, 26))  # the next one
+
+
 class WindowTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -144,6 +207,12 @@ class WindowTests(unittest.TestCase):
             self.assertIn("מכתב ישן", window.reader.toPlainText())
             window.mark_unread()
             self.assertEqual(window.current["seen"], 0)
+            window.search.setText("ישן")  # the search field finds it across every folder
+            self.assertEqual(window.list.topLevelItemCount(), 1)
+            window.search.setText("nothing like this")
+            self.assertEqual(window.list.topLevelItemCount(), 0)
+            window.search.clear()
+            window.list.setCurrentItem(window.list.topLevelItem(0))
             window.delete()
             self.assertEqual(window.store.listing([localmail.LOCAL], folder="Imported/old"), [])
 

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+import time
 from pathlib import Path
 
 from .mail import Header
@@ -25,7 +26,23 @@ CREATE TABLE IF NOT EXISTS messages (
     seen INTEGER, flagged INTEGER, message_id TEXT, refs TEXT, body BLOB,
     PRIMARY KEY (account, folder, uid));
 CREATE INDEX IF NOT EXISTS messages_date ON messages (date DESC);
+CREATE TABLE IF NOT EXISTS snoozed (
+    account TEXT NOT NULL, folder TEXT NOT NULL, uid INTEGER NOT NULL, until REAL NOT NULL,
+    PRIMARY KEY (account, folder, uid));
 """
+# A snoozed message is out of sight until its time (docs/MAIL.md §12).
+AWAKE = ("NOT EXISTS (SELECT 1 FROM snoozed z WHERE z.account = {m}.account AND z.folder = {m}.folder "
+         "AND z.uid = {m}.uid AND z.until > ?)")
+
+
+def snooze_time(choice: str, now: float | None = None) -> float:
+    """"later" (in 3 hours), "tomorrow" (8:00) or "week" (next Monday, 8:00), in local time."""
+    now = time.time() if now is None else now
+    if choice == "later":
+        return now + 3 * 3600
+    day = time.localtime(now)
+    days = 1 if choice == "tomorrow" else (7 - day.tm_wday) or 7
+    return time.mktime((day.tm_year, day.tm_mon, day.tm_mday + days, 8, 0, 0, 0, 0, -1))
 
 
 class Store:
@@ -104,6 +121,7 @@ class Store:
     def remove(self, account: str, folder: str, uid: int) -> None:
         with self.db:
             self.db.execute("DELETE FROM messages WHERE account = ? AND folder = ? AND uid = ?", (account, folder, uid))
+            self.db.execute("DELETE FROM snoozed WHERE account = ? AND folder = ? AND uid = ?", (account, folder, uid))
 
     def set_body(self, account: str, folder: str, uid: int, raw: bytes) -> None:
         with self.db:
@@ -120,14 +138,35 @@ class Store:
         if not accounts:
             return []
         marks = ",".join("?" * len(accounts))
+        now = time.time()
         if role:
             sql = (f"SELECT m.* FROM messages m JOIN folders f ON f.account = m.account AND f.name = m.folder "
-                   f"WHERE m.account IN ({marks}) AND f.role = ? ORDER BY m.date DESC LIMIT ?")
-            args = (*accounts, role, limit)
+                   f"WHERE m.account IN ({marks}) AND f.role = ? AND {AWAKE.format(m='m')} ORDER BY m.date DESC LIMIT ?")
+            args = (*accounts, role, now, limit)
         else:
-            sql = f"SELECT * FROM messages WHERE account IN ({marks}) AND folder = ? ORDER BY date DESC LIMIT ?"
-            args = (*accounts, folder, limit)
+            sql = (f"SELECT * FROM messages m WHERE account IN ({marks}) AND folder = ? AND {AWAKE.format(m='m')} "
+                   f"ORDER BY date DESC LIMIT ?")
+            args = (*accounts, folder, now, limit)
         cursor = self.db.execute(sql, args)
+        names = [c[0] for c in cursor.description]
+        return [{k: v for k, v in zip(names, row) if k != "body"} for row in cursor]
+
+    def search(self, accounts: list[str], query: str, limit: int = 500) -> list[dict]:
+        """Messages whose sender, recipients or subject contain every word of query (the body too when it is
+        kept as plain text). Newest first. Words are matched literally: % and _ mean themselves."""
+        words = [w for w in query.split() if w][:8]
+        if not accounts or not words:
+            return []
+        marks = ",".join("?" * len(accounts))
+        fields = "(sender LIKE ? ESCAPE '\\' OR sender_address LIKE ? ESCAPE '\\' OR recipients LIKE ? ESCAPE '\\' " \
+                 "OR subject LIKE ? ESCAPE '\\' OR CAST(body AS TEXT) LIKE ? ESCAPE '\\')"
+        args: list = list(accounts)
+        for word in words:
+            pattern = "%" + word.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+            args += [pattern] * 5
+        sql = (f"SELECT * FROM messages m WHERE account IN ({marks}) AND " + " AND ".join([fields] * len(words))
+               + f" AND {AWAKE.format(m='m')} ORDER BY date DESC LIMIT ?")
+        cursor = self.db.execute(sql, (*args, time.time(), limit))
         names = [c[0] for c in cursor.description]
         return [{k: v for k, v in zip(names, row) if k != "body"} for row in cursor]
 
@@ -136,12 +175,26 @@ class Store:
             return 0
         marks = ",".join("?" * len(accounts))
         row = self.db.execute(f"SELECT COUNT(*) FROM messages m JOIN folders f ON f.account = m.account AND "
-                              f"f.name = m.folder WHERE m.account IN ({marks}) AND f.role = ? AND m.seen = 0",
-                              (*accounts, role)).fetchone()
+                              f"f.name = m.folder WHERE m.account IN ({marks}) AND f.role = ? AND m.seen = 0 "
+                              f"AND {AWAKE.format(m='m')}", (*accounts, role, time.time())).fetchone()
         return int(row[0])
+
+    def snooze(self, account: str, folder: str, uid: int, until: float) -> None:
+        """Out of sight until `until`; it comes back unread, so it is noticed."""
+        with self.db:
+            self.db.execute("INSERT INTO snoozed (account, folder, uid, until) VALUES (?, ?, ?, ?) "
+                            "ON CONFLICT (account, folder, uid) DO UPDATE SET until = excluded.until",
+                            (account, folder, uid, until))
+            self.db.execute("UPDATE messages SET seen = 0 WHERE account = ? AND folder = ? AND uid = ?",
+                            (account, folder, uid))
+
+    def next_wake(self) -> float | None:
+        row = self.db.execute("SELECT MIN(until) FROM snoozed WHERE until > ?", (time.time(),)).fetchone()
+        return row[0] if row and row[0] else None
 
     def forget_account(self, account: str) -> None:
         with self.db:
+            self.db.execute("DELETE FROM snoozed WHERE account = ?", (account,))
             self.db.execute("DELETE FROM messages WHERE account = ?", (account,))
             self.db.execute("DELETE FROM folders WHERE account = ?", (account,))
         self.db.execute("VACUUM")  # the deleted mail does not linger in free pages

@@ -105,6 +105,15 @@ STRINGS = {
     "import_mail_done": ("{added} messages copied into {folders} local folders.",
                          "{added} הודעות הועתקו ל־{folders} תיקיות מקומיות."),
     "local_folders": ("On this computer", "במחשב הזה"),
+    "undo_send": ("Undo", "ביטול השליחה"),
+    "search": ("Search mail…", "חיפוש בדואר…"),
+    "snooze": ("Snooze", "נודניק"),
+    "snooze_later": ("Later today (in 3 hours)", "מאוחר יותר היום (בעוד 3 שעות)"),
+    "snooze_tomorrow": ("Tomorrow at 8:00", "מחר ב־8:00"),
+    "snooze_week": ("Next week (Monday 8:00)", "בשבוע הבא (יום שני ב־8:00)"),
+    "snoozed": ("Snoozed until {when}. It will come back unread.", "נדחה עד {when}. ההודעה תחזור כלא נקראה."),
+    "sending_in": ("Sending in {seconds} s · Undo (Esc)", "נשלח בעוד {seconds} שנ' · ביטול (Esc)"),
+    "send_undone": ("Not sent. The message is still here.", "לא נשלח. ההודעה עדיין כאן."),
     "import_title": ("Accounts found on this computer", "חשבונות שנמצאו במחשב הזה"),
     "import_none": ("No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, "
                     "Mutt).", "לא נמצאה תוכנת דואר אחרת עם חשבונות (Thunderbird, ‏Betterbird, ‏Evolution, "

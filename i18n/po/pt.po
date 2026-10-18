@@ -3515,3 +3515,37 @@ msgstr "Neste computador"
 #, python-brace-format
 msgid "{added} messages copied into {folders} local folders."
 msgstr "{added} mensagens copiadas para {folders} pastas locais."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Later today (in 3 hours)"
+msgstr "Mais tarde hoje (em 3 horas)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Next week (Monday 8:00)"
+msgstr "Na próxima semana (segunda-feira, 8:00)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Not sent. The message is still here."
+msgstr "Não enviada. A mensagem continua aqui."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Search mail…"
+msgstr "Pesquisar nos e-mails…"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "Sending in {seconds} s · Undo (Esc)"
+msgstr "Enviando em {seconds} s · Desfazer (Esc)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Snooze"
+msgstr "Adiar"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "Snoozed until {when}. It will come back unread."
+msgstr "Adiada até {when}. Ela voltará como não lida."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Tomorrow at 8:00"
+msgstr "Amanhã às 8:00"
