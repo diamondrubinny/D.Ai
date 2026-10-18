@@ -188,6 +188,11 @@ build_apps() {
   install -m 0644 "$heal/data/dai-heal-autostart.desktop" "$root/etc/xdg/autostart/dai-heal.desktop"
   install -m 0644 "$heal/data/50-dai-coredump.conf" "$root/usr/lib/systemd/coredump.conf.d/50-dai.conf"
 
+  # D.Ai Quick (docs/TASKBAR.md §2.4): quick settings from the clock or Super+N.
+  local quick="$REPO_ROOT/apps/dai-quick"
+  copy_package "$quick/dai_quick" "$root"
+  install -m 0755 "$quick/data/dai-quick" "$root/usr/bin/dai-quick"
+
   # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
   local evolve="$REPO_ROOT/apps/dai-evolve"
   copy_package "$evolve/dai_evolve" "$root"
@@ -294,9 +299,11 @@ build_panel_plugin() {
   fi
   local root="$WORK/dai-panel-plugin"
   install -d "$root/usr/lib/x86_64-linux-gnu/lxqt-panel" "$root/usr/share/lxqt/lxqt-panel"
-  install -m 0644 "$dist/libdaicommand.so" "$dist/libdaistatus.so" "$root/usr/lib/x86_64-linux-gnu/lxqt-panel/"
-  install -m 0644 "$dist/daicommand.desktop" "$dist/daistatus.desktop" "$root/usr/share/lxqt/lxqt-panel/"
-  finish "$root" dai-panel-plugin amd64 "lxqt-panel, dai-apps" "D.Ai command field and Living Diamond for the LXQt panel"
+  install -m 0644 "$dist/libdaicommand.so" "$dist/libdaistatus.so" "$dist/libdaiclock.so" \
+    "$root/usr/lib/x86_64-linux-gnu/lxqt-panel/"
+  install -m 0644 "$dist/daicommand.desktop" "$dist/daistatus.desktop" "$dist/daiclock.desktop" \
+    "$root/usr/share/lxqt/lxqt-panel/"
+  finish "$root" dai-panel-plugin amd64 "lxqt-panel, dai-apps" "D.Ai command field, Living Diamond and clock for the LXQt panel"
 }
 
 main() {

@@ -256,6 +256,15 @@ type_keys ret
 sleep 8
 monitor "screendump $ARTIFACT_DIR/welcome.png -f png" || log "warning: screenshot failed"
 
+log "interactive: D.Ai Quick (Super+N, next to the clock)"
+type_keys esc
+sleep 1
+type_keys meta_l-n
+sleep 4
+monitor "screendump $ARTIFACT_DIR/quick.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 1
+
 log "interactive: clipboard history (Super+V, filled by the clip check)"
 type_keys esc
 sleep 2

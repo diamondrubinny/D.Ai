@@ -431,6 +431,14 @@ def main() -> int:
          lambda o: "Diamond Rubinny (d.Ai)" in o and "TIMER=enabled" in o and "Install an e-book reader" in o
          and "Let D.Ai do it every morning" in o and "MODE=600" in o and "foliate" in o and "FORGOTTEN" in o
          and "D.Ai Evolve is off" in o, 60),
+        # D.Ai Quick (docs/TASKBAR.md §2.4): reads the real switches; do not disturb goes to LXQt and back.
+        ("taskbar: quick settings", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-quick --version; dai-quick --state; "
+         "echo CLOCK=$(grep -c libdaiclock.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps); "
+         "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); from dai_quick.controls import Controls; "
+         "c = Controls(); c.set_dnd(True); print(\"DND_ON\", c.dnd()); c.set_dnd(False); print(\"DND_OFF\", c.dnd())'; "
+         "grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and '"wifi"' in o and '"volume"' in o and '"security"' in o
+         and re.search(r"CLOCK=[1-9]", o) is not None and "DND_ON True" in o and "DND_OFF False" in o, 60),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
