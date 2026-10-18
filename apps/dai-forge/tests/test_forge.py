@@ -416,6 +416,88 @@ except ImportError:  # pragma: no cover - depends on the machine
 
 
 @unittest.skipIf(gui is None, "PyQt6 is not installed")
+class WorkshopTests(ForgeTestCase):
+    """Build → test → repair (docs/EVOLVE.md). Real bubblewrap when available."""
+
+    CRASH = "#!/usr/bin/env python3\nimport sys\nprint('starting')\nraise ValueError('no such column: price')\n"
+    FIXED = "#!/usr/bin/env python3\nprint('ok')\n"
+
+    def fake_chat(self, codes, network=False):
+        calls = []
+
+        def chat(messages, schema=None, max_tokens=512, task="general"):
+            calls.append(messages[-1]["content"])
+            code = codes[min(len(calls) - 1, len(codes) - 1)]
+            yield json.dumps({"name": "prices", "title": "Prices", "network": network, "documents": False, "code": code})
+        return chat, calls
+
+    def test_repairs_a_crash_with_the_traceback(self):
+        from dai_forge import workshop
+        results = iter([workshop.TestResult("failed", "Traceback ...\nValueError: no such column: price"),
+                        workshop.TestResult("passed", "ok")])
+        chat, calls = self.fake_chat([self.CRASH, self.FIXED], network=True)
+        stages = []
+        built = workshop.build("a price list", "cli", chat=chat, tester=lambda code, kind: next(results),
+                               status=lambda stage, n, test: stages.append((stage, n)))
+        self.assertEqual((built.test.status, built.repairs), ("passed", 1))
+        self.assertEqual(built.result["code"], self.FIXED)
+        self.assertIn("no such column: price", calls[1])
+        self.assertIn(self.CRASH.strip().splitlines()[-1], calls[1])  # the code to fix is sent back
+        self.assertEqual(stages, [("testing", 0), ("repairing", 1), ("testing", 1)])
+
+    def test_gives_up_after_two_repairs_and_never_gains_permissions(self):
+        from dai_forge import workshop
+        chat, calls = self.fake_chat([self.CRASH], network=False)
+        failing = lambda code, kind: workshop.TestResult("failed", "ValueError")
+        built = workshop.build("x", "cli", chat=chat, tester=failing)
+        self.assertEqual((built.test.status, built.repairs, len(calls)), ("failed", 2, 3))
+        chat, _ = self.fake_chat([self.CRASH, self.FIXED], network=True)
+        first = {"n": 0}
+
+        def tester(code, kind):
+            first["n"] += 1
+            return workshop.TestResult("failed" if first["n"] == 1 else "passed")
+        # The first reply asks for no network; a repair that asks for it does not get it.
+        with mock.patch.object(workshop, "generate_app", side_effect=[
+                {"name": "p", "title": "P", "network": False, "documents": False, "code": self.CRASH},
+                {"name": "p", "title": "P", "network": True, "documents": True, "code": self.FIXED}]):
+            built = workshop.build("x", "cli", tester=tester)
+        self.assertEqual((built.result["network"], built.result["documents"]), (False, False))
+
+    def test_never_runs_without_the_sandbox(self):
+        from dai_forge import workshop
+        run = mock.Mock()
+        with mock.patch.object(workshop.shutil, "which", return_value=None):
+            result = workshop.smoke_test(self.FIXED, "cli", run=run)
+        self.assertEqual(result.status, "skipped")
+        run.assert_not_called()
+
+    def test_web_pages_are_parsed_not_run(self):
+        from dai_forge import workshop
+        self.assertEqual(workshop.smoke_test("<!doctype html><html lang='he'><body>שלום</body></html>", "web").status, "passed")
+        self.assertEqual(workshop.smoke_test("just text", "web").status, "failed")
+
+    @unittest.skipUnless(shutil.which("bwrap"), "bubblewrap not installed")
+    def test_real_sandbox(self):
+        from dai_forge import workshop
+        if subprocess.run(["bwrap", "--ro-bind", "/", "/", "true"], capture_output=True).returncode != 0:
+            self.skipTest("bubblewrap cannot create namespaces here")
+        crash = workshop.smoke_test(self.CRASH, "cli")
+        self.assertEqual(crash.status, "failed")
+        self.assertIn("ValueError: no such column: price", crash.detail)
+        self.assertEqual(workshop.smoke_test(self.FIXED, "cli").status, "passed")
+        asks = workshop.smoke_test("name = input('Name? ')\nprint('hi', name)\n", "cli")
+        self.assertEqual(asks.status, "passed")
+        slow = workshop.smoke_test("import time\ntime.sleep(30)\n", "gui", seconds=1)
+        self.assertEqual(slow.status, "passed")
+        # The test run sees no network and no home folder of the user.
+        probe = ("import os, socket\nassert not os.path.exists(os.path.expanduser('~/.ssh'))\n"
+                 "assert os.environ.get('DAI_SELF_TEST') == '1'\n"
+                 "try:\n    socket.create_connection(('1.1.1.1', 80), timeout=2)\n    raise SystemExit('network open')\n"
+                 "except OSError:\n    pass\n")
+        self.assertEqual(workshop.smoke_test(probe, "cli").status, "passed", workshop.smoke_test(probe, "cli").detail)
+
+
 class WindowTests(ForgeTestCase):
     @classmethod
     def setUpClass(cls):
@@ -503,12 +585,20 @@ class WindowTests(ForgeTestCase):
             progress(reply[: len(reply) // 2])
             return {"name": "shopping", "title": "Shopping", "network": True, "documents": False, "code": GUI_CODE}
 
+        from dai_forge.workshop import Built, TestResult
+
+        def fake_build(request, kind, existing=None, progress=None, status=None):
+            status("testing", 0, TestResult("skipped"))
+            return Built(fake_generate(request, kind, existing, progress=progress), TestResult("passed", "ok"), 1)
+
         with mock.patch.object(gui, "model_installed", lambda: True), \
-                mock.patch.object(gui, "generate_app", fake_generate):
+                mock.patch.object(gui, "build", fake_build):
             self.ask("build an app for a shopping list")
             self.wait()
         self.assertEqual(self.window.app.name, "shopping")
         self.assertIn("ready", self.texts())
+        self.assertIn("the AI fixed 1 problem", self.texts())
+        self.assertEqual(apps.load("shopping").tested, "passed")
         self.assertEqual(list(self.window.permission_boxes), ["network"])
         with mock.patch.object(gui.subprocess, "Popen") as popen, mock.patch.object(gui.shutil, "which", return_value="/usr/bin/bwrap"):
             self.window.run_current()  # network left unchecked -> request withdrawn, app runs offline

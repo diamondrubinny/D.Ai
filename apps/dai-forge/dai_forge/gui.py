@@ -36,6 +36,7 @@ from dai_tune.planner import Plan, build_plan
 
 from . import __author__, __version__, apps
 from .ai import author_recipe, generate_app, partial_code
+from .workshop import TestResult, build
 from .cli import is_admin, policy
 from .intent import Intent, classify
 from .recipes import Recipe, install_requests, load_library, remove_requests, save_user_recipe
@@ -92,7 +93,17 @@ QFrame#Actions {{ border-top: 1px solid {BORDER}; }}
 QScrollArea > QWidget > QWidget {{ background: transparent; }}
 """
 
+STATUS_MARK = "\x00status:"  # progress text that is a Workshop stage, not streamed code
+
 STRINGS = {
+    "testing": ("Testing it in the sandbox…", "בודק אותה בארגז החול…"),
+    "repairing": ("It crashed when started; the AI is fixing it ({n}/2)…", "קרסה בהפעלה; ה־AI מתקן ({n}/2)…"),
+    "tested_ok": ("✓ Tested in the sandbox: it works", "✓ נבדקה בארגז החול: עובדת"),
+    "tested_fixed": ("✓ Tested in the sandbox: it works (the AI fixed {n} problem(s))",
+                     "✓ נבדקה בארגז החול: עובדת (ה־AI תיקן {n} בעיות)"),
+    "tested_failed": ("⚠ It still crashes when started. Try “change” with more details, or a larger model.",
+                      "⚠ עדיין קורסת בהפעלה. נסו „שינוי” עם יותר פרטים, או מודל גדול יותר."),
+    "tested_skipped": ("Not tested: {why}", "לא נבדקה: {why}"),
     "title": ("D.Ai Forge", "D.Ai Forge"),
     "subtitle": ("Tell the computer what it should be able to do — it builds and sets it up for you.",
                  "כתבו מה המחשב צריך לדעת לעשות, והוא יבנה ויקים את זה בשבילכם."),
@@ -656,17 +667,27 @@ class ForgeWindow(QWidget):
         layout.addWidget(self.code_view, 1)
 
         def stream(reply: str) -> None:
+            if reply.startswith(STATUS_MARK):  # a Workshop stage, not code
+                self.status.setText(reply[len(STATUS_MARK):])
+                return
             code = partial_code(reply)
             self.status.setText(f"{code.count(chr(10))} {self.t('lines')} · {len(reply):,}")
             self.code_view.setPlainText(code)
             self.code_view.verticalScrollBar().setValue(self.code_view.verticalScrollBar().maximum())
 
         def work(progress):
-            result = generate_app(request, kind, existing, progress=progress)
+            def status(stage: str, repair: int, test: TestResult) -> None:
+                key = "testing" if stage == "testing" else "repairing"
+                progress(STATUS_MARK + self.t(key).format(n=repair))
+
+            built = build(request, kind, existing, progress=progress, status=status)
+            result = built.result
             name = current.name if current else apps.unique_name(result["name"])
             title = current.title if current else result["title"]
             permissions = {"network": result["network"], "documents": result["documents"]}
-            return apps.save(name, title, kind, result["code"], permissions, request, generator="ai")
+            self.last_test = (built.test, built.repairs)
+            return apps.save(name, title, kind, result["code"], permissions, request, generator="ai",
+                             tested=built.test.status)
 
         self._run(work, self.show_app, stream)
 
@@ -681,6 +702,17 @@ class ForgeWindow(QWidget):
         card.addWidget(QLabel(f"{icon}  <b>{app.title}</b>  <span style='color:{MUTED}'>· {app.name} · v{app.version} · "
                               f"{lines} {self.t('lines')}</span>"))
         card.addWidget(self._wrap(self.t("app_where"), "Muted"))
+        test, repairs = getattr(self, "last_test", (None, 0))
+        if test is not None:
+            if test.status == "passed":
+                text, color = (self.t("tested_fixed").format(n=repairs) if repairs else self.t("tested_ok")), OK_GREEN
+            elif test.status == "failed":
+                text, color = self.t("tested_failed") + "\n" + test.detail.splitlines()[-1][:200], DANGER
+            else:
+                text, color = self.t("tested_skipped").format(why=test.detail), MUTED
+            tested = self._wrap(text)
+            tested.setStyleSheet(f"color: {color};")
+            card.addWidget(tested)
 
         self.permission_boxes: dict[str, QCheckBox] = {}
         for permission in app.pending_permissions:
