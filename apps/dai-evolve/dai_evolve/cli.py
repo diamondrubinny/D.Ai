@@ -120,6 +120,7 @@ def main(argv: list[str] | None = None) -> int:
     command = args[0] if args else "suggest"
     if command == "off":
         store.forget_all()
+        scan.mirror(0)
         marker = store.off_marker()
         marker.parent.mkdir(parents=True, exist_ok=True)
         marker.touch()

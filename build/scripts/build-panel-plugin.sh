@@ -32,12 +32,16 @@ git clone --quiet --depth 1 --branch "$PANEL_TAG" "$PANEL_REPO" "$WORK/lxqt-pane
 actual="$(git -C "$WORK/lxqt-panel" rev-parse HEAD)"
 [[ "$actual" == "$PANEL_COMMIT" ]] || { log "commit mismatch: $actual != $PANEL_COMMIT"; exit 1; }
 
-cmake -S "$SRC_DIR" -B "$WORK/build" -DCMAKE_BUILD_TYPE=Release -DLXQT_PANEL_SRC="$WORK/lxqt-panel"
+cmake -S "$SRC_DIR" -B "$WORK/build" -DCMAKE_BUILD_TYPE=Release -DLXQT_PANEL_SRC="$WORK/lxqt-panel" -DDAI_PANEL_TESTS=ON
 cmake --build "$WORK/build" -j "$(nproc)"
+# The Living Diamond against a real Qt button (offscreen): parsing, escaping, accessibility.
+(cd "$WORK/build" && QT_QPA_PLATFORM=offscreen ctest --output-on-failure)
 
 mkdir -p "$OUT_DIR"
 install -m 0644 "$WORK/build/libdaicommand.so" "$OUT_DIR/libdaicommand.so"
 install -m 0644 "$SRC_DIR/daicommand.desktop" "$OUT_DIR/daicommand.desktop"
+install -m 0644 "$WORK/build/libdaistatus.so" "$OUT_DIR/libdaistatus.so"
+install -m 0644 "$SRC_DIR/daistatus.desktop" "$OUT_DIR/daistatus.desktop"
 printf 'lxqt-panel %s %s\n' "$PANEL_TAG" "$PANEL_COMMIT" >"$OUT_DIR/VERSION"
 ls -la "$OUT_DIR" >&2
 rm -rf -- "$WORK"
