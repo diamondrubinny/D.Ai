@@ -103,7 +103,7 @@ def smoke_test(code: str, kind: str, run: Callable[..., Any] = subprocess.run,
     error = result.stderr or ""
     if result.returncode == 0:
         return TestResult("passed", "started and finished without errors")
-    if kind == "cli" and ("EOFError" in error or (result.returncode == 2 and "usage:" in error)):
+    if kind in ("cli", "automation") and ("EOFError" in error or (result.returncode == 2 and "usage:" in error)):
         return TestResult("passed", "started and waited for input")
     if "Traceback" in error or result.returncode != 0:
         return TestResult("failed", _tail(error) or f"exit code {result.returncode}")
@@ -136,6 +136,7 @@ def build(request: str, kind: str, existing: str | None = None, chat: ChatFn | N
         # Permissions may only shrink in a repair: a fix never gains network or documents access.
         result["network"] = result["network"] and fixed["network"]
         result["documents"] = result["documents"] and fixed["documents"]
+        result["downloads"] = result.get("downloads", False) and fixed.get("downloads", False)
         if status:
             status("testing", repairs, test)
         test = tester(result["code"], kind)

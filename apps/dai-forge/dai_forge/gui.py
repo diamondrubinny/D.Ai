@@ -96,6 +96,14 @@ QScrollArea > QWidget > QWidget {{ background: transparent; }}
 STATUS_MARK = "\x00status:"  # progress text that is a Workshop stage, not streamed code
 
 STRINGS = {
+    "activate": ("Activate ✦", "הפעלה ✦"),
+    "automation_on": ("Active: {when}", "פעילה: {when}"),
+    "automation_where": ("It runs in the sandbox on its schedule and tells you with a notification. "
+                         "See and stop it: dai-forge auto list · dai-forge auto pause {name}",
+                         "היא רצה בארגז החול לפי הלוח זמנים ומודיעה לכם בהתראה. "
+                         "לראות ולעצור: dai-forge auto list · dai-forge auto pause {name}"),
+    "automation_when": ("Runs {when}", "תרוץ {when}"),
+    "perm_downloads": ("Allow access to ~/Downloads", "לאפשר גישה ל־~/Downloads"),
     "testing": ("Testing it in the sandbox…", "בודק אותה בארגז החול…"),
     "repairing": ("It crashed when started; the AI is fixing it ({n}/2)…", "קרסה בהפעלה; ה־AI מתקן ({n}/2)…"),
     "tested_ok": ("✓ Tested in the sandbox: it works", "✓ נבדקה בארגז החול: עובדת"),
@@ -511,7 +519,9 @@ class ForgeWindow(QWidget):
         intent = classify(text, load_library(), (a.name for a in apps.list_apps()))
         if intent.kind in ("recipe", "remove") and intent.recipe is not None:
             self.show_recipe(intent.recipe, removing=intent.kind == "remove")
-        elif intent.kind in ("app", "edit"):
+        elif intent.kind == "automation" and intent.schedule is None:
+            self.show_error(intent.problem)
+        elif intent.kind in ("app", "edit", "automation"):
             self.build(intent)
         elif intent.kind == "unknown":
             self.ai_recipe(text)
@@ -655,6 +665,8 @@ class ForgeWindow(QWidget):
         request = intent.instruction if current else intent.text
         kind = current.kind if current else intent.app_kind
         existing = current.code_path.read_text(encoding="utf-8") if current else None
+        automation = intent.kind == "automation" or bool(current and current.is_automation)
+        schedule = intent.schedule.to_json() if intent.schedule else (current.schedule if current else None)
 
         _, layout = self._page()
         layout.addWidget(QLabel(f"<span style='font-size:14pt; font-weight:700'>✦ {self.t('writing_app')}</span>"))
@@ -680,14 +692,14 @@ class ForgeWindow(QWidget):
                 key = "testing" if stage == "testing" else "repairing"
                 progress(STATUS_MARK + self.t(key).format(n=repair))
 
-            built = build(request, kind, existing, progress=progress, status=status)
+            built = build(request, "automation" if automation else kind, existing, progress=progress, status=status)
             result = built.result
             name = current.name if current else apps.unique_name(result["name"])
             title = current.title if current else result["title"]
-            permissions = {"network": result["network"], "documents": result["documents"]}
+            permissions = {p: bool(result.get(p)) for p in apps.PERMISSIONS}
             self.last_test = (built.test, built.repairs)
             return apps.save(name, title, kind, result["code"], permissions, request, generator="ai",
-                             tested=built.test.status)
+                             tested=built.test.status, schedule=schedule if automation else None)
 
         self._run(work, self.show_app, stream)
 
@@ -701,7 +713,13 @@ class ForgeWindow(QWidget):
         lines = app.code_path.read_text(encoding="utf-8").count("\n")
         card.addWidget(QLabel(f"{icon}  <b>{app.title}</b>  <span style='color:{MUTED}'>· {app.name} · v{app.version} · "
                               f"{lines} {self.t('lines')}</span>"))
-        card.addWidget(self._wrap(self.t("app_where"), "Muted"))
+        if app.is_automation:
+            from .schedule import Schedule
+
+            when = Schedule.from_json(app.schedule)
+            card.addWidget(self._wrap("⏰ " + self.t("automation_when").format(when=when.describe(self.lang) if when else "?")))
+        else:
+            card.addWidget(self._wrap(self.t("app_where"), "Muted"))
         test, repairs = getattr(self, "last_test", (None, 0))
         if test is not None:
             if test.status == "passed":
@@ -732,7 +750,7 @@ class ForgeWindow(QWidget):
         older = QPushButton(self.t("older"))
         older.setEnabled(bool(apps.versions(app)))
         older.clicked.connect(self.previous_version)
-        run = QPushButton(self.t("run"), objectName="Primary")
+        run = QPushButton(self.t("activate" if app.is_automation else "run"), objectName="Primary")
         run.clicked.connect(self.run_current)
         self._buttons(layout, older, change, open_code, run)
         layout.addStretch(1)
@@ -749,7 +767,27 @@ class ForgeWindow(QWidget):
             if not box.isChecked():
                 app = apps.revoke(app, permission)
         self.app = app
+        if app.is_automation:
+            self.activate(app)
+            return
         self.run_app(app.name)
+
+    def activate(self, app: apps.App) -> None:
+        from . import automation
+        from .schedule import Schedule
+
+        try:
+            automation.install(app)
+        except apps.AppError as exc:
+            self.show_error(str(exc))
+            return
+        when = Schedule.from_json(app.schedule)
+        _, layout = self._page()
+        card = self._card(layout)
+        card.addWidget(QLabel(f"<span style='font-size:17pt; font-weight:700; color:{OK_GREEN}'>"
+                              f"{self.t('automation_on').format(when=when.describe(self.lang) if when else '?')} ✓</span>"))
+        card.addWidget(self._wrap(self.t("automation_where").format(name=app.name), "Muted"))
+        layout.addStretch(1)
 
     def previous_version(self) -> None:
         if self.app is None:

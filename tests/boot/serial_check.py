@@ -383,6 +383,16 @@ def main() -> int:
          lambda o: "FS btrfs" in o and "ENABLED True" in o and re.search(r"UNDONE \(\d+, \d+\) before update", o) is not None
          and "REDONE after update" in o and "DISABLED True" in o
          and ("Undo the last software update" in o or "ביטול העדכון האחרון" in o), 180),
+        # Automations (docs/EVOLVE.md §2): a real user timer, a sandboxed run, NOTIFY → notification and log.
+        ("forge: automation on a timer", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "printf 'import shutil\\nfree = shutil.disk_usage(\"/\").free // 2**30\\nprint(f\"NOTIFY: {free} GB free\")\\n' > /tmp/disk.py; "
+         "echo y | dai-forge app add disk-report /tmp/disk.py --schedule 'every day at 18:00' | tail -n 1; "
+         "systemctl --user list-timers --all --no-pager | grep -q dai-auto-disk-report && echo TIMER_ACTIVE; "
+         "systemctl --user start dai-auto-disk-report.service; dai-forge auto log disk-report; dai-forge auto list; "
+         "echo y | dai-forge auto remove disk-report >/dev/null; "
+         "test -f ~/.config/systemd/user/dai-auto-disk-report.timer || echo UNITS_GONE", True,
+         lambda o: "TIMER_ACTIVE" in o and re.search(r"NOTIFY: \d+ GB free", o) is not None and "exit 0" in o
+         and "every day at 18:00" in o and "UNITS_GONE" in o, 90),
         # D.Ai Heal: a failed service is noticed, explained and fixed (docs/EVOLVE.md §4).
         ("heal: failed service fixed", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-heal --version; "
          "pgrep -f 'dai_heal.cli import main.* watch' >/dev/null && echo WATCHING; "

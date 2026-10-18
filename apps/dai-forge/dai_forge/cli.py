@@ -161,6 +161,8 @@ PERMISSION_TEXT = {
     "network": ("This app asks for INTERNET access. Allow? [y/N] ", "האפליקציה מבקשת גישה לאינטרנט. לאשר? [כ/ל] "),
     "documents": ("This app asks to read and write ~/Documents. Allow? [y/N] ",
                   "האפליקציה מבקשת לקרוא ולכתוב ב־~/Documents. לאשר? [כ/ל] "),
+    "downloads": ("This app asks to read and change ~/Downloads. Allow? [y/N] ",
+                  "האפליקציה מבקשת לקרוא ולשנות את ~/Downloads. לאשר? [כ/ל] "),
 }
 
 
@@ -189,6 +191,10 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     lang = ctx.lang
     if not _may_build(lang):
         return _need_admin(lang)
+    automation = intent.kind == "automation"
+    if automation and intent.schedule is None:
+        print(_color(f"✗ {intent.problem or _l(lang, 'no schedule found', 'לא נמצא לוח זמנים')}", "31"))
+        return 1
     if intent.kind == "edit":
         current = apps.load(intent.app_name)
         request, kind, existing = intent.instruction, current.kind, current.code_path.read_text(encoding="utf-8")
@@ -196,8 +202,14 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     else:
         current, request, kind, existing = None, intent.text, intent.app_kind, None
         kinds = {"gui": ("desktop app", "אפליקציה"), "cli": ("terminal tool", "כלי טרמינל"), "web": ("web app", "אפליקציית Web")}
-        print(_l(lang, f"Building a {kinds[kind][0]} with the local AI (on this computer)…",
-                 f"בונה {kinds[kind][1]} עם ה־AI המקומי (במחשב הזה)…"))
+        if automation:
+            print(_l(lang, f"Building an automation ({intent.schedule.describe('en')}) with the local AI…",
+                     f"בונה אוטומציה ({intent.schedule.describe('he')}) עם ה־AI המקומי…"))
+        else:
+            print(_l(lang, f"Building a {kinds[kind][0]} with the local AI (on this computer)…",
+                     f"בונה {kinds[kind][1]} עם ה־AI המקומי (במחשב הזה)…"))
+    if current is not None and current.is_automation:
+        automation = True
     def status(stage: str, repair: int, test: TestResult) -> None:
         if stage == "repairing":
             print(_color(_l(lang, f"\n  ✗ It crashed when started; the AI is fixing it ({repair}/2)…",
@@ -207,7 +219,7 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
             print(_l(lang, "\n  Testing it in the sandbox…", "\n  בודק אותה בארגז החול…"))
 
     try:
-        built = build(request, kind, existing, progress=_progress(lang), status=status)
+        built = build(request, "automation" if automation else kind, existing, progress=_progress(lang), status=status)
     except AIError as exc:
         print(_color(f"\n✗ {exc}", "31"))
         return 1
@@ -219,20 +231,91 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
         return 0
     name = current.name if current else apps.unique_name(result["name"])
     title = current.title if current else result["title"]
-    permissions = {"network": result["network"], "documents": result["documents"]}
+    permissions = {p: bool(result.get(p)) for p in apps.PERMISSIONS}
+    schedule = intent.schedule.to_json() if intent.schedule else (current.schedule if current else None)
     try:
         app, findings = apps.save(name, title, kind, result["code"], permissions, request,
-                                  generator="ai", tested=test.status)
+                                  generator="ai", tested=test.status, schedule=schedule if automation else None)
     except apps.AppError as exc:
         print(_color(f"\n✗ {_l(lang, 'The AI code was rejected', 'הקוד של ה־AI נדחה')}: {exc}", "31"))
         return 1
     _show_result(app, findings, lang)
     app = _approve_pending(app, lang)
+    if app.is_automation:
+        return _activate_automation(app, lang)
     print(_l(lang, f"  In the Start menu as “{app.title}”. Change it: + change {app.name}: …  ·  Undo: dai-forge app undo {app.name}",
              f"  מופיעה בתפריט התחל בשם „{app.title}”. לשינוי: + שנה את {app.name}: …  ·  ביטול: dai-forge app undo {app.name}"))
     if _ask(lang, "Run it now? [Y/n] ", "להריץ עכשיו? [כ/ל] ", default=True):
         return run_app(app.name, lang, detach=app.kind != "cli")
     return 0
+
+
+def _activate_automation(app: apps.App, lang: str) -> int:
+    from . import automation
+    from .schedule import Schedule
+
+    when = Schedule.from_json(app.schedule)
+    describe = when.describe(lang) if when else "?"
+    if app.pending_permissions:
+        print(_l(lang, "  Not activated: it needs the permissions above.", "  לא הופעלה: היא צריכה את ההרשאות שלמעלה."))
+        return 1
+    if not _ask(lang, f"Run it {describe}? [Y/n] ", f"להריץ אותה {describe}? [כ/ל] ", default=True):
+        print(_l(lang, f"  Saved, not active. Later: dai-forge auto resume {app.name}",
+                 f"  נשמרה ולא הופעלה. אחר כך: dai-forge auto resume {app.name}"))
+        return 0
+    try:
+        automation.install(app)
+    except apps.AppError as exc:
+        print(_color(f"✗ {exc}", "31"))
+        return 1
+    print(_color(_l(lang, f"✓ Active: {describe}. Stop: dai-forge auto pause {app.name}  ·  Log: dai-forge auto log {app.name}",
+                    f"✓ פעילה: {describe}. עצירה: dai-forge auto pause {app.name}  ·  יומן: dai-forge auto log {app.name}"), "32"))
+    return 0
+
+
+def cmd_auto(args: list[str], lang: str) -> int:
+    """dai-forge auto list | run | pause | resume | log | remove <name>"""
+    from . import automation
+    from .schedule import Schedule
+
+    sub, rest = (args[0] if args else "list"), args[1:]
+    try:
+        if sub == "list":
+            rows = automation.listing()
+            if not rows:
+                print(_l(lang, "No automations yet. Try: dai-forge \"every morning tell me how much disk space is free\"",
+                         "עדיין אין אוטומציות. נסו: dai-forge \"כל בוקר תגיד לי כמה מקום פנוי בדיסק\""))
+            for app, state in rows:
+                when = Schedule.from_json(app.schedule)
+                print(f"  {app.name:<20} {state:<14} {when.describe(lang) if when else '?':<24} {app.title}")
+            return 0
+        if not rest:
+            print(cmd_auto.__doc__)
+            return 2
+        name = apps.validate_name(rest[0])
+        if sub == "run":
+            app = apps.load(name)
+            return automation.run_background(app, apps.run_argv(app))
+        if sub == "pause":
+            automation.pause(name)
+            print(_l(lang, f"✓ Paused. Resume: dai-forge auto resume {name}", f"✓ הושהתה. חידוש: dai-forge auto resume {name}"))
+            return 0
+        if sub == "resume":
+            automation.resume(name)
+            print("✓")
+            return 0
+        if sub == "log":
+            log = automation.log_path(name)
+            print(log.read_text(encoding="utf-8") if log.exists() else _l(lang, "It has not run yet.", "היא עוד לא רצה."))
+            return 0
+        if sub == "remove":
+            automation.uninstall(name)
+            return cmd_app(["remove", name], lang)
+    except apps.AppError as exc:
+        print(_color(f"✗ {exc}", "31"))
+        return 1
+    print(cmd_auto.__doc__)
+    return 2
 
 
 def run_app(name: str, lang: str, detach: bool = False) -> int:
@@ -268,6 +351,7 @@ def run_watched(app: apps.App, argv: list[str]) -> int:
         sys.stderr.write(line)
         tail.append(line)
     code = process.wait()
+    process.stderr.close()
     if code != 0 and any("Traceback" in line for line in tail):
         apps.record_crash(app, "".join(tail))
     return code
@@ -287,6 +371,11 @@ def cmd_app(args: list[str], lang: str) -> int:
                 print(f"  {app.name:<20} v{app.version:<3} {app.kind:<4} {app.title}  [{perms}]")
             return 0
         if sub == "run" and rest:
+            if "--background" in rest:
+                from . import automation
+
+                app = apps.load(rest[0])
+                return automation.run_background(app, apps.run_argv(app))
             return run_app(rest[0], lang)
         if sub == "show" and rest:
             app = apps.load(rest[0])
@@ -313,6 +402,10 @@ def cmd_app(args: list[str], lang: str) -> int:
             if not _ask(lang, f"Delete {app.title} and its data? [y/N] ", f"למחוק את {app.title} ואת הנתונים שלה? [כ/ל] "):
                 print(_l(lang, "Cancelled.", "בוטל."))
                 return 1
+            if app.is_automation:
+                from . import automation
+
+                automation.uninstall(app.name)
             apps.remove(app)
             print(_l(lang, "✓ Removed", "✓ נמחקה"))
             return 0
@@ -336,13 +429,30 @@ def cmd_app_add(rest: list[str], lang: str) -> int:
         kind = options[options.index("--kind") + 1]
     if "--title" in options and options.index("--title") + 1 < len(options):
         title = options[options.index("--title") + 1]
-    permissions = {"network": "--network" in options, "documents": "--documents" in options}
+    permissions = {p: f"--{p}" in options for p in apps.PERMISSIONS}
+    schedule = None
+    if "--schedule" in options and options.index("--schedule") + 1 < len(options):
+        from .schedule import ScheduleError, parse
+
+        try:
+            parsed = parse(options[options.index("--schedule") + 1])
+        except ScheduleError as exc:
+            print(_color(f"✗ {exc}", "31"))
+            return 1
+        if parsed is None:
+            print(_color(_l(lang, "✗ No schedule understood (e.g. \"every day at 18:00\")",
+                            "✗ לוח הזמנים לא הובן (למשל \"כל יום ב־18:00\")"), "31"))
+            return 1
+        kind, schedule = "cli", parsed.to_json()
     if not _may_build(lang):
         return _need_admin(lang)
     code = source.read_text(encoding="utf-8")
-    app, findings = apps.save(apps.validate_name(name), title, kind, code, permissions, f"added from {source}", "user")
+    app, findings = apps.save(apps.validate_name(name), title, kind, code, permissions, f"added from {source}", "user",
+                              schedule=schedule)
     _show_result(app, findings, lang)
-    _approve_pending(app, lang)
+    app = _approve_pending(app, lang)
+    if app.is_automation:
+        return _activate_automation(app, lang)
     return 0
 
 
@@ -442,6 +552,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_app(words[1:], lang)
         if command == "recipe":
             return cmd_recipe(words[1:], lang)
+        if command in ("auto", "automation", "automations"):
+            return cmd_auto(words[1:], lang)
         if command == "list":
             cmd_recipe(["list"], lang)
             print()
@@ -453,7 +565,7 @@ def main(argv: list[str] | None = None) -> int:
         intent = classify(" ".join(words), library, (a.name for a in apps.list_apps()))
         if intent.kind in ("recipe", "remove") and intent.recipe is not None:
             return apply_recipe(intent.recipe, ctx, intent.kind == "remove", "--dry-run" in flags, "--yes" in flags)
-        if intent.kind in ("app", "edit"):
+        if intent.kind in ("app", "edit", "automation"):
             return build_app(intent, ctx, "--dry-run" in flags)
         if intent.kind == "empty":
             return cmd_help(lang)

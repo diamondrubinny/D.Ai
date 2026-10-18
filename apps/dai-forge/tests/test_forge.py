@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
+import io
 import json
 import os
 import shutil
@@ -259,7 +260,7 @@ class AppTests(ForgeTestCase):
             apps.run_argv(app)
         self.assertNotIn("--share-net", apps.sandbox_argv(app, {"XDG_RUNTIME_DIR": "/run/user/1000"}))
         app = apps.approve(app, ["network", "documents"])
-        self.assertEqual(app.approved, {"network": True, "documents": False})  # only what was requested
+        self.assertEqual(app.approved, {"network": True, "documents": False, "downloads": False})  # only what was requested
         self.assertIn("--share-net", apps.run_argv(app, {"XDG_RUNTIME_DIR": "/run/user/1000"}))
         # A new version that stops asking for the network loses the approval.
         app, _ = apps.save("weather", "", "gui", GUI_CODE, {"network": False})
@@ -506,13 +507,13 @@ class CrashRecordTests(ForgeTestCase):
         from dai_forge import cli
         app, _ = apps.save("prices", "Prices", "cli", "print(1)\n", {})
         argv = [sys.executable, "-c", "import sys; sys.stderr.write('Traceback (most recent call last):\\nValueError: boom\\n'); sys.exit(1)"]
-        with mock.patch("sys.stderr", new=open(os.devnull, "w")):
+        with mock.patch("sys.stderr", new=io.StringIO()):
             self.assertEqual(cli.run_watched(app, argv), 1)
         report = json.loads((paths.heal_dir() / "forge-prices.json").read_text())
         self.assertEqual((report["kind"], report["name"], report["count"]), ("forge-app", "prices", 1))
         self.assertIn("ValueError: boom", report["detail"])
         self.assertEqual(oct((paths.heal_dir() / "forge-prices.json").stat().st_mode & 0o777), "0o600")
-        with mock.patch("sys.stderr", new=open(os.devnull, "w")):
+        with mock.patch("sys.stderr", new=io.StringIO()):
             cli.run_watched(app, argv)
         self.assertEqual(json.loads((paths.heal_dir() / "forge-prices.json").read_text())["count"], 2)
 
@@ -521,6 +522,97 @@ class CrashRecordTests(ForgeTestCase):
         app, _ = apps.save("ok-app", "OK", "cli", "print(1)\n", {})
         self.assertEqual(cli.run_watched(app, [sys.executable, "-c", "print('fine')"]), 0)
         self.assertFalse((paths.heal_dir() / "forge-ok-app.json").exists())
+
+
+class AutomationTests(ForgeTestCase):
+    """Scheduled scripts (docs/EVOLVE.md §2): rules decide when, the sandbox decides what."""
+
+    SCRIPT = "#!/usr/bin/env python3\nprint('NOTIFY: 12 GB free')\nprint('details for the log')\n"
+
+    def test_schedule_rules(self):
+        from dai_forge.schedule import Schedule, ScheduleError, parse
+        cases = {
+            "כל יום ב־18:00 תמחק מההורדות קבצים ישנים": ("daily", "*-*-* 18:00:00"),
+            "every day at 6pm back up my notes": ("daily", "*-*-* 18:00:00"),
+            "כל בוקר תבדוק מקום בדיסק": ("daily", "*-*-* 08:00:00"),
+            "every monday at 9:30 clean the downloads": ("weekly", "Mon *-*-* 09:30:00"),
+            "כל יום שני ב-9 תנקה": ("weekly", "Mon *-*-* 09:00:00"),
+            "כל שעה תבדוק": ("hourly", "hourly"),
+            "every 30 minutes remind me to stand up": ("minutes", ""),
+            "בכל כניסה תפתח את המסמכים": ("login", ""),
+        }
+        for text, (kind, calendar) in cases.items():
+            with self.subTest(text=text):
+                schedule = parse(text)
+                self.assertEqual((schedule.kind, schedule.calendar), (kind, calendar))
+        self.assertEqual(parse("every 30 minutes x").timer_lines(), ["OnStartupSec=30min", "OnUnitActiveSec=30min"])
+        self.assertIsNone(parse("delete old files"))
+        with self.assertRaises(ScheduleError):
+            parse("כל 5 דקות תבדוק")
+        self.assertIsNone(Schedule.from_json({"kind": "daily", "hour": 25}))
+        self.assertIsNone(Schedule.from_json({"kind": "cron", "expr": "* * * * *"}))
+
+    def test_intent(self):
+        library = self.library()
+        self.assertEqual(intent.classify("כל בוקר תגיד לי כמה מקום פנוי בדיסק", library).kind, "automation")
+        self.assertEqual(intent.classify("build a pomodoro app that rings every 30 minutes", library).kind, "app")
+        self.assertEqual(intent.classify("install antivirus with a scan every day", library).kind, "recipe")
+        too_often = intent.classify("every 5 minutes check the disk", library)
+        self.assertEqual((too_often.kind, too_often.schedule), ("automation", None))
+        self.assertIn("15 minutes", too_often.problem)
+
+    def test_units_install_and_remove(self):
+        from dai_forge import automation
+        from dai_forge.schedule import parse
+        app, _ = apps.save("disk-report", "Disk report", "cli", self.SCRIPT, {"downloads": True},
+                           schedule=parse("every day at 18:00").to_json())
+        self.assertFalse(apps.desktop_file("disk-report").exists())  # not a menu app
+        calls = []
+        runner = lambda argv: (calls.append(argv), subprocess.CompletedProcess(argv, 0, "enabled\n", ""))[1]
+        with self.assertRaisesRegex(apps.AppError, "not approved"):
+            automation.install(app, runner)
+        app = apps.approve(app, ["downloads"])
+        self.assertEqual(automation.install(app, runner), "dai-auto-disk-report.timer")
+        timer = (automation.unit_dir() / "dai-auto-disk-report.timer").read_text()
+        service = (automation.unit_dir() / "dai-auto-disk-report.service").read_text()
+        self.assertIn("OnCalendar=*-*-* 18:00:00", timer)
+        self.assertIn("ExecStart=/usr/bin/dai-forge app run disk-report --background", service)
+        self.assertNotIn("User=root", service)
+        self.assertIn(["systemctl", "--user", "enable", "--now", "dai-auto-disk-report.timer"], calls)
+        self.assertEqual([(a.name, state) for a, state in automation.listing(runner)], [("disk-report", "enabled")])
+        automation.uninstall("disk-report", runner)
+        self.assertFalse((automation.unit_dir() / "dai-auto-disk-report.timer").exists())
+        with self.assertRaises(apps.AppError):
+            apps.save("bad", "Bad", "gui", "print(1)\n", {}, schedule=parse("every day").to_json())
+
+    def test_login_automation_has_no_timer(self):
+        from dai_forge import automation
+        from dai_forge.schedule import parse
+        app, _ = apps.save("hello", "Hello", "cli", self.SCRIPT, {}, schedule=parse("at login say hi").to_json())
+        files = automation.unit_files(app)
+        self.assertEqual(list(files), ["dai-auto-hello.service"])
+        self.assertIn("WantedBy=default.target", files["dai-auto-hello.service"])
+
+    def test_background_run_notifies_logs_and_limits(self):
+        from dai_forge import automation
+        app, _ = apps.save("noisy", "Noisy", "cli", self.SCRIPT, {})
+        shown = []
+        code = "import sys\nfor i in range(6):\n    print(f'NOTIFY: message {i}')\nprint('only in the log')\n"
+        self.assertEqual(automation.run_background(app, [sys.executable, "-c", code],
+                                                   notify=lambda title, text: shown.append((title, text))), 0)
+        self.assertEqual(shown, [("Noisy", "message 0"), ("Noisy", "message 1"), ("Noisy", "message 2")])
+        log = automation.log_path("noisy").read_text()
+        self.assertIn("only in the log", log)
+        self.assertIn("exit 0", log)
+        crash = "raise SystemExit('x') if False else (_ for _ in ()).throw(ValueError('broken'))"
+        automation.run_background(app, [sys.executable, "-c", crash], notify=lambda *a: None)
+        self.assertTrue((paths.heal_dir() / "forge-noisy.json").exists())  # D.Ai Heal can offer a repair
+
+    def test_ai_rules_for_automations(self):
+        messages = ai.app_messages("every morning tell me the free disk space", "automation")
+        self.assertIn("UNATTENDED", messages[0]["content"])
+        self.assertIn("NOTIFY: ", messages[0]["content"])
+        self.assertIn("downloads", ai.APP_SCHEMA["properties"])
 
 
 class WindowTests(ForgeTestCase):
