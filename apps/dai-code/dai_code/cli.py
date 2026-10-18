@@ -103,7 +103,7 @@ def cmd_edit(project: Project, name: str, instruction: str, chat, assume_yes: bo
             original = raw.decode("utf-8")
         except UnicodeDecodeError as exc:
             raise ProjectError(f"{rel} is not UTF-8 text") from exc
-    print(_l("Asking the local AI to edit {rel}…", "מבקש מה־AI המקומי לערוך את {rel}…", rel=rel), file=sys.stderr)
+    print(_l("Asking Diamond to edit {rel}…", "מבקש מ־Diamond לערוך את {rel}…", rel=rel), file=sys.stderr)
 
     def progress(reply: str) -> None:
         if sys.stderr.isatty():
@@ -114,7 +114,7 @@ def cmd_edit(project: Project, name: str, instruction: str, chat, assume_yes: bo
         print(file=sys.stderr)
     diff = edits.unified(rel, original, result["content"])
     if not diff:
-        print(_l("The AI proposed no change.", "ה־AI לא הציע שינוי."))
+        print(_l("Diamond proposed no change.", "Diamond לא הציע שינוי."))
         return 0
     if result["summary"]:
         print(_color("✦ " + result["summary"], "1;35"))

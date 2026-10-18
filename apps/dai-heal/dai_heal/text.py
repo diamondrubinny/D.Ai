@@ -40,15 +40,15 @@ STRINGS = {
                 "if it keeps crashing, putting its settings aside (they are kept) usually fixes it.",
                 "תוכנות קורסות בדרך כלל בגלל הגדרות פגומות או באג. הפעלה מחדש עוזרת לא פעם, ואם זה חוזר, "
                 "העברת ההגדרות שלה הצידה (הן נשמרות) בדרך כלל מתקנת."),
-    "x_forge-app": ("This is an app you built with D.Ai Forge. I can fix it: the local AI reads the error, changes "
+    "x_forge-app": ("This is an app you built with D.Ai Forge. I can fix it: Diamond reads the error, changes "
                     "the code, and tests it in the sandbox before you open it. The current version is kept.",
-                    "זו אפליקציה שבנית עם D.Ai Forge. אפשר לתקן אותה: ה־AI המקומי קורא את השגיאה, משנה את הקוד "
+                    "זו אפליקציה שבנית עם D.Ai Forge. אפשר לתקן אותה: Diamond קורא את השגיאה, משנה את הקוד "
                     "ובודק אותה בארגז החול לפני שתפתחו אותה. הגרסה הנוכחית נשמרת."),
-    "ai_says": ("The local AI adds:", "ה־AI המקומי מוסיף:"),
+    "ai_says": ("Diamond adds:", "Diamond מוסיף:"),
     # fixes
     "f_tune": ("Restart it (administrator password)", "הפעלה מחדש (סיסמת מנהל)"),
     "f_user-restart": ("Start it again", "הפעלה מחדש"),
-    "f_forge-repair": ("Fix the app with the AI", "תיקון האפליקציה עם ה־AI"),
+    "f_forge-repair": ("Fix the app with Diamond", "תיקון האפליקציה עם Diamond"),
     "f_reset-settings": ("Put its settings aside", "העברת ההגדרות הצידה"),
     "f_relaunch": ("Open it again", "פתיחה מחדש"),
     "f_restore-settings": ("Put the old settings back", "החזרת ההגדרות הישנות"),

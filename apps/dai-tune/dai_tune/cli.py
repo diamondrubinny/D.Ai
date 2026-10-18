@@ -136,15 +136,15 @@ def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes:
             not assume_yes
             and sys.stdin.isatty()
             and model_installed()
-            and input(_l(lang, "Not understood by the rules. Ask the local AI to interpret? [y/N] ",
-                         "הכללים לא הבינו. לבקש פרשנות מה־AI המקומי? [כ/ל] ")).strip().casefold() in ("y", "yes", "כ", "כן")
+            and input(_l(lang, "Not understood by the rules. Ask Diamond to interpret? [y/N] ",
+                         "הכללים לא הבינו. לבקש פרשנות מ־Diamond? [כ/ל] ")).strip().casefold() in ("y", "yes", "כ", "כן")
         )
         if wants_ai:
-            print(_l(lang, "Asking the local AI…", "שואל את ה־AI המקומי…"))
+            print(_l(lang, "Asking Diamond…", "שואל את Diamond…"))
             interpreted = ai_plan(text, ctx)
             if interpreted is None:
-                print(_l(lang, "Local AI is not available (dai-models install qwen2.5-0.5b).",
-                         "ה־AI המקומי לא זמין (dai-models install qwen2.5-0.5b)."))
+                print(_l(lang, "Diamond is not available (dai-models install qwen2.5-0.5b).",
+                         "Diamond לא זמין (dai-models install qwen2.5-0.5b)."))
             else:
                 plan, from_ai = interpreted, True
                 print(_color(_l(lang, "AI interpretation — review it carefully:", "פרשנות AI — בדקו היטב:"), "1;35"))

@@ -193,6 +193,12 @@ build_apps() {
   copy_package "$quick/dai_quick" "$root"
   install -m 0755 "$quick/data/dai-quick" "$root/usr/bin/dai-quick"
 
+  # MOM (docs/MOM.md): the task manager, Ctrl+Shift+Esc.
+  local mom="$REPO_ROOT/apps/dai-mom"
+  copy_package "$mom/dai_mom" "$root"
+  install -m 0755 "$mom/data/dai-mom" "$root/usr/bin/dai-mom"
+  install -m 0644 "$mom/data/dai-mom.desktop" "$root/usr/share/applications/"
+
   # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
   local evolve="$REPO_ROOT/apps/dai-evolve"
   copy_package "$evolve/dai_evolve" "$root"

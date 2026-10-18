@@ -39,6 +39,7 @@
     <!-- D.Ai Heal: something is not working → help & repair chat (docs/EVOLVE.md §4) -->
     <keybind key="W-F1"><action name="Execute" command="dai-heal" /></keybind>
     <keybind key="W-n"><action name="Execute" command="dai-quick" /></keybind>
+    <keybind key="C-S-Escape"><action name="Execute" command="dai-mom" /></keybind>
     <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
     <keybind key="W-e"><action name="Execute" command="pcmanfm-qt" /></keybind>
     <keybind key="W-l"><action name="Execute" command="swaylock -f" /></keybind>

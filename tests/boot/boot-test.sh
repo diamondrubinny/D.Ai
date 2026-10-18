@@ -265,6 +265,13 @@ monitor "screendump $ARTIFACT_DIR/quick.png -f png" || log "warning: screenshot 
 type_keys esc
 sleep 1
 
+log "interactive: MOM, the task manager (Ctrl+Shift+Esc)"
+type_keys ctrl-shift-esc
+sleep 6
+monitor "screendump $ARTIFACT_DIR/mom.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 1
+
 log "interactive: clipboard history (Super+V, filled by the clip check)"
 type_keys esc
 sleep 2

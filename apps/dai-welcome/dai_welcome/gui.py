@@ -75,7 +75,7 @@ STRINGS = {
                "בלי שינויים כרגע. תמיד אפשר לכתוב אותם ב־D.Ai Command, למשל „נעל מסך אחרי 5 דקות”."),
     "not_admin": ("Only an administrator can change system security. Ask the administrator of this computer.",
                   "רק מנהל המחשב יכול לשנות את אבטחת המערכת. פנו למנהל המחשב."),
-    "ai_title": ("Local AI and voice", "בינה מקומית וקול"),
+    "ai_title": ("Diamond, the local AI, and voice", "Diamond, הבינה המקומית, וקול"),
     "ai_intro": ("Models run on this computer: your questions, code and voice never leave it. "
                  "Choose what to download now (once, verified by SHA-256 from Hugging Face). You can add more later.",
                  "המודלים רצים על המחשב הזה: השאלות, הקוד והקול שלכם לא יוצאים ממנו. "
@@ -92,8 +92,8 @@ STRINGS = {
     "privacy": [
         ("No telemetry, no ads, no account. D.Ai OS does not report anything about you.",
          "אין טלמטריה, אין פרסומות ואין חשבון. D.Ai OS לא מדווח עליכם כלום."),
-        ("The AI runs on this computer. Prompts, files and code are not sent anywhere.",
-         "ה־AI רץ על המחשב הזה. שאלות, קבצים וקוד לא נשלחים לשום מקום."),
+        ("Diamond, the AI, runs on this computer. Prompts, files and code are not sent anywhere.",
+         "Diamond, ה־AI, רץ על המחשב הזה. שאלות, קבצים וקוד לא נשלחים לשום מקום."),
         ("The microphone records only while you press the voice button; a notification is shown the whole time.",
          "המיקרופון מקליט רק כשלוחצים על כפתור הקול, ומוצגת הודעה כל הזמן."),
         ("Apps you build with D.Ai Forge run in a sandbox without internet or your files, unless you allow it.",
