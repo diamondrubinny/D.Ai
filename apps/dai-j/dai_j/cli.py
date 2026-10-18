@@ -5,6 +5,8 @@
   dai-j                      open J
   dai-j mailto:ADDRESS?...   write to someone (J is the handler for mailto: links)
   dai-j discover ADDRESS     which servers J would use for an address, as JSON (nothing is signed in)
+  dai-j import [--add]       accounts found in Thunderbird, Betterbird, Evolution, Claws Mail and Mutt
+                             (read-only; --add adds them to J; passwords are asked at the first sign-in)
   dai-j --version
 """
 
@@ -35,6 +37,23 @@ def main(argv: list[str] | None = None) -> int:
             print("not an e-mail address", file=sys.stderr)
             return 1
         print(json.dumps(settings.to_dict(), indent=2))
+        return 0
+    if args and args[0] == "import":
+        from dataclasses import asdict
+
+        from . import accounts as acc
+        from .importers import find_all
+
+        found = find_all()
+        if "--add" in args:
+            current = acc.load()
+            known = {a.id for a in current}
+            new = [acc.Account(f.address, f.name, f.incoming, f.outgoing) for f in found
+                   if f.usable and f.address.lower() not in known]
+            acc.save(current + new)
+            print(json.dumps({"added": [a.address for a in new]}, indent=2))
+            return 0
+        print(json.dumps([{**asdict(f), "usable": f.usable} for f in found], indent=2, ensure_ascii=False))
         return 0
     if len(args) > 1 or args and not args[0].startswith("mailto:"):
         print(__doc__.strip(), file=sys.stderr)

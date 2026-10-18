@@ -199,6 +199,11 @@ msgstr ""
 msgid "About you"
 msgstr ""
 
+#. he: חשבונות שנמצאו במחשב הזה
+#: apps/dai-j/dai_j/text.py:100
+msgid "Accounts found on this computer"
+msgstr ""
+
 #. he: הפעלה ✦
 #: apps/dai-forge/dai_forge/gui.py:101
 msgid "Activate ✦"
@@ -228,6 +233,11 @@ msgstr ""
 #. he: הוספת חנות האפליקציות Flathub
 #: apps/dai-tune/dai_tune/catalog.py:895
 msgid "Add the Flathub app store"
+msgstr ""
+
+#. he: הוספת החשבונות המסומנים
+#: apps/dai-j/dai_j/text.py:107
+msgid "Add the checked accounts"
 msgstr ""
 
 #. he: הוסיפו את כתובת המייל שלכם, ו־J ימצא את ההגדרות בעצמו.
@@ -574,7 +584,7 @@ msgid "Cannot reach the mail server. Check the Internet connection and the serve
 msgstr ""
 
 #. he: עותק
-#: apps/dai-j/dai_j/text.py:102
+#: apps/dai-j/dai_j/text.py:118
 msgid "Cc"
 msgstr ""
 
@@ -594,7 +604,7 @@ msgid "Check mail"
 msgstr ""
 
 #. he: בדקו את הכתובות האלה: {bad}
-#: apps/dai-j/dai_j/text.py:110
+#: apps/dai-j/dai_j/text.py:126
 #, python-brace-format
 msgid "Check these addresses: {bad}"
 msgstr ""
@@ -922,12 +932,12 @@ msgid "Diamond, the local AI, and voice"
 msgstr ""
 
 #. he: ויתור
-#: apps/dai-j/dai_j/text.py:113
+#: apps/dai-j/dai_j/text.py:129
 msgid "Discard"
 msgstr ""
 
 #. he: לוותר על ההודעה הזו?
-#: apps/dai-j/dai_j/text.py:112
+#: apps/dai-j/dai_j/text.py:128
 msgid "Discard this message?"
 msgstr ""
 
@@ -1234,7 +1244,7 @@ msgstr ""
 
 #. he: מאת
 #: apps/dai-j/dai_j/text.py:22
-#: apps/dai-j/dai_j/text.py:100
+#: apps/dai-j/dai_j/text.py:116
 msgid "From"
 msgstr ""
 
@@ -1343,6 +1353,11 @@ msgstr ""
 #. he: אם זה ממשיך, דווחו (שום דבר לא נשלח בלעדיכם): https://github.com/diamondrubinny/D.Ai/issues
 #: apps/dai-heal/dai_heal/text.py:80
 msgid "If it keeps happening, report it (nothing is sent without you): https://github.com/diamondrubinny/D.Ai/issues"
+msgstr ""
+
+#. he: ייבוא מתוכנת דואר אחרת
+#: apps/dai-j/dai_j/text.py:99
+msgid "Import from another mail app"
 msgstr ""
 
 #. he: לשפר
@@ -1454,7 +1469,7 @@ msgid "Last backup: "
 msgstr ""
 
 #. he: משמאל לימין
-#: apps/dai-j/dai_j/text.py:109
+#: apps/dai-j/dai_j/text.py:125
 msgid "Left to right"
 msgstr ""
 
@@ -1541,7 +1556,7 @@ msgstr ""
 
 #. he: הודעה
 #: apps/dai-j/dai_j/text.py:21
-#: apps/dai-j/dai_j/text.py:104
+#: apps/dai-j/dai_j/text.py:120
 msgid "Message"
 msgstr ""
 
@@ -1598,7 +1613,7 @@ msgstr ""
 
 #. he: הודעה חדשה
 #: apps/dai-j/dai_j/text.py:29
-#: apps/dai-j/dai_j/text.py:99
+#: apps/dai-j/dai_j/text.py:115
 msgid "New message"
 msgstr ""
 
@@ -1678,6 +1693,11 @@ msgstr ""
 #: apps/dai-tune/dai_tune/cli.py:299
 #, python-brace-format
 msgid "No organization policies ({POLICY_DIR})."
+msgstr ""
+
+#. he: לא נמצאה תוכנת דואר אחרת עם חשבונות (Thunderbird, ‏Betterbird, ‏Evolution, ‏Claws Mail, ‏Mutt).
+#: apps/dai-j/dai_j/text.py:101
+msgid "No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, Mutt)."
 msgstr ""
 
 #. he: אין פורטים פתוחים לכל האינטרנט
@@ -1906,6 +1926,11 @@ msgstr ""
 #. he: רק מנהל המחשב יכול לשנות את אבטחת המערכת. פנו למנהל המחשב.
 #: apps/dai-welcome/dai_welcome/gui.py:76
 msgid "Only an administrator can change system security. Ask the administrator of this computer."
+msgstr ""
+
+#. he: רק ההגדרות מועתקות, והתוכנה האחרת לא משתנה. J יבקש כל סיסמה בכניסה הראשונה.
+#: apps/dai-j/dai_j/text.py:104
+msgid "Only the settings are copied; the other app is not changed. J asks for each password the first time it signs in."
 msgstr ""
 
 #. he: רק {mem_available} מתוך {mem_total} פנויים.
@@ -2221,7 +2246,7 @@ msgid "Right now · Enter for the privacy log"
 msgstr ""
 
 #. he: מימין לשמאל
-#: apps/dai-j/dai_j/text.py:108
+#: apps/dai-j/dai_j/text.py:124
 msgid "Right to left"
 msgstr ""
 
@@ -2392,12 +2417,12 @@ msgstr ""
 
 #. he: שליחה
 #: apps/dai-heal/dai_heal/text.py:21
-#: apps/dai-j/dai_j/text.py:105
+#: apps/dai-j/dai_j/text.py:121
 msgid "Send"
 msgstr ""
 
 #. he: שולח…
-#: apps/dai-j/dai_j/text.py:106
+#: apps/dai-j/dai_j/text.py:122
 msgid "Sending…"
 msgstr ""
 
@@ -2407,7 +2432,7 @@ msgid "Sent"
 msgstr ""
 
 #. he: נשלח.
-#: apps/dai-j/dai_j/text.py:107
+#: apps/dai-j/dai_j/text.py:123
 msgid "Sent."
 msgstr ""
 
@@ -2592,7 +2617,7 @@ msgstr ""
 
 #. he: נושא
 #: apps/dai-j/dai_j/text.py:23
-#: apps/dai-j/dai_j/text.py:103
+#: apps/dai-j/dai_j/text.py:119
 msgid "Subject"
 msgstr ""
 
@@ -2842,7 +2867,7 @@ msgid "Thu"
 msgstr ""
 
 #. he: אל
-#: apps/dai-j/dai_j/text.py:101
+#: apps/dai-j/dai_j/text.py:117
 msgid "To"
 msgstr ""
 
@@ -3047,7 +3072,7 @@ msgid "When: {when}"
 msgstr ""
 
 #. he: למי ההודעה? הוסיפו כתובת בשדה אל.
-#: apps/dai-j/dai_j/text.py:111
+#: apps/dai-j/dai_j/text.py:127
 msgid "Who is it for? Add an address in To."
 msgstr ""
 
@@ -3440,6 +3465,11 @@ msgstr ""
 msgid "signals other processes"
 msgstr ""
 
+#. he: נכנס רק דרך הדף של הספק (עוד לא נתמך)
+#: apps/dai-j/dai_j/text.py:109
+msgid "signs in only through the provider's page (not supported yet)"
+msgstr ""
+
 #. he: מסומנת בכוכב
 #: apps/dai-j/dai_j/text.py:28
 msgid "starred"
@@ -3505,6 +3535,11 @@ msgstr ""
 #. he: לא נקראה
 #: apps/dai-j/dai_j/text.py:27
 msgid "unread"
+msgstr ""
+
+#. he: השתמש בחיבור לא מוצפן; J מתחבר רק עם הצפנה
+#: apps/dai-j/dai_j/text.py:111
+msgid "used without encryption; J connects only with encryption"
 msgstr ""
 
 #. he: משתמש
@@ -3578,6 +3613,12 @@ msgstr ""
 msgid "your recipe"
 msgstr ""
 
+#. he: {address} · מ־{source} · {host}
+#: apps/dai-j/dai_j/text.py:108
+#, python-brace-format
+msgid "{address} · from {source} · {host}"
+msgstr ""
+
 #. he: {apps} אפליקציות · {procs} תהליכים
 #: apps/dai-mom/dai_mom/text.py:54
 #, python-brace-format
@@ -3594,6 +3635,12 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:177
 #, python-brace-format
 msgid "{capacity}% charged{health}"
+msgstr ""
+
+#. he: נוספו חשבונות: {count}. בדקו דואר כדי להיכנס.
+#: apps/dai-j/dai_j/text.py:113
+#, python-brace-format
+msgid "{count} account(s) added. Check mail to sign in."
 msgstr ""
 
 #. he: {count} תמונות נחסמו, כדי למנוע מעקב.

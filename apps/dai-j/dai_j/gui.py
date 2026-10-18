@@ -465,6 +465,62 @@ class ComposeWindow(QWidget):
         super().closeEvent(event)
 
 
+# Importing (docs/MAIL.md §3.1)
+
+class ImportDialog(QDialog):
+    """The accounts other mail apps on this computer have; the checked ones are added (settings only)."""
+
+    def __init__(self, lang: str, found: list, parent=None) -> None:
+        super().__init__(parent)
+        from PyQt6.QtWidgets import QListWidget, QListWidgetItem
+
+        self.lang = lang
+        self.found = found
+        self.setWindowTitle(t("import_title", lang))
+        self.setLayoutDirection(qt_direction(lang))
+        self.setStyleSheet(STYLE)
+        self.setMinimumWidth(560)
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(t("import_title", lang), objectName="Big"))
+        layout.addWidget(QLabel(t("import_hint", lang) if found else t("import_none", lang), objectName="Muted",
+                                wordWrap=True))
+        self.list = QListWidget()
+        self.list.setAccessibleName(t("import_title", lang))
+        names = {"thunderbird": "Thunderbird", "betterbird": "Betterbird", "evolution": "Evolution",
+                 "claws": "Claws Mail", "mutt": "Mutt"}
+        for account in found:
+            host = account.incoming.host if account.incoming else "?"
+            text = t("import_row", lang, address=f"{LRI}{account.address}{PDI}", source=names.get(account.source,
+                     account.source), host=f"{LRI}{host}{PDI}")
+            reasons = [t(f"import_{n}", lang) for n in account.notes if n in ("oauth", "insecure")]
+            item = QListWidgetItem(text + ("\n    " + "; ".join(reasons) if reasons else ""))
+            if account.usable and "oauth" not in account.notes:
+                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                item.setCheckState(Qt.CheckState.Checked)
+            else:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
+            self.list.addItem(item)
+        layout.addWidget(self.list, 1)
+        buttons = QHBoxLayout()
+        buttons.addStretch(1)
+        cancel = QPushButton(embed(t("cancel", lang), lang))
+        cancel.clicked.connect(self.reject)
+        add = QPushButton(embed(t("import_add", lang), lang), objectName="Primary")
+        add.clicked.connect(self.accept)
+        add.setEnabled(any(a.usable and "oauth" not in a.notes for a in found))
+        buttons.addWidget(cancel)
+        buttons.addWidget(add)
+        layout.addLayout(buttons)
+
+    def chosen(self) -> list[acc.Account]:
+        result = []
+        for index, account in enumerate(self.found):
+            item = self.list.item(index)
+            if item.flags() & Qt.ItemFlag.ItemIsUserCheckable and item.checkState() == Qt.CheckState.Checked:
+                result.append(acc.Account(account.address, account.name, account.incoming, account.outgoing))
+        return result
+
+
 # Reading
 
 class Reader(QTextBrowser):
@@ -517,11 +573,11 @@ class MainWindow(QMainWindow):
         bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
         self.addToolBar(bar)
         self.actions_by_key: dict[str, QAction] = {}
-        for key, shortcut, handler in (("new", "Ctrl+N", self.new_message), ("reply", "Ctrl+R", lambda: self.reply(False)),
+        for key, shortcut, handler in (("new", "Ctrl+N", lambda: self.new_message()), ("reply", "Ctrl+R", lambda: self.reply(False)),
                                        ("reply_all", "Ctrl+Shift+R", lambda: self.reply(True)),
                                        ("forward", "Ctrl+Shift+F", self.forward), ("delete", "Delete", self.delete),
                                        ("mark_unread", "Ctrl+U", self.mark_unread), ("refresh", "F5", self.sync_all),
-                                       ("add_account", "", self.add_account)):
+                                       ("add_account", "", self.add_account), ("import", "", lambda: self.import_accounts())):
             action = QAction(t(key, self.lang), self)
             if shortcut:
                 action.setShortcut(QKeySequence(shortcut))
@@ -539,11 +595,14 @@ class MainWindow(QMainWindow):
         button = QPushButton(embed(t("add_account", self.lang), self.lang), objectName="Primary")
         button.clicked.connect(self.add_account)
         self.empty_button = button
+        importing = QPushButton(embed(t("import", self.lang), self.lang))
+        importing.clicked.connect(lambda: self.import_accounts())
         layout.addWidget(title)
         layout.addWidget(body)
         row = QHBoxLayout()
         row.addStretch(1)
         row.addWidget(button)
+        row.addWidget(importing)
         row.addStretch(1)
         layout.addLayout(row)
         layout.addStretch(2)
@@ -601,7 +660,7 @@ class MainWindow(QMainWindow):
     def refresh_views(self) -> None:
         self.stack.setCurrentIndex(1 if self.accounts else 0)
         for key, action in self.actions_by_key.items():
-            action.setEnabled(bool(self.accounts) or key == "add_account")
+            action.setEnabled(bool(self.accounts) or key in ("add_account", "import"))
         selected = self._folder_key()
         self.folders.clear()
         ids = [a.id for a in self.accounts]
@@ -790,6 +849,22 @@ class MainWindow(QMainWindow):
             acc.save(self.accounts, self.directory)
             self.refresh_views()
             self.sync(dialog.account)
+
+    def import_accounts(self, found: list | None = None, dialog_factory=None) -> None:
+        from .importers import find_all
+
+        found = find_all() if found is None else found
+        dialog = (dialog_factory or ImportDialog)(self.lang, found, self)
+        if not dialog.exec():
+            return
+        known = {a.id for a in self.accounts}
+        new = [a for a in dialog.chosen() if a.id not in known]
+        self.accounts += new
+        acc.save(self.accounts, self.directory)
+        self.refresh_views()
+        self.statusBar().showMessage(t("import_added", self.lang, count=len(new)), 10000)
+        for account in new:
+            self.sync(account)
 
     def _compose(self, draft: compose.Draft | None = None) -> None:
         if not self.accounts:

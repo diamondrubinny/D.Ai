@@ -482,6 +482,22 @@ def main() -> int:
          "sudo /usr/lib/dai/dai-raz-guard post; LANG=C.UTF-8 dai-heal status | grep -c 'last update broke' | sed 's/^/HEAL_AFTER=/'",
          True, lambda o: "REGRESSIONS ['files']" in o and "HEAL_SHOWS=1" in o and "HEAL_AFTER=0" in o
          and re.search(r"^\s*2\s*$", o, re.M) is not None, 180),
+        # J stage 2 (docs/MAIL.md §3.1): settings imported from a Thunderbird profile, read-only, no password.
+        ("j: imports from other mail apps", "mkdir -p ~/.thunderbird/t.default; printf '%s\\n' "
+         "'user_pref(\"mail.account.account1.server\", \"server1\");' "
+         "'user_pref(\"mail.account.account1.identities\", \"id1\");' "
+         "'user_pref(\"mail.identity.id1.useremail\", \"dana@example.org\");' "
+         "'user_pref(\"mail.identity.id1.smtpServer\", \"smtp1\");' "
+         "'user_pref(\"mail.server.server1.type\", \"imap\");' "
+         "'user_pref(\"mail.server.server1.hostname\", \"imap.example.org\");' "
+         "'user_pref(\"mail.server.server1.socketType\", 3);' "
+         "'user_pref(\"mail.smtpserver.smtp1.hostname\", \"smtp.example.org\");' "
+         "'user_pref(\"mail.smtpserver.smtp1.try_ssl\", 2);' > ~/.thunderbird/t.default/prefs.js; "
+         "S=$(md5sum ~/.thunderbird/t.default/prefs.js); dai-j import --add; "
+         "grep -c password ~/.local/share/dai-j/accounts.json | sed 's/^/PASSWORDS=/'; "
+         "[ \"$S\" = \"$(md5sum ~/.thunderbird/t.default/prefs.js)\" ] && echo THUNDERBIRD_UNTOUCHED; "
+         "rm -rf ~/.thunderbird ~/.local/share/dai-j", True,
+         lambda o: '"dana@example.org"' in o and "PASSWORDS=0" in o and "THUNDERBIRD_UNTOUCHED" in o, 60),
         # MOM stage 2 (docs/MOM.md): the user's services and the system's, and a login app turned off and on again
         # with the user's own file (the system's file is never touched).
         ("mom: background and login apps", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom services | head -n 40; "

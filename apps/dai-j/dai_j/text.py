@@ -95,6 +95,22 @@ STRINGS = {
     "e_recipients": ("The server refused one of the recipients.", "השרת סירב לאחד הנמענים."),
     "e_send": ("The message was not sent. It is still here; try again.", "ההודעה לא נשלחה. היא עדיין כאן; נסו שוב."),
     "e_unknown": ("Something went wrong: {detail}", "משהו השתבש: {detail}"),
+    # Import (docs/MAIL.md §3.1)
+    "import": ("Import from another mail app", "ייבוא מתוכנת דואר אחרת"),
+    "import_title": ("Accounts found on this computer", "חשבונות שנמצאו במחשב הזה"),
+    "import_none": ("No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, "
+                    "Mutt).", "לא נמצאה תוכנת דואר אחרת עם חשבונות (Thunderbird, ‏Betterbird, ‏Evolution, "
+                    "‏Claws Mail, ‏Mutt)."),
+    "import_hint": ("Only the settings are copied; the other app is not changed. J asks for each password the "
+                    "first time it signs in.", "רק ההגדרות מועתקות, והתוכנה האחרת לא משתנה. J יבקש כל סיסמה בכניסה "
+                    "הראשונה."),
+    "import_add": ("Add the checked accounts", "הוספת החשבונות המסומנים"),
+    "import_row": ("{address} · from {source} · {host}", "{address} · מ־{source} · {host}"),
+    "import_oauth": ("signs in only through the provider's page (not supported yet)",
+                     "נכנס רק דרך הדף של הספק (עוד לא נתמך)"),
+    "import_insecure": ("used without encryption; J connects only with encryption",
+                        "השתמש בחיבור לא מוצפן; J מתחבר רק עם הצפנה"),
+    "import_added": ("{count} account(s) added. Check mail to sign in.", "נוספו חשבונות: {count}. בדקו דואר כדי להיכנס."),
     # Compose
     "compose_title": ("New message", "הודעה חדשה"),
     "from": ("From", "מאת"),

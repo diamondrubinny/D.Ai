@@ -257,6 +257,107 @@ class ImapTests(unittest.TestCase):
                 pass
 
 
+THUNDERBIRD_PREFS = """// Mozilla User Preferences
+user_pref("mail.account.account1.server", "server1");
+user_pref("mail.account.account1.identities", "id1");
+user_pref("mail.account.account2.server", "server2");
+user_pref("mail.account.account2.identities", "id2");
+user_pref("mail.account.account3.server", "server3");
+user_pref("mail.account.account4.server", "server4");
+user_pref("mail.account.account4.identities", "id4");
+user_pref("mail.identity.id1.useremail", "dana@example.org");
+user_pref("mail.identity.id1.fullName", "Dana \\"D\\" Levi");
+user_pref("mail.identity.id1.smtpServer", "smtp1");
+user_pref("mail.identity.id2.useremail", "dana@gmail.com");
+user_pref("mail.identity.id2.smtpServer", "smtp2");
+user_pref("mail.identity.id4.useremail", "old@plain.example");
+user_pref("mail.identity.id4.smtpServer", "smtp1");
+user_pref("mail.server.server1.type", "imap");
+user_pref("mail.server.server1.hostname", "IMAP.example.org");
+user_pref("mail.server.server1.port", 993);
+user_pref("mail.server.server1.socketType", 3);
+user_pref("mail.server.server1.userName", "dana");
+user_pref("mail.server.server2.type", "imap");
+user_pref("mail.server.server2.hostname", "imap.gmail.com");
+user_pref("mail.server.server2.socketType", 3);
+user_pref("mail.server.server2.authMethod", 10);
+user_pref("mail.server.server3.type", "none");
+user_pref("mail.server.server4.type", "imap");
+user_pref("mail.server.server4.hostname", "mail.plain.example");
+user_pref("mail.server.server4.socketType", 0);
+user_pref("mail.smtpserver.smtp1.hostname", "smtp.example.org");
+user_pref("mail.smtpserver.smtp1.port", 587);
+user_pref("mail.smtpserver.smtp1.try_ssl", 2);
+user_pref("mail.smtpserver.smtp2.hostname", "smtp.gmail.com");
+user_pref("mail.smtpserver.smtp2.port", 465);
+user_pref("mail.smtpserver.smtp2.try_ssl", 3);
+"""
+
+
+class ImportTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.home = Path(self.tmp.name)
+
+    def write(self, relative, text):
+        path = self.home / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        return path
+
+    def test_thunderbird_accounts_without_passwords(self):
+        from dai_j import importers
+
+        self.write(".thunderbird/abc.default-release/prefs.js", THUNDERBIRD_PREFS)
+        self.write(".thunderbird/abc.default-release/logins.json", '{"logins": ["secret"]}')
+        found = {f.address: f for f in importers.find_all(self.home)}
+        dana = found["dana@example.org"]
+        self.assertEqual((dana.source, dana.name), ("thunderbird", 'Dana "D" Levi'))
+        self.assertEqual((dana.incoming.host, dana.incoming.port, dana.incoming.security, dana.incoming.username),
+                         ("imap.example.org", 993, "ssl", "dana"))
+        self.assertEqual((dana.outgoing.host, dana.outgoing.port, dana.outgoing.security),
+                         ("smtp.example.org", 587, "starttls"))
+        self.assertTrue(dana.usable)
+        self.assertIn("oauth", found["dana@gmail.com"].notes)
+        self.assertIn("insecure", found["old@plain.example"].notes)  # no encryption: never offered
+        self.assertFalse(found["old@plain.example"].usable)
+        self.assertEqual(len(found), 3)  # local folders are not an account
+
+    def test_evolution_claws_and_mutt(self):
+        from dai_j import importers
+
+        src = ".config/evolution/sources/"
+        self.write(src + "acc.source", "[Data Source]\nDisplayName=Work\n[Mail Account]\nBackendName=imapx\n"
+                   "IdentityUid=ident\n[Authentication]\nHost=imap.work.example\nPort=993\nUser=avi\n"
+                   "Method=plain/password\n[Security]\nMethod=ssl-on-alternate-port\n")
+        self.write(src + "ident.source", "[Mail Identity]\nAddress=avi@work.example\nName=Avi\n"
+                   "[Mail Submission]\nTransportUid=out\n")
+        self.write(src + "out.source", "[Mail Transport]\nBackendName=smtp\n[Authentication]\nHost=smtp.work.example\n"
+                   "Port=587\nUser=avi\n[Security]\nMethod=starttls-on-standard-port\n")
+        self.write(".claws-mail/accountrc", "[Account: 1]\naccount_name=Home\nname=Rina\naddress=rina@home.example\n"
+                   "protocol=3\nreceive_server=imap.home.example\nsmtp_server=smtp.home.example\nuser_id=rina\n"
+                   "ssl_imap=1\nssl_smtp=2\n")
+        self.write(".muttrc", 'set from = "Noa <noa@mutt.example>"\nset folder = "imaps://noa@imap.mutt.example:993/"\n'
+                   'set smtp_url = "smtps://noa@smtp.mutt.example:465/"\n')
+        found = {f.address: f for f in importers.find_all(self.home)}
+        self.assertEqual((found["avi@work.example"].incoming.host, found["avi@work.example"].outgoing.security),
+                         ("imap.work.example", "starttls"))
+        rina = found["rina@home.example"]
+        self.assertEqual((rina.incoming.security, rina.outgoing.port, rina.outgoing.security), ("ssl", 587, "starttls"))
+        noa = found["noa@mutt.example"]
+        self.assertEqual((noa.name, noa.incoming.host, noa.incoming.username, noa.outgoing.port),
+                         ("Noa", "imap.mutt.example", "noa", 465))
+
+    def test_nothing_found_and_bad_files(self):
+        from dai_j import importers
+
+        self.assertEqual(importers.find_all(self.home), [])
+        self.write(".thunderbird/x/prefs.js", 'user_pref("mail.account.a.server", "s");\n\x00garbage')
+        self.write(".claws-mail/accountrc", "[[[ not ini")
+        self.assertEqual(importers.find_all(self.home), [])
+
+
 class WindowTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -329,6 +430,27 @@ class WindowTests(unittest.TestCase):
         self.assertIn("unread", item.data(0, Qt.ItemDataRole.AccessibleTextRole))
         window.show_body(mail.Body(text="", html="<p>hi <img src=http://t/p></p>"))
         self.assertIn("1 image(s) blocked", window.notice.text())
+
+    def test_toolbar_new_message_and_import(self):
+        from dai_j import gui, importers
+
+        window = self.window()
+        account = importers.Found("thunderbird", "dana@example.org", "Dana",
+                                  discover.Server("imap.example.org", 993, "ssl", "dana"),
+                                  discover.Server("smtp.example.org", 587, "starttls", "dana"))
+        blocked = importers.Found("thunderbird", "x@gmail.com", "", discover.Server("imap.gmail.com", 993, "ssl", "x",
+                                  True), discover.Server("smtp.gmail.com", 465, "ssl", "x"), ["oauth"])
+
+        class Accept(gui.ImportDialog):
+            def exec(self):
+                return True
+
+        window.import_accounts([account, blocked], Accept)
+        self.assertEqual([a.address for a in window.accounts], ["dana@example.org"])
+        self.assertEqual(accounts.load(self.directory)[0].incoming.username, "dana")
+        window.actions_by_key["new"].trigger()  # the toolbar passes "checked"; it must not become the address
+        self.assertEqual(window.windows[-1].to.text(), "")
+        window.windows[-1].close()
 
     def test_compose_directions_and_double_send(self):
         from PyQt6.QtCore import Qt
