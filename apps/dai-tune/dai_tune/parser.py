@@ -86,6 +86,7 @@ PRIVACY = r"(?:privacy mode|private mode|מצב פרטיות|מצב פרטי)"
 
 CLEAN = (r"(?:free (?:up )?(?:disk )?space|clean (?:up )?(?:the )?(?:system|disk|computer)|clear (?:the )?caches?|"
          r"פנה מקום|תפנה מקום|לפנות מקום|פינוי מקום|נקה את (?:המערכת|הדיסק|המחשב)|תנקה את (?:המערכת|הדיסק|המחשב)|ניקוי (?:המערכת|הדיסק))")
+RESTART_SERVICE = r"(?:restart|הפעל מחדש(?: את)?|תפעיל מחדש(?: את)?)\s+(?:the\s+)?(?:service|השירות)\s+([a-z0-9@._-]+)"
 SNAPSHOTS_ON = (r"(?:(?:enable|turn on|take|keep) (?:system )?snapshots?|snapshots? before (?:each |every |any )?(?:software )?updates?|"
                 r"(?:הפעל|תפעיל|להפעיל) (?:צילום|תמונות|תמונת) מצב|(?:צילום|תמונות|תמונת) מצב (?:של המערכת )?לפני (?:כל )?עדכון)")
 UNDO_UPDATE = (r"(?:undo (?:the )?(?:last|latest|recent) (?:software |system )?update|roll ?back (?:the )?(?:last |latest )?update|"
@@ -142,6 +143,9 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("preset.public", {}, clause)]
     if _has(PRIVACY, c):
         return [Request("preset.privacy", {}, clause)]
+
+    if m := re.search(RESTART_SERVICE, c, re.IGNORECASE):
+        return [Request("service.restart", {"unit": m.group(1)}, clause)]
 
     # Before anything that mentions "updates" (automatic updates).
     if _has(UNDO_UPDATE, c):

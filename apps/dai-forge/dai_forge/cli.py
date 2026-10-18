@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import collections
 import grp
 import json
 import os
@@ -245,12 +246,31 @@ def run_app(name: str, lang: str, detach: bool = False) -> int:
         print(_color(_l(lang, "✗ bubblewrap is missing; apps never run outside the sandbox.",
                         "✗ bubblewrap חסר; אפליקציות לא רצות מחוץ לארגז החול."), "31"))
         return 1
-    if detach or app.kind == "web":
+    if app.kind == "web":
         subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          start_new_session=True)
         return 0
-    os.execvp(argv[0], argv)
-    return 1  # not reached
+    if detach:
+        # Through "dai-forge app run" so a crash is still recorded for D.Ai Heal.
+        launcher = ["dai-forge", "app", "run", app.name] if shutil.which("dai-forge") else argv
+        subprocess.Popen(launcher, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+        return 0
+    return run_watched(app, argv)
+
+
+def run_watched(app: apps.App, argv: list[str]) -> int:
+    """Run in the sandbox; pass errors through and keep the last ones in case it crashes."""
+    process = subprocess.Popen(argv, stderr=subprocess.PIPE, text=True, errors="replace")
+    tail: collections.deque[str] = collections.deque(maxlen=80)
+    assert process.stderr is not None
+    for line in process.stderr:
+        sys.stderr.write(line)
+        tail.append(line)
+    code = process.wait()
+    if code != 0 and any("Traceback" in line for line in tail):
+        apps.record_crash(app, "".join(tail))
+    return code
 
 
 def cmd_app(args: list[str], lang: str) -> int:

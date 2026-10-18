@@ -23,6 +23,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - For people leaving Windows: D.Ai Move (files, bookmarks, Wi-Fi names), `dai-doctor hardware`, and Forge recipes for Steam, Bottles, ONLYOFFICE, Zoom, Spotify, Discord, printers, scanners, OpenVPN and Cisco-compatible VPN.
 - D.Ai Clip: clipboard history (`Super+V`) in memory only; password-manager copies, keys, tokens, card and ID numbers are never kept, and keys/tokens are cleared from the clipboard after 90 seconds.
 - Snapshots before updates on Btrfs system disks (snapper): "snapshots before updates" and "undo the last update" in D.Ai Tune, and D.Ai Doctor answers "it broke after the update".
+- The Workshop: AI-built apps are tested in the sandbox and repaired from their error before you see them.
+- D.Ai Heal: crashes and failed services lead to a help & repair chat (Super+F1) with fixes applied only after you agree; D.Ai Tune `service.restart`.
 - D.Ai OEM: `dai-oem prepare` for refurbishers; a first-boot wizard where the new owner creates their account, names the computer and replaces the temporary disk encryption password; temporary users removed before the first login.
 - Education edition (`edu`) and organization policies (`/etc/dai/policy.d`, applied at boot and on change), including a screen-lock limit for every user.
 - LibreOffice (Writer, Calc, Impress) with the Hebrew interface and Hebrew/English spell checking in every edition.

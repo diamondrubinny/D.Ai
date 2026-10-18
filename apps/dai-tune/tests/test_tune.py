@@ -512,6 +512,28 @@ class DoctorActionTests(ForgeActionTests):
             self.apply("power.profile", {"profile": "performance"})
 
 
+class ServiceRestartTests(ForgeActionTests):
+    """Restarting a failed service (offered by D.Ai Heal)."""
+
+    def test_restart_validated_and_applied(self):
+        (self.root / "usr/lib/systemd/system").mkdir(parents=True)
+        (self.root / "usr/lib/systemd/system/cups.service").write_text("")
+        plan = self.plan("restart service cups")
+        self.assertTrue(plan.ok, plan.errors)
+        self.assertEqual(plan.steps[0].params, {"unit": "cups.service"})
+        self.apply("service.restart", {"unit": "cups.service"})
+        self.assertEqual(self.runner.calls[-2:], [["systemctl", "reset-failed", "cups.service"],
+                                                  ["systemctl", "restart", "cups.service"]])
+        for unit in ("sddm.service", "dbus.service", "user@1000.service", "cups.service; reboot", "cups.timer"):
+            with self.subTest(unit=unit), self.assertRaises(ValidationError):
+                catalog.CATALOG["service.restart"].validate({"unit": unit}, self.ctx)
+        self.assertIn("would end the session", self.plan("הפעל מחדש את השירות sddm").errors[0])
+
+    def test_not_installed(self):
+        with self.assertRaises(executor.ApplyError):
+            self.apply("service.restart", {"unit": "nothere.service"})
+
+
 class SnapshotTests(ForgeActionTests):
     """Snapshots before updates (docs/SNAPSHOTS.md). The real snapper runs in the VM check."""
 

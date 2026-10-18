@@ -773,6 +773,8 @@ class ForgeWindow(QWidget):
             return
         if app.kind == "cli":
             argv = ["x-terminal-emulator", "-e", "dai-forge", "app", "run", name]
+        elif app.kind == "gui" and shutil.which("dai-forge"):
+            argv = ["dai-forge", "app", "run", name]  # records a crash for D.Ai Heal
         subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          start_new_session=True)
 
