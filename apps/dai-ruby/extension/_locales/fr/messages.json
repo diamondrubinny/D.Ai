@@ -1,0 +1,121 @@
+{
+  "name": {
+    "message": "Ruby"
+  },
+  "description": {
+    "message": "La navigation privée de D.Ai : elle retient les sites que vous voulez et oublie le reste d'elle-même."
+  },
+  "shield": {
+    "message": "Bouclier Ruby"
+  },
+  "site": {
+    "message": "Ce site"
+  },
+  "no_site": {
+    "message": "Pas un site web"
+  },
+  "remember": {
+    "message": "Retenir ce site (rester connecté)"
+  },
+  "forget": {
+    "message": "Oublier ce site maintenant"
+  },
+  "cookies": {
+    "message": "Cookies enregistrés par ce site : $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "forgotten": {
+    "message": "Oublié : $COUNT$ cookies et ses données enregistrées.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cleaning": {
+    "message": "Nettoyer automatiquement"
+  },
+  "cleaning_hint": {
+    "message": "Quand le dernier onglet d'un site se ferme, ses cookies et données sont effacés, sauf si vous le retenez."
+  },
+  "clean_all": {
+    "message": "Nettoyer tout ce qui n'est pas retenu"
+  },
+  "cleaned": {
+    "message": "Nettoyé : $COUNT$ cookies.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "spaces": {
+    "message": "Espaces"
+  },
+  "space_work": {
+    "message": "Travail"
+  },
+  "space_home": {
+    "message": "Maison"
+  },
+  "space_school": {
+    "message": "École"
+  },
+  "sessions": {
+    "message": "Rouvrir les onglets d'avant"
+  },
+  "no_sessions": {
+    "message": "Pas encore d'instantané (un toutes les 5 minutes)."
+  },
+  "session_row": {
+    "message": "$TIME$ · $TABS$ onglets",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "restore": {
+    "message": "Rouvrir"
+  },
+  "local_only": {
+    "message": "Tout reste sur cet ordinateur."
+  },
+  "diamond": {
+    "message": "Diamond, sur cet ordinateur"
+  },
+  "diamond_summarize": {
+    "message": "Résumer"
+  },
+  "diamond_explain": {
+    "message": "Expliquer"
+  },
+  "diamond_translate": {
+    "message": "Traduire"
+  },
+  "diamond_simplify": {
+    "message": "Simplifier"
+  },
+  "diamond_hint": {
+    "message": "Seul le texte visible de la page va à Diamond, l'IA locale. Les formulaires et ce que vous avez tapé ne sont jamais lus, et rien ne quitte l'ordinateur."
+  },
+  "diamond_working": {
+    "message": "Diamond lit la page…"
+  },
+  "diamond_unavailable": {
+    "message": "Diamond n'est pas disponible. Installez un modèle : D.Ai Command, ? et la question."
+  },
+  "diamond_not_page": {
+    "message": "Diamond n'aide que sur les pages web."
+  },
+  "diamond_empty": {
+    "message": "Cette page n'a pas de texte."
+  }
+}

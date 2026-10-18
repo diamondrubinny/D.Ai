@@ -6,6 +6,8 @@
 const say = (key, ...values) => browser.i18n.getMessage(key, values.map(String));
 const $ = (id) => document.getElementById(id);
 let site = "";
+// A date, a number or a host inside a right-to-left sentence keeps its own order (U+2068 … U+2069).
+const isolate = (text) => `\u2068${text}\u2069`;
 
 function status(text) {
   $("status").textContent = text;
@@ -48,7 +50,7 @@ async function load() {
     const row = document.createElement("li");
     const label = document.createElement("span");
     const when = new Date(snapshot.time).toLocaleString(lang, { dateStyle: "short", timeStyle: "short" });
-    label.textContent = say("session_row", when, snapshot.tabs);
+    label.textContent = say("session_row", isolate(when), snapshot.tabs);
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = say("restore");

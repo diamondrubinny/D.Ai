@@ -144,13 +144,19 @@ test("private windows are never tracked; messages from others are ignored; space
   assert.deepEqual(fake.state.created.map((t) => t.cookieStoreId), ["firefox-container-1", "firefox-container-1"]);
 });
 
-test("both languages have every message, with the same placeholders", () => {
-  const en = JSON.parse(fs.readFileSync(path.join(dir, "_locales/en/messages.json"), "utf8"));
-  const he = JSON.parse(fs.readFileSync(path.join(dir, "_locales/he/messages.json"), "utf8"));
-  assert.deepEqual(Object.keys(en).sort(), Object.keys(he).sort());
-  for (const key of Object.keys(en)) {
-    assert.deepEqual(Object.keys(en[key].placeholders || {}), Object.keys(he[key].placeholders || {}), key);
+test("all eight languages have every message, with the same placeholders", () => {
+  const read = (lang) => JSON.parse(fs.readFileSync(path.join(dir, `_locales/${lang}/messages.json`), "utf8"));
+  const en = read("en");
+  assert.deepEqual(fs.readdirSync(path.join(dir, "_locales")).sort(), ["ar", "de", "en", "es", "fr", "he", "pt", "ru"]);
+  for (const lang of ["he", "ar", "ru", "es", "fr", "de", "pt"]) {
+    const other = read(lang);
+    assert.deepEqual(Object.keys(other).sort(), Object.keys(en).sort(), lang);
+    for (const key of Object.keys(en)) {
+      assert.deepEqual(Object.keys(other[key].placeholders || {}), Object.keys(en[key].placeholders || {}), `${lang} ${key}`);
+      for (const [, name] of en[key].message.matchAll(/\$([A-Z]+)\$/g)) assert.ok(other[key].message.includes(`$${name}$`), `${lang} ${key}`);
+    }
   }
+  assert.ok(fs.readFileSync(path.join(dir, "popup/popup.js"), "utf8").includes("isolate(when)"));  // dates keep their order in RTL
   const html = fs.readFileSync(path.join(dir, "popup/popup.html"), "utf8");
   for (const [, key] of html.matchAll(/data-i18n="([a-z_]+)"/g)) assert.ok(en[key], key);
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, "manifest.json"), "utf8"));

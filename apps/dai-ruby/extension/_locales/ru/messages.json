@@ -1,0 +1,121 @@
+{
+  "name": {
+    "message": "Ruby"
+  },
+  "description": {
+    "message": "Приватный просмотр D.Ai: запоминает нужные вам сайты, остальное забывает сам."
+  },
+  "shield": {
+    "message": "Щит Ruby"
+  },
+  "site": {
+    "message": "Этот сайт"
+  },
+  "no_site": {
+    "message": "Не веб-сайт"
+  },
+  "remember": {
+    "message": "Запомнить этот сайт (не выходить из аккаунта)"
+  },
+  "forget": {
+    "message": "Забыть этот сайт сейчас"
+  },
+  "cookies": {
+    "message": "Cookie этого сайта: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "forgotten": {
+    "message": "Забыто: $COUNT$ cookie и сохранённые данные сайта.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cleaning": {
+    "message": "Очищать автоматически"
+  },
+  "cleaning_hint": {
+    "message": "Когда закрывается последняя вкладка сайта, его cookie и данные удаляются, если вы его не запомнили."
+  },
+  "clean_all": {
+    "message": "Очистить всё, что не запомнено"
+  },
+  "cleaned": {
+    "message": "Очищено: $COUNT$ cookie.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "spaces": {
+    "message": "Пространства"
+  },
+  "space_work": {
+    "message": "Работа"
+  },
+  "space_home": {
+    "message": "Дом"
+  },
+  "space_school": {
+    "message": "Учёба"
+  },
+  "sessions": {
+    "message": "Вернуть прежние вкладки"
+  },
+  "no_sessions": {
+    "message": "Снимков пока нет (снимок делается каждые 5 минут)."
+  },
+  "session_row": {
+    "message": "$TIME$ · вкладок: $TABS$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "restore": {
+    "message": "Вернуть"
+  },
+  "local_only": {
+    "message": "Всё остаётся на этом компьютере."
+  },
+  "diamond": {
+    "message": "Diamond, на этом компьютере"
+  },
+  "diamond_summarize": {
+    "message": "Кратко"
+  },
+  "diamond_explain": {
+    "message": "Объяснить"
+  },
+  "diamond_translate": {
+    "message": "Перевести"
+  },
+  "diamond_simplify": {
+    "message": "Упростить"
+  },
+  "diamond_hint": {
+    "message": "Diamond, локальному ИИ, передаётся только видимый текст страницы. Формы и то, что вы ввели, никогда не читаются, и ничего не покидает компьютер."
+  },
+  "diamond_working": {
+    "message": "Diamond читает страницу…"
+  },
+  "diamond_unavailable": {
+    "message": "Diamond недоступен. Установите модель: D.Ai Command, ? и вопрос."
+  },
+  "diamond_not_page": {
+    "message": "Diamond помогает только на веб-страницах."
+  },
+  "diamond_empty": {
+    "message": "На этой странице нет текста."
+  }
+}

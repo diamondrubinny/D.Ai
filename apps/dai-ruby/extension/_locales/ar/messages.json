@@ -1,0 +1,121 @@
+{
+  "name": {
+    "message": "Ruby"
+  },
+  "description": {
+    "message": "التصفح الخاص في D.Ai: يتذكر المواقع التي تريدها، وينسى الباقي وحده."
+  },
+  "shield": {
+    "message": "درع Ruby"
+  },
+  "site": {
+    "message": "هذا الموقع"
+  },
+  "no_site": {
+    "message": "ليس موقع ويب"
+  },
+  "remember": {
+    "message": "تذكّر هذا الموقع (البقاء مسجّلًا)"
+  },
+  "forget": {
+    "message": "انسَ هذا الموقع الآن"
+  },
+  "cookies": {
+    "message": "ملفات تعريف الارتباط لهذا الموقع: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "forgotten": {
+    "message": "نُسي: $COUNT$ من ملفات تعريف الارتباط وبيانات الموقع المخزنة.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cleaning": {
+    "message": "تنظيف تلقائي"
+  },
+  "cleaning_hint": {
+    "message": "عند إغلاق آخر علامة تبويب لموقع، تُحذف ملفات تعريف الارتباط وبياناته، ما لم تتذكره."
+  },
+  "clean_all": {
+    "message": "تنظيف كل ما لم يُحفظ"
+  },
+  "cleaned": {
+    "message": "نُظّف: $COUNT$ من ملفات تعريف الارتباط.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "spaces": {
+    "message": "المساحات"
+  },
+  "space_work": {
+    "message": "العمل"
+  },
+  "space_home": {
+    "message": "المنزل"
+  },
+  "space_school": {
+    "message": "الدراسة"
+  },
+  "sessions": {
+    "message": "استعادة علامات التبويب السابقة"
+  },
+  "no_sessions": {
+    "message": "لا لقطات بعد (تُلتقط واحدة كل 5 دقائق)."
+  },
+  "session_row": {
+    "message": "$TIME$ · علامات التبويب: $TABS$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "restore": {
+    "message": "استعادة"
+  },
+  "local_only": {
+    "message": "كل شيء يبقى على هذا الحاسوب."
+  },
+  "diamond": {
+    "message": "Diamond، على هذا الحاسوب"
+  },
+  "diamond_summarize": {
+    "message": "تلخيص"
+  },
+  "diamond_explain": {
+    "message": "شرح"
+  },
+  "diamond_translate": {
+    "message": "ترجمة"
+  },
+  "diamond_simplify": {
+    "message": "تبسيط"
+  },
+  "diamond_hint": {
+    "message": "يُرسَل إلى Diamond، الذكاء الاصطناعي المحلي، النص المرئي للصفحة فقط. لا تُقرأ النماذج ولا ما كتبته أبدًا، ولا يخرج شيء من الحاسوب."
+  },
+  "diamond_working": {
+    "message": "Diamond يقرأ الصفحة…"
+  },
+  "diamond_unavailable": {
+    "message": "Diamond غير متاح. ثبّت نموذجًا: D.Ai Command، ثم ? والسؤال."
+  },
+  "diamond_not_page": {
+    "message": "يساعد Diamond في صفحات الويب فقط."
+  },
+  "diamond_empty": {
+    "message": "لا يوجد نص في هذه الصفحة."
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "name": {
+    "message": "Ruby"
+  },
+  "description": {
+    "message": "Privates Surfen von D.Ai: merkt sich die Seiten, die Sie wollen, und vergisst den Rest von selbst."
+  },
+  "shield": {
+    "message": "Ruby-Schild"
+  },
+  "site": {
+    "message": "Diese Seite"
+  },
+  "no_site": {
+    "message": "Keine Webseite"
+  },
+  "remember": {
+    "message": "Diese Seite merken (angemeldet bleiben)"
+  },
+  "forget": {
+    "message": "Diese Seite jetzt vergessen"
+  },
+  "cookies": {
+    "message": "Cookies dieser Seite: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "forgotten": {
+    "message": "Vergessen: $COUNT$ Cookies und die gespeicherten Daten der Seite.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cleaning": {
+    "message": "Automatisch aufräumen"
+  },
+  "cleaning_hint": {
+    "message": "Wenn der letzte Tab einer Seite schließt, werden ihre Cookies und Daten gelöscht, außer Sie merken sie sich."
+  },
+  "clean_all": {
+    "message": "Alles Nicht-Gemerkte aufräumen"
+  },
+  "cleaned": {
+    "message": "Aufgeräumt: $COUNT$ Cookies.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "spaces": {
+    "message": "Bereiche"
+  },
+  "space_work": {
+    "message": "Arbeit"
+  },
+  "space_home": {
+    "message": "Zuhause"
+  },
+  "space_school": {
+    "message": "Schule"
+  },
+  "sessions": {
+    "message": "Frühere Tabs wiederherstellen"
+  },
+  "no_sessions": {
+    "message": "Noch keine Schnappschüsse (alle 5 Minuten wird einer gemacht)."
+  },
+  "session_row": {
+    "message": "$TIME$ · $TABS$ Tabs",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "restore": {
+    "message": "Wiederherstellen"
+  },
+  "local_only": {
+    "message": "Alles bleibt auf diesem Computer."
+  },
+  "diamond": {
+    "message": "Diamond, auf diesem Computer"
+  },
+  "diamond_summarize": {
+    "message": "Zusammenfassen"
+  },
+  "diamond_explain": {
+    "message": "Erklären"
+  },
+  "diamond_translate": {
+    "message": "Übersetzen"
+  },
+  "diamond_simplify": {
+    "message": "Vereinfachen"
+  },
+  "diamond_hint": {
+    "message": "Nur der sichtbare Text der Seite geht an Diamond, die lokale KI. Formulare und Ihre Eingaben werden nie gelesen, und nichts verlässt den Computer."
+  },
+  "diamond_working": {
+    "message": "Diamond liest die Seite…"
+  },
+  "diamond_unavailable": {
+    "message": "Diamond ist nicht verfügbar. Installieren Sie ein Modell: D.Ai Command, ? und die Frage."
+  },
+  "diamond_not_page": {
+    "message": "Diamond hilft nur auf Webseiten."
+  },
+  "diamond_empty": {
+    "message": "Diese Seite hat keinen Text."
+  }
+}
