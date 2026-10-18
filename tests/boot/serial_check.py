@@ -581,6 +581,20 @@ def main() -> int:
          "stat -c %a ~/.local/share/dai-j/mail.sqlite; rm -rf ~/.thunderbird", True,
          lambda o: '"added":1,"skipped":1' in o and '"added":0,"skipped":2' in o and "SOURCE_UNTOUCHED" in o
          and re.search(r"^600$", o, re.M) is not None, 60),
+        # J stage 4b (docs/MAIL.md §14): the image's own GnuPG checks a signed mail, with a throwaway key; one changed
+        # word makes it "bad".
+        ("j: signed mail checked", "export GNUPGHOME=$(mktemp -d); "
+         "gpg --batch --pinentry-mode loopback --passphrase '' --quick-gen-key 'Dana VM <dana@example.org>' "
+         "default default 1d 2>/dev/null; printf 'Content-Type: text/plain\\r\\n\\r\\nhello\\r\\n' > $GNUPGHOME/in; "
+         "gpg --batch --pinentry-mode loopback --passphrase '' -a --detach-sign -o $GNUPGHOME/sig $GNUPGHOME/in; "
+         "python3 -I -c 'import sys, os; sys.path.insert(0, \"/usr/lib/dai\"); from dai_j import pgp; "
+         "h = os.environ[\"GNUPGHOME\"]; inner = open(h + \"/in\", \"rb\").read(); sig = open(h + \"/sig\", \"rb\").read(); "
+         "mk = lambda body: b\"Subject: s\\r\\nContent-Type: multipart/signed; protocol=\\\"application/pgp-signature\\\"; "
+         "boundary=\\\"B\\\"\\r\\n\\r\\n--B\\r\\n\" + body + b\"\\r\\n--B\\r\\nContent-Type: application/pgp-signature\\r\\n\\r\\n\" "
+         "+ sig + b\"\\r\\n--B--\\r\\n\"; "
+         "print(\"SIG\", pgp.verify(mk(inner)).state, pgp.verify(mk(inner.replace(b\"hello\", b\"hellO\"))).state)'; "
+         "gpgconf --kill all; rm -r -- \"$GNUPGHOME\"", True,
+         lambda o: "SIG good bad" in o, 90),
         # Ruby stage 3 (docs/BROWSER.md §11): Firefox finds the native host, only Ruby may start it, it refuses an
         # action outside its list, and answers (or says Diamond is unavailable) without crashing.
         ("ruby: Diamond's native host", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "

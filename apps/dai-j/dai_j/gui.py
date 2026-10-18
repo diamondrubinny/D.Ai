@@ -105,6 +105,18 @@ class Runner:
             self.pool.start(task)
 
 
+def signature_text(signature, lang: str) -> str:
+    """What a signature means, in plain words."""
+    if signature is None or signature.state == "error":
+        return t("signature_error", lang)
+    if signature.state == "bad":
+        return t("signature_bad", lang)
+    if signature.state == "unknown_key":
+        return t("signature_unknown", lang)
+    who = signature.who or signature.fingerprint[-16:]
+    return t("signature_trusted" if signature.trusted else "signature_good", lang, who=f"{LRI}{who}{PDI}")
+
+
 def when(stamp: float, lang: str) -> str:
     if not stamp:
         return ""
@@ -588,7 +600,7 @@ class Reader(QTextBrowser):
 
 class MainWindow(QMainWindow):
     def __init__(self, lang: str | None = None, directory: Path | None = None, keyring: acc.Keyring | None = None,
-                 runner: Runner | None = None, ask_password=None, sync_on_start: bool = True) -> None:
+                 runner: Runner | None = None, ask_password=None, sync_on_start: bool = True, ai=None) -> None:
         super().__init__()
         self.lang = lang or ui_lang()
         self.directory = directory or acc.data_dir()
@@ -596,6 +608,7 @@ class MainWindow(QMainWindow):
         self.keyring = keyring or acc.Keyring()
         self.runner = runner or Runner()
         self.ask_password = ask_password or self._ask_password
+        self.ai = ai  # Diamond (diamond.answer by default); tests pass their own
         self.accounts = acc.load(self.directory)
         self.windows: list[QWidget] = []
         self.current: dict | None = None
@@ -636,6 +649,8 @@ class MainWindow(QMainWindow):
                                        ("mark_unread", "Ctrl+U", self.mark_unread), ("refresh", "F5", self.sync_all),
                                        ("add_account", "", self.add_account), ("import", "", lambda: self.import_accounts()),
                                        ("snooze", "", lambda: self.snooze_menu()),
+                                       ("summarize", "Ctrl+Shift+S", lambda: self.summarize()),
+                                       ("diamond_reply", "Ctrl+Shift+D", lambda: self.diamond_reply()),
                                        ("import_mail", "", lambda: self.import_mail())):
             action = QAction(t(key, self.lang), self)
             if shortcut:
@@ -702,12 +717,28 @@ class MainWindow(QMainWindow):
         self.header.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.notice = QLabel(objectName="Notice", wordWrap=True)
         self.notice.hide()
+        self.summary = QLabel(objectName="Notice", wordWrap=True)
+        self.summary.setTextFormat(Qt.TextFormat.PlainText)  # Diamond's words are never markup or links
+        self.summary.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse
+                                             | Qt.TextInteractionFlag.TextSelectableByKeyboard)
+        self.summary.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.summary.setAccessibleName(t("summarize", self.lang))
+        self.summary.hide()
+        self.security = QLabel(objectName="Notice", wordWrap=True)
+        self.security.setTextFormat(Qt.TextFormat.PlainText)  # signer names come from keys: never markup
+        self.security.hide()
+        self.decrypt_button = QPushButton(embed("🔒 " + t("decrypt", self.lang), self.lang))
+        self.decrypt_button.clicked.connect(self.decrypt_current)
+        self.decrypt_button.hide()
         self.reader = Reader()
         self.reader.setOpenLinks(False)
         self.reader.anchorClicked.connect(self._open_link)
         self.reader.setAccessibleName(t("reader", self.lang))
         column.addWidget(self.header)
         column.addWidget(self.notice)
+        column.addWidget(self.security)
+        column.addWidget(self.decrypt_button, 0, Qt.AlignmentFlag.AlignLeading)
+        column.addWidget(self.summary)
         column.addWidget(self.reader, 1)
         middle = QWidget(objectName="Page")
         stack = QVBoxLayout(middle)
@@ -845,9 +876,13 @@ class MainWindow(QMainWindow):
                                        t("to_line", self.lang, to=f"{LRI}{row['recipients'] or ''}{PDI}"),
                                        row["subject"] or t("no_subject", self.lang)]))
         self.notice.hide()
+        self.summary.hide()
+        self.security.hide()
+        self.decrypt_button.hide()
         if row["account"] == localmail.LOCAL:  # kept whole on this computer when it was imported
             raw = self.store.body(localmail.LOCAL, row["folder"], row["uid"])
             self.show_body(mail.parse_body(raw or b""))
+            self._check_security(raw or b"", row)
             self.store.set_seen(localmail.LOCAL, row["folder"], row["uid"])
             row["seen"] = 1
             self._style_row(item, row)
@@ -864,6 +899,7 @@ class MainWindow(QMainWindow):
             self.show_body(body)
             row["seen"] = 1
             self._style_row(item, row)
+            self._check_security(self.store.body(row["account"], row["folder"], row["uid"]) or b"", row)
 
         self.runner.start(lambda: engine.open_message(account, password, self.db, row["folder"], row["uid"]), done,
                           lambda e: self.reader.setPlainText(error(e, self.lang)))
@@ -908,6 +944,94 @@ class MainWindow(QMainWindow):
             self.refresh_views()
 
         self.runner.start(work, done, lambda e: self.statusBar().showMessage(error(e, self.lang)))
+
+    # Signed and encrypted mail (docs/MAIL.md §14): through the system's GnuPG; decrypted text is never saved
+
+    def _check_security(self, raw: bytes, row: dict) -> None:
+        from . import pgp
+
+        what = pgp.kind(raw)
+        if what in ("encrypted", "inline_encrypted"):
+            self.security.setText(t("encrypted", self.lang))
+            self.security.show()
+            self.decrypt_button.show()
+            return
+        if what not in ("signed", "smime_signed"):
+            return
+        key = (row["account"], row["folder"], row["uid"])
+        self.security.setText(t("checking_signature", self.lang))
+        self.security.show()
+
+        def done(signature) -> None:
+            if not self.current or (self.current["account"], self.current["folder"], self.current["uid"]) != key:
+                return
+            self.security.setText(signature_text(signature, self.lang))
+        self.runner.start(lambda: pgp.verify(raw), done, lambda e: done(pgp.Signature("error")))
+
+    def decrypt_current(self) -> None:
+        from . import pgp
+
+        row = self.current
+        if row is None:
+            return
+        raw = self.store.body(row["account"], row["folder"], row["uid"]) or b""
+        self.security.setText(t("decrypting", self.lang))
+
+        def done(inner) -> None:
+            if inner is None:
+                self.security.setText(t("decrypt_failed", self.lang))
+                return
+            self.decrypt_button.hide()
+            self.show_body(mail.parse_body(inner))  # shown only: the store keeps what arrived, still encrypted
+            self.security.setText(t("decrypted", self.lang))
+        self.runner.start(lambda: pgp.decrypt(raw), done, lambda e: done(None))
+
+    # Diamond (docs/MAIL.md §13): only when asked; the message is data, the answer is text
+
+    def _ask_diamond(self, messages, done) -> None:
+        from . import diamond
+
+        ai = self.ai or diamond.answer
+        self.runner.start(lambda: ai(messages), done, lambda e: done(""))
+
+    def summarize(self) -> None:
+        from . import diamond
+
+        row = self.current
+        if row is None or not self.current_text:
+            return
+        self.summary.setText(t("diamond_thinking", self.lang))
+        self.summary.show()
+        key = (row["account"], row["folder"], row["uid"])
+
+        def done(said) -> None:
+            if not self.current or (self.current["account"], self.current["folder"], self.current["uid"]) != key:
+                return  # another message is open now
+            self.summary.setText(said or t("diamond_unavailable", self.lang))
+            self.summary.setFocus()
+        self._ask_diamond(diamond.summary_messages(row["sender"] or row["sender_address"] or "",
+                                                   row["subject"] or "", self.current_text, self.lang), done)
+
+    def diamond_reply(self) -> None:
+        """A draft from Diamond in the normal compose window: the person reads, changes and sends it."""
+        from . import diamond
+
+        row = self.current
+        if row is None or not self.current_text:
+            return
+        text = self.current_text
+        self.statusBar().showMessage(t("diamond_thinking", self.lang))
+
+        def done(said) -> None:
+            if not said:
+                self.statusBar().showMessage(t("diamond_unavailable", self.lang), 8000)
+                return
+            self.statusBar().clearMessage()
+            draft = compose.reply(row, text, row["account"], False, self.lang)
+            draft.paragraphs = [(line, "auto") for line in said.splitlines()] + [("", "auto")] + draft.paragraphs
+            self._compose(draft)
+        self._ask_diamond(diamond.reply_messages(row["sender"] or row["sender_address"] or "", row["subject"] or "",
+                                                 text, self.lang), done)
 
     def _open_link(self, url: QUrl) -> None:
         if url.scheme() == "mailto":

@@ -305,7 +305,7 @@ EOF
   chmod 0755 "$root/DEBIAN/postinst" "$root/DEBIAN/prerm"
 
   finish "$root" dai-apps all \
-    "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
+    "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin, gnupg, gpgsm" \
     "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, Move, Diamond (local AI), Forge, Code, Voice, Welcome, MOM and J" \
     "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic, libsecret-tools, python3-dnspython"
 }

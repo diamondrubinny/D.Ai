@@ -3549,3 +3549,65 @@ msgstr "Отложено до {when}. Письмо вернётся непроч
 #: apps/dai-j/dai_j/text.py
 msgid "Tomorrow at 8:00"
 msgstr "Завтра в 8:00"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Summarize (Diamond)"
+msgstr "Кратко (Diamond)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Draft a reply (Diamond)"
+msgstr "Черновик ответа (Diamond)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Diamond is reading the message…"
+msgstr "Diamond читает письмо…"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Diamond is not available. Install a model: D.Ai Command, ? and the question."
+msgstr "Diamond недоступен. Установите модель: в D.Ai Command введите ? и вопрос."
+
+#: apps/dai-j/dai_j/text.py
+msgid "🔒 This message is encrypted. Only you can read it, with your key."
+msgstr "🔒 Это письмо зашифровано. Прочитать его можете только вы, своим ключом."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Decrypt and show"
+msgstr "Расшифровать и показать"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Decrypting… (your key's password may be asked in its own window)"
+msgstr "Расшифровываем… (пароль ключа может быть запрошен в отдельном окне)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "🔓 Decrypted to read now. It is not saved decrypted."
+msgstr "🔓 Расшифровано для чтения сейчас. В расшифрованном виде не сохраняется."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Could not decrypt: the key is not on this computer, or the password was not given."
+msgstr "Не удалось расшифровать: ключа нет на этом компьютере или пароль не введён."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Checking the signature…"
+msgstr "Проверяем подпись…"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "✓ Signed by {who}, and the message was not changed."
+msgstr "✓ Подписано: {who}. Письмо не изменялось."
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "✓ Signed by {who} and not changed, but you have not confirmed that this key is theirs."
+msgstr "✓ Подписано: {who}, без изменений, но вы ещё не подтвердили, что этот ключ принадлежит ему."
+
+#: apps/dai-j/dai_j/text.py
+msgid "✗ The signature does not match: the message was changed after it was signed."
+msgstr "✗ Подпись не совпадает: письмо изменили после подписания."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Signed with a key that is not on this computer, so it cannot be checked."
+msgstr "Подписано ключом, которого нет на этом компьютере, поэтому проверить нельзя."
+
+#: apps/dai-j/dai_j/text.py
+msgid "The signature could not be checked."
+msgstr "Не удалось проверить подпись."

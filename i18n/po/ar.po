@@ -3549,3 +3549,65 @@ msgstr "أُجّلت حتى {when}. ستعود غير مقروءة."
 #: apps/dai-j/dai_j/text.py
 msgid "Tomorrow at 8:00"
 msgstr "غدًا الساعة 8:00"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Summarize (Diamond)"
+msgstr "تلخيص (Diamond)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Draft a reply (Diamond)"
+msgstr "مسودة رد (Diamond)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Diamond is reading the message…"
+msgstr "Diamond يقرأ الرسالة…"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Diamond is not available. Install a model: D.Ai Command, ? and the question."
+msgstr "Diamond غير متاح. ثبّت نموذجًا: في D.Ai Command، اكتب ? ثم السؤال."
+
+#: apps/dai-j/dai_j/text.py
+msgid "🔒 This message is encrypted. Only you can read it, with your key."
+msgstr "🔒 هذه الرسالة مشفّرة. أنت وحدك تستطيع قراءتها، بمفتاحك."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Decrypt and show"
+msgstr "فكّ التشفير والعرض"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Decrypting… (your key's password may be asked in its own window)"
+msgstr "جارٍ فك التشفير… (قد تُطلب كلمة مرور مفتاحك في نافذة خاصة بها)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "🔓 Decrypted to read now. It is not saved decrypted."
+msgstr "🔓 فُكّ التشفير للقراءة الآن. لا تُحفظ الرسالة مفكوكة التشفير."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Could not decrypt: the key is not on this computer, or the password was not given."
+msgstr "تعذّر فك التشفير: المفتاح غير موجود على هذا الحاسوب، أو لم تُدخل كلمة المرور."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Checking the signature…"
+msgstr "جارٍ التحقق من التوقيع…"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "✓ Signed by {who}, and the message was not changed."
+msgstr "✓ وقّعها {who}، ولم تُغيَّر الرسالة."
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "✓ Signed by {who} and not changed, but you have not confirmed that this key is theirs."
+msgstr "✓ وقّعها {who} ولم تُغيَّر، لكنك لم تؤكد بعد أن هذا المفتاح له."
+
+#: apps/dai-j/dai_j/text.py
+msgid "✗ The signature does not match: the message was changed after it was signed."
+msgstr "✗ التوقيع غير مطابق: غُيّرت الرسالة بعد توقيعها."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Signed with a key that is not on this computer, so it cannot be checked."
+msgstr "موقّعة بمفتاح غير موجود على هذا الحاسوب، لذا لا يمكن التحقق منها."
+
+#: apps/dai-j/dai_j/text.py
+msgid "The signature could not be checked."
+msgstr "تعذّر التحقق من التوقيع."

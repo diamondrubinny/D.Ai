@@ -3549,3 +3549,65 @@ msgstr "Adiada até {when}. Ela voltará como não lida."
 #: apps/dai-j/dai_j/text.py
 msgid "Tomorrow at 8:00"
 msgstr "Amanhã às 8:00"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Summarize (Diamond)"
+msgstr "Resumir (Diamond)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Draft a reply (Diamond)"
+msgstr "Rascunho de resposta (Diamond)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Diamond is reading the message…"
+msgstr "O Diamond está lendo a mensagem…"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Diamond is not available. Install a model: D.Ai Command, ? and the question."
+msgstr "O Diamond não está disponível. Instale um modelo: no D.Ai Command, ? e a pergunta."
+
+#: apps/dai-j/dai_j/text.py
+msgid "🔒 This message is encrypted. Only you can read it, with your key."
+msgstr "🔒 Esta mensagem está cifrada. Só você pode lê-la, com a sua chave."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Decrypt and show"
+msgstr "Decifrar e mostrar"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Decrypting… (your key's password may be asked in its own window)"
+msgstr "Decifrando… (a senha da sua chave pode ser pedida numa janela própria)"
+
+#: apps/dai-j/dai_j/text.py
+msgid "🔓 Decrypted to read now. It is not saved decrypted."
+msgstr "🔓 Decifrada para ler agora. Não é guardada decifrada."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Could not decrypt: the key is not on this computer, or the password was not given."
+msgstr "Não foi possível decifrar: a chave não está neste computador ou a senha não foi indicada."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Checking the signature…"
+msgstr "Verificando a assinatura…"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "✓ Signed by {who}, and the message was not changed."
+msgstr "✓ Assinada por {who}, e a mensagem não foi alterada."
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "✓ Signed by {who} and not changed, but you have not confirmed that this key is theirs."
+msgstr "✓ Assinada por {who} e sem alterações, mas você ainda não confirmou que esta chave é dessa pessoa."
+
+#: apps/dai-j/dai_j/text.py
+msgid "✗ The signature does not match: the message was changed after it was signed."
+msgstr "✗ A assinatura não confere: a mensagem foi alterada depois de assinada."
+
+#: apps/dai-j/dai_j/text.py
+msgid "Signed with a key that is not on this computer, so it cannot be checked."
+msgstr "Assinada com uma chave que não está neste computador, por isso não pode ser verificada."
+
+#: apps/dai-j/dai_j/text.py
+msgid "The signature could not be checked."
+msgstr "Não foi possível verificar a assinatura."
