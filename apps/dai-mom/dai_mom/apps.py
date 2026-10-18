@@ -31,6 +31,8 @@ SESSION = PROTECTED | {"init", "sh", "dash", "bash-session", "lxqt-wayland-sessi
 
 # The D.Ai launchers run `python3 -c '... from dai_<name>.cli import main ...'`.
 DAI_MODULE = re.compile(r"\bdai_([a-z]+)\b")
+# Interpreters are never the app themselves: the script they run is.
+INTERPRETERS = frozenset({"python", "python3", "perl", "ruby", "node", "sh", "bash", "dash", "java"})
 FLATPAK_SCOPE = re.compile(r"^app-flatpak-(.+)-\d+\.scope$")
 FIELD_CODE = re.compile(r"%[fFuUdDnNickvm]")
 
@@ -146,22 +148,40 @@ def load_desktop_apps(dirs: list[Path], lang: str) -> dict[str, DesktopApp]:
     return by_key
 
 
+def _interpreter(name: str) -> bool:
+    return name in INTERPRETERS or re.fullmatch(r"python3\.\d+", name) is not None
+
+
 def program_keys(process: Process) -> list[str]:
     """The names to look a process up by, most specific first."""
     keys = []
     scope = FLATPAK_SCOPE.match(process.cgroup)
     if scope:
         keys.append(scope.group(1))
-    if process.name in ("python3", "python") or process.name.startswith("python3."):
+    if _interpreter(process.name) or process.cmdline and _interpreter(os.path.basename(process.cmdline[0])):
         found = DAI_MODULE.search(" ".join(process.cmdline[:4]))
         if found:
             keys.append(f"dai-{found.group(1)}")
+        script = next((a for a in process.cmdline[1:] if not a.startswith("-")), "")
+        if script and "/" in script:
+            keys.append(os.path.basename(script))
+        return keys  # never "python3.13": that would be the interpreter's own menu entry
     if process.exe:
         keys.append(os.path.basename(process.exe))
     if process.cmdline:
         keys.append(os.path.basename(process.cmdline[0]))
     keys += [process.name, process.name.lower()]
     return keys
+
+
+def _dai_service(process: Process) -> DesktopApp | None:
+    """A D.Ai background service without a menu entry: "dai_privacy" -> "D.Ai Privacy"."""
+    if not _interpreter(process.name):
+        return None
+    found = DAI_MODULE.search(" ".join(process.cmdline[:4]))
+    if not found:
+        return None
+    return DesktopApp(id=f"dai-{found.group(1)}", name=f"D.Ai {found.group(1).capitalize()}", icon="dai-logo")
 
 
 def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = None,
@@ -174,7 +194,7 @@ def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = 
     def match(process: Process) -> DesktopApp | None:
         if process.name in SESSION:
             return None
-        return next((desktop[k] for k in program_keys(process) if k in desktop), None)
+        return next((desktop[k] for k in program_keys(process) if k in desktop), None) or _dai_service(process)
 
     owner: dict[int, str] = {}
     apps: dict[str, App] = {}
@@ -182,14 +202,21 @@ def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = 
         found: DesktopApp | None = None
         current: Process | None = process
         hops = 0
+        sandbox: Process | None = None
         while current is not None and hops < 64:  # the highest ancestor that is an app wins
             if current.name in SESSION or current.uid != uid:
                 break
+            if sandbox is not None and current.name != "bwrap":
+                break  # a sandbox is its own app, not part of whatever started it
             candidate = match(current)
             if candidate is not None:
                 found = candidate
+            if current.name == "bwrap":
+                sandbox = current
             current = procs.get(current.ppid)
             hops += 1
+        if found is None and sandbox is not None:
+            found = DesktopApp(id=f"sandbox:{sandbox.pid}", name="", icon="security-high")
         if found is not None:
             key = found.id
             app = apps.setdefault(key, App(key=key, name=found.name, comment=found.comment, icon=found.icon))
@@ -207,6 +234,8 @@ def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = 
         names = {app.name.lower(), *(p.name.lower() for p in app.processes)}
         app.recording = any(r and any(r in n or n in r for n in names if len(n) > 2) for r in lowered)
         app.processes.sort(key=lambda p: p.pid)
+        if not app.name:  # a sandbox without a menu entry: named after what runs inside
+            app.name = next((p.name for p in app.processes if p.name != "bwrap"), "sandbox")
     return sorted(apps.values(), key=lambda a: (not a.is_app, -a.memory, a.name.lower()))
 
 

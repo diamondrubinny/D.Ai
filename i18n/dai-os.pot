@@ -401,6 +401,11 @@ msgstr ""
 msgid "Backed up: "
 msgstr ""
 
+#. he: שירותי הרקע פועלים
+#: apps/dai-raz/dai_raz/cli.py:29
+msgid "Background services are on"
+msgstr ""
+
 #. he: דיסק הגיבוי מחובר · Enter
 #: apps/dai-command/dai_command/core.py:423
 msgid "Backup drive connected · Enter"
@@ -789,6 +794,11 @@ msgstr ""
 msgid "D.Ai Tune — configure the system by writing what you need."
 msgstr ""
 
+#. he: פקודות D.Ai עולות
+#: apps/dai-raz/dai_raz/cli.py:27
+msgid "D.Ai commands start"
+msgstr ""
+
 #. he: ל־D.Ai יש רעיון בשבילך
 #: apps/dai-evolve/dai_evolve/cli.py:40
 msgid "D.Ai has an idea for you"
@@ -797,6 +807,11 @@ msgstr ""
 #. he: הצעה של D.Ai · Enter לבדיקה · Delete להסתרה
 #: apps/dai-command/dai_command/core.py:413
 msgid "D.Ai suggests · Enter to review · Delete to hide"
+msgstr ""
+
+#. he: הקבצים של D.Ai כפי שהותקנו
+#: apps/dai-raz/dai_raz/cli.py:31
+msgid "D.Ai's files are as installed"
 msgstr ""
 
 #. he: תאריך
@@ -818,6 +833,11 @@ msgstr ""
 #. he: סגירה: ⁦Delete⁩ · סגירה בכוח: ⁦Shift+Delete⁩
 #: apps/dai-mom/dai_mom/text.py:55
 msgid "Delete: close · Shift+Delete: force close"
+msgstr ""
+
+#. he: נמחק.
+#: apps/dai-raz/dai_raz/cli.py:109
+msgid "Deleted."
 msgstr ""
 
 #. he: שולחן העבודה
@@ -1022,6 +1042,11 @@ msgstr ""
 #. he: Enter להעתקה
 #: apps/dai-command/dai_command/core.py:379
 msgid "Enter to copy"
+msgstr ""
+
+#. he: כל השפות עובדות
+#: apps/dai-raz/dai_raz/cli.py:35
+msgid "Every language works"
 msgstr ""
 
 #. he: אפשר לבטל כל שינוי במערכת: dai-tune undo
@@ -1983,6 +2008,11 @@ msgstr ""
 msgid "Programs usually crash because of damaged settings or a bug. Starting it again often works; if it keeps crashing, putting its settings aside (they are kept) usually fixes it."
 msgstr ""
 
+#. he: ההגדרות המוגנות שלמות
+#: apps/dai-raz/dai_raz/cli.py:30
+msgid "Protected settings are intact"
+msgstr ""
+
 #. he: העברת ההגדרות הצידה
 #: apps/dai-heal/dai_heal/text.py:52
 msgid "Put its settings aside"
@@ -2007,6 +2037,11 @@ msgstr ""
 #. he: מפתח שחזור — רשמו אותו ושמרו במקום בטוח
 #: apps/dai-backup/dai_backup/cli.py:103
 msgid "RECOVERY KEY — write it down and keep it safe"
+msgstr ""
+
+#. he: Raz עוד לא בדק: dai-raz check
+#: apps/dai-raz/dai_raz/cli.py:99
+msgid "Raz has not checked yet: dai-raz check"
 msgstr ""
 
 #. he: מוכנים
@@ -2277,6 +2312,11 @@ msgstr ""
 msgid "Security updates from Debian install automatically; D.Ai updates only when you choose to."
 msgstr ""
 
+#. he: עדכוני אבטחה מותקנים לבד
+#: apps/dai-raz/dai_raz/cli.py:33
+msgid "Security updates install by themselves"
+msgstr ""
+
 #. he: אבטחה {score}/100
 #: apps/dai-quick/dai_quick/gui.py:33
 #, python-brace-format
@@ -2530,6 +2570,11 @@ msgstr ""
 msgid "Takes effect at each user's next login. Users can choose a shorter time, not a longer one."
 msgstr ""
 
+#. he: התוספים של שורת המשימות נטענו
+#: apps/dai-raz/dai_raz/cli.py:28
+msgid "Taskbar plugins are loaded"
+msgstr ""
+
 #. he: כתבו מה המחשב צריך לדעת לעשות, והוא יבנה ויקים את זה בשבילכם.
 #: apps/dai-forge/dai_forge/gui.py:118
 msgid "Tell the computer what it should be able to do — it builds and sets it up for you."
@@ -2575,6 +2620,11 @@ msgstr ""
 msgid "The disk is encrypted if you chose encryption during installation."
 msgstr ""
 
+#. he: חומת האש פועלת
+#: apps/dai-raz/dai_raz/cli.py:32
+msgid "The firewall is on"
+msgstr ""
+
 #. he: העדכון האחרון ({date}) שינה {count} חבילות. 
 #: apps/dai-doctor/dai_doctor/diagnose.py:225
 #, python-brace-format
@@ -2599,6 +2649,11 @@ msgstr ""
 #. he: המעבד לא עמוס
 #: apps/dai-doctor/dai_doctor/diagnose.py:97
 msgid "The processor is not overloaded"
+msgstr ""
+
+#. he: אפשר לחשב את ציון האבטחה
+#: apps/dai-raz/dai_raz/cli.py:34
+msgid "The security score can be computed"
 msgstr ""
 
 #. he: השרת לא קיבל את שם המשתמש או הסיסמה.
@@ -3537,6 +3592,12 @@ msgstr ""
 #: apps/dai-clip/dai_clip/text.py:21
 #, python-brace-format
 msgid "{n} min ago"
+msgstr ""
+
+#. he: {n} חדשים
+#: apps/dai-raz/dai_raz/checks.py:188
+#, python-brace-format
+msgid "{n} new"
 msgstr ""
 
 #. he: {rel} גדול מ־{limit}KB; ערכו קובץ קטן יותר
