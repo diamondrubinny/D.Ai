@@ -1,5 +1,7 @@
 # D.Ai OS
 
+🌍 **English** · [עברית](#בעברית) · [العربية](docs/readme/README.ar.md) · [Русский](docs/readme/README.ru.md) · [Español](docs/readme/README.es.md) · [Français](docs/readme/README.fr.md) · [Deutsch](docs/readme/README.de.md) · [Português](docs/readme/README.pt.md)
+
 **A free, secure, open-source Linux desktop with a built-in local AI, a Hebrew-first experience, and a builder that extends the system from plain text.**
 
 Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
