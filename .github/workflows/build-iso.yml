@@ -117,6 +117,9 @@ jobs:
           PYTHONPATH: apps/dai-raz:apps/dai-i18n:apps/dai-tune:apps/dai-ai
         run: python3 -m unittest discover -s apps/dai-raz/tests -t apps/dai-raz -v
 
+      - name: Unit tests (Ruby's extension - cleaning, remembering, spaces, snapshots - against a fake browser)
+        run: node --test apps/dai-ruby/extension-tests/
+
       - name: Unit tests (dai-voice)
         env:
           PYTHONPATH: apps/dai-i18n:apps/dai-ai
@@ -263,8 +266,37 @@ jobs:
           path: panel-plugin/
           retention-days: 3
 
+  ruby-extension:
+    # Firefox installs only signed add-ons. With the project's addons.mozilla.org API key (secrets
+    # AMO_JWT_ISSUER / AMO_JWT_SECRET) the extension is signed as unlisted (self-distributed) and goes into
+    # the image; without it, Ruby keeps stage 1 (docs/BROWSER.md §10).
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+      AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint and build the extension
+        run: |
+          npx --yes web-ext@8.3.0 lint --source-dir apps/dai-ruby/extension --self-hosted
+          npx --yes web-ext@8.3.0 build --source-dir apps/dai-ruby/extension --artifacts-dir ruby-unsigned
+      - name: Sign (only with the project's AMO key)
+        if: env.AMO_JWT_ISSUER != ''
+        run: |
+          npx --yes web-ext@8.3.0 sign --source-dir apps/dai-ruby/extension --channel unlisted \
+            --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET" --artifacts-dir ruby-signed
+          mkdir -p ruby-extension && cp ruby-signed/*.xpi ruby-extension/ruby.xpi
+      - uses: actions/upload-artifact@v4
+        if: env.AMO_JWT_ISSUER != ''
+        with:
+          name: ruby-extension
+          path: ruby-extension/
+          retention-days: 3
+
   build:
-    needs: [lint, llama, whisper, panel-plugin]
+    needs: [lint, llama, whisper, panel-plugin, ruby-extension]
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -292,6 +324,12 @@ jobs:
           name: panel-plugin
           path: panel-plugin
 
+      - uses: actions/download-artifact@v4
+        continue-on-error: true   # only there when the extension was signed
+        with:
+          name: ruby-extension
+          path: ruby-extension
+
       - name: Build ISO (Debian trixie container)
         timeout-minutes: 40
         run: |
@@ -304,6 +342,7 @@ jobs:
             -e DAI_LLAMA_DIST=/src/llama-dist \
             -e DAI_WHISPER_DIST=/src/whisper-dist \
             -e DAI_PANEL_PLUGIN=/src/panel-plugin \
+            -e DAI_RUBY_XPI=/src/ruby-extension/ruby.xpi \
             -e SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)" \
             -v "$PWD:/src" -w /src \
             debian:trixie \

@@ -10,6 +10,7 @@
 #   DAI_LLAMA_DIST     llama.cpp runtime (build-llama.sh) → dai-llama-runtime
 #   DAI_WHISPER_DIST   whisper.cpp runtime (build-whisper.sh) → dai-whisper-runtime
 #   DAI_PANEL_PLUGIN   lxqt-panel plugin (build-panel-plugin.sh) → dai-panel-plugin
+#   DAI_RUBY_XPI       Ruby's extension, signed by addons.mozilla.org → dai-ruby (optional)
 #   DAI_APT_URL        update source base (".../releases/latest/"; apt then reads "download/InRelease")
 #   DAI_KEYRING        public archive key (default: build/keys/dai-archive-keyring.asc)
 #   DAI_MAINTAINER     Maintainer field
@@ -312,6 +313,25 @@ build_ruby() { # Ruby (docs/BROWSER.md): D.Ai's browsing experience on Debian's 
   install -m 0644 "$ruby/firefox-esr.desktop" "$root/usr/share/applications/firefox-esr.desktop"
   install -m 0644 "$ruby/start.html" "$root/usr/share/dai/ruby/start.html"
   install -m 0644 "$ruby/dai-ruby.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-ruby.svg"
+  # Stage 2 (docs/BROWSER.md §10): with the signed extension, Ruby cleans by itself and keeps the sites the
+  # user remembers, so Firefox's own clean-everything-on-close is turned off. Without it: stage 1 as is.
+  if [[ -n "${DAI_RUBY_XPI:-}" && -f "$DAI_RUBY_XPI" ]]; then
+    install -m 0644 "$DAI_RUBY_XPI" "$root/usr/share/dai/ruby/ruby.xpi"
+    python3 - "$root/etc/firefox/policies/policies.json" <<'PY'
+import json, sys
+path = sys.argv[1]
+data = json.load(open(path))
+policies = data["policies"]
+policies["ExtensionSettings"]["ruby@dai-os.github.io"] = {
+    "installation_mode": "force_installed", "install_url": "file:///usr/share/dai/ruby/ruby.xpi",
+    "default_area": "navbar"}
+policies["SanitizeOnShutdown"].update({"Cookies": False, "OfflineApps": False})
+open(path, "w").write(json.dumps(data, indent=2) + "\n")
+PY
+    log "dai-ruby: with the signed extension (stage 2)"
+  else
+    log "dai-ruby: no signed extension; Ruby stage 1"
+  fi
   install -d "$root/DEBIAN"
   # One browser in the menu: Debian's entry moves aside (not deleted) while dai-ruby is installed.
   cat >"$root/DEBIAN/preinst" <<'EOF2'

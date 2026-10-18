@@ -1,0 +1,91 @@
+{
+  "name": {
+    "message": "Ruby"
+  },
+  "description": {
+    "message": "D.Ai's private browsing: remember the sites you want, forget the rest by itself."
+  },
+  "shield": {
+    "message": "Ruby shield"
+  },
+  "site": {
+    "message": "This site"
+  },
+  "no_site": {
+    "message": "Not a web site"
+  },
+  "remember": {
+    "message": "Remember this site (stay signed in)"
+  },
+  "forget": {
+    "message": "Forget this site now"
+  },
+  "cookies": {
+    "message": "Cookies stored by this site: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "forgotten": {
+    "message": "Forgotten: $COUNT$ cookies and its stored data.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cleaning": {
+    "message": "Clean automatically"
+  },
+  "cleaning_hint": {
+    "message": "When a site's last tab closes, its cookies and stored data go, unless you remember it."
+  },
+  "clean_all": {
+    "message": "Clean everything not remembered"
+  },
+  "cleaned": {
+    "message": "Cleaned: $COUNT$ cookies.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "spaces": {
+    "message": "Spaces"
+  },
+  "space_work": {
+    "message": "Work"
+  },
+  "space_home": {
+    "message": "Home"
+  },
+  "space_school": {
+    "message": "School"
+  },
+  "sessions": {
+    "message": "Restore tabs from earlier"
+  },
+  "no_sessions": {
+    "message": "No snapshots yet (one is taken every 5 minutes)."
+  },
+  "session_row": {
+    "message": "$TIME$ · $TABS$ tabs",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "restore": {
+    "message": "Restore"
+  },
+  "local_only": {
+    "message": "Everything stays on this computer."
+  }
+}

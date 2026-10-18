@@ -1,0 +1,91 @@
+{
+  "name": {
+    "message": "רובי"
+  },
+  "description": {
+    "message": "הגלישה הפרטית של D.Ai: זוכר את האתרים שבחרתם, ושוכח את השאר בעצמו."
+  },
+  "shield": {
+    "message": "המגן של רובי"
+  },
+  "site": {
+    "message": "האתר הזה"
+  },
+  "no_site": {
+    "message": "זה לא אתר אינטרנט"
+  },
+  "remember": {
+    "message": "לזכור את האתר (להישאר מחוברים)"
+  },
+  "forget": {
+    "message": "לשכוח את האתר עכשיו"
+  },
+  "cookies": {
+    "message": "עוגיות שהאתר שמר: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "forgotten": {
+    "message": "נשכח: $COUNT$ עוגיות והנתונים שהאתר שמר.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cleaning": {
+    "message": "ניקוי אוטומטי"
+  },
+  "cleaning_hint": {
+    "message": "כשהלשונית האחרונה של אתר נסגרת, העוגיות והנתונים שלו נמחקים, אלא אם בחרתם לזכור אותו."
+  },
+  "clean_all": {
+    "message": "לנקות את כל מה שלא נזכר"
+  },
+  "cleaned": {
+    "message": "נוקו: $COUNT$ עוגיות.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "spaces": {
+    "message": "סביבות"
+  },
+  "space_work": {
+    "message": "עבודה"
+  },
+  "space_home": {
+    "message": "בית"
+  },
+  "space_school": {
+    "message": "לימודים"
+  },
+  "sessions": {
+    "message": "שחזור לשוניות מקודם"
+  },
+  "no_sessions": {
+    "message": "עוד אין תמונות מצב (נשמרת אחת כל 5 דקות)."
+  },
+  "session_row": {
+    "message": "$TIME$ · $TABS$ לשוניות",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "restore": {
+    "message": "שחזור"
+  },
+  "local_only": {
+    "message": "הכל נשאר במחשב הזה."
+  }
+}

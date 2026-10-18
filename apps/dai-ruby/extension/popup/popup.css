@@ -1,0 +1,20 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright (c) 2026 Diamond Rubinny (d.Ai) */
+:root { --bg: #0B1020; --card: #141B33; --line: #2A3563; --text: #E6E9F5; --muted: #AEB6D9; --ruby: #FF6B8F; --cyan: #22D3EE; }
+body { margin: 0; width: 340px; background: var(--bg); color: var(--text); font: 14px/1.5 "Noto Sans", sans-serif; }
+main { padding: 12px 14px; }
+h1 { font-size: 16px; margin: 0 0 8px; display: flex; gap: 6px; align-items: center; color: var(--ruby); }
+h2 { font-size: 13px; margin: 0 0 6px; color: var(--muted); font-weight: 600; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0 0 10px; }
+.site { font-weight: 700; margin: 0 0 6px; overflow-wrap: anywhere; }
+.row { display: flex; gap: 8px; align-items: center; margin: 4px 0; cursor: pointer; }
+.muted { color: var(--muted); font-size: 12px; margin: 4px 0; }
+button { background: #1C2547; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font: inherit; cursor: pointer; }
+button:hover { border-color: #7C5CFF; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+button:disabled { opacity: .5; cursor: default; }
+.spaces { display: flex; gap: 6px; flex-wrap: wrap; }
+ul { list-style: none; margin: 0; padding: 0; }
+li { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 4px 0; }
+#status { min-height: 1.2em; margin: 0 0 6px; }
+@media (prefers-reduced-motion: no-preference) { button { transition: border-color .15s; } }
