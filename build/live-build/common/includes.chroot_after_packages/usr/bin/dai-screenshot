@@ -1,0 +1,22 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Screenshot on Wayland: the whole screen (Print) or an area (Shift+Print, --area), saved to
+# ~/Pictures/Screenshots and copied to the clipboard. Nothing leaves the computer.
+set -eu
+dir="${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
+mkdir -p "$dir"
+file="$dir/Screenshot-$(date +%Y-%m-%d-%H%M%S).png"
+if [ "${1:-}" = "--area" ]; then
+	area=$(slurp) || exit 0 # Esc: no screenshot
+	grim -g "$area" "$file"
+else
+	grim "$file"
+fi
+if command -v wl-copy >/dev/null 2>&1; then
+	wl-copy --type image/png <"$file" || true
+fi
+if command -v notify-send >/dev/null 2>&1; then
+	notify-send -a "D.Ai" -i "$file" "Screenshot" "$file" || true
+fi
+printf '%s\n' "$file"

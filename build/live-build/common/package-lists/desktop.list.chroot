@@ -33,6 +33,15 @@ featherpad
 lximage-qt
 qpdfview
 screengrab
+# Wayland basics (recommends are off, so they are named here; docs/PLAN.md "OS basics"):
+# drives mount by themselves (udisks2), trash and network folders in the file manager (gvfs),
+# screenshots (grim, slurp) and the screens' layout (wlr-randr).
+udisks2
+gvfs
+gvfs-backends
+grim
+slurp
+wlr-randr
 pavucontrol-qt
 nm-tray
 blueman

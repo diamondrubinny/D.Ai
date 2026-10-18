@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# A window to arrange the screens on Wayland (lxqt-config-monitor works only on X11).
+wdisplays

@@ -87,6 +87,7 @@ configure() {
     --firmware-chroot false \
     --firmware-binary false \
     --memtest none \
+    --uefi-secure-boot enable \
     --image-name "dai-os-$EDITION" \
     --iso-application "D.Ai OS" \
     --iso-publisher "Diamond Rubinny (d.Ai)" \

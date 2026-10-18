@@ -48,6 +48,7 @@ jobs:
             build/live-build/common/includes.chroot_after_packages/usr/lib/live/config/*
           shellcheck -s sh build/live-build/common/includes.chroot_after_packages/etc/skel/.config/labwc/autostart \
             build/live-build/common/includes.chroot_after_packages/usr/bin/startdai-wayland \
+            build/live-build/common/includes.chroot_after_packages/usr/bin/dai-screenshot \
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models apps/dai-ruby/data/dai-ruby-diamond \

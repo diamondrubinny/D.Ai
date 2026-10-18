@@ -592,6 +592,18 @@ def main() -> int:
          "stat -c %a ~/.local/share/dai-j/mail.sqlite; rm -rf ~/.thunderbird", True,
          lambda o: '"added":1,"skipped":1' in o and '"added":0,"skipped":2' in o and "SOURCE_UNTOUCHED" in o
          and re.search(r"^600$", o, re.M) is not None, 60),
+        # OS basics on Wayland: drives mount by themselves, the screens can be read and arranged, Print works,
+        # and the medium boots with Secure Boot on (Debian's signed shim and GRUB).
+        ("os: drives mount by themselves", "udisksctl status >/dev/null 2>&1 && echo UDISKS; "
+         "test -x /usr/libexec/gvfsd && echo GVFS; systemctl is-enabled udisks2 2>/dev/null", True,
+         lambda o: "UDISKS" in o and "GVFS" in o, 60),
+        ("os: screens on Wayland", WAYLAND_ENV + "wlr-randr 2>&1 | head -n 8; command -v wdisplays >/dev/null && echo WDISPLAYS",
+         True, lambda o: re.search(r"\d+x\d+ px", o) is not None, 30),
+        ("os: screenshot (Print)", WAYLAND_ENV + "f=$(dai-screenshot 2>/dev/null) && test -s \"$f\" && echo SHOT_OK; "
+         "rm -f -- \"$f\"", True, lambda o: "SHOT_OK" in o, 40),
+        ("os: secure boot shim", "for f in $(find /run/live/medium -iname 'bootx64.efi' -o -iname 'efi.img' 2>/dev/null); do "
+         "printf '%s ' \"$f\"; grep -c -a 'UEFI SHIM' \"$f\"; done; find /run/live/medium -iname 'grubx64.efi' | head -n 2",
+         False, lambda o: re.search(r" [1-9]\d*$", o, re.M) is not None, 60),
         # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
         ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
          "dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst", False,
