@@ -143,6 +143,8 @@ build_apps() {
   copy_package "$forge/dai_forge" "$root"
   install -m 0755 "$forge/data/dai-forge" "$forge/data/dai-forge-gui" "$root/usr/bin/"
   install -m 0644 "$forge/data/dai-forge.desktop" "$root/usr/share/applications/"
+  # Forge apps that run in a sandbox show this icon (with a shield) in the menu and the taskbar (docs/TASKBAR.md §12).
+  install -D -m 0644 "$forge/data/dai-app-sandboxed.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-app-sandboxed.svg"
   install -d "$root/usr/share/dai/forge/recipes" "$root/usr/share/dai/forge/examples" "$root/etc/dai/forge/recipes"
   install -m 0644 "$forge"/data/recipes/*.json "$root/usr/share/dai/forge/recipes/"
   install -m 0644 "$forge"/examples/* "$root/usr/share/dai/forge/examples/"

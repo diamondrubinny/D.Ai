@@ -297,6 +297,29 @@ class AppTests(ForgeTestCase):
         with self.assertRaises(apps.AppError):
             apps.sandbox_argv(app, {"WAYLAND_DISPLAY": "../../tmp/x"})
 
+    def test_the_taskbar_shows_it_with_the_shield(self):
+        """docs/TASKBAR.md §12: a window app runs as "dai-app-<name>", the name of its .desktop file and its 🛡 icon."""
+        from dai_forge import sandbox_start
+
+        app, _ = apps.save("notes", "Notes", "gui", GUI_CODE, {})
+        desktop = apps.desktop_file("notes").read_text()
+        self.assertIn("Icon=dai-app-sandboxed", desktop)
+        self.assertIn("StartupWMClass=dai-app-notes", desktop)
+        installed = Path("/usr/lib/dai/dai_forge/sandbox_start.py")
+        with mock.patch.object(apps, "SANDBOX_START", installed):
+            argv = apps.sandbox_argv(app, {"XDG_RUNTIME_DIR": "/run/user/1000", "WAYLAND_DISPLAY": "wayland-0"})
+        self.assertEqual(argv[-5:], ["/usr/bin/python3", "-I", str(installed), "dai-app-notes", "/app/app.py"])
+        cli, _ = apps.save("report", "Report", "cli", "print(1)\n", {})
+        with mock.patch.object(apps, "SANDBOX_START", installed):
+            self.assertEqual(apps.sandbox_argv(cli, {})[-1], "/app/app.py")  # only window apps have an app_id
+        self.assertNotIn("StartupWMClass", apps.desktop_file("report").read_text())
+        for bad in (["x", "dai-app-x", "/etc/passwd"], ["x", "dai-app-../x", "/app/app.py"], ["x", "notes", "/app/app.py"],
+                    ["x", "dai-app-x", "/app/../etc/passwd.py"], ["x"]):
+            with self.subTest(bad), mock.patch("sys.stderr"):
+                self.assertEqual(sandbox_start.main(bad), 2)
+        icon = (Path(apps.__file__).resolve().parents[1] / "data/dai-app-sandboxed.svg").read_text()
+        self.assertIn("<title>", icon)
+
     def test_web_app_csp(self):
         page = "<!doctype html><html><head><title>x</title></head><body><script>fetch('https://x')</script></body></html>"
         app, findings = apps.save("page", "Page", "web", page, {"network": True})

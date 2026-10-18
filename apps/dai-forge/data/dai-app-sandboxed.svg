@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- An app built with D.Ai Forge, running in a sandbox: an app tile with a shield (docs/TASKBAR.md §12). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>App in a sandbox</title>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7C5CFF"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34D399"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="46" height="46" rx="11" fill="url(#tile)"/>
+  <rect x="13" y="15" width="28" height="22" rx="3" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <line x1="13" y1="21" x2="41" y2="21" stroke="#FFFFFF" stroke-width="3"/>
+  <path d="M46 30 L60 35 V45 C60 53 54 58 46 61 C38 58 32 53 32 45 V35 Z" fill="url(#shield)" stroke="#0B1020" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M39.5 45.5 L44.5 50 L52.5 40.5" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -448,7 +448,9 @@ def desktop_file(name: str) -> Path:
     return paths.desktop_dir() / f"dai-app-{name}.desktop"
 
 
-ICONS = {"gui": "applications-other", "cli": "utilities-terminal", "web": "applications-internet"}
+# A window app shows the 🛡 icon in the taskbar: it runs as "dai-app-<name>", the name of its .desktop file.
+ICONS = {"gui": "dai-app-sandboxed", "cli": "utilities-terminal", "web": "applications-internet"}
+SANDBOX_START = Path(__file__).with_name("sandbox_start.py")
 
 
 def write_desktop_entry(app: App) -> Path:
@@ -469,6 +471,8 @@ def write_desktop_entry(app: App) -> Path:
         "Categories=Utility;",
         "X-DAi-Forge=true",
     ]
+    if app.kind == "gui":
+        lines.append(f"StartupWMClass=dai-app-{app.name}")
     path = desktop_file(app.name)
     _write(path, "\n".join(lines) + "\n")
     return path
@@ -539,7 +543,10 @@ def sandbox_argv(app: App, env: dict[str, str] | None = None) -> list[str]:
                 argv += ["--setenv", key, env[key]]
     elif env.get("TERM"):
         argv += ["--setenv", "TERM", env["TERM"]]
-    argv += ["--", "/usr/bin/python3", "-I", f"/app/{app.entry}"]
+    if app.kind == "gui" and str(SANDBOX_START).startswith("/usr/"):  # installed: /usr is in the sandbox, read-only
+        argv += ["--", "/usr/bin/python3", "-I", str(SANDBOX_START), f"dai-app-{app.name}", f"/app/{app.entry}"]
+    else:
+        argv += ["--", "/usr/bin/python3", "-I", f"/app/{app.entry}"]
     return argv
 
 

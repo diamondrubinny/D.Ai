@@ -367,8 +367,13 @@ def main() -> int:
          lambda o: all(x in o for x in ("home: []", "network: blocked", "read-only: /app/app.py", "read-only: /etc/passwd",
                                           "ssh key visible: False", "x11 socket visible: False")), 60),
         ("forge: example app added", "dai-forge app add tasks /usr/share/dai/forge/examples/tasks.py --title Tasks </dev/null "
-         "| head -n 2; dai-forge app list; test -f ~/.local/share/applications/dai-app-tasks.desktop && echo IN_MENU", True,
-         lambda o: "IN_MENU" in o and "tasks" in o),
+         "| head -n 2; dai-forge app list; test -f ~/.local/share/applications/dai-app-tasks.desktop && echo IN_MENU; "
+         # docs/TASKBAR.md §12: it runs as "dai-app-tasks", so the taskbar shows its 🛡 icon
+         "grep -h '^StartupWMClass=\\|^Icon=' ~/.local/share/applications/dai-app-tasks.desktop; "
+         "test -f /usr/share/icons/hicolor/scalable/apps/dai-app-sandboxed.svg && echo SHIELD_ICON; "
+         "python3 -I /usr/lib/dai/dai_forge/sandbox_start.py dai-app-x /etc/passwd; echo START_RC=$?", True,
+         lambda o: "IN_MENU" in o and "tasks" in o and "StartupWMClass=dai-app-tasks" in o
+         and "Icon=dai-app-sandboxed" in o and "SHIELD_ICON" in o and "START_RC=2" in o),
         # D.Ai Clip: the real labwc clipboard → history; tokens and password-manager copies stay out.
         # The secrets are assembled in the shell so the command echo never contains them.
         ("clip: history without secrets", WAYLAND_ENV + "dai-clip --version; dai-clip clear >/dev/null; "
