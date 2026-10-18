@@ -79,6 +79,7 @@ class Base(unittest.TestCase):
         desktop(apps_dir, "python3.13", "Name=Python (v3.13)\nExec=python3.13\n")
         f.add(1100, 600, "python3", ["python3", "-I", "-c", "import sys; from dai_privacy.tray import main"])
         f.add(1101, 600, "python3", ["python3", "/home/dana/tool.py"])
+        f.add(1102, 500, "python3", ["python3", "-I", "-c", "import sys; from dai_ai.daid import main"])
         f.add(1200, 600, "python3", ["python3", "-I", "-c", "from dai_command.ui import main"])
         f.add(1201, 1200, "bwrap", ["bwrap", "--unshare-all", "python3", "app.py"])
         f.add(1202, 1201, "python3", ["python3", "/app/app.py"])
@@ -135,6 +136,7 @@ class GroupTests(Base):
         found = {a.key: a for a in self.grouped()}
         self.assertNotIn("python3.13", found)  # the interpreter's menu entry is never "the app"
         self.assertEqual(found["dai-privacy"].name, "D.Ai Privacy")
+        self.assertEqual(found["dai-ai"].name, "Diamond")
         self.assertIn("proc:python3", found)  # a script of the user's own, under its own name
         self.assertEqual([p.pid for p in found["proc:python3"].processes], [1101])
         sandbox = found["sandbox:1201"]

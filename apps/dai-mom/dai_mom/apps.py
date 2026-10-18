@@ -181,7 +181,9 @@ def _dai_service(process: Process) -> DesktopApp | None:
     found = DAI_MODULE.search(" ".join(process.cmdline[:4]))
     if not found:
         return None
-    return DesktopApp(id=f"dai-{found.group(1)}", name=f"D.Ai {found.group(1).capitalize()}", icon="dai-logo")
+    module = found.group(1)
+    name = "Diamond" if module == "ai" else f"D.Ai {module.capitalize()}"  # daid is Diamond, the local AI
+    return DesktopApp(id=f"dai-{module}", name=name, icon="dai-logo")
 
 
 def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = None,
