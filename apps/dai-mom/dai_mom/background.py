@@ -139,6 +139,31 @@ def login_items(lang: str, user_dir: Path | None = None, system_dirs: list[Path]
     return sorted(items, key=lambda i: (not i.id.startswith("dai-"), i.name.lower()))
 
 
+BLAME = re.compile(r"^\s*(?:(\d+)min\s*)?(?:([\d.]+)(ms|s))?\s+app-(\S+)@autostart\.service\s*$")
+
+
+def boot_costs(runner: Runner = _run) -> dict[str, float]:
+    """Seconds each login app adds, by its .desktop id, when the session starts them as systemd units
+    (app-<id>@autostart.service, from systemd-xdg-autostart-generator). Empty when it cannot be measured:
+    then MOM shows nothing rather than a guess."""
+    try:
+        result = runner(["systemd-analyze", "--user", "blame", "--no-pager"])
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    if result.returncode != 0:
+        return {}
+    costs: dict[str, float] = {}
+    for line in result.stdout.splitlines():
+        match = BLAME.match(line)
+        if not match or not (match.group(1) or match.group(2)):
+            continue
+        minutes, value, unit, escaped = match.groups()
+        seconds = int(minutes or 0) * 60 + (float(value) / (1000 if unit == "ms" else 1) if value else 0.0)
+        item = re.sub(r"\\x([0-9a-fA-F]{2})", lambda m: chr(int(m.group(1), 16)), escaped)
+        costs[item + ".desktop"] = round(seconds, 1)
+    return costs
+
+
 def set_login_item(item_id: str, enabled: bool, user_dir: Path | None = None,
                    system_dirs: list[Path] | None = None) -> None:
     """Turn a login app on or off by writing (or removing) the user's own copy of its file."""

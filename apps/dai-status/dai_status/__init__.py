@@ -2,9 +2,9 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """The Living Diamond's state (docs/TASKBAR.md §2.1): one small file the panel watches.
 
-  $XDG_RUNTIME_DIR/dai/status.json   {"heal": 1, "privacy": ["Zoom"], "ideas": 2}
+  $XDG_RUNTIME_DIR/dai/status.json   {"heal": 1, "privacy": ["Zoom"], "busy": ["Game"], "ideas": 2}
 
-Written by the services that already run (D.Ai Heal, Privacy, Evolve), read by
+Written by the services that already run (D.Ai Heal, Privacy, Evolve, MOM's guard), read by
 the panel plugin with inotify, never polled. Counters and app names only:
 no content, questions or file names. In memory (tmpfs), 0600, gone at logout.
 """
@@ -34,7 +34,7 @@ def directory() -> Path | None:
 def _clean(section: str, value: object) -> object:
     if section in ("heal", "ideas"):
         return max(0, min(MAX_COUNT, int(value)))  # type: ignore[call-overload]
-    if section == "privacy":
+    if section in ("privacy", "busy"):  # app names: recording now, or running away (MOM's guard)
         names = [CONTROL.sub("", str(name)).strip()[:MAX_NAME] for name in value]  # type: ignore[union-attr]
         return sorted({name for name in names if name})[:MAX_APPS]
     raise ValueError(f"unknown status section: {section}")

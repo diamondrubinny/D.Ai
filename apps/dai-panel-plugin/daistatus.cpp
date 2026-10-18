@@ -46,15 +46,23 @@ DaiStatus DaiStatus::fromJson(const QByteArray &data)
     status.ideas = count(object, "ideas");
     // App names are shown to the user: plain text only, no control or bidi characters.
     static const QRegularExpression unsafe(QStringLiteral("[\\x00-\\x1f\\x7f\\x{200e}\\x{200f}\\x{202a}-\\x{202e}\\x{2066}-\\x{2069}]"));
-    for (const QJsonValue &value : object.value(QLatin1String("privacy")).toArray()) {
-        const QString name = value.toString().remove(unsafe).trimmed().left(kMaxName);
-        if (!name.isEmpty() && status.recording.size() < kMaxApps)
-            status.recording << name;
-    }
+    const auto names = [&](const char *key) {
+        QStringList found;
+        for (const QJsonValue &value : object.value(QLatin1String(key)).toArray()) {
+            const QString name = value.toString().remove(unsafe).trimmed().left(kMaxName);
+            if (!name.isEmpty() && found.size() < kMaxApps)
+                found << name;
+        }
+        return found;
+    };
+    status.recording = names("privacy");
+    status.busy = names("busy");
     if (!status.recording.isEmpty())
         status.kind = Kind::Privacy;
     else if (status.heal > 0)
         status.kind = Kind::Heal;
+    else if (!status.busy.isEmpty())
+        status.kind = Kind::Busy;
     else if (status.ideas > 0)
         status.kind = Kind::Idea;
     return status;
@@ -69,6 +77,9 @@ QString DaiStatus::describe(bool hebrew) const
     case Kind::Heal:
         return hebrew ? QStringLiteral("D.Ai Heal מצא תקלות (%1). לעזרה: Super+F1").arg(heal)
                       : QStringLiteral("D.Ai Heal found %1 problem(s). Help: Super+F1").arg(heal);
+    case Kind::Busy:
+        return hebrew ? QStringLiteral("עובד קשה מאוד: %1. לפרטים: Ctrl+Shift+Esc").arg(busy.join(QStringLiteral(", ")))
+                      : QStringLiteral("Working very hard: %1. Details: Ctrl+Shift+Esc").arg(busy.join(QStringLiteral(", ")));
     case Kind::Idea:
         return hebrew ? QStringLiteral("ל־D.Ai יש רעיון בשבילך. Super+Space")
                       : QStringLiteral("D.Ai has an idea for you. Super+Space");
@@ -106,7 +117,8 @@ bool DaiStatusBadge::eventFilter(QObject *watched, QEvent *event)
 
 void DaiStatusBadge::paintEvent(QPaintEvent *)
 {
-    // Shape as well as colour (WCAG 1.4.1): circle = recording, triangle = problem, diamond = idea.
+    // Shape as well as colour (WCAG 1.4.1): circle = recording, triangle = problem, square = an app runs away,
+    // diamond = idea.
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     const qreal size = 11.0;
@@ -127,6 +139,10 @@ void DaiStatusBadge::paintEvent(QPaintEvent *)
         shape.lineTo(box.left(), box.bottom());
         shape.closeSubpath();
         color = QColor(0xFB, 0xBF, 0x24);
+        break;
+    case DaiStatus::Kind::Busy:
+        shape.addRoundedRect(box.adjusted(0.5, 0.5, -0.5, -0.5), 2.0, 2.0);
+        color = QColor(0xFB, 0x92, 0x3C);
         break;
     case DaiStatus::Kind::Idea:
         shape.moveTo(box.center().x(), box.top());

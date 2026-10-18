@@ -33,6 +33,7 @@ SESSION = PROTECTED | {"init", "sh", "dash", "bash-session", "lxqt-wayland-sessi
 DAI_MODULE = re.compile(r"\bdai_([a-z]+)\b")
 # Interpreters are never the app themselves: the script they run is.
 INTERPRETERS = frozenset({"python", "python3", "perl", "ruby", "node", "sh", "bash", "dash", "java"})
+SHELLS = frozenset({"sh", "bash", "dash"})
 FLATPAK_SCOPE = re.compile(r"^app-flatpak-(.+)-\d+\.scope$")
 FIELD_CODE = re.compile(r"%[fFuUdDnNickvm]")
 
@@ -176,9 +177,9 @@ def program_keys(process: Process) -> list[str]:
 
 def _dai_service(process: Process) -> DesktopApp | None:
     """A D.Ai background service without a menu entry: "dai_privacy" -> "D.Ai Privacy"."""
-    if not _interpreter(process.name):
-        return None
-    found = DAI_MODULE.search(" ".join(process.cmdline[:4]))
+    if not _interpreter(process.name) or process.name in SHELLS:
+        return None  # a shell's command text is not the program it runs
+    found = DAI_MODULE.search(" ".join(process.cmdline[:4]))  # D.Ai's launchers: python3 -I -c "from dai_x…"
     if not found:
         return None
     module = found.group(1)

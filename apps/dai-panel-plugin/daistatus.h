@@ -2,7 +2,8 @@
 // Copyright (c) 2026 Diamond Rubinny (d.Ai)
 // The Living Diamond (docs/TASKBAR.md §2.1): the Start button also shows, at a
 // glance, whether something needs you - a red dot while an app records, an
-// amber triangle when D.Ai Heal found a problem, a small cyan diamond when
+// amber triangle when D.Ai Heal found a problem, an orange square while an app
+// runs away (MOM's guard), a small cyan diamond when
 // D.Ai Evolve has an idea. It decorates LXQt's own Start button (same
 // process) instead of replacing it, so the menu and its shortcuts stay as
 // they are. State comes from $XDG_RUNTIME_DIR/dai/status.json (dai_status),
@@ -21,13 +22,14 @@
 
 struct DaiStatus
 {
-    enum class Kind { None, Idea, Heal, Privacy };
+    enum class Kind { None, Idea, Busy, Heal, Privacy };
     Kind kind = Kind::None;
     int heal = 0;
     int ideas = 0;
     QStringList recording;
+    QStringList busy;   // apps that run away (MOM's guard); never closed for you
 
-    // The most important thing wins: privacy, then a problem, then an idea.
+    // The most important thing wins: privacy, then a problem, then a busy app, then an idea.
     static DaiStatus fromJson(const QByteArray &data);
     QString describe(bool hebrew) const;
 };

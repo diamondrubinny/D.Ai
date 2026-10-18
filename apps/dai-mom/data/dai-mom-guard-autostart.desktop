@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# MOM's guard (docs/MOM.md §12): notices an app that runs away and shows it on
+# the Living Diamond. It never closes anything. Turn it off in MOM → Startup.
+[Desktop Entry]
+Type=Application
+Name=MOM guard
+Name[he]=השומר של MOM
+Comment=Notices apps that run away; never closes them
+Comment[he]=שם לב לאפליקציות שיוצאות מכלל שליטה, ואף פעם לא סוגר אותן
+Exec=dai-mom guard
+TryExec=dai-mom
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

@@ -202,6 +202,8 @@ build_apps() {
   copy_package "$mom/dai_mom" "$root"
   install -m 0755 "$mom/data/dai-mom" "$root/usr/bin/dai-mom"
   install -m 0644 "$mom/data/dai-mom.desktop" "$root/usr/share/applications/"
+  install -d "$root/etc/xdg/autostart"
+  install -m 0644 "$mom/data/dai-mom-guard-autostart.desktop" "$root/etc/xdg/autostart/dai-mom-guard.desktop"
 
   # J (docs/MAIL.md): the mail client, and the handler for mailto: links.
   local j="$REPO_ROOT/apps/dai-j"

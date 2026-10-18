@@ -98,9 +98,11 @@ class BackgroundPage(QWidget):
 
 
 class StartupPage(QWidget):
-    def __init__(self, lang: str, user_dir: Path | None = None, system_dirs: list[Path] | None = None) -> None:
+    def __init__(self, lang: str, user_dir: Path | None = None, system_dirs: list[Path] | None = None,
+                 costs=None) -> None:
         super().__init__(objectName="Page")
         self.lang = lang
+        self.costs = costs or bg.boot_costs
         self.user_dir = user_dir
         self.system_dirs = system_dirs
         self.loading = False
@@ -118,8 +120,13 @@ class StartupPage(QWidget):
     def refresh(self) -> None:
         self.loading = True
         self.list.clear()
+        costs = self.costs()
         for entry in bg.login_items(self.lang, self.user_dir, self.system_dirs):
-            item = QListWidgetItem(f"{entry.name}" + (f" — {entry.comment}" if entry.comment else ""))
+            cost = costs.get(entry.id, 0.0)
+            label = f"{entry.name}" + (f" — {entry.comment}" if entry.comment else "")
+            if cost >= 0.1:  # measured by systemd; nothing is shown when it was not measured
+                label += f" · {t('boot_cost', self.lang, seconds=f'{cost:.1f}')}"
+            item = QListWidgetItem(label)
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             item.setCheckState(Qt.CheckState.Checked if entry.enabled else Qt.CheckState.Unchecked)
             item.setData(DATA, entry)

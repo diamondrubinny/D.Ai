@@ -45,6 +45,12 @@ private slots:
         const DaiStatus names = DaiStatus::fromJson(
             "{\"privacy\": [\"a\\u202eb\", \"\\u0007\", \"1\", \"2\", \"3\", \"4\", 5]}");
         QCOMPARE(names.recording, QStringList({QStringLiteral("ab"), QStringLiteral("1"), QStringLiteral("2")}));
+        // MOM's guard: a busy app shows above an idea and below a problem.
+        const DaiStatus busy = DaiStatus::fromJson("{\"ideas\": 1, \"busy\": [\"Game\\u202e\"]}");
+        QCOMPARE(busy.kind, DaiStatus::Kind::Busy);
+        QCOMPARE(busy.busy, QStringList({QStringLiteral("Game")}));
+        QVERIFY(busy.describe(false).contains(QStringLiteral("Working very hard: Game")));
+        QCOMPARE(DaiStatus::fromJson("{\"heal\": 1, \"busy\": [\"Game\"]}").kind, DaiStatus::Kind::Heal);
     }
 
     void decoratesTheStartButton()

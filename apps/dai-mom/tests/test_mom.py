@@ -146,6 +146,16 @@ class GroupTests(Base):
         self.assertEqual(sandbox.name, "python3")
         self.assertFalse(found["dai-command"].sandboxed)  # what started the sandbox is not inside it
 
+    def test_a_shell_that_mentions_dai_is_not_a_dai_service(self):
+        # bash -c "… python3 -m dai_mom …" must not pull everything it starts into "D.Ai Mom"
+        self.fake.add(1300, 600, "bash", ["bash", "-c", "python3 -m dai_mom guard; sleep 1"])
+        self.fake.add(1301, 1300, "dai-burn", ["/tmp/dai-burn", "-c", "while True: pass"])
+        self.fake.add(1302, 1300, "python3", ["python3", "-m", "dai_mom", "guard"])
+        found = {a.key: [p.pid for p in a.processes] for a in self.grouped()}
+        self.assertEqual(found["proc:dai-burn"], [1301])
+        self.assertIn(1302, found["dai-mom"])
+        self.assertNotIn(1300, found.get("dai-mom", []))
+
     def test_hebrew_names_and_recording_badge(self):
         found = {a.key: a for a in self.grouped("he", recording=["Firefox"])}
         self.assertEqual(found["firefox-esr"].name, "פיירפוקס")

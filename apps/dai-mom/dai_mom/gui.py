@@ -143,7 +143,10 @@ class MomWindow(QMainWindow):
         from .pages import BackgroundPage, StartupPage
 
         self.background = BackgroundPage(self.lang, services_runner or _run)
-        self.startup = StartupPage(self.lang, *autostart)
+        from . import background as bg
+
+        runner = services_runner or _run
+        self.startup = StartupPage(self.lang, *autostart, costs=lambda: bg.boot_costs(runner))
         self.tabs.addTab(self._apps_page(), t("apps", self.lang))
         self.tabs.addTab(self.background, t("background", self.lang))
         self.tabs.addTab(self.startup, t("startup", self.lang))

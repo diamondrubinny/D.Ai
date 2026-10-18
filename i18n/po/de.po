@@ -3346,3 +3346,27 @@ msgstr "eine App ohne Beschreibung"
 #, python-brace-format
 msgid "{name} is using {cpu}% of the processor."
 msgstr "{name} nutzt {cpu} % des Prozessors."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "+{seconds} s at login"
+msgstr "+{seconds} s bei der Anmeldung"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Nothing was closed. To see it or close it: Ctrl+Shift+Esc."
+msgstr "Nichts wurde geschlossen. Ansehen oder schließen: Strg+Umschalt+Esc."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "{name} has grown by {grown} in {minutes} minutes and keeps growing."
+msgstr "{name} ist in {minutes} Minuten um {grown} gewachsen und wächst weiter."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "{name} has kept a whole processor core busy for {minutes} minutes."
+msgstr "{name} lastet seit {minutes} Minuten einen ganzen Prozessorkern aus."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "{name} is working very hard"
+msgstr "{name} arbeitet sehr stark"

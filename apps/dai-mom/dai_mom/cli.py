@@ -13,6 +13,8 @@
   dai-mom explain NAME|PID [--facts]
                                     Diamond explains an app (--facts: only what would be sent)
   dai-mom why                       why the computer is slow, from D.Ai Doctor and Diamond
+  dai-mom guard [--cpu-seconds N] [--rounds N]
+                                    watch for apps that run away (started at login); never closes them
   dai-mom --version
 """
 
@@ -95,6 +97,17 @@ def main(argv: list[str] | None = None) -> int:
                 return 1
         for item in bg.login_items(lang):
             print(f"{'on ' if item.enabled else 'off'} {item.id}  {item.name}")
+        return 0
+    if command == "guard":
+        from . import guard
+
+        def option(name: str, default: float, low: float) -> float:
+            if name in rest and rest.index(name) + 1 < len(rest):
+                return max(low, float(rest[rest.index(name) + 1]))
+            return default
+        rounds = option("--rounds", 0, 1)
+        guard.run_forever(lang, rounds=int(rounds) if rounds else None,
+                          cpu_seconds=option("--cpu-seconds", guard.CPU_SECONDS, 10))
         return 0
     if command == "explain":
         from . import diamond

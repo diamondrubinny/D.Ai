@@ -541,6 +541,14 @@ def main() -> int:
          "timeout 60 dai-mom why | head -n 5; kill $P", True,
          lambda o: "RC_FACTS=0" in o and "NO_PASSWORD" in o and "NO_TOKEN" in o and "HIDDEN_SHOWN" in o
          and "RC_EXPLAIN=0" in o, 150),
+        # MOM stage 4 (docs/MOM.md §12): the guard starts at login, notices a copy of python that keeps a core busy
+        # (thresholds shortened for the test), and never closes it.
+        ("mom: the guard notices, never closes", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "test -f /etc/xdg/autostart/dai-mom-guard.desktop && echo AUTOSTART; "
+         "cp \"$(readlink -f /usr/bin/python3)\" /tmp/dai-burn; /tmp/dai-burn -c 'while True: pass' & B=$!; "
+         "timeout 90 dai-mom guard --cpu-seconds 10 --rounds 3 | head -n 5; "
+         "kill -0 $B && echo STILL_RUNNING; kill $B", True,
+         lambda o: "AUTOSTART" in o and "cpu proc:dai-burn" in o and "STILL_RUNNING" in o, 120),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
