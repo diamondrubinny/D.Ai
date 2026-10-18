@@ -1,0 +1,16 @@
+{
+ "format": 1,
+ "lang": "de",
+ "note": "German words D.Ai Command (Heal) understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "etwas": "something",
+  "irgendwas": "something",
+  "funktioniert nicht": "not working",
+  "geht nicht": "not working",
+  "kaputt": "broken",
+  "abgestürzt": "crashed",
+  "stürzt ab": "crashes",
+  "hilf mir reparieren": "help me fix",
+  "repariere meinen computer": "fix my computer"
+ }
+}

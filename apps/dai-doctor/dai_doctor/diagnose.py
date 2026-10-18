@@ -10,6 +10,7 @@ dai-doctor performs after confirmation, or advice.
 from __future__ import annotations
 
 import re
+from pathlib import Path
 from dataclasses import dataclass, field
 
 from dai_i18n import text
@@ -267,15 +268,23 @@ CUES = (r"(?:\bwhy\b|\bwhat\b|\bhow\b|\bcomputer\b|\bpc\b|\blaptop\b|\bsystem\b|
         r"למה|מדוע|מה |איך|המחשב|מחשב|המערכת|הלפטופ|שלי|עדכון|\bupdate\b)")
 
 
-def topic_for(text: str) -> str | None:
-    """The question a sentence asks, if it is one D.Ai Doctor answers."""
-    lowered = text.casefold()
+LANG_DIR = Path(__file__).parent / "lang"  # keyword packs for the six other languages (docs/I18N.md §10)
+
+
+def _topic(lowered: str) -> str | None:
     if not re.search(CUES, lowered):
         return None
     for topic, pattern in QUESTIONS.items():
         if re.search(pattern, lowered):
             return topic
     return None
+
+
+def topic_for(text: str) -> str | None:
+    """The question a sentence asks, if it is one D.Ai Doctor answers ("почему компьютер тормозит?" too)."""
+    from dai_i18n import keywords
+
+    return _topic(text.casefold()) or _topic(keywords.translate(keywords.normalize(text), LANG_DIR))
 
 
 def diagnose(facts: Facts, topics: tuple[str, ...], lang: str = "en") -> list[Finding]:

@@ -524,7 +524,7 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         command = text[1:].strip()
         return [Action("run", command, tr("background"), "system-run", command)] if command else []
 
-    if HEAL_WORDS.search(text) and shutil.which("dai-heal"):
+    if (HEAL_WORDS.search(text) or HEAL_WORDS.search(_heal_english(text))) and shutil.which("dai-heal"):
         return [Action("heal", tr("heal_title"), tr("heal_hint"), "help-browser", "")]
     if (found := find_actions(text)) is not None:
         return found
@@ -681,6 +681,15 @@ MOVE_WORDS = re.compile(r"(?:(?:import|move|copy|bring|transfer)\b.*\bfrom (?:my
 HEAL_WORDS = re.compile(r"^(?:משהו|something)\b.*(?:לא עובד|נתקע|השתבש|broke|broken|not working|wrong)|"
                         r"\bcrash(?:ed|es)?\b|קרס|קריסה|תקלה|help me fix|fix my (?:computer|pc)|עזרה ותיקון|"
                         r"(?:תתקן|תקן) את המחשב", re.IGNORECASE)
+HEAL_LANG = Path(__file__).parent / "lang"  # "что-то не работает", "quelque chose ne marche pas" (docs/I18N.md §10)
+
+
+def _heal_english(text: str) -> str:
+    from dai_i18n import keywords
+
+    return keywords.translate(keywords.normalize(text), HEAL_LANG)
+
+
 CLIP_WORDS = re.compile(r"\bclipboard\b|what (?:did i copy|i copied)|copy history|paste history|"
                         r"(?:היסטוריי?ת|יומן) (?:ה)?(?:העתקות|לוח|הדבקות)|מה העתקתי|לוח (?:ה)?(?:העתקות|גזירים)", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)

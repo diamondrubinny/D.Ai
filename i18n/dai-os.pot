@@ -155,7 +155,7 @@ msgid "+{seconds} s at login"
 msgstr ""
 
 #. he: , בריאות {health}%
-#: apps/dai-doctor/dai_doctor/diagnose.py:175
+#: apps/dai-doctor/dai_doctor/diagnose.py:176
 #, python-brace-format
 msgid ", {health}% health"
 msgstr ""
@@ -181,7 +181,7 @@ msgid "A part of the system that runs in the background stopped. Restarting it u
 msgstr ""
 
 #. he: לפניו נשמרה תמונת מצב של המערכת. הקבצים האישיים לא משתנים.
-#: apps/dai-doctor/dai_doctor/diagnose.py:229
+#: apps/dai-doctor/dai_doctor/diagnose.py:230
 msgid "A snapshot of the system was taken before it. Your personal files are not touched."
 msgstr ""
 
@@ -262,7 +262,7 @@ msgid "Advanced settings"
 msgstr ""
 
 #. he: מצב טיסה, או מקש/מתג Wi-Fi כבוי.
-#: apps/dai-doctor/dai_doctor/diagnose.py:209
+#: apps/dai-doctor/dai_doctor/diagnose.py:210
 msgid "Airplane mode or a Wi-Fi key/switch is on."
 msgstr ""
 
@@ -469,13 +469,13 @@ msgid "Balanced power mode"
 msgstr ""
 
 #. he: הסוללה ב־{capacity}%
-#: apps/dai-doctor/dai_doctor/diagnose.py:170
+#: apps/dai-doctor/dai_doctor/diagnose.py:171
 #, python-brace-format
 msgid "Battery at {capacity}%"
 msgstr ""
 
 #. he: הסוללה תקינה
-#: apps/dai-doctor/dai_doctor/diagnose.py:176
+#: apps/dai-doctor/dai_doctor/diagnose.py:177
 msgid "Battery is fine"
 msgstr ""
 
@@ -490,7 +490,7 @@ msgid "Battery saver mode (longer battery life, a bit slower)"
 msgstr ""
 
 #. he: מצב חיסכון בסוללה יאריך אותה.
-#: apps/dai-doctor/dai_doctor/diagnose.py:172
+#: apps/dai-doctor/dai_doctor/diagnose.py:173
 msgid "Battery saver mode makes it last longer."
 msgstr ""
 
@@ -500,7 +500,7 @@ msgid "Before the update this worked, and now it does not (Raz, D.Ai's quality c
 msgstr ""
 
 #. he: התיקיות הגדולות בבית שלכם
-#: apps/dai-doctor/dai_doctor/diagnose.py:155
+#: apps/dai-doctor/dai_doctor/diagnose.py:156
 msgid "Biggest folders in your home"
 msgstr ""
 
@@ -558,7 +558,7 @@ msgid "CPU"
 msgstr ""
 
 #. he: מצלמה
-#: apps/dai-doctor/dai_doctor/diagnose.py:184
+#: apps/dai-doctor/dai_doctor/diagnose.py:185
 msgid "Camera"
 msgstr ""
 
@@ -667,12 +667,12 @@ msgid "Close"
 msgstr ""
 
 #. he: סגרו אפליקציות או לשוניות דפדפן שלא בשימוש
-#: apps/dai-doctor/dai_doctor/diagnose.py:71
+#: apps/dai-doctor/dai_doctor/diagnose.py:72
 msgid "Close apps or browser tabs you are not using"
 msgstr ""
 
 #. he: סגרו את האפליקציה העמוסה או חכו שתסיים
-#: apps/dai-doctor/dai_doctor/diagnose.py:95
+#: apps/dai-doctor/dai_doctor/diagnose.py:96
 msgid "Close or wait for the busiest app"
 msgstr ""
 
@@ -742,12 +742,12 @@ msgid "Connect the backup drive first ({repo})."
 msgstr ""
 
 #. he: מחוברת, אבל שירות ההדפסה עוד לא מותקן.
-#: apps/dai-doctor/dai_doctor/diagnose.py:195
+#: apps/dai-doctor/dai_doctor/diagnose.py:196
 msgid "Connected, but printing is not installed yet."
 msgstr ""
 
 #. he: שקלו להחליף סוללה
-#: apps/dai-doctor/dai_doctor/diagnose.py:168
+#: apps/dai-doctor/dai_doctor/diagnose.py:169
 msgid "Consider replacing the battery"
 msgstr ""
 
@@ -940,7 +940,7 @@ msgid "Desktop"
 msgstr ""
 
 #. he: פרטים: journalctl -u {failed_units}
-#: apps/dai-doctor/dai_doctor/diagnose.py:104
+#: apps/dai-doctor/dai_doctor/diagnose.py:105
 #, python-brace-format
 msgid "Details: journalctl -u {failed_units}"
 msgstr ""
@@ -1084,7 +1084,7 @@ msgid "Download the coding model"
 msgstr ""
 
 #. he: קבצי התקנה שהורדו ויומני מערכת ישנים.
-#: apps/dai-doctor/dai_doctor/diagnose.py:139
+#: apps/dai-doctor/dai_doctor/diagnose.py:140
 msgid "Downloaded package files and old system logs."
 msgstr ""
 
@@ -1125,7 +1125,7 @@ msgid "E-mail address"
 msgstr ""
 
 #. he: לרוקן את סל המחזור ולנקות תצוגות מקדימות
-#: apps/dai-doctor/dai_doctor/diagnose.py:151
+#: apps/dai-doctor/dai_doctor/diagnose.py:152
 msgid "Empty the trash and clear previews"
 msgstr ""
 
@@ -1150,12 +1150,12 @@ msgid "English letters, digits and -, up to 63."
 msgstr ""
 
 #. he: יש מספיק זיכרון פנוי
-#: apps/dai-doctor/dai_doctor/diagnose.py:75
+#: apps/dai-doctor/dai_doctor/diagnose.py:76
 msgid "Enough free memory"
 msgstr ""
 
 #. he: יש מספיק מקום ב־{mount}
-#: apps/dai-doctor/dai_doctor/diagnose.py:130
+#: apps/dai-doctor/dai_doctor/diagnose.py:131
 #, python-brace-format
 msgid "Enough free space on {mount}"
 msgstr ""
@@ -1343,7 +1343,7 @@ msgid "Free disk space: downloaded package files and old system logs"
 msgstr ""
 
 #. he: לפנות את המקום (מנהל)
-#: apps/dai-doctor/dai_doctor/diagnose.py:140
+#: apps/dai-doctor/dai_doctor/diagnose.py:141
 msgid "Free this space (administrator)"
 msgstr ""
 
@@ -1401,7 +1401,7 @@ msgid "Good to know"
 msgstr ""
 
 #. he: גרפיקה
-#: apps/dai-doctor/dai_doctor/diagnose.py:183
+#: apps/dai-doctor/dai_doctor/diagnose.py:184
 msgid "Graphics"
 msgstr ""
 
@@ -1516,7 +1516,7 @@ msgid "Install from Flathub: "
 msgstr ""
 
 #. he: התקנת הדפסה (D.Ai Forge)
-#: apps/dai-doctor/dai_doctor/diagnose.py:196
+#: apps/dai-doctor/dai_doctor/diagnose.py:197
 msgid "Install printing (D.Ai Forge)"
 msgstr ""
 
@@ -1537,7 +1537,7 @@ msgid "It has not run yet."
 msgstr ""
 
 #. he: היא מחזיקה {health}% מהקיבולת המקורית שלה.
-#: apps/dai-doctor/dai_doctor/diagnose.py:166
+#: apps/dai-doctor/dai_doctor/diagnose.py:167
 #, python-brace-format
 msgid "It holds {health}% of its original capacity."
 msgstr ""
@@ -1641,19 +1641,19 @@ msgid "Let's start ✦"
 msgstr ""
 
 #. he: מעט מקום פנוי ב־{mount}
-#: apps/dai-doctor/dai_doctor/diagnose.py:125
+#: apps/dai-doctor/dai_doctor/diagnose.py:126
 #, python-brace-format
 msgid "Little free space on {mount}"
 msgstr ""
 
 #. he: עומס {load1:.1f} על {cores} ליבות
-#: apps/dai-doctor/dai_doctor/diagnose.py:98
+#: apps/dai-doctor/dai_doctor/diagnose.py:99
 #, python-brace-format
 msgid "Load {load1:.1f} on {cores} cores"
 msgstr ""
 
 #. he: עומס {load1:.1f} על {cores} ליבות. הכי עמוסים: {names}.
-#: apps/dai-doctor/dai_doctor/diagnose.py:92
+#: apps/dai-doctor/dai_doctor/diagnose.py:93
 #, python-brace-format
 msgid "Load {load1:.1f} on {cores} cores. Busiest: {names}."
 msgstr ""
@@ -1717,7 +1717,7 @@ msgid "Memory"
 msgstr ""
 
 #. he: הזיכרון כמעט מלא
-#: apps/dai-doctor/dai_doctor/diagnose.py:73
+#: apps/dai-doctor/dai_doctor/diagnose.py:74
 msgid "Memory is almost full"
 msgstr ""
 
@@ -1842,7 +1842,7 @@ msgid "No edits yet."
 msgstr ""
 
 #. he: אין כאן פרטי חומרה
-#: apps/dai-doctor/dai_doctor/diagnose.py:216
+#: apps/dai-doctor/dai_doctor/diagnose.py:217
 msgid "No hardware details available here"
 msgstr ""
 
@@ -1967,7 +1967,7 @@ msgid "Not prepared."
 msgstr ""
 
 #. he: המחשב לא הופעל מחדש הרבה זמן
-#: apps/dai-doctor/dai_doctor/diagnose.py:108
+#: apps/dai-doctor/dai_doctor/diagnose.py:109
 msgid "Not restarted for a long time"
 msgstr ""
 
@@ -2163,7 +2163,7 @@ msgid "Only these facts, on this computer. Secrets in the command line are hidde
 msgstr ""
 
 #. he: רק {mem_available} מתוך {mem_total} פנויים.
-#: apps/dai-doctor/dai_doctor/diagnose.py:66
+#: apps/dai-doctor/dai_doctor/diagnose.py:67
 #, python-brace-format
 msgid "Only {mem_available} of {mem_total} is free."
 msgstr ""
@@ -2283,7 +2283,7 @@ msgid "Previous version"
 msgstr ""
 
 #. he: מדפסת
-#: apps/dai-doctor/dai_doctor/diagnose.py:185
+#: apps/dai-doctor/dai_doctor/diagnose.py:186
 msgid "Printer"
 msgstr ""
 
@@ -2486,7 +2486,7 @@ msgid "Restart the service {unit}"
 msgstr ""
 
 #. he: הפעילו מחדש כשנוח
-#: apps/dai-doctor/dai_doctor/diagnose.py:112
+#: apps/dai-doctor/dai_doctor/diagnose.py:113
 msgid "Restart when convenient"
 msgstr ""
 
@@ -2612,7 +2612,7 @@ msgid "Search what you copied…"
 msgstr ""
 
 #. he: חפשו: linux driver {name}
-#: apps/dai-doctor/dai_doctor/diagnose.py:204
+#: apps/dai-doctor/dai_doctor/diagnose.py:205
 #, python-brace-format
 msgid "Search: linux driver {name}"
 msgstr ""
@@ -2666,12 +2666,12 @@ msgid "Security {score}/100"
 msgstr ""
 
 #. he: מה השתנה: /var/log/apt/history.log
-#: apps/dai-doctor/dai_doctor/diagnose.py:238
+#: apps/dai-doctor/dai_doctor/diagnose.py:239
 msgid "See what changed: /var/log/apt/history.log"
 msgstr ""
 
 #. he: מה השתנה: /var/log/apt/history.log, ודווחו ב־GitHub
-#: apps/dai-doctor/dai_doctor/diagnose.py:244
+#: apps/dai-doctor/dai_doctor/diagnose.py:245
 msgid "See what changed: /var/log/apt/history.log, and report it on GitHub"
 msgstr ""
 
@@ -2791,12 +2791,12 @@ msgid "Signing in…"
 msgstr ""
 
 #. he: צילום מצב לפני עדכונים כבוי
-#: apps/dai-doctor/dai_doctor/diagnose.py:233
+#: apps/dai-doctor/dai_doctor/diagnose.py:234
 msgid "Snapshots before updates are off"
 msgstr ""
 
 #. he: תמונות מצב דורשות דיסק מערכת מסוג Btrfs, וזה {root_fs}.
-#: apps/dai-doctor/dai_doctor/diagnose.py:241
+#: apps/dai-doctor/dai_doctor/diagnose.py:242
 #, python-brace-format
 msgid "Snapshots need a Btrfs system disk; this one is {unknown}."
 msgstr ""
@@ -2818,7 +2818,7 @@ msgid "Some steps did not complete. You can retry later from the menu (Welcome t
 msgstr ""
 
 #. he: שירותי מערכת נכשלו
-#: apps/dai-doctor/dai_doctor/diagnose.py:103
+#: apps/dai-doctor/dai_doctor/diagnose.py:104
 msgid "Some system services failed"
 msgstr ""
 
@@ -2851,7 +2851,7 @@ msgid "Something went wrong: {error}\nNothing was lost. Check the details and tr
 msgstr ""
 
 #. he: קול
-#: apps/dai-doctor/dai_doctor/diagnose.py:184
+#: apps/dai-doctor/dai_doctor/diagnose.py:185
 msgid "Sound"
 msgstr ""
 
@@ -2990,7 +2990,7 @@ msgid "Take a snapshot of the system before every software update"
 msgstr ""
 
 #. he: להפעיל צילום מצב לפני עדכונים
-#: apps/dai-doctor/dai_doctor/diagnose.py:236
+#: apps/dai-doctor/dai_doctor/diagnose.py:237
 msgid "Take snapshots before updates"
 msgstr ""
 
@@ -3025,7 +3025,7 @@ msgid "That does not look like an e-mail address."
 msgstr ""
 
 #. he: הסוללה שחוקה
-#: apps/dai-doctor/dai_doctor/diagnose.py:165
+#: apps/dai-doctor/dai_doctor/diagnose.py:166
 msgid "The battery is worn"
 msgstr ""
 
@@ -3040,7 +3040,7 @@ msgid "The code from Diamond was rejected"
 msgstr ""
 
 #. he: המחשב משתמש הרבה בזיכרון החלפה (swap)
-#: apps/dai-doctor/dai_doctor/diagnose.py:81
+#: apps/dai-doctor/dai_doctor/diagnose.py:82
 msgid "The computer is using swap heavily"
 msgstr ""
 
@@ -3055,7 +3055,7 @@ msgid "The firewall is on"
 msgstr ""
 
 #. he: העדכון האחרון ({date}) שינה {count} חבילות. 
-#: apps/dai-doctor/dai_doctor/diagnose.py:225
+#: apps/dai-doctor/dai_doctor/diagnose.py:226
 #, python-brace-format
 msgid "The last update ({date}) changed {count} package(s). "
 msgstr ""
@@ -3076,12 +3076,12 @@ msgid "The microphone records only while you press the voice button; a notificat
 msgstr ""
 
 #. he: המעבד עמוס
-#: apps/dai-doctor/dai_doctor/diagnose.py:91
+#: apps/dai-doctor/dai_doctor/diagnose.py:92
 msgid "The processor is busy"
 msgstr ""
 
 #. he: המעבד לא עמוס
-#: apps/dai-doctor/dai_doctor/diagnose.py:97
+#: apps/dai-doctor/dai_doctor/diagnose.py:98
 msgid "The processor is not overloaded"
 msgstr ""
 
@@ -3194,7 +3194,7 @@ msgid "This provider accepts only its own sign-in page, which J does not support
 msgstr ""
 
 #. he: את העדכון הזה אי אפשר לבטל אוטומטית, אבל את הבאים כן.
-#: apps/dai-doctor/dai_doctor/diagnose.py:234
+#: apps/dai-doctor/dai_doctor/diagnose.py:235
 msgid "This update cannot be undone automatically, but the next ones can."
 msgstr ""
 
@@ -3241,7 +3241,7 @@ msgid "Trash"
 msgstr ""
 
 #. he: סל מחזור {trash}, תצוגות מקדימות {previews}.
-#: apps/dai-doctor/dai_doctor/diagnose.py:148
+#: apps/dai-doctor/dai_doctor/diagnose.py:149
 #, python-brace-format
 msgid "Trash {trash}, previews {previews}."
 msgstr ""
@@ -3264,12 +3264,12 @@ msgid "Tue"
 msgstr ""
 
 #. he: הפעילו Wi-Fi מתפריט הרשת או עם מקש ה־Wi-Fi
-#: apps/dai-doctor/dai_doctor/diagnose.py:210
+#: apps/dai-doctor/dai_doctor/diagnose.py:211
 msgid "Turn Wi-Fi on in the network menu or with the Wi-Fi key"
 msgstr ""
 
 #. he: להפעיל חיסכון בסוללה
-#: apps/dai-doctor/dai_doctor/diagnose.py:173
+#: apps/dai-doctor/dai_doctor/diagnose.py:174
 msgid "Turn on battery saver"
 msgstr ""
 
@@ -3300,7 +3300,7 @@ msgid "Undo the last software update (system files go back to before it)"
 msgstr ""
 
 #. he: לבטל את העדכון האחרון
-#: apps/dai-doctor/dai_doctor/diagnose.py:231
+#: apps/dai-doctor/dai_doctor/diagnose.py:232
 msgid "Undo the last update"
 msgstr ""
 
@@ -3336,7 +3336,7 @@ msgid "Update this app with Diamond · previous version kept · Enter"
 msgstr ""
 
 #. he: על הדיסק הזה אי אפשר לבטל עדכונים
-#: apps/dai-doctor/dai_doctor/diagnose.py:240
+#: apps/dai-doctor/dai_doctor/diagnose.py:241
 msgid "Updates cannot be undone on this disk"
 msgstr ""
 
@@ -3357,13 +3357,13 @@ msgid "User name (English letters, for signing in)"
 msgstr ""
 
 #. he: הכי הרבה משתמשים: {names}.
-#: apps/dai-doctor/dai_doctor/diagnose.py:70
+#: apps/dai-doctor/dai_doctor/diagnose.py:71
 #, python-brace-format
 msgid "Using the most: {names}."
 msgstr ""
 
 #. he: בדרך כלל חסר firmware לשבב הזה.
-#: apps/dai-doctor/dai_doctor/diagnose.py:214
+#: apps/dai-doctor/dai_doctor/diagnose.py:215
 msgid "Usually missing firmware for this chip."
 msgstr ""
 
@@ -3451,17 +3451,17 @@ msgid "Why is the computer slow?"
 msgstr ""
 
 #. he: נמצא כרטיס Wi-Fi אבל הוא לא מוכן
-#: apps/dai-doctor/dai_doctor/diagnose.py:213
+#: apps/dai-doctor/dai_doctor/diagnose.py:214
 msgid "Wi-Fi chip found but not ready"
 msgstr ""
 
 #. he: ה־Wi-Fi כבוי
-#: apps/dai-doctor/dai_doctor/diagnose.py:208
+#: apps/dai-doctor/dai_doctor/diagnose.py:209
 msgid "Wi-Fi is switched off"
 msgstr ""
 
 #. he: רשת קווית
-#: apps/dai-doctor/dai_doctor/diagnose.py:183
+#: apps/dai-doctor/dai_doctor/diagnose.py:184
 msgid "Wired network"
 msgstr ""
 
@@ -3487,7 +3487,7 @@ msgid "Written by Diamond — review every step"
 msgstr ""
 
 #. he: אפשר לבטל את העדכון האחרון
-#: apps/dai-doctor/dai_doctor/diagnose.py:228
+#: apps/dai-doctor/dai_doctor/diagnose.py:229
 msgid "You can undo the last update"
 msgstr ""
 
@@ -3681,7 +3681,7 @@ msgid "friday|fri\\b"
 msgstr ""
 
 #. he: מחזק אבטחה
-#: apps/dai-command/dai_command/core.py:724
+#: apps/dai-command/dai_command/core.py:733
 #: apps/dai-forge/dai_forge/gui.py:179
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "hardens security"
@@ -3757,7 +3757,7 @@ msgid "monday|mon\\b"
 msgstr ""
 
 #. he: ניטרלי
-#: apps/dai-command/dai_command/core.py:726
+#: apps/dai-command/dai_command/core.py:735
 #: apps/dai-forge/dai_forge/gui.py:180
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "neutral"
@@ -3769,7 +3769,7 @@ msgid "never"
 msgstr ""
 
 #. he: אין דרייבר
-#: apps/dai-doctor/dai_doctor/diagnose.py:201
+#: apps/dai-doctor/dai_doctor/diagnose.py:202
 msgid "no driver"
 msgstr ""
 
@@ -3941,7 +3941,7 @@ msgid "uses the network"
 msgstr ""
 
 #. he: מחליש אבטחה
-#: apps/dai-command/dai_command/core.py:725
+#: apps/dai-command/dai_command/core.py:734
 #: apps/dai-forge/dai_forge/gui.py:179
 msgid "weakens security"
 msgstr ""
@@ -3972,7 +3972,7 @@ msgid "will start"
 msgstr ""
 
 #. he: במצב תקין
-#: apps/dai-doctor/dai_doctor/diagnose.py:198
+#: apps/dai-doctor/dai_doctor/diagnose.py:199
 msgid "works"
 msgstr ""
 
@@ -4022,7 +4022,7 @@ msgid "{app} stopped using the {device}"
 msgstr ""
 
 #. he: {capacity}% טעונה{health}
-#: apps/dai-doctor/dai_doctor/diagnose.py:177
+#: apps/dai-doctor/dai_doctor/diagnose.py:178
 #, python-brace-format
 msgid "{capacity}% charged{health}"
 msgstr ""
@@ -4058,13 +4058,13 @@ msgid "{drive} is not a writable folder"
 msgstr ""
 
 #. he: {free} פנויים מתוך {total}
-#: apps/dai-doctor/dai_doctor/diagnose.py:132
+#: apps/dai-doctor/dai_doctor/diagnose.py:133
 #, python-brace-format
 msgid "{free} free of {total}"
 msgstr ""
 
 #. he: {free} פנויים מתוך {total}.
-#: apps/dai-doctor/dai_doctor/diagnose.py:127
+#: apps/dai-doctor/dai_doctor/diagnose.py:128
 #, python-brace-format
 msgid "{free} free of {total}."
 msgstr ""
@@ -4076,7 +4076,7 @@ msgid "{icon} {app} is using the {device}"
 msgstr ""
 
 #. he: {mem_available} פנויים
-#: apps/dai-doctor/dai_doctor/diagnose.py:76
+#: apps/dai-doctor/dai_doctor/diagnose.py:77
 #, python-brace-format
 msgid "{mem_available} free"
 msgstr ""
@@ -4112,7 +4112,7 @@ msgid "{name} has kept a whole processor core busy for {minutes} minutes."
 msgstr ""
 
 #. he: ל־{name} לא נטען דרייבר, ולכן כנראה לא יעבוד.
-#: apps/dai-doctor/dai_doctor/diagnose.py:202
+#: apps/dai-doctor/dai_doctor/diagnose.py:203
 #, python-brace-format
 msgid "{name} has no driver loaded, so it will probably not work."
 msgstr ""
@@ -4214,25 +4214,25 @@ msgid "{size} download · needs {ram} RAM"
 msgstr ""
 
 #. he: אפשר לפנות {system_caches} במערכת
-#: apps/dai-doctor/dai_doctor/diagnose.py:137
+#: apps/dai-doctor/dai_doctor/diagnose.py:138
 #, python-brace-format
 msgid "{system_caches} can be freed in the system"
 msgstr ""
 
 #. he: {uptime_days:.0f} ימים. הפעלה מחדש מחילה עדכונים שהותקנו ומפנה זיכרון.
-#: apps/dai-doctor/dai_doctor/diagnose.py:109
+#: apps/dai-doctor/dai_doctor/diagnose.py:110
 #, python-brace-format
 msgid "{uptime_days:.0f} days. A restart applies installed updates and frees memory."
 msgstr ""
 
 #. he: {used} ב־swap: כשמשתמשים בו הכל מאט.
-#: apps/dai-doctor/dai_doctor/diagnose.py:83
+#: apps/dai-doctor/dai_doctor/diagnose.py:84
 #, python-brace-format
 msgid "{used} in swap: things slow down when it is used."
 msgstr ""
 
 #. he: {user_caches} בסל המחזור ובתצוגות מקדימות של תמונות
-#: apps/dai-doctor/dai_doctor/diagnose.py:145
+#: apps/dai-doctor/dai_doctor/diagnose.py:146
 #, python-brace-format
 msgid "{user_caches} in the trash and picture previews"
 msgstr ""

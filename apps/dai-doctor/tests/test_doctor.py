@@ -287,5 +287,20 @@ class CommandTests(unittest.TestCase):
         core._DOCTOR_CACHE.clear()
 
 
+class LanguageTests(unittest.TestCase):
+    """D.Ai Doctor in the six other languages (docs/I18N.md §10)."""
+
+    def test_questions(self):
+        from dai_doctor.diagnose import topic_for
+
+        for text, topic in (("почему компьютер тормозит?", "slow"), ("что занимает место на диске?", "disk"),
+                            ("por qué mi ordenador está lento", "slow"), ("pourquoi mon ordinateur rame", "slow"),
+                            ("mon imprimante ne marche pas depuis la mise à jour", "update"),
+                            ("was belegt meinen Speicherplatz", "disk"), ("por que meu computador está lento", "slow"),
+                            ("لماذا حاسوبي بطيء", "slow"), ("batería de mi portátil", "battery"),
+                            ("installiere vlc", None), ("why is my computer slow", "slow")):
+            with self.subTest(text):
+                self.assertEqual(topic_for(text), topic)
+
 if __name__ == "__main__":
     unittest.main()

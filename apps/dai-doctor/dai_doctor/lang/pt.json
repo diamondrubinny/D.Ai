@@ -1,0 +1,33 @@
+{
+ "format": 1,
+ "lang": "pt",
+ "note": "Portuguese words D.Ai Doctor understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "por que": "why",
+  "porque": "why",
+  "o que": "what",
+  "como": "how",
+  "meu": "my",
+  "minha": "my",
+  "computador": "computer",
+  "notebook": "laptop",
+  "sistema": "system",
+  "lento": "slow",
+  "lenta": "slow",
+  "travando": "freezes",
+  "trava": "freezes",
+  "congela": "freezes",
+  "espaço em disco": "disk space",
+  "espaço livre": "free space",
+  "disco cheio": "disk full",
+  "ocupando": "is taking",
+  "sem espaço": "running out of space",
+  "bateria": "battery",
+  "impressora": "printer",
+  "som": "sound",
+  "câmera": "camera",
+  "drivers": "drivers",
+  "depois da atualização": "after the update",
+  "desde a atualização": "since the update"
+ }
+}

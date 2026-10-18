@@ -1,0 +1,15 @@
+{
+ "format": 1,
+ "lang": "es",
+ "note": "Spanish words D.Ai Command (Heal) understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "algo": "something",
+  "no funciona": "not working",
+  "se rompió": "broken",
+  "se cerró": "crashed",
+  "se bloqueó": "crashed",
+  "ayúdame a arreglar": "help me fix",
+  "arregla mi ordenador": "fix my computer",
+  "arregla mi computadora": "fix my computer"
+ }
+}

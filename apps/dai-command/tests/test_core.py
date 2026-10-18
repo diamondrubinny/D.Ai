@@ -254,5 +254,16 @@ class BuildActionsTests(unittest.TestCase):
         self.assertEqual(kinds[-2:], ["run", "terminal"])
 
 
+class HealLanguageTests(unittest.TestCase):
+    """"Something is not working" in the six other languages opens D.Ai Heal (docs/I18N.md §10)."""
+
+    def test_heal_words(self):
+        for text in ("что-то не работает", "Firefox вылетает", "algo no funciona", "quelque chose ne marche pas",
+                     "etwas funktioniert nicht", "alguma coisa não funciona", "شيء لا يعمل"):
+            with self.subTest(text):
+                self.assertTrue(core.HEAL_WORDS.search(core._heal_english(text)))
+        self.assertFalse(core.HEAL_WORDS.search(core._heal_english("instala vlc")))
+
+
 if __name__ == "__main__":
     unittest.main()

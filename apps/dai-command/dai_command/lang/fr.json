@@ -1,0 +1,15 @@
+{
+ "format": 1,
+ "lang": "fr",
+ "note": "French words D.Ai Command (Heal) understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "quelque chose": "something",
+  "ne marche pas": "not working",
+  "ne fonctionne pas": "not working",
+  "est cassé": "broken",
+  "a planté": "crashed",
+  "plante": "crashes",
+  "aide-moi à réparer": "help me fix",
+  "répare mon ordinateur": "fix my computer"
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "format": 1,
+ "lang": "pt",
+ "note": "Portuguese words D.Ai Command (Heal) understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "algo": "something",
+  "alguma coisa": "something",
+  "não funciona": "not working",
+  "não está funcionando": "not working",
+  "quebrou": "broken",
+  "travou e fechou": "crashed",
+  "fechou sozinho": "crashed",
+  "me ajude a consertar": "help me fix",
+  "conserte meu computador": "fix my computer"
+ }
+}

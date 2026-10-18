@@ -1,0 +1,17 @@
+{
+ "format": 1,
+ "lang": "ru",
+ "note": "Russian words D.Ai Command (Heal) understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "что-то": "something",
+  "что то": "something",
+  "не работает": "not working",
+  "сломалось": "broken",
+  "упало": "crashed",
+  "вылетает": "crashes",
+  "вылетело": "crashed",
+  "помоги исправить": "help me fix",
+  "почини компьютер": "fix my computer",
+  "исправь компьютер": "fix my computer"
+ }
+}

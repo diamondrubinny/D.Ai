@@ -1,0 +1,16 @@
+{
+ "format": 1,
+ "lang": "ar",
+ "note": "Arabic words D.Ai Command (Heal) understands, mapped to the English it already parses (docs/I18N.md §10). Data only; used to recognize a question, never shown. Copyright (c) 2026 Diamond Rubinny (d.Ai), Apache-2.0.",
+ "phrases": {
+  "شيء ما": "something",
+  "شيء": "something",
+  "لا يعمل": "not working",
+  "تعطل": "broken",
+  "انهار": "crashed",
+  "توقف فجأة": "crashed",
+  "ساعدني في الإصلاح": "help me fix",
+  "أصلح حاسوبي": "fix my computer",
+  "اصلح جهازي": "fix my computer"
+ }
+}
