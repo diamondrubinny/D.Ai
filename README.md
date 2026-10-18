@@ -1,5 +1,6 @@
-# D.Ai
 # D.Ai OS
+
+🌍 **English** · [עברית](#בעברית) · [العربية](docs/readme/README.ar.md) · [Русский](docs/readme/README.ru.md) · [Español](docs/readme/README.es.md) · [Français](docs/readme/README.fr.md) · [Deutsch](docs/readme/README.de.md) · [Português](docs/readme/README.pt.md)
 
 **A free, secure, open-source Linux desktop with a built-in local AI, a Hebrew-first experience, and a builder that extends the system from plain text.**
 
@@ -16,6 +17,7 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 - **Private AI that stays on your computer.** A local model (llama.cpp) runs on a UNIX socket only. The AI service has no network access.
 - **Configure the system by describing it.** Type what you want in Hebrew or English. Nothing you type ever becomes a shell command. It becomes a reviewable plan, with undo.
 - **Extend the system by asking.** Ask for an antivirus, file sync, or a custom app. D.Ai Forge builds it, you review it, and it is installed.
+- **A system that develops and repairs itself.** Every app the AI builds is tested in a sandbox and repaired before you see it; ask for an automation and it runs on a schedule; it notices what you are missing and suggests it; when something crashes, a chat explains it and fixes it with your OK.
 - **Hebrew and RTL done properly.** HE/EN indicator, wrong-layout fixer (`akuo` becomes `שלום`), Hebrew app names and Hebrew voice dictation.
 - **Secure by default.** Default-deny firewall, AppArmor, kernel hardening, locked root, automatic security updates, full-disk encryption in the installer.
 
@@ -27,7 +29,9 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 | **D.Ai Command** | Launch apps (also by Hebrew name), commands, safe calculator, layout fixer. `?` asks the local AI, `!` opens Tune, `+` opens Forge | |
 | **D.Ai Tune** | Configure the system in text, through a closed catalog of validated actions, a root helper that re-validates everything, a journal and undo, and a security score | `docs/TUNE.md` |
 | **Local AI** | Pinned llama.cpp, models downloaded on demand with pinned SHA-256, automatic coder model for code | `docs/AI.md` |
-| **D.Ai Forge** | Recipes (antivirus, Syncthing, Flathub, Podman, WireGuard, Nextcloud, Steam, OnlyOffice and more) and an AI app builder with sandboxed apps | `docs/FORGE.md` |
+| **D.Ai Forge** | Recipes (antivirus, Syncthing, Flathub, Podman, WireGuard, Nextcloud, Steam, OnlyOffice and more), an AI app builder with sandboxed apps, the Workshop (build → test → repair) and scheduled automations | `docs/FORGE.md`, `docs/EVOLVE.md` |
+| **D.Ai Evolve** | Notices what you are missing (a file no program opens, a command you repeat, a request it could not fulfil) and suggests building it, in D.Ai Command | `docs/EVOLVE.md` |
+| **D.Ai Heal** | When a program crashes or a service fails: a notification, a chat that explains it in plain words, and fixes from a closed list applied only when you click (`Super+F1`) | `docs/EVOLVE.md` |
 | **D.Ai Voice** | Local Whisper dictation and voice commands | `docs/VOICE.md` |
 | **D.Ai Code** | Local coding assistant: explain, review, edit with diff and undo | |
 | **D.Ai Find** | "Find the PDF I downloaded last week", in Hebrew or English | `docs/FIND.md` |
@@ -37,6 +41,7 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 | **D.Ai Move** | Bring your files and bookmarks over from Windows | `docs/MOVE.md` |
 | **D.Ai Clip** | Clipboard history (Super+V) that never keeps passwords | |
 | **D.Ai Welcome** | First-run setup wizard | `docs/WELCOME.md` |
+| **D.Ai OEM** | Prepare a computer for its new owner (refurbishers, charities) | `docs/OEM.md` |
 | **Installer** | Calamares with LUKS full-disk encryption, D.Ai branded | `docs/INSTALL.md` |
 | **Snapshots** | Btrfs and snapper snapshots before updates, with a way back | `docs/SNAPSHOTS.md` |
 
@@ -61,6 +66,8 @@ Press `Super+B`, or type `+` in the command field, and say what the computer sho
 ```
 
 Every recipe becomes a D.Ai Tune plan that is reviewed, authorized by polkit, validated again by the root helper, journaled and undoable. Apps built by the local AI run in a **bubblewrap sandbox**.
+
+Before you see an app, the **Workshop** starts it in a stricter sandbox (no network, no home, no display). If it crashes, the AI fixes it from the error and tests again, at most twice. Ask for something recurring (`+ every morning tell me if the disk is almost full`) and it becomes an **automation**: a user-level systemd timer that runs the script in the sandbox and shows its result as a notification (`dai-forge auto list`).
 
 ## Security model, in short
 
@@ -122,7 +129,9 @@ Contributions are welcome. Please read `CONTRIBUTING.md` first. The project uses
 
 ## License and credits
 
-Apache-2.0. See `LICENSE` and `NOTICE` for third-party attribution.
+Copyright (c) 2026 Diamond Rubinny (d.Ai). The code is licensed under Apache-2.0: copies must keep `LICENSE`, `NOTICE` and the copyright notices in the files.
+
+**"D.Ai", "D.Ai OS" and the diamond logo are trademarks.** The license grants no rights to them, so modified versions may not be distributed under the D.Ai name or logo, or presented as official. See `TRADEMARKS.md`. Terms of use for the official releases: `docs/legal/TERMS.md` (draft, pending legal review). Debian packages in the images keep their own licenses.
 
 Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.com/claude-code).
 
@@ -134,8 +143,11 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 
 - **AI פרטי:** המודל רץ מקומית, ושירות ה-AI לא מחובר לרשת.
 - **הגדרות בטקסט:** כותבים מה רוצים ("חסום USB", "פתח פורט"), מקבלים תוכנית לבדיקה ואישור, ותמיד אפשר לבטל.
-- **D.Ai Forge:** כותבים `+ תתקין אנטי וירוס`, והמערכת בונה תוכנית, אתם בודקים, והיא מותקנת. אפשר גם לבקש בניית אפל��קציה.
+- **D.Ai Forge:** כותבים `+ תתקין אנטי וירוס`, והמערכת בונה תוכנית, אתם בודקים, והיא מותקנת. אפשר גם לבקש בניית אפליקציה.
+- **מערכת שמפתחת ומתקנת את עצמה:** כל אפליקציה שה-AI בונה נבדקת בארגז חול ומתוקנת לפני שאתם רואים אותה; אוטומציות רצות לפי לוח זמנים; וכשמשהו קורס, נפתח צ'אט שמסביר ומתקן באישורכם.
 - **עברית ו-RTL:** מחוון HE/EN, תיקון הקלדה בפריסה שגויה (`akuo` ל-`שלום`), הכתבה בעברית וחיפוש קבצים בעברית.
 - **אבטחה כברירת מחדל:** חומת אש, AppArmor, הצפנת דיסק מלאה בהתקנה, גיבוי מוצפן ועדכוני אבטחה אוטומטיים.
+
+**זכויות:** © 2026 Diamond Rubinny (d.Ai). הקוד ברישיון Apache-2.0. השם D.Ai והלוגו הם סימני מסחר: אסור להפיץ גרסה משונה בשמם (`TRADEMARKS.md`).
 
 **סטטוס:** שלב מוקדם. מומלץ לנסות מ-USB (Live) לפני התקנה. מעבר מ-Windows: ראו `docs/FROM-WINDOWS.md`.

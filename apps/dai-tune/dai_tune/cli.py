@@ -1,0 +1,351 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""dai-tune command line: plan, confirm, apply, undo, status."""
+
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import sys
+from dataclasses import dataclass
+from typing import Any
+
+from dai_i18n import pick, text
+
+from . import __author__, __version__
+from .catalog import CATALOG
+from .context import Context, detect_lang
+from .executor import ApplyError, Journal, apply_steps, undo_entry
+from .parser import EXAMPLES
+from .planner import Plan, build_plan, plan_from_text, plan_hash
+from .posture import assess, title
+
+HELPER = "/usr/lib/dai/dai-tune-helper"
+
+LABELS = {
+    "scope": {"user": ("user", "משתמש"), "system": ("system", "מערכת")},
+    "risk": {"low": ("low risk", "סיכון נמוך"), "medium": ("medium risk", "סיכון בינוני"), "high": ("HIGH RISK", "סיכון גבוה")},
+    "effect": {"hardens": ("hardens security", "מחזק אבטחה"), "weakens": ("WEAKENS security", "מחליש אבטחה"), "neutral": ("neutral", "ניטרלי")},
+}
+ICONS = {"hardens": "🛡 ", "weakens": "⚠ ", "neutral": "• "}
+
+
+def _l(lang: str, en: str, he: str, **kwargs: object) -> str:
+    return text(lang, en, he, **kwargs)
+
+
+def _label(kind: str, value: str, lang: str) -> str:
+    return pick(lang, *LABELS[kind][value])
+
+
+def _color(text: str, code: str) -> str:
+    return f"\033[{code}m{text}\033[0m" if sys.stdout.isatty() else text
+
+
+def describe(plan: Plan, lang: str) -> list[dict[str, Any]]:
+    rows = []
+    for step in plan.steps:
+        spec = CATALOG[step.action]
+        rows.append({
+            "action": step.action,
+            "params": step.params,
+            "scope": step.scope,
+            "risk": step.risk,
+            "effect": step.effect,
+            "summary": spec.summary(step.params, lang),
+            "note": spec.note(step.params, lang),
+        })
+    return rows
+
+
+def print_plan(plan: Plan, lang: str, heading: str = "") -> None:
+    heading = heading or _l(lang, "D.Ai Tune — change plan", "D.Ai Tune — תוכנית שינויים")
+    print(_color(f"{heading}  #{plan.hash}", "1"))
+    for index, row in enumerate(describe(plan, lang), 1):
+        tags = " · ".join([
+            _label("scope", row["scope"], lang), _label("risk", row["risk"], lang), _label("effect", row["effect"], lang)
+        ])
+        color = "33" if row["effect"] == "weakens" else ("32" if row["effect"] == "hardens" else "0")
+        print(f"  {index}. {ICONS[row['effect']]}{row['summary']}")
+        print("     " + _color(tags, color))
+        if row["note"]:
+            print("     ↳ " + row["note"])
+    for clause in plan.unknown:
+        print(_color("  ✗ " + _l(lang, "Not understood: “{clause}”", "לא הובן: „{clause}”", clause=clause), "31"))
+    for error in plan.errors:
+        print(_color("  ✗ " + error, "31"))
+
+
+def confirm(plan: Plan, lang: str, assume_yes: bool) -> bool:
+    if plan.weakens:
+        if assume_yes:
+            print(_l(lang, "Refusing --yes: this plan weakens security and needs explicit confirmation.",
+                     "‎--yes נדחה: התוכנית מחלישה אבטחה ודורשת אישור מפורש."))
+            return False
+        answer = input(_l(lang, 'This plan WEAKENS security. Type "yes" to apply: ',
+                          'התוכנית מחלישה אבטחה. להחלה הקלידו "כן": ')).strip().casefold()
+        return answer in ("yes", "כן")
+    if assume_yes:
+        return True
+    answer = input(_l(lang, "Apply? [y/N] ", "להחיל? [כ/ל] ")).strip().casefold()
+    return answer in ("y", "yes", "כ", "כן")
+
+
+def run_helper(args: list[str], payload: dict | None = None) -> dict[str, Any]:
+    """Run the root helper through polkit (or sudo when DAI_TUNE_ELEVATE=sudo)."""
+    if os.geteuid() == 0:
+        elevate: list[str] = []
+    else:
+        method = os.environ.get("DAI_TUNE_ELEVATE", "pkexec")
+        elevate = ["sudo"] if method == "sudo" else ["pkexec"]
+    result = subprocess.run(
+        [*elevate, HELPER, *args],
+        input=json.dumps(payload) if payload is not None else "",
+        stdout=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    try:
+        data = json.loads(result.stdout.strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError):
+        data = {"ok": False, "error": f"helper exited with {result.returncode} (authorization cancelled?)"}
+    return data
+
+
+def ai_plan(text: str, ctx: Context) -> Plan | None:
+    """Ask the local AI to interpret text the rules did not understand."""
+    from .ai import interpret
+
+    requests = interpret(text)
+    if requests is None:
+        return None
+    return build_plan(requests, ctx)
+
+
+def cmd_apply(text: str, ctx: Context, dry_run: bool, as_json: bool, assume_yes: bool, use_ai: bool = False) -> int:
+    lang = ctx.lang
+    plan = plan_from_text(text, ctx)
+    from_ai = False
+    if plan.unknown and not as_json:
+        from .ai import model_installed
+
+        # Only offer the AI interactively, never under --yes, and only when a
+        # model is installed: otherwise the question is a dead end.
+        wants_ai = use_ai or (
+            not assume_yes
+            and sys.stdin.isatty()
+            and model_installed()
+            and input(_l(lang, "Not understood by the rules. Ask Diamond to interpret? [y/N] ",
+                         "הכללים לא הבינו. לבקש פרשנות מ־Diamond? [כ/ל] ")).strip().casefold() in ("y", "yes", "כ", "כן")
+        )
+        if wants_ai:
+            print(_l(lang, "Asking Diamond…", "שואל את Diamond…"))
+            interpreted = ai_plan(text, ctx)
+            if interpreted is None:
+                print(_l(lang, "Diamond is not available (dai-models install qwen2.5-0.5b).",
+                         "Diamond לא זמין (dai-models install qwen2.5-0.5b)."))
+            else:
+                plan, from_ai = interpreted, True
+                print(_color(_l(lang, "AI interpretation — review it carefully:", "פרשנות AI — בדקו היטב:"), "1;35"))
+    if as_json:
+        print(json.dumps({
+            "ok": plan.ok, "hash": plan.hash, "risk": plan.risk, "weakens": plan.weakens,
+            "unknown": plan.unknown, "errors": plan.errors, "steps": describe(plan, lang),
+        }, ensure_ascii=False, indent=2))
+        return 0 if plan.ok else 2
+    return execute_plan(plan, ctx, dry_run=dry_run, assume_yes=assume_yes, from_ai=from_ai)
+
+
+def execute_plan(
+    plan: Plan,
+    ctx: Context,
+    *,
+    dry_run: bool = False,
+    assume_yes: bool = False,
+    from_ai: bool = False,
+    heading: str = "",
+    label: str = "",
+) -> int:
+    """Show a plan, confirm it, apply system steps through the helper, then user steps.
+
+    Shared by dai-tune and D.Ai Forge so every change follows the same rules.
+    """
+    lang = ctx.lang
+    print_plan(plan, lang, heading)
+    if not plan.ok:
+        if not plan.steps and not plan.errors:
+            print(_l(lang, 'Nothing was changed. See what you can ask: dai-tune help',
+                     'לא בוצע שום שינוי. מה אפשר לבקש: dai-tune help'))
+        else:
+            print(_l(lang, "Nothing was changed. Please rephrase the parts above.",
+                     "לא בוצע שום שינוי. נסחו מחדש את החלקים שסומנו."))
+        return 2
+    if dry_run:
+        print(_l(lang, "(dry run — nothing was changed)", "(הרצת ניסיון — לא בוצע שינוי)"))
+        return 0
+    if from_ai and assume_yes:
+        print(_l(lang, "Refusing --yes: AI interpretations always need manual confirmation.",
+                 "‎--yes נדחה: פרשנות AI דורשת תמיד אישור ידני."))
+        return 1
+    if not confirm(plan, lang, assume_yes and not from_ai):
+        print(_l(lang, "Cancelled. Nothing was changed.", "בוטל. לא בוצע שום שינוי."))
+        return 1
+
+    result = apply_plan(plan, ctx, label)
+    if not result.ok:
+        print(_color("✗ " + result.error, "31"))
+        if result.rolled_back:
+            print(_l(lang, "System changes were rolled back too.", "גם שינויי המערכת בוטלו."))
+        else:
+            print(_l(lang, "Nothing was changed.", "לא בוצע שום שינוי."))
+        return 1
+    print(_color(_l(lang, "✓ Applied. To undo: dai-tune undo", "✓ בוצע. לביטול: dai-tune undo"), "32"))
+    return 0
+
+
+@dataclass
+class ApplyResult:
+    ok: bool
+    error: str = ""
+    rolled_back: bool = False
+    entry_id: str = ""
+
+
+def apply_plan(plan: Plan, ctx: Context, label: str = "") -> ApplyResult:
+    """Apply an already reviewed and confirmed plan (no prompts).
+
+    System steps go to the root helper through polkit (it shows its own
+    password dialog); user steps run here. Used by the dai-tune CLI and by
+    graphical front ends such as the D.Ai Forge window.
+    """
+    if not plan.ok:
+        return ApplyResult(False, "the plan is not valid")
+    lang = ctx.lang
+    system_steps = plan.scoped("system")
+    system_id = None
+    if system_steps:
+        payload = {"version": 1, "hash": plan_hash(system_steps), "steps": [s.as_dict() for s in system_steps]}
+        result = run_helper(["apply"], payload)
+        if not result.get("ok"):
+            return ApplyResult(False, str(result.get("error")))
+        system_id = result["id"]
+
+    journal = Journal.for_user(ctx)
+    summaries = [row["summary"] for row in describe(plan, lang)]
+    if label:  # e.g. the Forge recipe name, shown first in history
+        summaries.insert(0, label)
+    try:
+        entry = apply_steps(plan.scoped("user"), ctx, journal, actor=str(os.getuid()), scope="user",
+                            extra={"system_entry": system_id, "summary": summaries})
+    except ApplyError as exc:
+        if system_id:
+            run_helper(["undo", system_id])
+        return ApplyResult(False, str(exc), rolled_back=bool(system_id))
+    return ApplyResult(True, entry_id=entry["id"])
+
+
+def cmd_undo(entry_id: str, ctx: Context) -> int:
+    lang = ctx.lang
+    journal = Journal.for_user(ctx)
+    entry = journal.find(entry_id)
+    if entry is None:
+        print(_l(lang, "Nothing to undo.", "אין מה לבטל."))
+        return 1
+    if entry.get("system_entry"):
+        result = run_helper(["undo", entry["system_entry"]])
+        if not result.get("ok"):
+            print(_color("✗ " + str(result.get("error")), "31"))
+            return 1
+    undo_entry(entry, ctx, journal)
+    print(_color(_l(lang, "✓ Undone: ", "✓ בוטל: ") + "; ".join(entry.get("summary", [])), "32"))
+    return 0
+
+
+def cmd_history(ctx: Context) -> int:
+    entries = Journal.for_user(ctx).entries()
+    if not entries:
+        print(_l(ctx.lang, "No changes yet.", "עדיין אין שינויים."))
+    for entry in entries[-20:]:
+        status = {"applied": "✓", "undone": "↶"}.get(entry.get("status"), "?")
+        print(f"{status} {entry['id']}  {entry['time']}  " + "; ".join(entry.get("summary", [])))
+    return 0
+
+
+def cmd_status(ctx: Context) -> int:
+    lang = ctx.lang
+    score, checks = assess(ctx, lang)
+    color = "32" if score >= 80 else ("33" if score >= 50 else "31")
+    print(_color(_l(lang, "Security score: {score}/100", "ציון אבטחה: {score}/100", score=score), "1;" + color))
+    for check in checks:
+        mark = _color("✓", "32") if check.ok else _color("✗", "31")
+        detail = f" ({check.detail})" if check.detail else ""
+        print(f"  {mark} {title(check, lang)}{detail}")
+        if not check.ok and check.fix:
+            print(f'      → dai-tune "{check.fix}"')
+    return 0
+
+
+def cmd_policy(ctx: Context, as_json: bool) -> int:
+    """Organization policies in /etc/dai/policy.d (docs/EDU.md)."""
+    from .policy import POLICY_DIR, status
+
+    lang = ctx.lang
+    rows = status(ctx)
+    if as_json:
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+        return 0
+    if not rows:
+        print(_l(lang, "No organization policies ({POLICY_DIR}).", "אין מדיניות ארגונית ({POLICY_DIR}).",
+                 POLICY_DIR=POLICY_DIR))
+        return 0
+    marks = {"applied": ("✓", "32"), "pending": ("…", "33"), "rejected": ("✗", "31")}
+    for row in rows:
+        mark, code = marks[row["state"]]
+        print(_color(f"{mark} {row['name'] or row['file']}  ({row['file']}, {row['state']})", code))
+        for step in row["steps"]:
+            print(f"    • {step}")
+        for problem in row["problems"]:
+            print(_color(f"    ✗ {problem}", "31"))
+    return 0 if all(r["state"] != "rejected" for r in rows) else 1
+
+
+def cmd_help(lang: str) -> int:
+    print(_l(lang, "D.Ai Tune — configure the system by writing what you need.",
+             "D.Ai Tune — מתאימים את המערכת פשוט ע\"י כתיבה."))
+    print(_l(lang, "Examples:", "דוגמאות:"))
+    for example in EXAMPLES.get(lang, EXAMPLES["en"]):  # sentences the rule parser understands
+        print(f'  dai-tune "{example}"')
+    print()
+    print("  dai-tune status   " + _l(lang, "security score and fixes", "ציון אבטחה והמלצות"))
+    print("  dai-tune history  " + _l(lang, "what was changed", "מה שונה"))
+    print("  dai-tune undo     " + _l(lang, "undo the last change", "ביטול השינוי האחרון"))
+    print("  --dry-run --json --yes --ai")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = list(sys.argv[1:] if argv is None else argv[1:])
+    lang = detect_lang()
+    ctx = Context(lang=lang)
+    flags = {a for a in args if a.startswith("--")}
+    words = [a for a in args if not a.startswith("--")]
+    if "--version" in flags:
+        print(f"dai-tune {__version__} — {__author__}")
+        return 0
+    if not words or words[0] in ("help", "עזרה") or "--help" in flags:
+        return cmd_help(lang)
+    command = words[0]
+    if command in ("status", "מצב"):
+        return cmd_status(ctx)
+    if command in ("history", "היסטוריה"):
+        return cmd_history(ctx)
+    if command in ("policy", "מדיניות"):
+        return cmd_policy(ctx, "--json" in flags)
+    if command in ("undo", "בטל"):
+        return cmd_undo(words[1] if len(words) > 1 else "last", ctx)
+    try:
+        return cmd_apply(" ".join(words), ctx, "--dry-run" in flags, "--json" in flags, "--yes" in flags, "--ai" in flags)
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return 1

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OEM first-boot session: run the setup until it is finished (docs/OEM.md).
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP >/dev/null 2>&1
+export QT_QPA_PLATFORM=wayland
+until /usr/lib/dai/dai-oem-setup; do sleep 2; done &

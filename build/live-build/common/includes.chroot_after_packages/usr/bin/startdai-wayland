@@ -1,0 +1,55 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OS desktop session: LXQt on the labwc Wayland compositor.
+#
+# labwc runs lxqt-session as its session client (-S); lxqt-session then starts
+# the panel, desktop, notifications and polkit agent from /etc/xdg/autostart
+# entries marked OnlyShowIn=LXQt. Per-user labwc settings live in
+# ~/.config/labwc (seeded from /etc/skel).
+set -eu
+
+: "${XDG_CONFIG_HOME:=$HOME/.config}"
+: "${XDG_DATA_HOME:=$HOME/.local/share}"
+: "${XDG_CACHE_HOME:=$HOME/.cache}"
+: "${XDG_CONFIG_DIRS:=/etc/xdg}"
+# LXQt 2.x ships its defaults (panel.conf, lxqt.conf, ...) in /usr/share/lxqt.
+case ":$XDG_CONFIG_DIRS:" in
+	*:/usr/share:*) ;;
+	*) XDG_CONFIG_DIRS="$XDG_CONFIG_DIRS:/usr/share" ;;
+esac
+: "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}"
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME XDG_CONFIG_DIRS XDG_DATA_DIRS
+
+export XDG_CURRENT_DESKTOP="LXQt:labwc:wlroots"
+export XDG_SESSION_DESKTOP="LXQt"
+export XDG_MENU_PREFIX="lxqt-"
+export QT_QPA_PLATFORM="wayland;xcb"
+export QT_QPA_PLATFORMTHEME="lxqt"
+export QT_ACCESSIBILITY=1
+export MOZ_ENABLE_WAYLAND=1
+
+# Hardware cursors are often invisible in virtual machines.
+if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --quiet; then
+	export WLR_NO_HARDWARE_CURSORS=1
+fi
+
+labwc_config="$XDG_CONFIG_HOME/labwc"
+if [ ! -d "$labwc_config" ] && [ -d /etc/skel/.config/labwc ]; then
+	mkdir -p "$XDG_CONFIG_HOME"
+	cp -r /etc/skel/.config/labwc "$labwc_config"
+fi
+
+mkdir -p "$HOME/Desktop"
+
+# First login: seed the panel with a localized Start label.
+panel_conf="$XDG_CONFIG_HOME/lxqt/panel.conf"
+if [ ! -e "$panel_conf" ] && [ -f /etc/xdg/lxqt/panel.conf ]; then
+	mkdir -p "$XDG_CONFIG_HOME/lxqt"
+	case "${LANG:-}" in
+		he*) sed 's/^text=Start$/text=התחל/' /etc/xdg/lxqt/panel.conf >"$panel_conf" ;;
+		*) cp /etc/xdg/lxqt/panel.conf "$panel_conf" ;;
+	esac
+fi
+
+exec labwc -C "$labwc_config" -S lxqt-session

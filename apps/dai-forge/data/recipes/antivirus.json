@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "id": "antivirus",
+  "name": {
+    "en": "Antivirus (ClamAV)",
+    "he": "אנטי וירוס (ClamAV)"
+  },
+  "description": {
+    "en": "Open-source ClamAV antivirus: signatures update automatically, /home is scanned daily and infected files are moved to a root-only quarantine.",
+    "he": "אנטי וירוס בקוד פתוח (ClamAV): חתימות מתעדכנות אוטומטית, /home נסרק כל יום וקבצים נגועים עוברים להסגר שרק root ניגש אליו."
+  },
+  "match": {
+    "en": [
+      "antivirus",
+      "anti virus",
+      "anti-virus",
+      "virus scanner",
+      "virus protection",
+      "malware scanner",
+      "clamav"
+    ],
+    "he": [
+      "אנטי וירוס",
+      "אנטיוירוס",
+      "אנטי-וירוס",
+      "סורק וירוסים",
+      "הגנה מוירוסים",
+      "הגנה מפני וירוסים",
+      "נוזקות",
+      "וירוסים"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "clamav",
+          "clamav-freshclam"
+        ]
+      }
+    },
+    {
+      "action": "service.unit",
+      "params": {
+        "unit": "clamav-freshclam.service",
+        "enabled": true
+      }
+    },
+    {
+      "action": "antivirus.schedule",
+      "params": {
+        "enabled": true,
+        "frequency": "daily"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

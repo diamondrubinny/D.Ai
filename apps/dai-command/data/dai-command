@@ -1,0 +1,17 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Command launcher (installed as /usr/bin/dai-command).
+set -eu
+
+if [ "${1:-}" = "--label" ]; then
+	# Text on the panel button. Runs at every panel start, so no Python here.
+	case "${LANG:-}" in
+		he*) echo "הקלידו פקודה…" ;;
+		*) echo "Type a command…" ;;
+	esac
+	exit 0
+fi
+
+# -I: ignore PYTHONPATH and user site-packages (no code injection via env).
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_command.ui import main; sys.exit(main(sys.argv))' "$@"

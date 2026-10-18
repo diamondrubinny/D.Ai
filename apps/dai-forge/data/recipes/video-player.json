@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "id": "video-player",
+  "name": {
+    "en": "Video and music player",
+    "he": "נגן וידאו ומוזיקה"
+  },
+  "description": {
+    "en": "VLC: plays almost every video and audio format (MKV, AVI, MOV, FLAC, DVDs).",
+    "he": "VLC: מנגן כמעט כל פורמט וידאו ושמע (MKV, ‏AVI, ‏MOV, ‏FLAC, ‏DVD)."
+  },
+  "match": {
+    "en": [
+      "vlc",
+      "video player",
+      "media player",
+      "play videos",
+      "mkv"
+    ],
+    "he": [
+      "נגן וידאו",
+      "נגן מדיה",
+      "לנגן סרטים",
+      "נגן סרטים",
+      "vlc"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "vlc"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

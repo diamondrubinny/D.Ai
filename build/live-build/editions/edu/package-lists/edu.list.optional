@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OS Education — learning apps (filtered against the Debian release by build-iso.sh)
+gcompris-qt
+tuxpaint
+tuxmath
+stellarium
+kgeography
+kalzium
+kturtle
+kbruch
+kwordquiz
+klettres
+marble-qt

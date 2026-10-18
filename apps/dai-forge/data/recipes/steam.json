@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "id": "steam",
+  "name": {
+    "en": "Steam (games, with Proton for Windows games)",
+    "he": "Steam (משחקים, כולל Proton למשחקי Windows)"
+  },
+  "description": {
+    "en": "Steam from Flathub, sandboxed. Most Windows games run through Proton; games with kernel anti-cheat (e.g. Call of Duty) do not.",
+    "he": "Steam מ־Flathub, בארגז חול. רוב משחקי Windows רצים דרך Proton; משחקים עם anti-cheat בליבה (למשל Call of Duty) לא ירוצו."
+  },
+  "match": {
+    "en": [
+      "steam",
+      "proton",
+      "gaming",
+      "pc games"
+    ],
+    "he": [
+      "סטים",
+      "משחקים",
+      "גיימינג"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "com.valvesoftware.Steam"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

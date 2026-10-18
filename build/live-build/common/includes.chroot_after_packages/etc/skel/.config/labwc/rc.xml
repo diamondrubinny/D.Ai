@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- D.Ai OS labwc configuration. Full reference: man 5 labwc-config -->
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+  </core>
+
+  <placement>
+    <policy>center</policy>
+  </placement>
+
+  <theme>
+    <cornerRadius>8</cornerRadius>
+    <dropShadows>yes</dropShadows>
+    <font place="ActiveWindow"><name>Noto Sans</name><size>11</size><weight>bold</weight></font>
+    <font place="InactiveWindow"><name>Noto Sans</name><size>11</size><weight>normal</weight></font>
+    <font place="MenuItem"><name>Noto Sans</name><size>11</size></font>
+    <font place="OnScreenDisplay"><name>Noto Sans</name><size>11</size></font>
+  </theme>
+
+  <keyboard>
+    <default />
+    <numlock>on</numlock>
+    <keybind key="W-space"><action name="Execute" command="dai-command" /></keybind>
+    <keybind key="W-b"><action name="Execute" command="dai-forge-gui" /></keybind>
+    <!-- D.Ai Voice: press once to talk, again to finish (local Whisper) -->
+    <keybind key="W-h"><action name="Execute" command="dai-voice toggle --to type" /></keybind>
+    <keybind key="W-S-space"><action name="Execute" command="dai-voice toggle --to command" /></keybind>
+    <!-- Fix selected text typed in the wrong layout (akuo -> שלום) -->
+    <!-- Switch keyboard layout (on release, so Alt+Shift+X shortcuts still work) -->
+    <keybind key="A-Shift_L" onRelease="yes"><action name="Execute" command="dai-lang toggle" /></keybind>
+    <keybind key="S-Alt_L" onRelease="yes"><action name="Execute" command="dai-lang toggle" /></keybind>
+    <keybind key="Pause"><action name="Execute" command="dai-fixlayout" /></keybind>
+    <keybind key="W-A-l"><action name="Execute" command="dai-fixlayout" /></keybind>
+    <!-- D.Ai Clip: clipboard history, never passwords (docs/CLIP.md) -->
+    <keybind key="W-v"><action name="Execute" command="dai-clip" /></keybind>
+    <!-- D.Ai Heal: something is not working → help & repair chat (docs/EVOLVE.md §4) -->
+    <keybind key="W-F1"><action name="Execute" command="dai-heal" /></keybind>
+    <keybind key="W-n"><action name="Execute" command="dai-quick" /></keybind>
+    <keybind key="C-S-Escape"><action name="Execute" command="dai-mom" /></keybind>
+    <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
+    <keybind key="W-e"><action name="Execute" command="pcmanfm-qt" /></keybind>
+    <keybind key="W-l"><action name="Execute" command="swaylock -f" /></keybind>
+    <keybind key="A-F2"><action name="Execute" command="lxqt-runner" /></keybind>
+    <keybind key="Print"><action name="Execute" command="screengrab" /></keybind>
+    <keybind key="XF86PowerOff"><action name="Execute" command="lxqt-leave" /></keybind>
+    <!-- Toggle the Orca screen reader -->
+    <keybind key="W-A-s"><action name="Execute" command="orca --replace" /></keybind>
+  </keyboard>
+
+  <windowRules>
+    <!-- D.Ai Command draws its own frame and behaves like a popup -->
+    <windowRule identifier="dai-command" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes" />
+    <windowRule identifier="dai-heal" serverDecoration="yes" />
+    <windowRule identifier="dai-clip" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes" />
+    <!-- D.Ai Quick opens above the clock: bottom right, or bottom left in Hebrew (docs/TASKBAR.md §2.4) -->
+    <windowRule identifier="dai-quick*" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes" />
+    <windowRule identifier="dai-quick">
+      <action name="MoveToEdge" direction="down" snapWindows="no" />
+      <action name="MoveToEdge" direction="right" snapWindows="no" />
+    </windowRule>
+    <windowRule identifier="dai-quick-rtl">
+      <action name="MoveToEdge" direction="down" snapWindows="no" />
+      <action name="MoveToEdge" direction="left" snapWindows="no" />
+    </windowRule>
+  </windowRules>
+</labwc_config>

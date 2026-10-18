@@ -1,0 +1,75 @@
+{
+  "models": [
+    {
+      "id": "qwen2.5-0.5b",
+      "name": "Qwen2.5 0.5B Instruct (Q4_K_M)",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+      "file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+      "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+      "size": 491400032,
+      "license": "Apache-2.0",
+      "ram_mb": 1024,
+      "purpose": "general assistant (fast)",
+      "tasks": [
+        "general"
+      ]
+    },
+    {
+      "id": "qwen2.5-coder-1.5b",
+      "name": "Qwen2.5 Coder 1.5B Instruct (Q4_K_M)",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",
+      "file": "qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",
+      "sha256": "cc324af070c2ecbfd324a30884d2f951a7ff756aba85cb811a6ec436933bb046",
+      "size": 1117320768,
+      "license": "Apache-2.0",
+      "ram_mb": 2048,
+      "purpose": "coding assistant",
+      "tasks": [
+        "general",
+        "code"
+      ]
+    },
+    {
+      "id": "whisper-base",
+      "name": "Whisper base (multilingual, ggml)",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin",
+      "file": "ggml-base.bin",
+      "sha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe",
+      "size": 147951465,
+      "license": "MIT",
+      "ram_mb": 400,
+      "purpose": "speech to text (fast)",
+      "tasks": [
+        "speech"
+      ]
+    },
+    {
+      "id": "whisper-small",
+      "name": "Whisper small (multilingual, ggml)",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin",
+      "file": "ggml-small.bin",
+      "sha256": "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
+      "size": 487601967,
+      "license": "MIT",
+      "ram_mb": 900,
+      "purpose": "speech to text (recommended for Hebrew)",
+      "tasks": [
+        "speech"
+      ]
+    },
+    {
+      "id": "whisper-large-v3-turbo",
+      "name": "Whisper large-v3-turbo (multilingual, ggml Q5_0)",
+      "url": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin",
+      "file": "ggml-large-v3-turbo-q5_0.bin",
+      "sha256": "394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2",
+      "size": 574041195,
+      "license": "MIT",
+      "ram_mb": 1600,
+      "purpose": "speech to text (most accurate)",
+      "tasks": [
+        "speech"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Install D.Ai OS
+Name[he]=התקנת D.Ai OS
+Comment=Install D.Ai OS on this computer, with full-disk encryption
+Comment[he]=התקנת D.Ai OS על המחשב, עם הצפנת דיסק מלאה
+Exec=dai-install
+TryExec=calamares
+Icon=dai-logo
+Categories=System;
+Keywords=install;installer;encryption;calamares;
+Keywords[he]=התקנה;מתקין;הצפנה;

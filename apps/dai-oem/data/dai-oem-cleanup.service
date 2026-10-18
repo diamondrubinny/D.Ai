@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OEM (docs/OEM.md §1): after the new owner finished the first-boot setup,
+# remove the temporary users before anyone can log in.
+[Unit]
+Description=D.Ai OEM: remove the temporary users after the first-boot setup
+ConditionPathExists=/var/lib/dai/oem/state.json
+After=local-fs.target
+Before=systemd-user-sessions.service display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/dai-oem cleanup
+
+[Install]
+WantedBy=multi-user.target

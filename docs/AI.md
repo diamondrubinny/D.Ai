@@ -1,0 +1,66 @@
+# Diamond: ה־AI המקומי של D.Ai (שלב 3, v0.1)
+
+> **השם:** בממשק ה־AI המקומי נקרא **Diamond**, כמו היהלום שעל כפתור התחל (אושר ב־docs/MOM.md §8). ⚖ השם הרשמי הוא "D.Ai Diamond", ודורש בדיקת סימני מסחר לפני פרסום.
+
+> AI שרץ כולו במחשב: בלי ענן, בלי חשבון, בלי רשת. מודל קטן שמוריד המשתמש, עם hash מוצמד.
+
+## 1. רכיבים
+
+```
+D.Ai Command  "?שאלה"  ─┐
+dai-ai "שאלה"          ─┼─► daid (שירות משתמש, systemd --user)
+dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0600, תיקייה 0700)
+                              │  RestrictAddressFamilies=AF_UNIX  ← אין רשת בכלל
+                              ▼
+                      llama-server (llama.cpp b11400, מוצמד ל־commit)
+                              │  --host $XDG_RUNTIME_DIR/dai/llama.sock (UNIX socket, אין פורט TCP)
+                              │  --no-webui · נטען לפי דרישה · נכבה אחרי 10 דקות ללא שימוש
+                              ▼
+                      ~/.local/share/dai/models/*.gguf   ← dai-models (HTTPS + SHA-256 מוצמד)
+```
+
+| רכיב | מיקום | תפקיד |
+|------|-------|-------|
+| `llama-server` | `/opt/dai/llama` | הרצת המודל. נבנה ב־CI מ־llama.cpp מוצמד; כל וריאנטי ה־CPU (SSE4.2…AVX-512) נבחרים בזמן ריצה |
+| `daid` | `/usr/bin/daid` + `dai-daid.socket` | מנהל את llama-server, מספק API פשוט (JSON lines) |
+| `dai-models` | `/usr/bin/dai-models` | רשימה, התקנה, אימות והסרה של מודלים |
+| `dai-ai` | `/usr/bin/dai-ai` | שאלות מהטרמינל עם תשובה בזרימה |
+
+## 2. מודלים (קטלוג `models.json`)
+
+| מזהה | קובץ | רישיון | RAM | ייעוד |
+|------|------|--------|-----|-------|
+| `qwen2.5-0.5b` | Qwen2.5-0.5B-Instruct Q4_K_M (~0.4GB) | Apache-2.0 | ~1GB | כללי, מהיר, ברירת מחדל |
+| `qwen2.5-coder-1.5b` | Qwen2.5-Coder-1.5B-Instruct Q4_K_M (~1.1GB) | Apache-2.0 | ~2GB | קוד (מהדורת מפתחים) |
+
+- הורדה ב־HTTPS בלבד, מ־`huggingface.co` ומתת־הדומיינים של רשת ה־CDN שלו (`*.hf.co`). שמות שרתי ה־CDN משתנים, ולכן ההתאמה היא לפי דומיין שלם (`evilhf.co` נדחה). כל קובץ חייב **SHA-256 מוצמד** בקטלוג, ומודל בלי hash מוצמד לא יותקן.
+- ה־hash נלקח פעם אחת ב־CI מהמאגר הרשמי, ומשם הוא קבוע בקוד.
+- המודלים לא כלולים ב־ISO: גודל, רישוי, ובחירה של המשתמש.
+
+## 3. אבטחה ופרטיות
+
+| איום | בקרה |
+|------|------|
+| דליפת מידע לרשת | `RestrictAddressFamilies=AF_UNIX` על daid ו־llama-server (תהליך בן). אין TCP |
+| משתמש אחר במחשב ניגש ל־AI | sockets בתיקייה 0700 של המשתמש (`$XDG_RUNTIME_DIR`) |
+| מודל מזויף / מורעל | HTTPS + SHA-256 מוצמד; קבצי GGUF בלבד (לא pickle) |
+| AI מבצע פעולה מסוכנת | ה־AI **לא מבצע כלום**. ב־D.Ai Tune הוא מחזיר JSON מוגבל לסכמה של פעולות הקטלוג, שעובר את אותו validator, מסומן "פרשנות AI" ודורש אישור |
+| prompt injection דרך טקסט | אותה הגנה: גם תוצאה "מורעלת" יכולה רק להציע פעולות מהקטלוג, ומוצגת לאישור |
+| שמירת שיחות | אין שמירה כברירת מחדל. השאלות לא נכתבות לדיסק |
+
+## 4. ממשקים
+
+- `dai-ai "מה ההבדל בין tcp ל־udp?"`, `dai-ai status`
+- `dai-models list | install <id> | verify <id> | remove <id>`
+- D.Ai Command: `?` ואז שאלה; התשובה מוצגת בזרימה בתוך החלון.
+- D.Ai Tune: אם הכללים לא הבינו משפט ויש מודל מותקן, מוצעת "פרשנות AI" (‎`--ai` מפעיל ישירות).
+
+## 5. מגבלות ידועות
+
+- מודל 0.5B מהיר אבל מוגבל, בעיקר בעברית. אפשר לבחור מודל גדול יותר מהקטלוג.
+- האצת GPU (Vulkan/CUDA) עוד לא נבנתה. כרגע CPU בלבד.
+- הכתבה קולית (Whisper): ראו [VOICE.md](VOICE.md).
+
+---
+
+© 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0

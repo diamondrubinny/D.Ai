@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OS labwc environment (LXQt Wayland session).
+# Keyboard layouts, switched with Alt+Shift by dai-lang (which writes the
+# active one to environment.d/50-dai-lang.env so the panel can show it).
+DAI_LAYOUTS=us,il
+XKB_DEFAULT_LAYOUT=us
+
+# Java apps (e.g. JetBrains IDEs) need this on wlroots compositors.
+_JAVA_AWT_WM_NONREPARENTING=1
+
+# Cursor theme (also removes labwc's XCURSOR_* warnings)
+XCURSOR_THEME=breeze_cursors
+XCURSOR_SIZE=24

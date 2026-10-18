@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "id": "printer",
+  "name": {
+    "en": "Printers",
+    "he": "מדפסות"
+  },
+  "description": {
+    "en": "Printing service with drivers for most printers (HP, Epson, Canon, Brother via driverless IPP) and a setup window.",
+    "he": "שירות הדפסה עם דרייברים לרוב המדפסות (HP, ‏Epson, ‏Canon, ‏Brother דרך IPP בלי דרייבר) וחלון הגדרה."
+  },
+  "match": {
+    "en": [
+      "printer",
+      "printers",
+      "printing"
+    ],
+    "he": [
+      "מדפסת",
+      "מדפסות",
+      "הדפסה",
+      "להדפיס"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "cups",
+          "cups-browsed",
+          "system-config-printer",
+          "hplip",
+          "printer-driver-gutenprint"
+        ]
+      }
+    },
+    {
+      "action": "service.unit",
+      "params": {
+        "unit": "cups.service",
+        "enabled": true
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

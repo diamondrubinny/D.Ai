@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- The active window button in the D.Ai Diamond Bar (docs/TASKBAR.md): a violet tint and a violet→cyan line. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="44" viewBox="0 0 48 44">
+  <defs>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7C5CFF"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.5" y="0.5" width="47" height="43" rx="12" fill="#7C5CFF" fill-opacity="0.24" stroke="#7C5CFF" stroke-opacity="0.5"/>
+  <rect x="13" y="38" width="22" height="3" rx="1.5" fill="url(#line)"/>
+</svg>

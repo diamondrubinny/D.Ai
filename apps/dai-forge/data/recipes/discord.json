@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "id": "discord",
+  "name": {
+    "en": "Discord",
+    "he": "דיסקורד"
+  },
+  "description": {
+    "en": "Discord from Flathub (sandboxed).",
+    "he": "דיסקורד מ־Flathub (בארגז חול)."
+  },
+  "match": {
+    "en": [
+      "discord"
+    ],
+    "he": [
+      "דיסקורד"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "com.discordapp.Discord"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

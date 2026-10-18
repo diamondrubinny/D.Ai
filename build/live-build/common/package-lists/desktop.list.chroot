@@ -1,0 +1,109 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OS — Wayland desktop (labwc compositor + LXQt components)
+
+# Session and login (LXQt Wayland session on the labwc compositor)
+labwc
+lxqt-session
+xwayland
+sddm
+xserver-xorg-core
+xserver-xorg-input-libinput
+swaylock
+swayidle
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-lxqt
+xdg-utils
+qt6-wayland
+qtwayland5
+
+# LXQt desktop components
+lxqt-panel
+lxqt-config
+lxqt-notificationd
+lxqt-policykit
+lxqt-qtplugin
+lxqt-themes
+lxqt-archiver
+lxqt-runner
+pcmanfm-qt
+qterminal
+featherpad
+lximage-qt
+qpdfview
+screengrab
+pavucontrol-qt
+nm-tray
+blueman
+breeze-icon-theme
+breeze-cursor-theme
+
+# D.Ai applications
+python3-pyqt6
+# Qt SVG rendering (D.Ai diamond, SVG icons)
+libqt6svg6
+wl-clipboard
+wtype
+libnotify-bin
+
+# Office suite with a Hebrew interface and Hebrew/English spell checking
+libreoffice-writer
+libreoffice-calc
+libreoffice-impress
+libreoffice-l10n-he
+hunspell-he
+hunspell-en-us
+
+# D.Ai Backup: encrypted, deduplicated backups to an external drive
+restic
+
+# Power: battery saver / balanced / performance (D.Ai Tune "power.profile", D.Ai Doctor)
+power-profiles-daemon
+
+# D.Ai Heal: notice crashes (metadata only, see /usr/lib/systemd/coredump.conf.d/50-dai.conf)
+systemd-coredump
+
+# Audio
+pipewire
+# pw-record for D.Ai Voice
+pipewire-bin
+pipewire-pulse
+pipewire-alsa
+wireplumber
+
+# Printing
+cups
+system-config-printer
+
+# Browser and apps
+firefox-esr
+# Ruby's interface languages (docs/BROWSER.md, docs/I18N.md)
+firefox-esr-l10n-he
+firefox-esr-l10n-ar
+firefox-esr-l10n-ru
+firefox-esr-l10n-es-es
+firefox-esr-l10n-fr
+firefox-esr-l10n-de
+firefox-esr-l10n-pt-br
+flatpak
+# J (docs/MAIL.md): passwords in the desktop keyring, unlocked at login; DNS lookups for account setup
+gnome-keyring
+libpam-gnome-keyring
+libsecret-tools
+python3-dnspython
+# D.Ai Forge app sandbox (also used by Flatpak)
+bubblewrap
+
+# Fonts (Hebrew + emoji)
+fonts-noto-core
+fonts-noto-color-emoji
+fonts-dejavu-core
+
+# Accessibility
+orca
+at-spi2-core
+
+# Installer (live session): Calamares with Debian's tested settings, incl. LUKS encryption
+calamares
+calamares-settings-debian

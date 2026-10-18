@@ -1,0 +1,148 @@
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFeedbackCommands": true,
+    "DisableSetDesktopBackground": true,
+    "DontCheckDefaultBrowser": true,
+    "OverrideFirstRunPage": "file:///usr/share/dai/ruby/start.html",
+    "OverridePostUpdatePage": "",
+    "UserMessaging": {
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "UrlbarInterventions": false,
+      "SkipOnboarding": true,
+      "MoreFromMozilla": false,
+      "Locked": true
+    },
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": true,
+      "SponsoredTopSites": false,
+      "Highlights": true,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Locked": false
+    },
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": true
+    },
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Locked": false,
+      "Cryptomining": true,
+      "Fingerprinting": true,
+      "EmailTracking": true
+    },
+    "Cookies": {
+      "Behavior": "reject-tracker-and-partition-foreign",
+      "BehaviorPrivateBrowsing": "reject-tracker-and-partition-foreign",
+      "Locked": false
+    },
+    "SanitizeOnShutdown": {
+      "Cache": true,
+      "Cookies": true,
+      "OfflineApps": true,
+      "History": false,
+      "Sessions": false,
+      "SiteSettings": false,
+      "Locked": false
+    },
+    "HttpsOnlyMode": "enabled",
+    "PopupBlocking": {
+      "Default": true,
+      "Locked": false
+    },
+    "DNSOverHTTPS": {
+      "Enabled": false,
+      "Locked": false
+    },
+    "PasswordManagerEnabled": true,
+    "OfferToSaveLoginsDefault": true,
+    "SearchEngines": {
+      "Default": "DuckDuckGo"
+    },
+    "Homepage": {
+      "StartPage": "previous-session"
+    },
+    "Preferences": {
+      "browser.ml.chat.enabled": {
+        "Value": false,
+        "Status": "default"
+      },
+      "browser.ml.chat.shortcuts": {
+        "Value": false,
+        "Status": "default"
+      },
+      "browser.tabs.unloadOnLowMemory": {
+        "Value": true,
+        "Status": "default"
+      },
+      "browser.tabs.groups.enabled": {
+        "Value": true,
+        "Status": "default"
+      },
+      "browser.contentblocking.category": {
+        "Value": "strict",
+        "Status": "default"
+      },
+      "browser.urlbar.trimHttps": {
+        "Value": false,
+        "Status": "default"
+      },
+      "browser.sessionstore.interval": {
+        "Value": 300000,
+        "Status": "default"
+      },
+      "dom.disable_open_during_load": {
+        "Value": true,
+        "Status": "default"
+      },
+      "media.autoplay.default": {
+        "Value": 5,
+        "Status": "default"
+      }
+    },
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "private_browsing": true,
+        "default_area": "navbar"
+      },
+      "@testpilot-containers": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi",
+        "default_area": "navbar"
+      }
+    },
+    "3rdparty": {
+      "Extensions": {
+        "uBlock0@raymondhill.net": {
+          "toOverwrite": {
+            "filterLists": [
+              "user-filters",
+              "ublock-filters",
+              "ublock-badware",
+              "ublock-privacy",
+              "ublock-quick-fixes",
+              "ublock-unbreak",
+              "easylist",
+              "easyprivacy",
+              "urlhaus-1",
+              "plowe-0",
+              "fanboy-cookiemonster",
+              "ublock-cookies-easylist",
+              "adguard-popup-overlays",
+              "ISR-0"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

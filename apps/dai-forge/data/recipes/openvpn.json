@@ -1,0 +1,36 @@
+{
+  "format": 1,
+  "id": "openvpn",
+  "name": {
+    "en": "OpenVPN (work VPN)",
+    "he": "OpenVPN ‏(VPN של העבודה)"
+  },
+  "description": {
+    "en": "Import .ovpn files in the network menu.",
+    "he": "ייבוא קבצי ‎.ovpn מתפריט הרשת."
+  },
+  "match": {
+    "en": [
+      "openvpn",
+      "ovpn",
+      "work vpn"
+    ],
+    "he": [
+      "אופן וי פי אן",
+      "vpn של העבודה",
+      "קובץ ovpn"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "network-manager-openvpn",
+          "network-manager-openvpn-gnome"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

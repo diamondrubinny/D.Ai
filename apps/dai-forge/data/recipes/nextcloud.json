@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "id": "nextcloud",
+  "name": {
+    "en": "Nextcloud sync client",
+    "he": "לקוח סנכרון Nextcloud"
+  },
+  "description": {
+    "en": "Sync with your own Nextcloud server.",
+    "he": "סנכרון מול שרת Nextcloud משלכם."
+  },
+  "match": {
+    "en": [
+      "nextcloud"
+    ],
+    "he": [
+      "נקסטקלאוד",
+      "נקסט קלאוד"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "nextcloud-desktop"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

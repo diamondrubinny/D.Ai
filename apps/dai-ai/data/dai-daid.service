@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai local AI service (llama.cpp, no network)
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/AI.md
+Requires=dai-daid.socket
+
+[Service]
+ExecStart=/usr/bin/daid
+# The AI has no network access at all: only UNIX sockets (also for llama-server).
+RestrictAddressFamilies=AF_UNIX
+NoNewPrivileges=yes
+LockPersonality=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+# Leave room for the desktop; the model is unloaded after 10 idle minutes.
+Nice=5
+MemoryHigh=80%

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=MOM – Task manager
+Name[he]=MOM – מנהל המשימות
+GenericName=Task manager
+GenericName[he]=מנהל המשימות
+Comment=What runs on the computer, in plain words; close what is stuck · Ctrl+Shift+Esc
+Comment[he]=מה רץ במחשב, במילים פשוטות; לסגור מה שנתקע · Ctrl+Shift+Esc
+Exec=dai-mom
+TryExec=dai-mom
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Monitor;
+Keywords=task manager;what is running;מה רץ;processes;stuck;frozen;slow;memory;cpu;kill;מנהל משימות;תהליכים;תקוע;נתקע;איטי;זיכרון;

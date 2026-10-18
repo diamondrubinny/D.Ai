@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "id": "vscode",
+  "name": {
+    "en": "Visual Studio Code",
+    "he": "Visual Studio Code"
+  },
+  "description": {
+    "en": "Code editor from Flathub (sandboxed).",
+    "he": "עורך קוד מ־Flathub (בארגז חול)."
+  },
+  "match": {
+    "en": [
+      "vscode",
+      "vs code",
+      "visual studio code"
+    ],
+    "he": [
+      "וי אס קוד",
+      "ויז'ואל סטודיו"
+    ]
+  },
+  "steps": [
+    {
+      "action": "flatpak.remote",
+      "params": {
+        "name": "flathub"
+      }
+    },
+    {
+      "action": "flatpak.install",
+      "params": {
+        "apps": [
+          "com.visualstudio.code"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}
