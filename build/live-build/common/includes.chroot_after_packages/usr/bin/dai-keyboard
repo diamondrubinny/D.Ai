@@ -1,0 +1,9 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The on-screen keyboard (wvkbd), on and off (Super+Alt+K; docs/BASICS.md §2).
+if pkill -x wvkbd-mobintl 2>/dev/null; then
+	exit 0
+fi
+command -v wvkbd-mobintl >/dev/null 2>&1 || { notify-send -a "D.Ai" "On-screen keyboard" "wvkbd is not installed"; exit 1; }
+exec wvkbd-mobintl -L 260

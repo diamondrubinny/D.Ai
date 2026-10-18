@@ -24,15 +24,19 @@
    - **Checks:**
      - **Unit:** finding disks, the passphrase only on stdin, closing even after a wrong passphrase, nothing changes without confirmation.
      - **VM** (`rescue: undo an update from the USB`): a real "installed system" on a Btrfs image, a pretend update, then `dai-rescue`. The file goes back, and a safety snapshot exists.
-2. **Firmware updates:** `fwupd`.
+2. 🔧 **Packages and shortcuts:** in an optional list (`basics.list.optional`), so a package Debian 13 does not have is left out rather than breaking the build.
+   - **Firmware updates:** `fwupd`.
+   - **Video and audio codecs:** GStreamer, including `libav`.
+   - **Printers:** most work with no driver (IPP Everywhere): `ipp-usb`, `cups-browsed`, `avahi-daemon`. For the rest: `printer-driver-gutenprint`, `printer-driver-brlaser`, `hplip`.
+   - **Night light:** Super+Alt+N (`dai-nightlight`, ‏wlsunset, 19:00-07:00).
+   - **On-screen keyboard:** Super+Alt+K (`dai-keyboard`, ‏wvkbd).
+   - **Screen magnifier:** labwc's own. Super+= closer, Super+- back, Super+Alt+M on and off. **Requires verification** that the labwc version in Debian 13 supports these actions.
+   - **Checks on the VM:** `os: firmware, codecs, printers` and `os: night light and on-screen keyboard`. Information only (WARN) until we see what Debian has.
 3. **Hibernation with LUKS:** swap or a swapfile.
 4. **Unlocking with TPM:** `systemd-cryptenroll`.
-5. **Night light, on-screen keyboard, screen magnifier.**
-6. **Phone connection:** KDE Connect.
-7. **Video codecs:** GStreamer.
-8. **Common printer drivers.**
-9. **A graphical app store:** on top of Flathub and Forge recipes.
-10. **ARM.**
+5. **Phone connection:** KDE Connect.
+6. **A graphical app store:** on top of Flathub and Forge recipes.
+7. **ARM.**
 
 ---
 

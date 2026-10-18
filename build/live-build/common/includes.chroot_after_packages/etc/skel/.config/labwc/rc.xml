@@ -50,6 +50,13 @@
     <keybind key="XF86PowerOff"><action name="Execute" command="lxqt-leave" /></keybind>
     <!-- Toggle the Orca screen reader -->
     <keybind key="W-A-s"><action name="Execute" command="orca --replace" /></keybind>
+    <!-- Screen magnifier (labwc's own): Super+= closer, Super+- back, Super+Alt+M on and off -->
+    <keybind key="W-equal"><action name="ZoomIn" /></keybind>
+    <keybind key="W-minus"><action name="ZoomOut" /></keybind>
+    <keybind key="W-A-m"><action name="ToggleMagnify" /></keybind>
+    <!-- On-screen keyboard and night light -->
+    <keybind key="W-A-k"><action name="Execute" command="dai-keyboard" /></keybind>
+    <keybind key="W-A-n"><action name="Execute" command="dai-nightlight" /></keybind>
   </keyboard>
 
   <windowRules>

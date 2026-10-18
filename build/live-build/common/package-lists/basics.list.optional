@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# OS basics, stage 2 (docs/BASICS.md §2). Optional: a package Debian 13 does not have is left out, not a failed build.
+# Firmware updates (BIOS, SSD, docks) through LVFS
+fwupd
+# Video and audio in every app, not only Firefox
+gstreamer1.0-plugins-good
+gstreamer1.0-plugins-bad
+gstreamer1.0-libav
+# Printers: most work with no driver (IPP Everywhere over the network or USB), the rest with these
+ipp-usb
+cups-browsed
+avahi-daemon
+printer-driver-gutenprint
+printer-driver-brlaser
+hplip
+# Night light on Wayland, and an on-screen keyboard
+wlsunset
+wvkbd

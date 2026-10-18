@@ -618,6 +618,15 @@ def main() -> int:
         ("os: secure boot shim", "for f in $(find /run/live/medium -iname 'bootx64.efi' -o -iname 'efi.img' 2>/dev/null); do "
          "printf '%s ' \"$f\"; grep -c -a 'UEFI SHIM' \"$f\"; done; find /run/live/medium -iname 'grubx64.efi' | head -n 2",
          False, lambda o: re.search(r" [1-9]\d*$", o, re.M) is not None, 60),
+        # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
+        ("os: firmware, codecs, printers", "fwupdmgr --version 2>/dev/null | head -n 1; "
+         "gst-inspect-1.0 libav 2>/dev/null | grep -m1 -i version; ls /usr/share/ppd 2>/dev/null | head -n 3; "
+         "command -v hp-setup", False,
+         lambda o: "fwupd" in o.lower() and "version" in o.lower(), 60),
+        ("os: night light and on-screen keyboard", WAYLAND_ENV + "labwc --version 2>&1 | head -n 1; "
+         "timeout 3 wlsunset -t 4000 -T 6500 -S 07:00 -s 19:00 >/dev/null 2>&1; echo SUNSET_RC=$?; "
+         "command -v wvkbd-mobintl && echo WVKBD; test -x /usr/bin/dai-nightlight && test -x /usr/bin/dai-keyboard && echo SCRIPTS",
+         False, lambda o: "SUNSET_RC=124" in o and "WVKBD" in o and "SCRIPTS" in o, 30),
         # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
         ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
          "dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst", False,

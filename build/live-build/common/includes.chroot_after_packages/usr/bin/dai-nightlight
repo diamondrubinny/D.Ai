@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Night light (wlsunset): warmer colours from 19:00 to 07:00, on and off (Super+Alt+N; docs/BASICS.md §2).
+if pkill -x wlsunset 2>/dev/null; then
+	notify-send -a "D.Ai" "Night light" "Off" 2>/dev/null || true
+	exit 0
+fi
+command -v wlsunset >/dev/null 2>&1 || { notify-send -a "D.Ai" "Night light" "wlsunset is not installed"; exit 1; }
+notify-send -a "D.Ai" "Night light" "On (19:00-07:00)" 2>/dev/null || true
+exec wlsunset -t 4000 -T 6500 -S 07:00 -s 19:00
