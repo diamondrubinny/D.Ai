@@ -193,7 +193,7 @@ type_keys() {
 
 log "interactive: type into the panel command field"
 type_keys esc
-click 210 777
+click 300 768  # the command field: the Diamond Bar is 80% wide, centered (x 128-1152), y 744-792
 sleep 1
 type_keys a k u o
 sleep 3
@@ -209,7 +209,7 @@ monitor "screendump $ARTIFACT_DIR/ai-answer.png -f png" || log "warning: screens
 
 log "interactive: the diamond Start button opens the Start menu"
 type_keys esc
-click 30 776
+click 161 768  # the diamond (docs/TASKBAR.md)
 sleep 3
 monitor "screendump $ARTIFACT_DIR/start-menu.png -f png" || log "warning: screenshot failed"
 type_keys esc
