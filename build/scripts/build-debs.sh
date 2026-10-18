@@ -126,6 +126,9 @@ build_apps() {
   install -d "$root/usr/lib/systemd/system" "$root/usr/share/dai/policy-examples"
   install -m 0644 "$tune/data/dai-policy.service" "$tune/data/dai-policy.path" "$root/usr/lib/systemd/system/"
   install -m 0644 "$tune/data/policy-examples/"* "$root/usr/share/dai/policy-examples/"
+  # Snapshots before updates on a new Btrfs installation (docs/SNAPSHOTS.md stage 2).
+  install -m 0755 "$tune/data/dai-snapshots-firstboot" "$root/usr/lib/dai/dai-snapshots-firstboot"
+  install -m 0644 "$tune/data/dai-snapshots-firstboot.service" "$root/usr/lib/systemd/system/"
 
   local ai="$REPO_ROOT/apps/dai-ai"
   copy_package "$ai/dai_ai" "$root"
@@ -206,6 +209,10 @@ build_apps() {
   install -m 0644 "$j/data/dai-j.desktop" "$root/usr/share/applications/"
   install -D -m 0644 "$j/data/dai-j.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-j.svg"
 
+  # Raz (docs/RAZ.md): D.Ai checks itself.
+  copy_package "$REPO_ROOT/apps/dai-raz/dai_raz" "$root"
+  install -m 0755 "$REPO_ROOT/apps/dai-raz/data/dai-raz" "$root/usr/bin/dai-raz"
+
   # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
   local evolve="$REPO_ROOT/apps/dai-evolve"
   copy_package "$evolve/dai_evolve" "$root"
@@ -266,6 +273,7 @@ if [ "$1" = configure ]; then
   ln -sf /usr/lib/systemd/user/dai-evolve.timer /etc/systemd/user/timers.target.wants/dai-evolve.timer
   # D.Ai OEM: does nothing unless a first-boot setup was just finished.
   ln -sf /usr/lib/systemd/system/dai-oem-cleanup.service /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
+  ln -sf /usr/lib/systemd/system/dai-snapshots-firstboot.service /etc/systemd/system/multi-user.target.wants/dai-snapshots-firstboot.service
 fi
 exit 0
 EOF
@@ -279,6 +287,7 @@ if [ "$1" = remove ]; then
   rm -f /etc/systemd/user/sockets.target.wants/dai-daid.socket
   rm -f /etc/systemd/system/multi-user.target.wants/dai-policy.service /etc/systemd/system/paths.target.wants/dai-policy.path
   rm -f /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
+  rm -f /etc/systemd/system/multi-user.target.wants/dai-snapshots-firstboot.service
   rm -f /etc/systemd/user/timers.target.wants/dai-evolve.timer
 fi
 exit 0

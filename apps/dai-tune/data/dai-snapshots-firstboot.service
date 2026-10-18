@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai snapshots before updates (first boot of a Btrfs installation)
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/SNAPSHOTS.md
+ConditionPathExists=!/etc/snapper/configs/root
+ConditionKernelCommandLine=!boot=live
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/dai/dai-snapshots-firstboot
+
+[Install]
+WantedBy=multi-user.target

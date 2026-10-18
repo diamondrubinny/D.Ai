@@ -76,6 +76,12 @@ class Base(unittest.TestCase):
         f.add(970, 600, "bwrap", ["bwrap", "--args", "40", "gimp"], cgroup=scope)
         f.add(971, 970, "gimp", ["/app/bin/gimp"], cgroup=scope)
         f.add(1000, 1, "sshd", ["sshd"], uid=0)
+        desktop(apps_dir, "python3.13", "Name=Python (v3.13)\nExec=python3.13\n")
+        f.add(1100, 600, "python3", ["python3", "-I", "-c", "import sys; from dai_privacy.tray import main"])
+        f.add(1101, 600, "python3", ["python3", "/home/dana/tool.py"])
+        f.add(1200, 600, "python3", ["python3", "-I", "-c", "from dai_command.ui import main"])
+        f.add(1201, 1200, "bwrap", ["bwrap", "--unshare-all", "python3", "app.py"])
+        f.add(1202, 1201, "python3", ["python3", "/app/app.py"])
 
     def grouped(self, lang="en", recording=None):
         snap = procs.snapshot(self.root)
@@ -124,6 +130,18 @@ class GroupTests(Base):
         self.assertTrue(found["proc:labwc"].protected)
         self.assertNotIn("proc:sshd", found)  # other users' processes are not ours to manage
         self.assertTrue(list(found.values())[0].is_app)  # apps first, the biggest at the top
+
+    def test_interpreters_services_and_sandboxes(self):
+        found = {a.key: a for a in self.grouped()}
+        self.assertNotIn("python3.13", found)  # the interpreter's menu entry is never "the app"
+        self.assertEqual(found["dai-privacy"].name, "D.Ai Privacy")
+        self.assertIn("proc:python3", found)  # a script of the user's own, under its own name
+        self.assertEqual([p.pid for p in found["proc:python3"].processes], [1101])
+        sandbox = found["sandbox:1201"]
+        self.assertEqual(sorted(p.pid for p in sandbox.processes), [1201, 1202])
+        self.assertTrue(sandbox.sandboxed)
+        self.assertEqual(sandbox.name, "python3")
+        self.assertFalse(found["dai-command"].sandboxed)  # what started the sandbox is not inside it
 
     def test_hebrew_names_and_recording_badge(self):
         found = {a.key: a for a in self.grouped("he", recording=["Firefox"])}

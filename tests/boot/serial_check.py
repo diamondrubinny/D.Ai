@@ -341,6 +341,13 @@ def main() -> int:
         ("installer: LUKS available", "test -x /usr/sbin/cryptsetup && echo CRYPTSETUP_OK; "
          "cat /etc/calamares/modules/partition.conf 2>/dev/null | grep -iE '^[^#]*luks' || echo 'luks: calamares default'", True,
          lambda o: "CRYPTSETUP_OK" in o and "enableLuksAutomatedPartitioning: false" not in o),
+        # Btrfs by default (docs/SNAPSHOTS.md stage 2): the installer's default file system, and the first-boot
+        # service that turns snapshots on, which must stay inactive in the live session.
+        ("installer: btrfs by default", "grep -E '^(defaultFileSystemType|initialSwapChoice):' "
+         "/etc/calamares/modules/partition.conf; systemctl is-enabled dai-snapshots-firstboot.service; "
+         "test -e /etc/snapper/configs/root || echo NO_LIVE_SNAPSHOTS", True,
+         lambda o: 'defaultFileSystemType: "btrfs"' in o and "initialSwapChoice: none" in o and "enabled" in o
+         and "NO_LIVE_SNAPSHOTS" in o),
         ("forge: window installed", "dai-forge-gui --version; test -f /usr/share/applications/dai-forge.desktop && echo IN_MENU; "
          "grep -c 'ownIcon=true' /etc/xdg/lxqt/panel.conf; test -f /etc/swaylock/config && echo LOCK_THEMED", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "IN_MENU" in o and "LOCK_THEMED" in o),
@@ -460,6 +467,11 @@ def main() -> int:
          lambda o: re.search(r"POLICIES \d+ enabled", o) is not None and "OWNER root 644" in o
          and "DIVERTED=1" in o and "Name=Ruby" in o and "HEBREW_UI" in o
          and ("UBLOCK" in o and "CONTAINERS" in o or "NO_NETWORK" in o), 200),
+        # Raz (docs/RAZ.md stage 1): the same checks a user's computer runs, here before every release.
+        ("raz: D.Ai checks itself", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-raz check; echo RAZ_EXIT=$?; "
+         "dai-raz last --json | python3 -c 'import json, sys; d = json.load(sys.stdin); "
+         "print(\"RAZ_KEPT\", len(d[\"results\"]))'; stat -c 'RAZ_DIR %a' ~/.local/state/dai/raz", True,
+         lambda o: "RAZ_EXIT=0" in o and "RAZ_KEPT 9" in o and "RAZ_DIR 700" in o and "✗" not in o, 120),
         # J (docs/MAIL.md stage 1): installed, finds Gmail's servers from the address alone, can keep passwords in
         # the keyring (secret-tool + a Secret Service on D-Bus), and is the handler for mailto: links.
         ("j: mail client", "dai-j --version; dai-j discover dana@gmail.com; "
