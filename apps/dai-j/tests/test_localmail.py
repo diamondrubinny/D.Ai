@@ -4,6 +4,7 @@
 import hashlib
 import mailbox
 import os
+import subprocess
 import tempfile
 import unittest
 from email.message import EmailMessage
@@ -119,6 +120,45 @@ class ImportTests(unittest.TestCase):
         self.addCleanup(setattr, localmail, "MAX_MESSAGE", original)
         result = localmail.import_source(self.store, localmail.source_for_path(path))
         self.assertEqual((result.added, result.skipped), (0, 1))
+
+
+class OutlookTests(unittest.TestCase):
+    """An Outlook .pst file through readpst (pst-utils), with readpst replaced by a fake that writes what it writes."""
+
+    def test_every_folder_readpst_made_is_imported_and_the_file_is_only_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            pst = Path(tmp) / "archive.pst"
+            pst.write_bytes(b"!BDN" + b"\0" * 60)
+            before = pst.read_bytes()
+            store = Store(Path(tmp) / "mail.sqlite")
+            self.addCleanup(store.close)
+            calls = []
+
+            def readpst(argv, **kwargs):
+                calls.append(argv)
+                out = Path(argv[argv.index("-o") + 1])
+                self.assertEqual(oct(out.stat().st_mode & 0o777), "0o700")
+                for folder, subject in (("Inbox", "From Outlook"), ("Inbox/Projects", "Plan")):
+                    (out / folder).mkdir(parents=True, exist_ok=True)
+                    box = mailbox.mbox(out / folder / "mbox")
+                    box.add(mailbox.mboxMessage(message(subject)))
+                    box.flush()
+                    box.close()
+                return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+            results = localmail.import_pst(store, pst, run=readpst, which=lambda name: "/usr/bin/readpst")
+            self.assertEqual(calls[0][:4], ["readpst", "-q", "-r", "-o"])
+            self.assertEqual(sorted((r.folders[0], r.added) for r in results),
+                             [("Outlook/archive/Inbox", 1), ("Outlook/archive/Inbox/Projects", 1)])
+            self.assertEqual(pst.read_bytes(), before)
+            self.assertFalse(Path(calls[0][4]).exists())  # the converted copy is gone
+            self.assertTrue(localmail.is_pst(pst))
+            self.assertFalse(localmail.is_pst(Path(tmp) / "mail.sqlite"))
+            with self.assertRaisesRegex(localmail.PstError, "no_readpst"):
+                localmail.import_pst(store, pst, which=lambda name: None)
+            failing = lambda argv, **kw: subprocess.CompletedProcess(argv, 1, b"", b"")  # noqa: E731
+            with self.assertRaisesRegex(localmail.PstError, "pst_failed"):
+                localmail.import_pst(store, pst, run=failing, which=lambda name: "/usr/bin/readpst")
 
 
 class SearchTests(unittest.TestCase):

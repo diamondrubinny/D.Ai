@@ -14,6 +14,9 @@ from __future__ import annotations
 
 import mailbox
 import re
+import shutil
+import subprocess
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterator
@@ -118,6 +121,55 @@ def find_sources(home: Path | None = None) -> list[Source]:
     for app, prefs in thunderbird_profiles(home):
         found += mozilla_folders(app, prefs.parent)
     return found + evolution_folders(home) + kmail_folders(home)
+
+
+PST_TIMEOUT = 1800  # a large Outlook file takes a while
+
+
+class PstError(RuntimeError):
+    """An Outlook file could not be read: "no_readpst" or "pst_failed"."""
+
+
+def is_pst(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    try:
+        with path.open("rb") as handle:
+            return handle.read(4) == b"!BDN"  # the signature of every .pst and .ost file
+    except OSError:
+        return False
+
+
+def import_pst(store, path: Path, run: Callable = subprocess.run, which: Callable = shutil.which) -> list[Result]:
+    """An Outlook .pst/.ost file: readpst (pst-utils) converts it into a private temporary folder, J imports
+    every mbox or Maildir it finds there, and the temporary folder is removed. The .pst file is only read."""
+    if which("readpst") is None:
+        raise PstError("no_readpst")
+    base = _clean_name(f"Outlook/{path.stem}")
+    results = []
+    with tempfile.TemporaryDirectory(prefix="dai-j-pst-") as tmp:  # 0700, removed even on failure
+        try:
+            done = run(["readpst", "-q", "-r", "-o", tmp, str(path)], capture_output=True, timeout=PST_TIMEOUT)
+        except (OSError, subprocess.SubprocessError):
+            raise PstError("pst_failed") from None
+        if done.returncode != 0:
+            raise PstError("pst_failed")
+        root = Path(tmp)
+        for found in sorted(root.rglob("*")):
+            if found.is_symlink():
+                continue
+            relative = found.relative_to(root)
+            if _is_maildir(found):
+                source = Source("outlook", _clean_name(f"{base}/{relative}"), found, "maildir")
+            elif _is_mbox(found):  # "-r": one "mbox" file in a folder per Outlook folder
+                parts = relative.parts[:-1] if found.name == "mbox" else (*relative.parts[:-1], found.stem)
+                source = Source("outlook", _clean_name("/".join((base, *parts))), found, "mbox")
+            else:
+                continue
+            results.append(import_source(store, source))
+    if not results:
+        raise PstError("pst_failed")
+    return results
 
 
 def source_for_path(path: Path) -> Source | None:

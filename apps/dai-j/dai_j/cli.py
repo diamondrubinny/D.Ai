@@ -8,7 +8,8 @@
   dai-j import [--add]       accounts found in Thunderbird, Betterbird, Evolution, Claws Mail and Mutt
                              (read-only; --add adds them to J; passwords are asked at the first sign-in)
   dai-j import-mail [PATH]    copy the mail Thunderbird, Betterbird, Evolution or KMail keep on this computer (or one
-                             mbox file / Maildir folder) into J's local folders; the other app's files are only read
+                             mbox file / Maildir folder / Outlook .pst file) into J's local folders; the other app's
+                             files are only read
   dai-j --version
 """
 
@@ -62,10 +63,25 @@ def main(argv: list[str] | None = None) -> int:
         from . import accounts as acc, localmail
         from .store import Store
 
+        if len(args) == 2 and localmail.is_pst(Path(args[1]).expanduser()):  # Outlook (docs/MAIL.md §11)
+            directory = acc.data_dir()
+            directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+            store = Store(directory / "mail.sqlite")
+            try:
+                results = localmail.import_pst(store, Path(args[1]).expanduser())
+            except localmail.PstError as exc:
+                print({"no_readpst": "readpst is not installed (sudo apt install pst-utils)",
+                       "pst_failed": f"could not read the Outlook file: {args[1]}"}[str(exc)], file=sys.stderr)
+                return 1
+            finally:
+                store.close()
+            print(json.dumps([{"folder": r.folders[0], "from": "outlook", "added": r.added, "skipped": r.skipped}
+                              for r in results], indent=2, ensure_ascii=False))
+            return 0
         if len(args) == 2:
             source = localmail.source_for_path(Path(args[1]))
             if source is None:
-                print(f"not an mbox file or a Maildir folder: {args[1]}", file=sys.stderr)
+                print(f"not an mbox file, a Maildir folder or an Outlook .pst file: {args[1]}", file=sys.stderr)
                 return 1
             sources = [source]
         else:

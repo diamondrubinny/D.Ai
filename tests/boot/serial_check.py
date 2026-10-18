@@ -592,6 +592,10 @@ def main() -> int:
          "stat -c %a ~/.local/share/dai-j/mail.sqlite; rm -rf ~/.thunderbird", True,
          lambda o: '"added":1,"skipped":1' in o and '"added":0,"skipped":2' in o and "SOURCE_UNTOUCHED" in o
          and re.search(r"^600$", o, re.M) is not None, 60),
+        # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
+        ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
+         "dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst", False,
+         lambda o: "READPST" in o and "PST_RC=1" in o, 60),
         # J stage 4b (docs/MAIL.md §14): the image's own GnuPG checks a signed mail, with a throwaway key; one changed
         # word makes it "bad".
         ("j: signed mail checked", "export GNUPGHOME=$(mktemp -d); "
