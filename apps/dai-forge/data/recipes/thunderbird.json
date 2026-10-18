@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "id": "thunderbird",
+  "name": {
+    "en": "Thunderbird mail",
+    "he": "דואר Thunderbird"
+  },
+  "description": {
+    "en": "Mozilla Thunderbird, until J signs in to Google and Microsoft accounts (docs/MAIL.md).",
+    "he": "‏Mozilla Thunderbird, עד ש־J יתמוך בכניסה לחשבונות Google ו־Microsoft (docs/MAIL.md)."
+  },
+  "match": {
+    "en": [
+      "thunderbird",
+      "mail client",
+      "email client",
+      "outlook"
+    ],
+    "he": [
+      "תאנדרבירד",
+      "לקוח דואר",
+      "תוכנת מייל",
+      "אאוטלוק"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "thunderbird",
+          "thunderbird-l10n-he"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

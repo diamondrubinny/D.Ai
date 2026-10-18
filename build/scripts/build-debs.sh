@@ -199,6 +199,13 @@ build_apps() {
   install -m 0755 "$mom/data/dai-mom" "$root/usr/bin/dai-mom"
   install -m 0644 "$mom/data/dai-mom.desktop" "$root/usr/share/applications/"
 
+  # J (docs/MAIL.md): the mail client, and the handler for mailto: links.
+  local j="$REPO_ROOT/apps/dai-j"
+  copy_package "$j/dai_j" "$root"
+  install -m 0755 "$j/data/dai-j" "$root/usr/bin/dai-j"
+  install -m 0644 "$j/data/dai-j.desktop" "$root/usr/share/applications/"
+  install -D -m 0644 "$j/data/dai-j.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-j.svg"
+
   # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
   local evolve="$REPO_ROOT/apps/dai-evolve"
   copy_package "$evolve/dai_evolve" "$root"
@@ -280,8 +287,8 @@ EOF
 
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin" \
-    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, Move, local AI, Forge, Code, Voice and Welcome" \
-    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic"
+    "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, Move, Diamond (local AI), Forge, Code, Voice, Welcome, MOM and J" \
+    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic, libsecret-tools, python3-dnspython"
 }
 
 build_ruby() { # Ruby (docs/BROWSER.md): D.Ai's browsing experience on Debian's Firefox ESR, unmodified.

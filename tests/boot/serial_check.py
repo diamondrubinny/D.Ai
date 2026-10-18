@@ -460,6 +460,15 @@ def main() -> int:
          lambda o: re.search(r"POLICIES \d+ enabled", o) is not None and "OWNER root 644" in o
          and "DIVERTED=1" in o and "Name=Ruby" in o and "HEBREW_UI" in o
          and ("UBLOCK" in o and "CONTAINERS" in o or "NO_NETWORK" in o), 200),
+        # J (docs/MAIL.md stage 1): installed, finds Gmail's servers from the address alone, can keep passwords in
+        # the keyring (secret-tool + a Secret Service on D-Bus), and is the handler for mailto: links.
+        ("j: mail client", "dai-j --version; dai-j discover dana@gmail.com; "
+         "command -v secret-tool >/dev/null && echo KEYRING_TOOL; ls /usr/share/dbus-1/services | grep -i secret; "
+         "grep -h mailto /etc/xdg/mimeapps.list; "
+         "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_j.gui, dns.resolver; "
+         "print(\"J_IMPORTS\")'", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and '"host": "imap.gmail.com"' in o and "KEYRING_TOOL" in o
+         and "secrets" in o and "mailto=dai-j.desktop" in o and "J_IMPORTS" in o, 60),
         # MOM (docs/MOM.md stage 1): closes the user's own app, refuses to force a part of the session, and
         # groups processes into apps. A copy of sleep with its own name, so nothing else in the session is hit.
         ("mom: closes apps, protects the session", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom --version; "
