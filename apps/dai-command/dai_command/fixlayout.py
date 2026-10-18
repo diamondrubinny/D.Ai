@@ -16,6 +16,8 @@ import shutil
 import subprocess
 import sys
 
+from dai_i18n import pick, text
+
 from .core import convert_layout, ui_language
 
 MAX_CHARS = 4000
@@ -36,17 +38,17 @@ def read_selection() -> str:
 
 
 def main(argv: list[str]) -> int:
-    he = ui_language() == "he"
-    text = read_selection()
-    if not text.strip():
-        _notify("D.Ai", "סמנו טקסט ואז לחצו Pause" if he else "Select text, then press Pause")
+    lang = ui_language()
+    selection = read_selection()
+    if not selection.strip():
+        _notify("D.Ai", pick(lang, "Select text, then press Pause", "סמנו טקסט ואז לחצו Pause"))
         return 1
-    if len(text) > MAX_CHARS:
-        _notify("D.Ai", "הבחירה ארוכה מדי" if he else "Selection is too long")
+    if len(selection) > MAX_CHARS:
+        _notify("D.Ai", pick(lang, "Selection is too long", "הבחירה ארוכה מדי"))
         return 1
-    fixed = convert_layout(text)
+    fixed = convert_layout(selection)
     if fixed is None:
-        _notify("D.Ai", "אין מה לתקן" if he else "Nothing to fix")
+        _notify("D.Ai", pick(lang, "Nothing to fix", "אין מה לתקן"))
         return 1
     if "--print" in argv:  # for scripts and tests: no clipboard, no typing
         print(fixed)
@@ -57,7 +59,7 @@ def main(argv: list[str]) -> int:
     # Keep typing in the language that was meant.
     if shutil.which("dai-lang"):
         _run(["dai-lang", "set", "il" if re.search(r"[\u05d0-\u05ea]", fixed) else "us"])
-    _notify("תוקן: " + fixed if he else "Fixed: " + fixed)
+    _notify(text(lang, "Fixed: {text}", "תוקן: {text}", text=fixed))
     return 0
 
 

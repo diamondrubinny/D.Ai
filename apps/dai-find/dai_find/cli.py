@@ -10,9 +10,10 @@
 from __future__ import annotations
 
 import json
-import os
 import sys
 from pathlib import Path
+
+from dai_i18n import pick, ui_lang
 
 from . import __author__, __version__
 from .query import parse
@@ -20,11 +21,7 @@ from .search import human_size, search
 
 
 def _lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -40,8 +37,8 @@ def main(argv: list[str] | None = None) -> int:
     lang = _lang()
     query = parse(" ".join(words), lang=lang)
     if not query.specific:
-        print("Say what to look for: a type, a time, a folder or part of the name." if lang == "en"
-              else "כתבו מה לחפש: סוג, זמן, תיקייה או חלק מהשם.", file=sys.stderr)
+        print(pick(lang, "Say what to look for: a type, a time, a folder or part of the name.",
+                   "כתבו מה לחפש: סוג, זמן, תיקייה או חלק מהשם."), file=sys.stderr)
         return 2
     hits = search(query, Path.home())
     if as_json:
@@ -54,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
         }, ensure_ascii=False, indent=2))
         return 0 if hits else 1
     if not hits:
-        print("Nothing found." if lang == "en" else "לא נמצא כלום.")
+        print(pick(lang, "Nothing found.", "לא נמצא כלום."))
         return 1
     home = str(Path.home())
     for hit in hits:

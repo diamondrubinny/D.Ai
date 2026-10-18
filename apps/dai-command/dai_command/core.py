@@ -19,6 +19,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterable
+from dai_i18n import pick, ui_lang
 
 # --------------------------------------------------------------------------
 # Desktop entries
@@ -51,7 +52,7 @@ def _localized(section: configparser.SectionProxy, key: str, langs: Iterable[str
 
 def _desktop_langs() -> list[str]:
     """Language keys to try, e.g. he_IL.UTF-8 -> ['he_IL', 'he']."""
-    raw = os.environ.get("LC_MESSAGES") or os.environ.get("LANG") or ""
+    raw = os.environ.get("LC_MESSAGES") or os.environ.get("LANG") or ""  # i18n: ok (Name[pt_BR] keys in .desktop files)
     base = raw.split(".")[0].split("@")[0]
     langs = []
     if base:
@@ -430,16 +431,11 @@ _STRINGS = {
 
 
 def ui_language() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def tr(key: str, lang: str | None = None) -> str:
-    english, hebrew = _STRINGS[key]
-    return hebrew if (lang or ui_language()) == "he" else english
+    return pick(lang or ui_language(), *_STRINGS[key])
 
 
 # --------------------------------------------------------------------------
@@ -515,7 +511,7 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
 
     if not actions and (fixed := fix_layout(text)):
         converted, lang = fixed
-        actions.append(Action("layout", converted, tr("fix_he" if lang == "he" else "fix_en"), "edit-paste", converted))
+        actions.append(Action("layout", converted, tr("fix_he" if lang == "he" else "fix_en"), "edit-paste", converted))  # i18n: ok (the keyboard layout)
 
     first = text.split()[0]
     if shutil.which(first):
@@ -694,7 +690,7 @@ def tune_actions(request: str) -> list[Action]:
         Action(
             "tune",
             CATALOG[step.action].summary(step.params, lang),
-            f"{effects[step.effect][lang == 'he']} · {tr('tune_review')}",
+            f"{pick(lang, *effects[step.effect])} · {tr('tune_review')}",
             icons[step.effect],
             request,
         )

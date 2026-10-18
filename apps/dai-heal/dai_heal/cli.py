@@ -70,7 +70,7 @@ def cmd_fix(key: str, assume_yes: bool, language: str, ask=input) -> int:
     print(describe(problem, language))
     print(explain(problem, language))
     for fix in F.fixes_for(problem):
-        prompt = f"{fix_label(fix, language)}? [{'כ/ל' if language == 'he' else 'y/N'}] "
+        prompt = f"{fix_label(fix, language)}? [{'כ/ל' if language == 'he' else 'y/N'}] "  # i18n: command (the accepted answers)
         if not assume_yes and ask(prompt).strip().lower() not in ("y", "yes", "כ", "כן"):
             continue
         outcome = F.apply(fix, problem)

@@ -21,6 +21,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Callable, Iterable
 
+from dai_i18n import pick
+
 from . import store
 
 MIN_REPEATS = 3
@@ -59,10 +61,10 @@ class Suggestion:
     payload: str        # the "+" request, the Tune sentence, or "" for heal
 
     def title(self, lang: str) -> str:
-        return self.title_he if lang == "he" else self.title_en
+        return pick(lang, self.title_en, self.title_he)
 
     def why(self, lang: str) -> str:
-        return self.why_he if lang == "he" else self.why_en
+        return pick(lang, self.why_en, self.why_he)
 
 
 def _key(*parts: str) -> str:

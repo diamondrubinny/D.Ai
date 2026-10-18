@@ -4,7 +4,8 @@
 
 from __future__ import annotations
 
-import os
+
+from dai_i18n import pick, ui_lang
 
 from .sensors import Use
 
@@ -27,18 +28,13 @@ STRINGS = {
 
 
 def lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def t(key: str, language: str, **kwargs: object) -> str:
-    en, he = STRINGS[key]
-    return (he if language == "he" else en).format(**kwargs)
+    return pick(language, *STRINGS[key]).format(**kwargs)
 
 
 def describe(use: Use, language: str, stopped: bool = False) -> str:
     en, he, icon = DEVICES.get(use.device, DEVICES["video"])
-    return t("stopped" if stopped else "uses", language, icon=icon, app=use.app, device=he if language == "he" else en)
+    return t("stopped" if stopped else "uses", language, icon=icon, app=use.app, device=pick(language, en, he))

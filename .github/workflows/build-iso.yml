@@ -65,14 +65,22 @@ jobs:
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
 
+      - name: Languages (dai-i18n; the text catalog is up to date and every translation is usable)
+        env:
+          PYTHONPATH: apps/dai-i18n:apps/dai-heal:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-command
+        run: |
+          python3 -m unittest discover -s apps/dai-i18n/tests -t apps/dai-i18n -v
+          python3 -m dai_i18n.tool extract --check
+          python3 -m dai_i18n.tool check
+
       - name: Unit tests (dai-tune)
         env:
-          PYTHONPATH: apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai
         run: python3 -m unittest discover -s apps/dai-tune/tests -t apps/dai-tune -v
 
       - name: Unit tests (dai-forge, with a real bubblewrap sandbox when available)
         env:
-          PYTHONPATH: apps/dai-tune:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-tune:apps/dai-ai
           QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq bubblewrap python3-pyqt6 >/dev/null || true
@@ -80,70 +88,70 @@ jobs:
 
       - name: Unit tests (dai-voice)
         env:
-          PYTHONPATH: apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-voice/tests -t apps/dai-voice -v
 
       - name: Unit tests (dai-code)
         env:
-          PYTHONPATH: apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai
         run: python3 -m unittest discover -s apps/dai-code/tests -t apps/dai-code -v
 
       - name: Unit tests (dai-welcome)
         env:
-          PYTHONPATH: apps/dai-ai:apps/dai-tune:apps/dai-forge:apps/dai-voice
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai:apps/dai-tune:apps/dai-forge:apps/dai-voice
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-welcome/tests -t apps/dai-welcome -v
 
       - name: Unit tests (dai-find, with the D.Ai Command integration)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
         run: python3 -m unittest discover -s apps/dai-find/tests -t apps/dai-find -v
 
       - name: Unit tests (dai-doctor, with D.Ai Tune and the D.Ai Command integration)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
         run: python3 -m unittest discover -s apps/dai-doctor/tests -t apps/dai-doctor -v
 
       - name: Unit tests (dai-privacy, with the panel indicator and D.Ai Command)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-privacy/tests -t apps/dai-privacy -v
 
       - name: Unit tests (dai-backup, with a real restic backup, change, restore and check)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
         run: |
           sudo apt-get install -y -qq restic >/dev/null || true
           python3 -m unittest discover -s apps/dai-backup/tests -t apps/dai-backup -v
 
       - name: Unit tests (dai-move, with the D.Ai Command integration)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
         run: python3 -m unittest discover -s apps/dai-move/tests -t apps/dai-move -v
 
       - name: Unit tests (dai-clip, with the history window and D.Ai Command)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-clip/tests -t apps/dai-clip -v
 
       - name: Unit tests (dai-heal, with the repair chat, D.Ai Forge and D.Ai Doctor)
         env:
-          PYTHONPATH: apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-command
+          PYTHONPATH: apps/dai-i18n:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-command
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-heal/tests -t apps/dai-heal -v
 
       - name: Unit tests (dai-evolve, with D.Ai Command, Forge, Doctor and Heal)
         env:
-          PYTHONPATH: apps/dai-command:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-heal
+          PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-heal
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-evolve/tests -t apps/dai-evolve -v
 
       - name: Unit tests (dai-oem, with the first-boot wizard and a real cryptsetup on an image file)
         env:
-          PYTHONPATH: apps/dai-forge:apps/dai-tune:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-forge:apps/dai-tune:apps/dai-ai
           QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq cryptsetup-bin python3-pyqt6 >/dev/null || true
@@ -152,7 +160,7 @@ jobs:
 
       - name: Unit tests (dai-command)
         env:
-          PYTHONPATH: apps/dai-tune
+          PYTHONPATH: apps/dai-i18n:apps/dai-tune
         run: python3 -m unittest discover -s apps/dai-command/tests -t apps/dai-command -v
 
   llama:

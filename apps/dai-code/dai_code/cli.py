@@ -18,23 +18,20 @@ import subprocess
 import sys
 from pathlib import Path
 
+from dai_i18n import text, ui_lang
+
 from . import __author__, __version__, ai, edits
 from .project import MAX_EDIT, Project, ProjectError
 
 MAX_DIFF = 14_000
 
 
-def _he() -> bool:
-    import os
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return value.startswith("he")
-    return False
+def _lang() -> str:
+    return ui_lang()
 
 
-def _l(en: str, he: str) -> str:
-    return he if _he() else en
+def _l(en: str, he: str, **kwargs: object) -> str:
+    return text(_lang(), en, he, **kwargs)
 
 
 def _color(text: str, code: str) -> str:
@@ -100,13 +97,13 @@ def cmd_edit(project: Project, name: str, instruction: str, chat, assume_yes: bo
     if path.exists():
         raw = path.read_bytes()
         if len(raw) > MAX_EDIT:
-            raise ProjectError(_l(f"{rel} is larger than {MAX_EDIT // 1024} KB; edit a smaller file or a part of it",
-                                  f"{rel} גדול מ־{MAX_EDIT // 1024}KB; ערכו קובץ קטן יותר"))
+            raise ProjectError(_l("{rel} is larger than {limit} KB; edit a smaller file or a part of it",
+                                  "{rel} גדול מ־{limit}KB; ערכו קובץ קטן יותר", rel=rel, limit=MAX_EDIT // 1024))
         try:
             original = raw.decode("utf-8")
         except UnicodeDecodeError as exc:
             raise ProjectError(f"{rel} is not UTF-8 text") from exc
-    print(_l(f"Asking the local AI to edit {rel}…", f"מבקש מה־AI המקומי לערוך את {rel}…"), file=sys.stderr)
+    print(_l("Asking the local AI to edit {rel}…", "מבקש מה־AI המקומי לערוך את {rel}…", rel=rel), file=sys.stderr)
 
     def progress(reply: str) -> None:
         if sys.stderr.isatty():
@@ -131,7 +128,8 @@ def cmd_edit(project: Project, name: str, instruction: str, chat, assume_yes: bo
             print(_l("Cancelled. Nothing was written.", "בוטל. לא נכתב דבר."))
             return 1
     entry = edits.apply(project.root, path, result["content"], result["summary"], instruction)
-    print(_color(_l(f"✓ Applied ({entry['id']}). Undo: dai-code undo", f"✓ הוחל ({entry['id']}). ביטול: dai-code undo"),
+    print(_color(_l("✓ Applied ({id}). Undo: dai-code undo", "✓ הוחל ({id}). ביטול: dai-code undo",
+                    id=entry['id']),
                  "32"))
     return 0
 
@@ -175,7 +173,7 @@ def main(argv: list[str] | None = None, chat=None) -> int:
             return cmd_history(project)
         if command == "undo":
             entry = edits.undo(project.root, words[1] if len(words) > 1 else "last", force="--force" in flags)
-            print(_color(_l(f"✓ Restored {entry['file']}", f"✓ שוחזר {entry['file']}"), "32"))
+            print(_color(_l("✓ Restored {file}", "✓ שוחזר {file}", file=entry['file']), "32"))
             return 0
         chat = chat or ai.default_chat()
         if command == "ask" and len(words) >= 2:

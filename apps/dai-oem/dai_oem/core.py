@@ -265,7 +265,7 @@ class Machine:
                   *(["--groups", ",".join(groups)] if groups else []), owner.username])
         self.run(["chpasswd"], data=f"{owner.username}:{owner.password}\n")
         self._set_hostname(owner.hostname)
-        if owner.language == "he":
+        if owner.language == "he":  # i18n: ok (the new owner's system language)
             self.run(["localectl", "set-locale", "LANG=he_IL.UTF-8"], check=False)
         self._restore_sddm()
         state.update(phase="cleanup", owner=owner.username, completed=int(self.clock()))

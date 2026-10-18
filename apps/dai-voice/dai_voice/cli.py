@@ -9,13 +9,14 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 from dai_ai.paths import runtime_dir
+
+from dai_i18n import pick, ui_lang
 
 from . import __author__, __version__
 from .engine import LANGS, VoiceError, cancel, recording, start, stop, transcribe
@@ -29,16 +30,11 @@ TEXT = {
 
 
 def _lang_ui() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def _t(key: str) -> str:
-    en, he = TEXT[key]
-    return he if _lang_ui() == "he" else en
+    return pick(_lang_ui(), *TEXT[key])
 
 
 def notify(body: str, persistent: bool = False) -> None:

@@ -17,6 +17,8 @@ from PyQt6.QtWidgets import (
     QStyledItemDelegate, QStyleOptionViewItem, QVBoxLayout, QWidget,
 )
 
+from dai_i18n import qt_direction
+
 from . import __author__, __version__
 from .store import History, Item
 from .text import age, lang, preview, t
@@ -108,7 +110,7 @@ class ClipWindow(QWidget):
         self.setWindowTitle(t("title", self.language))
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setLayoutDirection(Qt.LayoutDirection.RightToLeft if self.language == "he" else Qt.LayoutDirection.LeftToRight)
+        self.setLayoutDirection(qt_direction(self.language))
         self.setStyleSheet(STYLE)
         self.resize(560, 460)
 

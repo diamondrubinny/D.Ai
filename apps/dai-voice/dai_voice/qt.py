@@ -9,11 +9,11 @@ Click to record, click again to stop; the text arrives through the
 
 from __future__ import annotations
 
-import os
 
 from PyQt6.QtCore import QProcess, QSize, pyqtSignal
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QToolButton
+from dai_i18n import pick, ui_lang
 
 TEXT = {
     "idle": ("Speak (local, Whisper)", "דיבור (מקומי, Whisper)"),
@@ -22,12 +22,8 @@ TEXT = {
 }
 
 
-def _he() -> bool:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return value.startswith("he")
-    return False
+def _lang() -> str:
+    return ui_lang()
 
 
 class VoiceButton(QToolButton):
@@ -48,8 +44,7 @@ class VoiceButton(QToolButton):
         self._set_state("idle")
 
     def _label(self, key: str) -> str:
-        en, he = TEXT[key]
-        return he if _he() else en
+        return pick(_lang(), *TEXT[key])
 
     def _set_state(self, state: str) -> None:
         self.state = state

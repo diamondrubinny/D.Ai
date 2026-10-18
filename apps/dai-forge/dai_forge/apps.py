@@ -28,6 +28,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from dai_i18n import pick
+
 from . import paths
 
 FORMAT = 1
@@ -171,7 +173,7 @@ class Finding:
     network: bool = False
 
     def text(self, lang: str) -> str:
-        return f"{self.what}: {self.he if lang == 'he' else self.en}"
+        return f"{self.what}: {pick(lang, self.en, self.he)}"
 
 
 BUILTIN_CALLS = {"eval", "exec", "compile", "__import__"}

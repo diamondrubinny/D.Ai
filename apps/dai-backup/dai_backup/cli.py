@@ -17,6 +17,8 @@ import sys
 import time
 from pathlib import Path
 
+from dai_i18n import text, ui_lang
+
 from . import __author__, __version__
 from .config import (DEFAULT_FOLDERS, REPO_DIR, Settings, candidate_drives, key_path, load, new_key, save,
                      settings_path)
@@ -26,15 +28,11 @@ WEEK, DAY = 7 * 86400, 86400
 
 
 def _lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
-def _l(en: str, he: str) -> str:
-    return he if _lang() == "he" else en
+def _l(en: str, he: str, **kwargs: object) -> str:
+    return text(_lang(), en, he, **kwargs)
 
 
 def systemctl(*args: str) -> int:
@@ -81,11 +79,11 @@ def cmd_setup(args: list[str], home: Path, restic_runner=None) -> int:
             return 2
         drive = drives[0]
     if not drive.is_dir() or not os.access(drive, os.W_OK):
-        print(_l(f"{drive} is not a writable folder", f"{drive} אינה תיקייה שאפשר לכתוב אליה"), file=sys.stderr)
+        print(_l("{drive} is not a writable folder", "{drive} אינה תיקייה שאפשר לכתוב אליה", drive=drive), file=sys.stderr)
         return 2
     repo = drive / REPO_DIR
     if repo.exists() and any(repo.iterdir()):
-        print(_l(f"{repo} already exists; it is not overwritten.", f"{repo} כבר קיים, ולא נדרס."), file=sys.stderr)
+        print(_l("{repo} already exists; it is not overwritten.", "{repo} כבר קיים, ולא נדרס.", repo=repo), file=sys.stderr)
         return 1
     folders = (_value(args, "--folders") or ",".join(DEFAULT_FOLDERS)).split(",")
     folders = [f.strip().strip("/") for f in folders if f.strip() and ".." not in f]
@@ -128,7 +126,7 @@ def run_backup(settings: Settings, home: Path, restic: Restic, quiet: bool = Fal
     except BackupError as exc:
         settings.history.append({"time": time.time(), "ok": False, "detail": str(exc)[:300]})
         save(settings, home)
-        notify(_l(f"Backup failed: {exc}", f"הגיבוי נכשל: {exc}"))
+        notify(_l("Backup failed: {exc}", "הגיבוי נכשל: {exc}", exc=exc))
         print(f"✗ {exc}", file=sys.stderr)
         return 1
 
@@ -181,7 +179,8 @@ def main(argv: list[str] | None = None, restic_runner=None) -> int:
                  "הגיבוי האוטומטי כבוי. הגיבוי שבדיסק והמפתח (~/.config/dai/backup.key) נשמרו."))
         return 0
     if not present:
-        print(_l(f"Connect the backup drive first ({settings.repo}).", f"חברו קודם את דיסק הגיבוי ({settings.repo})."),
+        print(_l("Connect the backup drive first ({repo}).", "חברו קודם את דיסק הגיבוי ({repo}).",
+                 repo=settings.repo),
               file=sys.stderr)
         return 1
     try:
@@ -199,7 +198,7 @@ def main(argv: list[str] | None = None, restic_runner=None) -> int:
             return 0
         if command == "restore" and rest:
             target = restic.restore(Path(rest[0]), _value(rest, "--from") or "latest")
-            print(_l(f"✓ Restored into {target}", f"✓ שוחזר אל {target}"))
+            print(_l("✓ Restored into {target}", "✓ שוחזר אל {target}", target=target))
             return 0
     except BackupError as exc:
         print(f"✗ {exc}", file=sys.stderr)

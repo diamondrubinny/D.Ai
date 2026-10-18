@@ -24,6 +24,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from dai_i18n import text
+
 from .context import ActionError, Context, read_text, write_file
 
 Params = dict[str, Any]
@@ -129,8 +131,8 @@ def register(spec: ActionSpec) -> ActionSpec:
     return spec
 
 
-def _t(lang: str, en: str, he: str) -> str:
-    return he if lang == "he" else en
+def _t(lang: str, en: str, he: str, **kwargs: object) -> str:
+    return text(lang, en, he, **kwargs)
 
 
 # --------------------------------------------------------------------------
@@ -211,7 +213,7 @@ register(ActionSpec(
     apply=_device_block_apply,
     risk=lambda p: "low",
     effect=lambda p: "hardens",
-    summary=lambda p, lang: _t(lang, f"Block {DEVICE_NAMES[p['kind']][0]}", f"חסימת {DEVICE_NAMES[p['kind']][1]}"),
+    summary=lambda p, lang: _t(lang, "Block {kind}", "חסימת {kind}", kind=_t(lang, *DEVICE_NAMES[p["kind"]])),
     files=_device_file,
     capture=_bluetooth_capture,
     restore=_device_restore,
@@ -225,7 +227,7 @@ register(ActionSpec(
     apply=_device_allow_apply,
     risk=lambda p: "medium",
     effect=lambda p: "weakens",
-    summary=lambda p, lang: _t(lang, f"Allow {DEVICE_NAMES[p['kind']][0]}", f"אפשור {DEVICE_NAMES[p['kind']][1]}"),
+    summary=lambda p, lang: _t(lang, "Allow {kind}", "אפשור {kind}", kind=_t(lang, *DEVICE_NAMES[p["kind"]])),
     files=_device_file,
     capture=_bluetooth_capture,
     restore=_device_restore,
@@ -308,11 +310,11 @@ register(ActionSpec(
     risk=lambda p: "high" if p["source"] == "any" else "medium",
     effect=lambda p: "weakens",
     summary=lambda p, lang: (
-        _t(lang, f"Open port {p['port']}/{p['proto']} to the local network only",
-           f"פתיחת פורט {p['port']}/{p['proto']} לרשת המקומית בלבד")
+        _t(lang, "Open port {port}/{proto} to the local network only",
+           "פתיחת פורט {port}/{proto} לרשת המקומית בלבד", port=p['port'], proto=p['proto'])
         if p["source"] == "lan" else
-        _t(lang, f"Open port {p['port']}/{p['proto']} to ANY network (internet)",
-           f"פתיחת פורט {p['port']}/{p['proto']} לכל הרשתות (אינטרנט)")
+        _t(lang, "Open port {port}/{proto} to ANY network (internet)",
+           "פתיחת פורט {port}/{proto} לכל הרשתות (אינטרנט)", port=p['port'], proto=p['proto'])
     ),
     files=_fw_files,
     restore=_fw_reload,
@@ -327,7 +329,8 @@ register(ActionSpec(
     apply=_fw_close_apply,
     risk=lambda p: "low",
     effect=lambda p: "hardens",
-    summary=lambda p, lang: _t(lang, f"Close port {p['port']}/{p['proto']}", f"סגירת פורט {p['port']}/{p['proto']}"),
+    summary=lambda p, lang: _t(lang, "Close port {port}/{proto}", "סגירת פורט {port}/{proto}",
+                               port=p['port'], proto=p['proto']),
     files=_fw_files,
     restore=_fw_reload,
 ))
@@ -505,7 +508,8 @@ register(ActionSpec(
     apply=_tz_apply,
     risk=lambda p: "low",
     effect=lambda p: "neutral",
-    summary=lambda p, lang: _t(lang, f"Set time zone to {p['timezone']}", f"אזור זמן: {p['timezone']}"),
+    summary=lambda p, lang: _t(lang, "Set time zone to {timezone}", "אזור זמן: {timezone}",
+                               timezone=p['timezone']),
     capture=lambda p, c: {"previous": current_timezone(c)},
     restore=_tz_restore,
 ))
@@ -539,7 +543,8 @@ register(ActionSpec(
     apply=_hostname_apply,
     risk=lambda p: "low",
     effect=lambda p: "neutral",
-    summary=lambda p, lang: _t(lang, f"Rename this computer to {p['hostname']}", f"שינוי שם המחשב ל־{p['hostname']}"),
+    summary=lambda p, lang: _t(lang, "Rename this computer to {hostname}", "שינוי שם המחשב ל־{hostname}",
+                               hostname=p['hostname']),
     files=lambda p, c: [c.path("/etc/hosts")],
     capture=lambda p, c: {"previous": read_text(c.path("/etc/hostname")).strip()},
     restore=_hostname_restore,
@@ -638,7 +643,8 @@ register(ActionSpec(
     effect=_lock_effect,
     summary=lambda p, lang: (
         _t(lang, "Never lock the screen automatically", "ביטול נעילת מסך אוטומטית") if p["minutes"] == 0 else
-        _t(lang, f"Lock the screen after {p['minutes']} minutes of inactivity", f"נעילת מסך אחרי {p['minutes']} דקות ללא פעילות")
+        _t(lang, "Lock the screen after {minutes} minutes of inactivity", "נעילת מסך אחרי {minutes} דקות ללא פעילות",
+           minutes=p['minutes'])
     ),
     files=lambda p, c: [c.user_path(SESSION_ENV)],
     restore=lambda p, c, e: _restart_idle(c, lock_timeout_seconds(c)),
@@ -666,8 +672,8 @@ register(ActionSpec(
     apply=_lock_max_apply,
     risk=lambda p: "low",
     effect=lambda p: "hardens" if p["minutes"] <= 10 else "neutral",
-    summary=lambda p, lang: _t(lang, f"Every user: the screen locks after at most {p['minutes']} minutes",
-                               f"לכל המשתמשים: המסך ננעל אחרי {p['minutes']} דקות לכל היותר"),
+    summary=lambda p, lang: _t(lang, "Every user: the screen locks after at most {minutes} minutes",
+                               "לכל המשתמשים: המסך ננעל אחרי {minutes} דקות לכל היותר", minutes=p['minutes']),
     files=lambda p, c: [c.path(POLICY_SESSION_ENV)],
     note=lambda p, lang: _t(lang, "Takes effect at each user's next login. Users can choose a shorter time, not a longer one.",
                             "חל מהכניסה הבאה של כל משתמש. משתמשים יכולים לבחור זמן קצר יותר, לא ארוך יותר."),
@@ -778,8 +784,8 @@ def _unit_restore(params: Params, ctx: Context, extra: dict, user: bool) -> None
 def _unit_summary(params: Params, lang: str, user: bool) -> str:
     where = _t(lang, " (your session)", " (בסשן שלך)") if user else ""
     if params["enabled"]:
-        return _t(lang, f"Start and enable {params['unit']}", f"הפעלת השירות {params['unit']}") + where
-    return _t(lang, f"Stop and disable {params['unit']}", f"כיבוי השירות {params['unit']}") + where
+        return _t(lang, "Start and enable {unit}", "הפעלת השירות {unit}", unit=params['unit']) + where
+    return _t(lang, "Stop and disable {unit}", "כיבוי השירות {unit}", unit=params['unit']) + where
 
 
 # Restarting these would end the desktop session or the system bus: never offered.
@@ -814,7 +820,8 @@ register(ActionSpec(
     apply=_restart_apply,
     risk=lambda p: "low",
     effect=lambda p: "neutral",
-    summary=lambda p, lang: _t(lang, f"Restart the service {p['unit']}", f"הפעלה מחדש של השירות {p['unit']}"),
+    summary=lambda p, lang: _t(lang, "Restart the service {unit}", "הפעלה מחדש של השירות {unit}",
+                               unit=p['unit']),
 ))
 
 
@@ -1042,16 +1049,18 @@ register(ActionSpec(
     risk=lambda p: "low" if p["enabled"] else "medium",
     effect=lambda p: "hardens" if p["enabled"] else "weakens",
     summary=lambda p, lang: (
-        _t(lang, f"Scan /home for viruses ({p['frequency']}) and quarantine infected files",
-           f"סריקת וירוסים ל־/home ({'יומית' if p['frequency'] == 'daily' else 'שבועית'}) והעברת קבצים נגועים להסגר")
+        _t(lang, "Scan /home for viruses ({frequency}) and quarantine infected files",
+           "סריקת וירוסים ל־/home ({daily}) והעברת קבצים נגועים להסגר",
+           frequency=p['frequency'], daily='יומית' if p['frequency'] == 'daily' else 'שבועית')
         if p["enabled"] else
         _t(lang, "Stop scheduled virus scans", "הפסקת סריקות וירוסים מתוזמנות")
     ),
     files=lambda p, c: [c.path(AV_SERVICE), c.path(AV_TIMER)],
     capture=lambda p, c: _unit_state(c, "dai-av-scan.timer", user=False),
     restore=_av_restore,
-    note=lambda p, lang: _t(lang, f"Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}",
-                            f"הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}") if p["enabled"] else "",
+    note=lambda p, lang: _t(lang, "Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}",
+                            "הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}",
+                            AV_QUARANTINE=AV_QUARANTINE, AV_LOG=AV_LOG) if p["enabled"] else "",
 ))
 
 
@@ -1078,8 +1087,9 @@ register(ActionSpec(
     summary=lambda p, lang: _t(lang, "Free disk space: downloaded package files and old system logs",
                                "פינוי מקום: קבצי התקנה שהורדו ויומני מערכת ישנים"),
     # Only caches are removed: packages stay installed and recent logs are kept.
-    note=lambda p, lang: _t(lang, f"Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only).",
-                            f"אי אפשר לבטל, אבל שום דבר שאתם משתמשים בו לא נמחק (רק יומנים מעבר ל־{JOURNAL_KEEP})."),
+    note=lambda p, lang: _t(lang, "Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only).",
+                            "אי אפשר לבטל, אבל שום דבר שאתם משתמשים בו לא נמחק (רק יומנים מעבר ל־{JOURNAL_KEEP}).",
+                            JOURNAL_KEEP=JOURNAL_KEEP),
 ))
 
 

@@ -173,7 +173,7 @@ def _time_window(text: str, now: datetime, hebrew: bool) -> tuple[datetime | Non
 
 def parse(text: str, now: datetime | None = None, lang: str = "en") -> Query:
     now = now or datetime.now()
-    hebrew = lang == "he" or bool(re.search(r"[֐-׿]", text))
+    hebrew = lang == "he" or bool(re.search(r"[֐-׿]", text))  # i18n: ok (Hebrew search words)
     query = Query(text)
     # "ה-PDF" / "ה־PDF": a Hebrew prefix joined with a hyphen or maqaf.
     rest = re.sub(r"(?<=[\u0590-\u05FF])[-\u05BE](?=\w)", " ", TRIGGERS.sub(" ", text, count=1))

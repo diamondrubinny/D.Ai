@@ -102,6 +102,12 @@ build_apps() {
   install -d "$root/usr/bin" "$root/usr/share/applications" "$root/usr/share/dai" \
     "$root/usr/share/polkit-1/actions" "$root/usr/lib/systemd/user"
 
+  # Languages (docs/I18N.md): shared by every app; catalogs for languages other than he/en.
+  copy_package "$REPO_ROOT/apps/dai-i18n/dai_i18n" "$root"
+  if compgen -G "$REPO_ROOT/i18n/po/*.po" >/dev/null; then
+    PYTHONPATH="$REPO_ROOT/apps/dai-i18n" python3 -m dai_i18n.tool compile "$root/usr/share/locale"
+  fi
+
   local cmd="$REPO_ROOT/apps/dai-command"
   copy_package "$cmd/dai_command" "$root"
   for bin in dai-command dai-fixlayout dai-lang; do

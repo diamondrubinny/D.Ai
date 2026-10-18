@@ -18,7 +18,11 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from dai_i18n import pick, text
+
 MIN_MINUTES = 15
+DAY_NAMES = {"Mon": ("Mon", "שני"), "Tue": ("Tue", "שלישי"), "Wed": ("Wed", "רביעי"), "Thu": ("Thu", "חמישי"),
+             "Fri": ("Fri", "שישי"), "Sat": ("Sat", "שבת"), "Sun": ("Sun", "ראשון")}
 WEEKDAYS = {
     "Mon": (r"monday|mon\b", r"(?:יום )?שני"), "Tue": (r"tuesday|tue\b", r"(?:יום )?שלישי"),
     "Wed": (r"wednesday|wed\b", r"(?:יום )?רביעי"), "Thu": (r"thursday|thu\b", r"(?:יום )?חמישי"),
@@ -64,15 +68,14 @@ class Schedule:
     def describe(self, lang: str) -> str:
         at = f"{self.hour:02d}:{self.minute:02d}"
         if self.kind == "daily":
-            return f"כל יום ב־{at}" if lang == "he" else f"every day at {at}"
+            return text(lang, "every day at {at}", "כל יום ב־{at}", at=at)
         if self.kind == "weekly":
-            he_day = {"Mon": "שני", "Tue": "שלישי", "Wed": "רביעי", "Thu": "חמישי", "Fri": "שישי", "Sat": "שבת", "Sun": "ראשון"}
-            return f"כל יום {he_day[self.weekday]} ב־{at}" if lang == "he" else f"every {self.weekday} at {at}"
+            return text(lang, "every {day} at {at}", "כל יום {day} ב־{at}", day=pick(lang, *DAY_NAMES[self.weekday]), at=at)
         if self.kind == "hourly":
-            return "כל שעה" if lang == "he" else "every hour"
+            return pick(lang, "every hour", "כל שעה")
         if self.kind == "minutes":
-            return f"כל {self.every} דקות" if lang == "he" else f"every {self.every} minutes"
-        return "בכל כניסה למחשב" if lang == "he" else "every time you log in"
+            return text(lang, "every {every} minutes", "כל {every} דקות", every=self.every)
+        return pick(lang, "every time you log in", "בכל כניסה למחשב")
 
     def to_json(self) -> dict:
         return {"kind": self.kind, "hour": self.hour, "minute": self.minute, "weekday": self.weekday, "every": self.every}
