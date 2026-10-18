@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=Raz: D.Ai checks itself after login and daily
+
+[Timer]
+OnStartupSec=5min
+OnUnitActiveSec=1d
+RandomizedDelaySec=10min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

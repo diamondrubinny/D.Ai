@@ -218,6 +218,8 @@ build_apps() {
   # The update guard (docs/RAZ.md §3): apt runs it before and after dpkg.
   install -m 0755 "$REPO_ROOT/apps/dai-raz/data/dai-raz-guard" "$root/usr/lib/dai/dai-raz-guard"
   install -D -m 0644 "$REPO_ROOT/apps/dai-raz/data/85dai-raz" "$root/etc/apt/apt.conf.d/85dai-raz"
+  install -m 0644 "$REPO_ROOT/apps/dai-raz/data/dai-raz.service" "$REPO_ROOT/apps/dai-raz/data/dai-raz.timer" \
+    "$root/usr/lib/systemd/user/"
 
   # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
   local evolve="$REPO_ROOT/apps/dai-evolve"
@@ -277,6 +279,7 @@ if [ "$1" = configure ]; then
   # D.Ai Evolve's daily scan, for every user (each can stop it: dai-evolve off).
   install -d /etc/systemd/user/timers.target.wants
   ln -sf /usr/lib/systemd/user/dai-evolve.timer /etc/systemd/user/timers.target.wants/dai-evolve.timer
+  ln -sf /usr/lib/systemd/user/dai-raz.timer /etc/systemd/user/timers.target.wants/dai-raz.timer
   # D.Ai OEM: does nothing unless a first-boot setup was just finished.
   ln -sf /usr/lib/systemd/system/dai-oem-cleanup.service /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
   ln -sf /usr/lib/systemd/system/dai-snapshots-firstboot.service /etc/systemd/system/multi-user.target.wants/dai-snapshots-firstboot.service
@@ -295,6 +298,7 @@ if [ "$1" = remove ]; then
   rm -f /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
   rm -f /etc/systemd/system/multi-user.target.wants/dai-snapshots-firstboot.service
   rm -f /etc/systemd/user/timers.target.wants/dai-evolve.timer
+  rm -f /etc/systemd/user/timers.target.wants/dai-raz.timer
 fi
 exit 0
 EOF

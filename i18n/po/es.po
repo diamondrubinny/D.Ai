@@ -3370,3 +3370,76 @@ msgstr "{name} mantiene ocupado un núcleo entero del procesador desde hace {min
 #, python-brace-format
 msgid "{name} is working very hard"
 msgstr "{name} está trabajando muchísimo"
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Log out and in again."
+msgstr "Cierra la sesión y vuelve a entrar."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Not working {times} of {runs} times: {title}."
+msgstr "No funcionó {times} de {runs} veces: {title}."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Nothing to improve: no check failed again and again."
+msgstr "Nada que mejorar: ninguna comprobación falló una y otra vez."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Nothing was sent. Read it first; copy it to a GitHub issue only if you want to."
+msgstr "No se envió nada. Léelo primero; cópialo a un issue de GitHub solo si quieres."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Open D.Ai Heal (Super+F1)."
+msgstr "Abre D.Ai Heal (Super+F1)."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Programs crashed {count} times; D.Ai Heal has the details (Super+F1)."
+msgstr "Los programas fallaron {count} veces; los detalles están en D.Ai Heal (Super+F1)."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Raz did not check this week yet."
+msgstr "Raz todavía no comprobó esta semana."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Raz: your week"
+msgstr "Raz: tu semana"
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting is {seconds} seconds faster than last week."
+msgstr "El arranque es {seconds} segundos más rápido que la semana pasada."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting is {seconds} seconds slower than last week."
+msgstr "El arranque es {seconds} segundos más lento que la semana pasada."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting takes about {seconds} seconds, as last week."
+msgstr "El arranque tarda unos {seconds} segundos, como la semana pasada."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting takes about {seconds} seconds."
+msgstr "El arranque tarda unos {seconds} segundos."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "This week everything worked."
+msgstr "Esta semana todo funcionó."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Try in D.Ai Command: !{fix}"
+msgstr "Prueba en D.Ai Command: !{fix}"
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "• Failed {failures} times: {title}. {how}"
+msgstr "• Falló {failures} veces: {title}. {how}"
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "✓ Worked: {title} (passed {passes} times in a row)."
+msgstr "✓ Funcionó: {title} (pasó {passes} veces seguidas)."

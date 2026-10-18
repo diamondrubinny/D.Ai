@@ -4,6 +4,11 @@
 
   dai-raz check [--json]   run every check now (exit 1 when one failed); the result is kept for comparing
   dai-raz last [--json]    the last result
+  dai-raz week [--notify] [--weekly]
+                           this week in plain words (--notify: also as a notification;
+                           --weekly: only when a week passed since the last one)
+  dai-raz improve          what failed again and again, what to try, and what worked
+  dai-raz report           a problem report to copy into an issue (filtered; nothing is sent)
   dai-raz forget           delete what Raz kept
   dai-raz --version
 """
@@ -13,6 +18,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -45,12 +51,13 @@ def state_dir() -> Path:
     return base / "dai" / "raz"
 
 
-def save(results: list[Result], directory: Path | None = None) -> None:
+def save(results: list[Result], directory: Path | None = None, measured: dict | None = None) -> None:
     directory = directory or state_dir()
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     os.chmod(directory, 0o700)
     stamp = time.strftime("%Y%m%dT%H%M%S")
-    data = json.dumps({"time": time.time(), "results": json.loads(to_json(results))}, ensure_ascii=False)
+    data = json.dumps({"time": time.time(), "results": json.loads(to_json(results)), "metrics": measured or {}},
+                      ensure_ascii=False)
     for name in ("last.json", f"run-{stamp}.json"):
         fd, tmp = tempfile.mkstemp(dir=directory)
         with os.fdopen(fd, "w", encoding="utf-8") as handle:
@@ -85,13 +92,57 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if args else 2
     command = args[0]
     if command == "check":
+        from . import report
+
         results = run_all()
         try:
-            save(results)
+            save(results, measured=report.metrics())
+            directory = state_dir()
+            report.save_items(directory, report.improve(report.load_runs(directory), report.load_items(directory),
+                                                        time.time()))
         except OSError:
             pass  # a read-only home must not hide the result
-        print(to_json(results) if "--json" in args else show(results, lang))
+        if "--quiet" not in args:
+            print(to_json(results) if "--json" in args else show(results, lang))
         return 1 if any(r.status == "failed" for r in results) else 0
+    if command == "week":
+        from . import report
+
+        told = state_dir() / "week-told"
+        if "--weekly" in args and told.exists() and time.time() - told.stat().st_mtime < report.WEEK:
+            return 0  # the timer runs daily; the week is told once a week
+        summary = report.week_text(report.week(report.load_runs(state_dir()), time.time()), lang, TITLES)
+        print(summary)
+        if "--weekly" in args:
+            try:
+                state_dir().mkdir(parents=True, exist_ok=True, mode=0o700)
+                told.touch(mode=0o600)
+                os.utime(told)
+            except OSError:
+                pass
+        if "--notify" in args and shutil.which("notify-send"):
+            subprocess.run(["notify-send", "-a", "D.Ai", "-i", "dai-logo", "-u", "low",
+                            pick(lang, "Raz: your week", "‏Raz: השבוע שלך"), summary],
+                           capture_output=True, check=False, timeout=10)
+        return 0
+    if command == "improve":
+        from . import report
+
+        print(report.items_text(report.load_items(state_dir()), lang, TITLES))
+        return 0
+    if command == "report":
+        from . import report
+
+        try:
+            data = json.loads((state_dir() / "last.json").read_text(encoding="utf-8"))
+            results = data.get("results", [])
+        except (OSError, ValueError):
+            results = [json.loads(to_json([r]))[0] for r in run_all()]
+        print(report.problem_report(results, __version__, TITLES))
+        print()
+        print(pick(lang, "Nothing was sent. Read it first; copy it to a GitHub issue only if you want to.",
+                   "שום דבר לא נשלח. קראו קודם, והעתיקו ל־GitHub Issues רק אם תרצו."), file=sys.stderr)
+        return 0
     if command == "last":
         try:
             data = json.loads((state_dir() / "last.json").read_text(encoding="utf-8"))

@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Raz checks D.Ai after each login and every day, and tells the week once a week (docs/RAZ.md §14).
+[Unit]
+Description=Raz: D.Ai checks itself
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/RAZ.md
+
+[Service]
+Type=oneshot
+Nice=15
+IOSchedulingClass=idle
+ExecStart=-/usr/bin/dai-raz check --quiet
+ExecStart=/usr/bin/dai-raz week --notify --weekly

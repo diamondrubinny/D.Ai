@@ -549,6 +549,17 @@ def main() -> int:
          "timeout 90 dai-mom guard --cpu-seconds 10 --rounds 3 | head -n 5; "
          "kill -0 $B && echo STILL_RUNNING; kill $B", True,
          lambda o: "AUTOSTART" in o and "cpu proc:dai-burn" in o and "STILL_RUNNING" in o, 120),
+        # Raz stage 4 (docs/RAZ.md §14): the daily timer is on for every user, a check keeps the boot time, the
+        # week is told in words, and the problem report names neither the user nor the computer.
+        ("raz: trends, week and report", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "systemctl --user is-enabled dai-raz.timer; dai-raz check --quiet; "
+         "python3 -c 'import glob, json, os; f = sorted(glob.glob(os.path.expanduser(\"~/.local/state/dai/raz/run-*.json\")))[-1]; "
+         "print(\"BOOT\", json.load(open(f))[\"metrics\"][\"boot_seconds\"])'; dai-raz week; dai-raz improve; "
+         "dai-raz report 2>/dev/null > /tmp/raz-report.txt; head -n 4 /tmp/raz-report.txt; "
+         "grep -cE \"(^|[^[:alnum:]_.-])($(id -un)|$(hostname))([^[:alnum:]_.-]|$)\" /tmp/raz-report.txt || echo NO_NAMES",
+         True,
+         lambda o: re.search(r"^enabled", o, re.M) is not None and re.search(r"^BOOT \d", o, re.M) is not None
+         and ("everything worked" in o or "Not working" in o) and "nothing was sent" in o and "NO_NAMES" in o, 90),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "

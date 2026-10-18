@@ -433,7 +433,7 @@ msgid "Background"
 msgstr ""
 
 #. he: שירותי הרקע פועלים
-#: apps/dai-raz/dai_raz/cli.py:29
+#: apps/dai-raz/dai_raz/cli.py:35
 msgid "Background services are on"
 msgstr ""
 
@@ -853,7 +853,7 @@ msgid "D.Ai Tune — configure the system by writing what you need."
 msgstr ""
 
 #. he: פקודות D.Ai עולות
-#: apps/dai-raz/dai_raz/cli.py:27
+#: apps/dai-raz/dai_raz/cli.py:33
 msgid "D.Ai commands start"
 msgstr ""
 
@@ -868,7 +868,7 @@ msgid "D.Ai suggests · Enter to review · Delete to hide"
 msgstr ""
 
 #. he: הקבצים של D.Ai כפי שהותקנו
-#: apps/dai-raz/dai_raz/cli.py:31
+#: apps/dai-raz/dai_raz/cli.py:37
 msgid "D.Ai's files are as installed"
 msgstr ""
 
@@ -894,7 +894,7 @@ msgid "Delete: close · Shift+Delete: force close"
 msgstr ""
 
 #. he: נמחק.
-#: apps/dai-raz/dai_raz/cli.py:109
+#: apps/dai-raz/dai_raz/cli.py:160
 msgid "Deleted."
 msgstr ""
 
@@ -1125,7 +1125,7 @@ msgid "Enter to copy"
 msgstr ""
 
 #. he: כל השפות עובדות
-#: apps/dai-raz/dai_raz/cli.py:35
+#: apps/dai-raz/dai_raz/cli.py:41
 msgid "Every language works"
 msgstr ""
 
@@ -1578,6 +1578,11 @@ msgstr ""
 msgid "Lock the screen after {minutes} minutes of inactivity"
 msgstr ""
 
+#. he: צאו מהחשבון והיכנסו שוב.
+#: apps/dai-raz/dai_raz/report.py:234
+msgid "Log out and in again."
+msgstr ""
+
 #. he: מחפש את ההגדרות של {domain}…
 #: apps/dai-j/dai_j/text.py:61
 #, python-brace-format
@@ -1876,6 +1881,12 @@ msgstr ""
 msgid "Not understood: “{clause}”"
 msgstr ""
 
+#. he: לא עבד {times} מתוך {runs} פעמים: {title}.
+#: apps/dai-raz/dai_raz/report.py:121
+#, python-brace-format
+msgid "Not working {times} of {runs} times: {title}."
+msgstr ""
+
 #. he: הערות
 #: apps/dai-mom/dai_mom/text.py:19
 msgid "Notes"
@@ -1932,6 +1943,11 @@ msgstr ""
 msgid "Nothing to fix"
 msgstr ""
 
+#. he: אין מה לשפר: שום בדיקה לא נכשלה שוב ושוב.
+#: apps/dai-raz/dai_raz/report.py:220
+msgid "Nothing to improve: no check failed again and again."
+msgstr ""
+
 #. he: אין מה להסיר במתכון הזה.
 #: apps/dai-forge/dai_forge/cli.py:92
 msgid "Nothing to remove for this recipe."
@@ -1965,6 +1981,11 @@ msgstr ""
 #. he: שום דבר לא נסגר. כדי לראות או לסגור: Ctrl+Shift+Esc.
 #: apps/dai-mom/dai_mom/text.py:30
 msgid "Nothing was closed. To see it or close it: Ctrl+Shift+Esc."
+msgstr ""
+
+#. he: שום דבר לא נשלח. קראו קודם, והעתיקו ל־GitHub Issues רק אם תרצו.
+#: apps/dai-raz/dai_raz/cli.py:143
+msgid "Nothing was sent. Read it first; copy it to a GitHub issue only if you want to."
 msgstr ""
 
 #. he: כבוי (dai-clip on)
@@ -2018,6 +2039,11 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:66
 #, python-brace-format
 msgid "Only {mem_available} of {mem_total} is free."
+msgstr ""
+
+#. he: פתחו את D.Ai Heal (‏Super+F1).
+#: apps/dai-raz/dai_raz/report.py:232
+msgid "Open D.Ai Heal (Super+F1)."
 msgstr ""
 
 #. he: פתיחה מחדש
@@ -2140,13 +2166,19 @@ msgstr ""
 msgid "Processor: {value}%"
 msgstr ""
 
+#. he: תוכנות קרסו {count} פעמים. הפרטים ב־D.Ai Heal (‏Super+F1).
+#: apps/dai-raz/dai_raz/report.py:139
+#, python-brace-format
+msgid "Programs crashed {count} times; D.Ai Heal has the details (Super+F1)."
+msgstr ""
+
 #. he: תוכנות קורסות בדרך כלל בגלל הגדרות פגומות או באג. הפעלה מחדש עוזרת לא פעם, ואם זה חוזר, העברת ההגדרות שלה הצידה (הן נשמרות) בדרך כלל מתקנת.
 #: apps/dai-heal/dai_heal/text.py:40
 msgid "Programs usually crash because of damaged settings or a bug. Starting it again often works; if it keeps crashing, putting its settings aside (they are kept) usually fixes it."
 msgstr ""
 
 #. he: ההגדרות המוגנות שלמות
-#: apps/dai-raz/dai_raz/cli.py:30
+#: apps/dai-raz/dai_raz/cli.py:36
 msgid "Protected settings are intact"
 msgstr ""
 
@@ -2176,9 +2208,19 @@ msgstr ""
 msgid "RECOVERY KEY — write it down and keep it safe"
 msgstr ""
 
+#. he: ‏Raz עוד לא בדק השבוע.
+#: apps/dai-raz/dai_raz/report.py:114
+msgid "Raz did not check this week yet."
+msgstr ""
+
 #. he: Raz עוד לא בדק: dai-raz check
-#: apps/dai-raz/dai_raz/cli.py:99
+#: apps/dai-raz/dai_raz/cli.py:150
 msgid "Raz has not checked yet: dai-raz check"
+msgstr ""
+
+#. he: ‏Raz: השבוע שלך
+#: apps/dai-raz/dai_raz/cli.py:125
+msgid "Raz: your week"
 msgstr ""
 
 #. he: מוכנים
@@ -2466,7 +2508,7 @@ msgid "Security updates from Debian install automatically; D.Ai updates only whe
 msgstr ""
 
 #. he: עדכוני אבטחה מותקנים לבד
-#: apps/dai-raz/dai_raz/cli.py:33
+#: apps/dai-raz/dai_raz/cli.py:39
 msgid "Security updates install by themselves"
 msgstr ""
 
@@ -2670,6 +2712,30 @@ msgstr ""
 msgid "Start using D.Ai"
 msgstr ""
 
+#. he: האתחול מהיר ב־{seconds} שניות מאשר בשבוע שעבר.
+#: apps/dai-raz/dai_raz/report.py:127
+#, python-brace-format
+msgid "Starting is {seconds} seconds faster than last week."
+msgstr ""
+
+#. he: האתחול איטי ב־{seconds} שניות מאשר בשבוע שעבר.
+#: apps/dai-raz/dai_raz/report.py:130
+#, python-brace-format
+msgid "Starting is {seconds} seconds slower than last week."
+msgstr ""
+
+#. he: האתחול לוקח בערך {seconds} שניות, כמו בשבוע שעבר.
+#: apps/dai-raz/dai_raz/report.py:133
+#, python-brace-format
+msgid "Starting takes about {seconds} seconds, as last week."
+msgstr ""
+
+#. he: האתחול לוקח בערך {seconds} שניות.
+#: apps/dai-raz/dai_raz/report.py:136
+#, python-brace-format
+msgid "Starting takes about {seconds} seconds."
+msgstr ""
+
 #. he: מצב
 #: apps/dai-mom/dai_mom/text.py:93
 msgid "State"
@@ -2749,7 +2815,7 @@ msgid "Takes effect at each user's next login. Users can choose a shorter time, 
 msgstr ""
 
 #. he: התוספים של שורת המשימות נטענו
-#: apps/dai-raz/dai_raz/cli.py:28
+#: apps/dai-raz/dai_raz/cli.py:34
 msgid "Taskbar plugins are loaded"
 msgstr ""
 
@@ -2799,7 +2865,7 @@ msgid "The disk is encrypted if you chose encryption during installation."
 msgstr ""
 
 #. he: חומת האש פועלת
-#: apps/dai-raz/dai_raz/cli.py:32
+#: apps/dai-raz/dai_raz/cli.py:38
 msgid "The firewall is on"
 msgstr ""
 
@@ -2835,7 +2901,7 @@ msgid "The processor is not overloaded"
 msgstr ""
 
 #. he: אפשר לחשב את ציון האבטחה
-#: apps/dai-raz/dai_raz/cli.py:34
+#: apps/dai-raz/dai_raz/cli.py:40
 msgid "The security score can be computed"
 msgstr ""
 
@@ -2942,6 +3008,11 @@ msgstr ""
 msgid "This update cannot be undone automatically, but the next ones can."
 msgstr ""
 
+#. he: השבוע הכל עבד.
+#: apps/dai-raz/dai_raz/report.py:117
+msgid "This week everything worked."
+msgstr ""
+
 #. he: חמישי
 #: apps/dai-forge/dai_forge/schedule.py:24
 msgid "Thu"
@@ -2984,6 +3055,12 @@ msgstr ""
 #: apps/dai-forge/dai_forge/gui.py:148
 #: apps/dai-welcome/dai_welcome/gui.py:128
 msgid "Try again"
+msgstr ""
+
+#. he: נסו בשורת הפקודה: !{fix}
+#: apps/dai-raz/dai_raz/report.py:230
+#, python-brace-format
+msgid "Try in D.Ai Command: !{fix}"
 msgstr ""
 
 #. he: שלישי
@@ -3964,6 +4041,12 @@ msgstr ""
 msgid "{value}% CPU"
 msgstr ""
 
+#. he: • נכשל {failures} פעמים: {title}. {how}
+#: apps/dai-raz/dai_raz/report.py:235
+#, python-brace-format
+msgid "• Failed {failures} times: {title}. {how}"
+msgstr ""
+
 #. he: ⚠ עדיין קורסת בהפעלה. נסו „שינוי” עם יותר פרטים, או מודל גדול יותר.
 #: apps/dai-forge/dai_forge/gui.py:114
 msgid "⚠ It still crashes when started. Try “change” with more details, or a larger model."
@@ -4095,6 +4178,12 @@ msgstr ""
 #. he: ✓ בוטל: 
 #: apps/dai-tune/dai_tune/cli.py:261
 msgid "✓ Undone: "
+msgstr ""
+
+#. he: ✓ עבד: {title} (עבר {passes} פעמים ברצף).
+#: apps/dai-raz/dai_raz/report.py:226
+#, python-brace-format
+msgid "✓ Worked: {title} (passed {passes} times in a row)."
 msgstr ""
 
 #. he: ✓ {name} חזרה לגרסה {version}

@@ -3370,3 +3370,76 @@ msgstr "يُشغل {name} نواة معالج كاملة منذ {minutes} دقا
 #, python-brace-format
 msgid "{name} is working very hard"
 msgstr "{name} يعمل بجهد كبير جدًا"
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Log out and in again."
+msgstr "سجّل الخروج ثم الدخول مجددًا."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Not working {times} of {runs} times: {title}."
+msgstr "لم يعمل {times} من {runs} مرات: {title}."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Nothing to improve: no check failed again and again."
+msgstr "لا شيء للتحسين: لم يفشل أي فحص مرارًا."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Nothing was sent. Read it first; copy it to a GitHub issue only if you want to."
+msgstr "لم يُرسل أي شيء. اقرأه أولًا، وانسخه إلى GitHub Issues فقط إن أردت."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Open D.Ai Heal (Super+F1)."
+msgstr "افتح D.Ai Heal (‏Super+F1)."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Programs crashed {count} times; D.Ai Heal has the details (Super+F1)."
+msgstr "تعطلت البرامج {count} مرات؛ التفاصيل في D.Ai Heal (‏Super+F1)."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Raz did not check this week yet."
+msgstr "لم يفحص Raz هذا الأسبوع بعد."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "Raz: your week"
+msgstr "Raz: أسبوعك"
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting is {seconds} seconds faster than last week."
+msgstr "الإقلاع أسرع بـ{seconds} ثانية من الأسبوع الماضي."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting is {seconds} seconds slower than last week."
+msgstr "الإقلاع أبطأ بـ{seconds} ثانية من الأسبوع الماضي."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting takes about {seconds} seconds, as last week."
+msgstr "يستغرق الإقلاع نحو {seconds} ثانية، كالأسبوع الماضي."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Starting takes about {seconds} seconds."
+msgstr "يستغرق الإقلاع نحو {seconds} ثانية."
+
+#: apps/dai-raz/dai_raz/report.py
+msgid "This week everything worked."
+msgstr "هذا الأسبوع عمل كل شيء."
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "Try in D.Ai Command: !{fix}"
+msgstr "جرّب في D.Ai Command: !{fix}"
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "• Failed {failures} times: {title}. {how}"
+msgstr "• فشل {failures} مرات: {title}. {how}"
+
+#: apps/dai-raz/dai_raz/report.py
+#, python-brace-format
+msgid "✓ Worked: {title} (passed {passes} times in a row)."
+msgstr "✓ نجح: {title} (نجح {passes} مرات متتالية)."
