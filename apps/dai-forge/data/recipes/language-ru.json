@@ -1,0 +1,63 @@
+{
+  "format": 1,
+  "id": "language-ru",
+  "name": {
+    "en": "D.Ai in Russian (Русский)",
+    "he": "‏D.Ai ברוסית (Русский)"
+  },
+  "description": {
+    "en": "Shows D.Ai in Russian from the next login, with Firefox, LibreOffice and the spelling dictionary in Russian, and a Russian keyboard next to English and Hebrew (Alt+Shift).",
+    "he": "‏D.Ai ברוסית מהכניסה הבאה, עם Firefox, ‏LibreOffice ובודק איות ברוסית, ומקלדת רוסית לצד אנגלית ועברית (Alt+Shift)."
+  },
+  "match": {
+    "en": [
+      "russian language",
+      "russian interface",
+      "language russian"
+    ],
+    "he": [
+      "שפה רוסית",
+      "ממשק ברוסית",
+      "מערכת ברוסית"
+    ],
+    "ru": [
+      "русский",
+      "русском"
+    ]
+  },
+  "steps": [
+    {
+      "action": "system.locale",
+      "params": {
+        "lang": "ru"
+      }
+    },
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "firefox-esr-l10n-ru",
+          "libreoffice-l10n-ru",
+          "hunspell-ru"
+        ]
+      }
+    },
+    {
+      "action": "keyboard.layouts",
+      "params": {
+        "layouts": [
+          "ru",
+          "us",
+          "il"
+        ]
+      }
+    },
+    {
+      "action": "session.language",
+      "params": {
+        "lang": "ru"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

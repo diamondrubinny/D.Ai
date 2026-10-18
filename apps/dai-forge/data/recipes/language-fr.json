@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "id": "language-fr",
+  "name": {
+    "en": "D.Ai in French (Français)",
+    "he": "‏D.Ai בצרפתית (Français)"
+  },
+  "description": {
+    "en": "Shows D.Ai in French from the next login, with Firefox, LibreOffice and the spelling dictionary in French, and a French keyboard next to English and Hebrew (Alt+Shift).",
+    "he": "‏D.Ai בצרפתית מהכניסה הבאה, עם Firefox, ‏LibreOffice ובודק איות בצרפתית, ומקלדת צרפתית לצד אנגלית ועברית (Alt+Shift)."
+  },
+  "match": {
+    "en": [
+      "french language",
+      "french interface",
+      "language french"
+    ],
+    "he": [
+      "שפה צרפתית",
+      "ממשק בצרפתית",
+      "מערכת בצרפתית"
+    ],
+    "fr": [
+      "français"
+    ]
+  },
+  "steps": [
+    {
+      "action": "system.locale",
+      "params": {
+        "lang": "fr"
+      }
+    },
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "firefox-esr-l10n-fr",
+          "libreoffice-l10n-fr",
+          "hunspell-fr"
+        ]
+      }
+    },
+    {
+      "action": "keyboard.layouts",
+      "params": {
+        "layouts": [
+          "fr",
+          "us",
+          "il"
+        ]
+      }
+    },
+    {
+      "action": "session.language",
+      "params": {
+        "lang": "fr"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

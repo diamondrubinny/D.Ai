@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from dai_i18n import text
+from dai_i18n import pick, text
 
 from .context import ActionError, Context, read_text, write_file
 
@@ -56,7 +56,9 @@ DEVICE_MODULES = {
     "camera": ("uvcvideo",),
     "bluetooth": ("btusb",),
 }
-KEYBOARD_LAYOUTS = ("us", "il", "ru", "ar", "fr", "de", "es", "it", "ua")
+# xkb layout names (/usr/share/X11/xkb/symbols): Arabic is "ara"; "ar" is accepted and means "ara".
+KEYBOARD_LAYOUTS = ("us", "il", "ru", "ara", "fr", "de", "es", "it", "ua", "pt", "br")
+LAYOUT_ALIASES = {"ar": "ara"}
 LAN_V4 = "10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16"
 LAN_V6 = "fc00::/7, fe80::/10"
 
@@ -687,6 +689,7 @@ def _layouts_validate(params: Params, ctx: Context) -> Params:
         raise ValidationError("layouts: 1-4 keyboard layouts")
     clean: list[str] = []
     for layout in layouts:
+        layout = LAYOUT_ALIASES.get(layout, layout)
         _choice(layout, KEYBOARD_LAYOUTS, "layout")
         if layout not in clean:
             clean.append(layout)
@@ -721,6 +724,79 @@ register(ActionSpec(
     summary=lambda p, lang: _t(lang, "Keyboard layouts: ", "שפות מקלדת: ") + ", ".join(p["layouts"]) + " (Alt+Shift)",
     files=lambda p, c: [c.user_path(LABWC_ENV), c.user_path(LANG_STATE)],
     restore=lambda p, c, e: _reconfigure_labwc(c),
+))
+
+
+# --------------------------------------------------------------------------
+# Language of the system and of the session (docs/I18N.md §9)
+# --------------------------------------------------------------------------
+
+# The eight languages of D.Ai OS and the locale each one uses.
+UI_LOCALES = {"he": "he_IL.UTF-8", "en": "en_US.UTF-8", "ar": "ar_EG.UTF-8", "ru": "ru_RU.UTF-8",
+              "es": "es_ES.UTF-8", "fr": "fr_FR.UTF-8", "de": "de_DE.UTF-8", "pt": "pt_BR.UTF-8"}
+LOCALE_GEN = "/etc/locale.gen"
+LANGUAGE_ENV = ".config/dai/language.env"
+LANGUAGE_NAMES = {"he": ("Hebrew", "עברית"), "en": ("English", "אנגלית"), "ar": ("Arabic", "ערבית"),
+                  "ru": ("Russian", "רוסית"), "es": ("Spanish", "ספרדית"), "fr": ("French", "צרפתית"),
+                  "de": ("German", "גרמנית"), "pt": ("Portuguese", "פורטוגזית")}
+
+
+def _lang_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"lang"})
+    return {"lang": _choice(params.get("lang"), UI_LOCALES, "language")}
+
+
+def _language_name(code: str, lang: str) -> str:
+    return pick(lang, *LANGUAGE_NAMES[code])  # translated for the other six languages too
+
+
+def _locale_apply(params: Params, ctx: Context) -> None:
+    """Make the locale available: its line in /etc/locale.gen, then locale-gen (Debian's own tools)."""
+    wanted = f"{UI_LOCALES[params['lang']]} UTF-8"
+    path = ctx.path(LOCALE_GEN)
+    lines = read_text(path).splitlines()
+    found = False
+    for index, line in enumerate(lines):
+        if line.lstrip("# ").strip() == wanted:
+            lines[index] = wanted
+            found = True
+    if not found:
+        lines.append(wanted)
+    write_file(path, "\n".join(lines) + "\n", mode=0o644)
+    ctx.run(["locale-gen"])
+
+
+register(ActionSpec(
+    id="system.locale",
+    scope="system",
+    validate=_lang_validate,
+    apply=_locale_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Make {name} available on this computer ({locale})",
+                               "הוספת {name} למחשב ({locale})", name=_language_name(p["lang"], lang),
+                               locale=UI_LOCALES[p["lang"]]),
+    files=lambda p, c: [c.path(LOCALE_GEN)],
+    restore=lambda p, c, e: c.run(["locale-gen"], check=False),
+))
+
+
+def _session_language_apply(params: Params, ctx: Context) -> None:
+    code = params["lang"]
+    # startdai-wayland reads this file at login (only these two keys, only values from UI_LOCALES).
+    write_file(ctx.user_path(LANGUAGE_ENV), f"LANG={UI_LOCALES[code]}\nLANGUAGE={code}:en\n", mode=0o600)
+
+
+register(ActionSpec(
+    id="session.language",
+    scope="user",
+    validate=_lang_validate,
+    apply=_session_language_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Show D.Ai in {name} from the next login", "‏D.Ai ב{name} מהכניסה הבאה",
+                               name=_language_name(p["lang"], lang)),
+    files=lambda p, c: [c.user_path(LANGUAGE_ENV)],
 ))
 
 

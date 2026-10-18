@@ -68,6 +68,20 @@ class RecipeTests(ForgeTestCase):
                 if removal:
                     self.assertTrue(build_plan(removal, self.ctx).ok)
 
+    def test_a_language_is_found_in_its_own_words(self):
+        library = self.library()
+        for text, wanted in (("+ russian language", "language-ru"), ("+ русский", "language-ru"),
+                             ("+ ממשק בערבית", "language-ar"), ("+ العربية", "language-ar"),
+                             ("+ español", "language-es"), ("+ deutsch", "language-de"),
+                             ("+ français", "language-fr"), ("+ português", "language-pt")):
+            recipe, removing = recipes.find(text, library)
+            self.assertEqual((recipe.id if recipe else None, removing), (wanted, False), text)
+        recipe = library.recipes["language-ar"]
+        self.assertEqual([r.action for r in recipes.install_requests(recipe)],
+                         ["system.locale", "packages.install", "keyboard.layouts", "session.language"])
+        self.assertEqual(recipe.steps[2]["params"]["layouts"], ["ara", "us", "il"])  # Hebrew stays on the keyboard
+        self.assertEqual(recipe.name["ar"] if "ar" in recipe.name else recipe.name["en"], "D.Ai in Arabic (العربية)")
+
     def test_antivirus_recipe_hardens_and_reverses(self):
         recipe = self.library().recipes["antivirus"]
         actions = [r.action for r in recipes.install_requests(recipe)]
@@ -91,7 +105,7 @@ class RecipeTests(ForgeTestCase):
             {"steps": [{"action": "shell.run", "params": {"cmd": "rm -rf /"}}]},
             {"steps": [{"action": "preset.public", "params": {}}]},
             {"steps": [{"action": "packages.install"}]},
-            {"name": {"en": "x\ny"}}, {"name": {"fr": "x"}}, {"match": {"en": ["x" * 41]}},
+            {"name": {"en": "x\ny"}}, {"name": {"xx": "x"}}, {"match": {"en": ["x" * 41]}},
         ]
         for override in bad:
             with self.subTest(override=override), self.assertRaises(recipes.RecipeError):

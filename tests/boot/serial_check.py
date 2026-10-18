@@ -560,6 +560,14 @@ def main() -> int:
          True,
          lambda o: re.search(r"^enabled", o, re.M) is not None and re.search(r"^BOOT \d", o, re.M) is not None
          and ("everything worked" in o or "Not working" in o) and "nothing was sent" in o and "NO_NAMES" in o, 90),
+        # Languages, stage 3 (docs/I18N.md §9): "language russian" through Tune generates the locale (root, through
+        # the helper) and keeps the choice for the next login (user); the recipe exists. Cleaned up afterwards.
+        ("i18n: choose the language", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'language russian' >/dev/null; echo RC=$?; "
+         "grep -x 'ru_RU.UTF-8 UTF-8' /etc/locale.gen; locale -a | grep -ix ru_RU.utf8; cat ~/.config/dai/language.env; "
+         "dai-forge recipe list 2>/dev/null | grep -c language- ; rm -f ~/.config/dai/language.env", True,
+         lambda o: "RC=0" in o and "ru_RU.UTF-8 UTF-8" in o and re.search(r"^ru_RU\.utf8$", o, re.M | re.I) is not None
+         and "LANG=ru_RU.UTF-8" in o and "LANGUAGE=ru:en" in o and re.search(r"^6$", o, re.M) is not None, 180),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "

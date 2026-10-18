@@ -670,3 +670,54 @@ class PolicyTests(TuneTestCase):
         fake_stat = os.stat_result((0o100644, 0, 0, 1, 1000, 1000, 100, 0, 0, 0))
         with mock.patch.object(Path, "stat", return_value=fake_stat):
             self.assertEqual(policy._trusted(path, real), "is not owned by root")
+
+
+class LanguageTests(TuneTestCase):
+    """docs/I18N.md §9: the language of D.Ai, in each of the eight languages."""
+
+    apply = ExecutorTests.apply
+
+    SENTENCES = {"language russian": "ru", "שפה רוסית": "ru", "русский язык": "ru", "اللغة العربية": "ar",
+                 "idioma español": "es", "langue française": "fr", "Sprache Deutsch": "de", "idioma português": "pt",
+                 "interface language hebrew": "he", "שפת הממשק אנגלית": "en"}
+
+    def test_each_language_asks_for_the_locale_and_the_session(self):
+        for sentence, code in self.SENTENCES.items():
+            result = parser.parse(sentence)
+            self.assertEqual([(r.action, r.params) for r in result.requests],
+                             [("system.locale", {"lang": code}), ("session.language", {"lang": code})], sentence)
+        self.assertEqual(parser.parse("language russian french").requests, [])  # which one? not a guess
+
+    def test_the_locale_is_generated_and_undone(self):
+        gen = self.root / "etc/locale.gen"
+        gen.parent.mkdir(parents=True, exist_ok=True)
+        gen.write_text("# ru_RU.UTF-8 UTF-8\nhe_IL.UTF-8 UTF-8\n")
+        entry, journal = self.apply("language russian")
+        self.assertIn("ru_RU.UTF-8 UTF-8\n", gen.read_text())
+        self.assertNotIn("# ru_RU", gen.read_text())
+        self.assertIn(["locale-gen"], self.runner.calls)
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(gen.read_text(), "# ru_RU.UTF-8 UTF-8\nhe_IL.UTF-8 UTF-8\n")
+        gen.write_text("he_IL.UTF-8 UTF-8\n")
+        self.apply("language arabic")
+        self.assertIn("ar_EG.UTF-8 UTF-8", gen.read_text())  # a missing line is added
+
+    def test_the_session_file_is_private_and_exact(self):
+        self.apply("שפה גרמנית", scope="user")
+        env = self.home / ".config/dai/language.env"
+        self.assertEqual(env.read_text(), "LANG=de_DE.UTF-8\nLANGUAGE=de:en\n")
+        self.assertEqual(oct(env.stat().st_mode & 0o777), "0o600")
+
+    def test_only_the_eight_languages(self):
+        spec = catalog.CATALOG["session.language"]
+        for bad in ("xx", "ru_RU.UTF-8; rm -rf /", "", None, 7):
+            with self.assertRaises(catalog.ValidationError):
+                spec.validate({"lang": bad}, self.ctx)
+        with self.assertRaises(catalog.ValidationError):
+            spec.validate({"lang": "ru", "extra": 1}, self.ctx)
+
+    def test_arabic_keyboard_is_the_real_xkb_name(self):
+        result = parser.parse("keyboard english arabic portuguese")
+        self.assertEqual(result.requests[0].params, {"layouts": ["us", "ara", "pt"]})
+        spec = catalog.CATALOG["keyboard.layouts"]
+        self.assertEqual(spec.validate({"layouts": ["ar", "us"]}, self.ctx), {"layouts": ["ara", "us"]})  # old name

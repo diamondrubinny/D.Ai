@@ -58,6 +58,9 @@ jobs:
       - name: Packages and update repository (signature, redirect, pinning; Debian trixie container)
         run: docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie bash tests/apt/apt-repo-test.sh
 
+      - name: Language packs exist in Debian 13 (every package and locale the language recipes use)
+        run: docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie bash tests/apt/language-packages.sh
+
       - name: Copyright notices, license, trademark policy and terms
         run: python3 -m unittest tests/legal/test_legal.py -v
 

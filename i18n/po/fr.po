@@ -3443,3 +3443,45 @@ msgstr "• A échoué {failures} fois : {title}. {how}"
 #, python-brace-format
 msgid "✓ Worked: {title} (passed {passes} times in a row)."
 msgstr "✓ Ça a marché : {title} (réussi {passes} fois de suite)."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Arabic"
+msgstr "arabe"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "English"
+msgstr "anglais"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "French"
+msgstr "français"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "German"
+msgstr "allemand"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Hebrew"
+msgstr "hébreu"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Portuguese"
+msgstr "portugais"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Russian"
+msgstr "russe"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Spanish"
+msgstr "espagnol"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Make {name} available on this computer ({locale})"
+msgstr "Rendre {name} disponible sur cet ordinateur ({locale})"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Show D.Ai in {name} from the next login"
+msgstr "Afficher D.Ai en {name} dès la prochaine connexion"

@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "id": "language-pt",
+  "name": {
+    "en": "D.Ai in Portuguese (Português)",
+    "he": "‏D.Ai בפורטוגזית (Português)"
+  },
+  "description": {
+    "en": "Shows D.Ai in Portuguese from the next login, with Firefox, LibreOffice and the spelling dictionary in Portuguese, and a Portuguese keyboard next to English and Hebrew (Alt+Shift).",
+    "he": "‏D.Ai בפורטוגזית מהכניסה הבאה, עם Firefox, ‏LibreOffice ובודק איות בפורטוגזית, ומקלדת פורטוגזית לצד אנגלית ועברית (Alt+Shift)."
+  },
+  "match": {
+    "en": [
+      "portuguese language",
+      "brazilian language",
+      "portuguese interface",
+      "brazilian interface",
+      "language portuguese",
+      "language brazilian"
+    ],
+    "he": [
+      "שפה פורטוגזית",
+      "שפה ברזילאית",
+      "ממשק בפורטוגזית",
+      "ממשק בברזילאית",
+      "מערכת בפורטוגזית",
+      "מערכת בברזילאית"
+    ],
+    "pt": [
+      "português"
+    ]
+  },
+  "steps": [
+    {
+      "action": "system.locale",
+      "params": {
+        "lang": "pt"
+      }
+    },
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "firefox-esr-l10n-pt-br",
+          "libreoffice-l10n-pt-br",
+          "hunspell-pt-br"
+        ]
+      }
+    },
+    {
+      "action": "keyboard.layouts",
+      "params": {
+        "layouts": [
+          "br",
+          "us",
+          "il"
+        ]
+      }
+    },
+    {
+      "action": "session.language",
+      "params": {
+        "lang": "pt"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

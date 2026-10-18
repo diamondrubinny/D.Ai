@@ -22,6 +22,8 @@ current="$(sed -n 's/^XKB_DEFAULT_LAYOUT=//p' "$state" 2>/dev/null | tail -n 1)"
 label() {
 	case "$1" in
 		il) echo "HE" ;;
+		ara) echo "AR" ;;
+		br) echo "PT" ;;
 		us) echo "EN" ;;
 		ua) echo "UA" ;;
 		*) echo "$1" | tr '[:lower:]' '[:upper:]' ;;

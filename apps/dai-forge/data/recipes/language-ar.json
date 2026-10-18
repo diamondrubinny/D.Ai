@@ -1,0 +1,66 @@
+{
+  "format": 1,
+  "id": "language-ar",
+  "name": {
+    "en": "D.Ai in Arabic (العربية)",
+    "he": "‏D.Ai בערבית (العربية)"
+  },
+  "description": {
+    "en": "Shows D.Ai in Arabic from the next login, with Firefox, LibreOffice and the spelling dictionary in Arabic, and a Arabic keyboard next to English and Hebrew (Alt+Shift).",
+    "he": "‏D.Ai בערבית מהכניסה הבאה, עם Firefox, ‏LibreOffice ובודק איות בערבית, ומקלדת ערבית לצד אנגלית ועברית (Alt+Shift)."
+  },
+  "match": {
+    "en": [
+      "arabic language",
+      "arab language",
+      "arabic interface",
+      "arab interface",
+      "language arabic",
+      "language arab"
+    ],
+    "he": [
+      "שפה ערבית",
+      "ממשק בערבית",
+      "מערכת בערבית"
+    ],
+    "ar": [
+      "العربية",
+      "عربي"
+    ]
+  },
+  "steps": [
+    {
+      "action": "system.locale",
+      "params": {
+        "lang": "ar"
+      }
+    },
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "firefox-esr-l10n-ar",
+          "libreoffice-l10n-ar",
+          "hunspell-ar"
+        ]
+      }
+    },
+    {
+      "action": "keyboard.layouts",
+      "params": {
+        "layouts": [
+          "ara",
+          "us",
+          "il"
+        ]
+      }
+    },
+    {
+      "action": "session.language",
+      "params": {
+        "lang": "ar"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

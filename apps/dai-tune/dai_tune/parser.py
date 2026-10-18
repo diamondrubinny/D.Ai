@@ -77,8 +77,23 @@ NEVER = r"(?:never|off|disable|אף פעם|לעולם לא|בלי נעילה|כ�
 KEYBOARD = r"(?:keyboard|layouts?|מקלדת|שפות מקלדת|שפות הקלדה)"
 LANGUAGES = [
     ("il", r"(?:hebrew|עברית)"), ("us", r"(?:english|אנגלית)"), ("ru", r"(?:russian|רוסית)"),
-    ("ar", r"(?:arabic|ערבית)"), ("fr", r"(?:french|צרפתית)"), ("de", r"(?:german|גרמנית)"),
+    ("ara", r"(?:arabic|ערבית)"), ("fr", r"(?:french|צרפתית)"), ("de", r"(?:german|גרמנית)"),
     ("es", r"(?:spanish|ספרדית)"), ("it", r"(?:italian|איטלקית)"), ("ua", r"(?:ukrainian|אוקראינית)"),
+    ("pt", r"(?:portuguese|פורטוגזית)"),
+]
+
+# The language D.Ai itself speaks (docs/I18N.md §9), in each of the eight languages.
+UI_LANGUAGE = (r"(?:\b(?:language|interface language|display language)\b|שפה|שפת הממשק|שפת המערכת|язык|"
+               r"اللغة|لغة|\bidioma\b|\blangue\b|\bsprache\b|\blíngua\b)")
+UI_LANGUAGES = [
+    ("he", r"(?:hebrew|עברית|иврит|العبرية|hebreo|hébreu|hebräisch|hebraico)"),
+    ("en", r"(?:english|אנגלית|английский|الإنجليزية|inglés|anglais|englisch|inglês)"),
+    ("ar", r"(?:arabic|ערבית|арабский|العربية|árabe|arabe|arabisch)"),
+    ("ru", r"(?:russian|רוסית|русский|الروسية|ruso|russe|russisch|russo)"),
+    ("es", r"(?:spanish|ספרדית|испанский|الإسبانية|español|espagnol|spanisch|espanhol)"),
+    ("fr", r"(?:french|צרפתית|французский|الفرنسية|francés|français|französisch|francês)"),
+    ("de", r"(?:german|גרמנית|немецкий|الألمانية|alemán|allemand|deutsch|alemão)"),
+    ("pt", r"(?:portuguese|פורטוגזית|португальский|البرتغالية|portugués|portugais|portugiesisch|português)"),
 ]
 
 PUBLIC = r"(?:public mode|public network|cafe mode|מצב ציבורי|רשת ציבורית|מצב בית קפה|מצב נסיעה)"
@@ -209,6 +224,13 @@ def parse_clause(clause: str) -> list[Request]:
         if found:
             return [Request("keyboard.layouts", {"layouts": [code for _, code in found]}, clause)]
 
+    # The language of D.Ai: the locale for the computer (root) and the choice for this person (next login).
+    if _has(UI_LANGUAGE, c):
+        found = [code for code, pattern in UI_LANGUAGES if re.search(pattern, c)]
+        if len(found) == 1:
+            return [Request("system.locale", {"lang": found[0]}, clause),
+                    Request("session.language", {"lang": found[0]}, clause)]
+
     # Time zone.
     if _has(TIMEZONE, c):
         for alias, tz in sorted(TIMEZONE_ALIASES.items(), key=lambda kv: -len(kv[0])):
@@ -244,6 +266,7 @@ _TOPICS = {
     "device": ("|".join(DEVICES.values()), ("device.",)),
     "updates": (UPDATES, ("updates.",)),
     "keyboard": (KEYBOARD, ("keyboard.",)),
+    "language": (UI_LANGUAGE, ("session.language", "keyboard.", "system.locale")),
     "timezone": (TIMEZONE, ("system.timezone",)),
     "hostname": (HOSTNAME, ("system.hostname",)),
     "lock": (LOCK, ("session.lock",)),
@@ -296,6 +319,7 @@ EXAMPLES = {
         "התקן vlc gimp",
         "נעל מסך אחרי 5 דקות",
         "מקלדת עברית אנגלית רוסית",
+        "שפה רוסית",
         "אזור זמן ירושלים",
         "שנה שם מחשב ל office-pc",
         "מצב ציבורי",
@@ -315,6 +339,7 @@ EXAMPLES = {
         "install vlc gimp",
         "lock the screen after 5 minutes",
         "keyboard english hebrew",
+        "language russian",
         "time zone london",
         "rename computer to office-pc",
         "public mode",

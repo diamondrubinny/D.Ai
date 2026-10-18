@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "id": "language-de",
+  "name": {
+    "en": "D.Ai in German (Deutsch)",
+    "he": "‏D.Ai בגרמנית (Deutsch)"
+  },
+  "description": {
+    "en": "Shows D.Ai in German from the next login, with Firefox, LibreOffice and the spelling dictionary in German, and a German keyboard next to English and Hebrew (Alt+Shift).",
+    "he": "‏D.Ai בגרמנית מהכניסה הבאה, עם Firefox, ‏LibreOffice ובודק איות בגרמנית, ומקלדת גרמנית לצד אנגלית ועברית (Alt+Shift)."
+  },
+  "match": {
+    "en": [
+      "german language",
+      "german interface",
+      "language german"
+    ],
+    "he": [
+      "שפה גרמנית",
+      "ממשק בגרמנית",
+      "מערכת בגרמנית"
+    ],
+    "de": [
+      "deutsch"
+    ]
+  },
+  "steps": [
+    {
+      "action": "system.locale",
+      "params": {
+        "lang": "de"
+      }
+    },
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "firefox-esr-l10n-de",
+          "libreoffice-l10n-de",
+          "hunspell-de-de"
+        ]
+      }
+    },
+    {
+      "action": "keyboard.layouts",
+      "params": {
+        "layouts": [
+          "de",
+          "us",
+          "il"
+        ]
+      }
+    },
+    {
+      "action": "session.language",
+      "params": {
+        "lang": "de"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

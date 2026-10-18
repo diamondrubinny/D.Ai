@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "id": "language-es",
+  "name": {
+    "en": "D.Ai in Spanish (Español)",
+    "he": "‏D.Ai בספרדית (Español)"
+  },
+  "description": {
+    "en": "Shows D.Ai in Spanish from the next login, with Firefox, LibreOffice and the spelling dictionary in Spanish, and a Spanish keyboard next to English and Hebrew (Alt+Shift).",
+    "he": "‏D.Ai בספרדית מהכניסה הבאה, עם Firefox, ‏LibreOffice ובודק איות בספרדית, ומקלדת ספרדית לצד אנגלית ועברית (Alt+Shift)."
+  },
+  "match": {
+    "en": [
+      "spanish language",
+      "spanish interface",
+      "language spanish"
+    ],
+    "he": [
+      "שפה ספרדית",
+      "ממשק בספרדית",
+      "מערכת בספרדית"
+    ],
+    "es": [
+      "español"
+    ]
+  },
+  "steps": [
+    {
+      "action": "system.locale",
+      "params": {
+        "lang": "es"
+      }
+    },
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "firefox-esr-l10n-es-es",
+          "libreoffice-l10n-es",
+          "hunspell-es"
+        ]
+      }
+    },
+    {
+      "action": "keyboard.layouts",
+      "params": {
+        "layouts": [
+          "es",
+          "us",
+          "il"
+        ]
+      }
+    },
+    {
+      "action": "session.language",
+      "params": {
+        "lang": "es"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

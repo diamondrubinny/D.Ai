@@ -80,11 +80,15 @@ class Recipe:
         return data
 
 
+# The eight languages of D.Ai OS (docs/I18N.md): a recipe may name and match itself in any of them.
+LANGS = frozenset({"en", "he", "ar", "ru", "es", "fr", "de", "pt"})
+
+
 def _text_map(value: Any, what: str, limit: int, required: bool = True) -> dict[str, str]:
     if not required and (value is None or value == {}):
         return {}
-    if not isinstance(value, dict) or not value or set(value) - {"en", "he"}:
-        raise RecipeError(f"{what}: expected {{\"en\": ..., \"he\": ...}}")
+    if not isinstance(value, dict) or not value or set(value) - LANGS:
+        raise RecipeError(f"{what}: expected {{\"en\": ..., \"he\": ...}} (or another D.Ai language)")
     out = {}
     for lang, text in value.items():
         if not isinstance(text, str) or not text.strip() or len(text) > limit or any(ord(ch) < 32 for ch in text):
@@ -104,8 +108,8 @@ def validate(data: Any, source: str = "user", path: Path | None = None) -> Recip
     if not isinstance(rid, str) or not ID_RE.match(rid):
         raise RecipeError(f"invalid recipe id: {rid!r}")
     match = data.get("match", {})
-    if not isinstance(match, dict) or set(match) - {"en", "he"}:
-        raise RecipeError("match: expected {\"en\": [...], \"he\": [...]}")
+    if not isinstance(match, dict) or set(match) - LANGS:
+        raise RecipeError("match: expected {\"en\": [...], \"he\": [...]} (or another D.Ai language)")
     clean_match: dict[str, list[str]] = {}
     for lang, words in match.items():
         if not isinstance(words, list) or len(words) > MAX_KEYWORDS:

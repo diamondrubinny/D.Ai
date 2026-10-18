@@ -21,6 +21,18 @@ esac
 : "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}"
 export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME XDG_CONFIG_DIRS XDG_DATA_DIRS
 
+# The language D.Ai speaks to this person (D.Ai Tune "language russian", docs/I18N.md §9). Only LANG and
+# LANGUAGE are read, and only values that look like the ones Tune writes; anything else is ignored.
+language_env="$XDG_CONFIG_HOME/dai/language.env"
+if [ -r "$language_env" ]; then
+	wanted_lang=$(sed -n 's/^LANG=\([a-z][a-z]_[A-Z][A-Z]\.UTF-8\)$/\1/p' "$language_env" | tail -n 1)
+	wanted_language=$(sed -n 's/^LANGUAGE=\([a-z][a-z]:en\)$/\1/p' "$language_env" | tail -n 1)
+	if [ -n "$wanted_lang" ] && locale -a 2>/dev/null | grep -qix "$(printf '%s' "$wanted_lang" | sed 's/UTF-8$/utf8/')"; then
+		export LANG="$wanted_lang" LC_MESSAGES="$wanted_lang"
+		[ -n "$wanted_language" ] && export LANGUAGE="$wanted_language"
+	fi
+fi
+
 export XDG_CURRENT_DESKTOP="LXQt:labwc:wlroots"
 export XDG_SESSION_DESKTOP="LXQt"
 export XDG_MENU_PREFIX="lxqt-"
