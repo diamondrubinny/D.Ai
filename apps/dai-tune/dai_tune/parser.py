@@ -10,12 +10,12 @@ the same validation.
 
 from __future__ import annotations
 
-import json
 import re
-from functools import lru_cache
 from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any
+
+from dai_i18n import keywords
 
 
 @dataclass(frozen=True)
@@ -134,30 +134,17 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().casefold())
 
 
-@lru_cache(maxsize=1)
+LANG_DIR = Path(__file__).parent / "lang"
+
+
 def _packs() -> tuple[tuple[re.Pattern, str], ...]:
-    """The keyword packs (lang/<xx>.json, docs/I18N.md §10): words in the other six languages → the English
-    this parser already understands. Data only; the longest phrase wins, and only whole words are replaced."""
-    phrases: dict[str, str] = {}
-    for path in sorted((Path(__file__).parent / "lang").glob("*.json")):
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
-        if data.get("format") != 1 or not isinstance(data.get("phrases"), dict):
-            continue
-        for foreign, english in data["phrases"].items():
-            if isinstance(foreign, str) and isinstance(english, str) and re.fullmatch(r"[a-z0-9 .:'-]+", english):
-                phrases.setdefault(_normalize(foreign), english)
-    ordered = sorted(phrases.items(), key=lambda item: -len(item[0]))
-    return tuple((re.compile(rf"(?<![\w-]){re.escape(foreign)}(?![\w-])"), english) for foreign, english in ordered)
+    """The keyword packs (lang/<xx>.json, docs/I18N.md §10), through the shared loader in dai_i18n."""
+    return keywords.load(str(LANG_DIR))
 
 
 def translate(text: str) -> str:
     """"заблокируй флешки" → "block usb"; Hebrew and English pass through unchanged."""
-    for pattern, english in _packs():
-        text = pattern.sub(english, text)
-    return text
+    return keywords.translate(text, LANG_DIR)
 
 
 def split_clauses(text: str) -> list[str]:

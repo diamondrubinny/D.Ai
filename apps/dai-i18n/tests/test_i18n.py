@@ -191,5 +191,26 @@ class Routing(unittest.TestCase):
         self.assertEqual(offenders, [], "read the language with dai_i18n.ui_lang()")
 
 
+class KeywordPackTests(unittest.TestCase):
+    def test_longest_phrase_whole_words_and_only_safe_english(self):
+        import json
+        import tempfile
+        from pathlib import Path
+
+        from dai_i18n import keywords
+
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "ru.json").write_text(json.dumps({"format": 1, "lang": "ru", "phrases": {
+                "каждый": "every", "каждый день": "every day", "день": "day", "злой": "x; rm -rf /",
+                "плохой": "<b>", "Фото": "photos"}}), encoding="utf-8")
+            (folder / "xx.json").write_text("{not json", encoding="utf-8")
+            (folder / "yy.json").write_text(json.dumps({"format": 2, "phrases": {"a": "b"}}), encoding="utf-8")
+            self.assertEqual(keywords.translate("каждый день", folder), "every day")
+            self.assertEqual(keywords.translate("каждыйдень злой плохой", folder), "каждыйдень злой плохой")
+            self.assertEqual(keywords.translate(keywords.normalize("ФОТО  со  вчера"), folder), "photos со вчера")
+            self.assertEqual(len(keywords.load(str(folder))), 4)  # the unsafe ones and the broken files are skipped
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
-from dai_find import cli, search as search_mod
+from dai_find import cli, query, search as search_mod
 from dai_find.query import is_find_request, parse
 from dai_find.search import search, user_dirs
 
@@ -159,6 +159,45 @@ class CommandTests(unittest.TestCase):
                 self.assertIsNone(hint[0].payload)
                 self.assertTrue(build_actions("find something", []))
         search_mod._CACHE.clear()
+
+
+class LanguageTests(unittest.TestCase):
+    """Find in the six other languages (docs/I18N.md §10)."""
+    NOW = datetime(2026, 10, 18, 12, 0)
+    SENTENCES = {
+        "найди фото со вчера": ({"image"}, "yesterday", []),
+        "где мой pdf, который я скачал на прошлой неделе": ({"pdf"}, "last_week", ["downloads"]),
+        "покажи документы в загрузках за последние 3 дня": ({"document"}, "last_n_days", ["downloads"]),
+        "busca las fotos de ayer": ({"image"}, "yesterday", []),
+        "dónde está el pdf que descargué la semana pasada": ({"pdf"}, "last_week", ["downloads"]),
+        "muéstrame documentos de hace 3 días": ({"document"}, "days_ago", []),
+        "trouve les photos d'hier": ({"image"}, "yesterday", []),
+        "cherche les documents des 3 derniers jours": ({"document"}, "last_n_days", []),
+        "trouve les vidéos de mars": ({"video"}, "month:3", []),
+        "finde die Fotos von gestern": ({"image"}, "yesterday", []),
+        "wo ist das PDF, das ich letzte Woche heruntergeladen habe": ({"pdf"}, "last_week", ["downloads"]),
+        "suche Dokumente von vor 3 Tagen": ({"document"}, "days_ago", []),
+        "encontre as fotos de ontem": ({"image"}, "yesterday", []),
+        "onde está o pdf que baixei semana passada": ({"pdf"}, "last_week", ["downloads"]),
+        "procure documentos de 3 dias atrás": ({"document"}, "days_ago", []),
+        "ابحث عن الصور من أمس": ({"image"}, "yesterday", []),
+        "أين ملف pdf الذي نزلتها الأسبوع الماضي": ({"pdf"}, "last_week", ["downloads"]),
+        "ابحث عن المستندات منذ 3 أيام": ({"document"}, "days_ago", []),
+    }
+
+    def test_every_sentence(self):
+        for text, (kinds, label, folders) in self.SENTENCES.items():
+            with self.subTest(text):
+                self.assertTrue(query.is_find_request(text))
+                found = query.parse(text, self.NOW)
+                self.assertEqual((found.kinds, found.time_label, found.folders, found.words), (kinds, label, folders, []))
+                self.assertEqual(found.text, text)
+
+    def test_names_stay_and_english_is_not_translated(self):
+        self.assertEqual(query.parse("найди отчет 2025", self.NOW).words, ["отчет", "2025"])
+        found = query.parse("find mars rover photos", self.NOW)  # "mars" is French for March, not here
+        self.assertEqual((found.kinds, found.words, found.time_label), ({"image"}, ["mars", "rover"], ""))
+        self.assertFalse(query.is_find_request("заблокируй флешки"))
 
 
 if __name__ == "__main__":

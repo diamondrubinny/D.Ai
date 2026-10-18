@@ -13,7 +13,12 @@ import calendar
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Callable
+
+from dai_i18n import keywords
+
+LANG_DIR = Path(__file__).parent / "lang"  # keyword packs for the six other languages (docs/I18N.md §10)
 
 # Hebrew attaches prepositions and "that/the/and" to the next word.
 HE_PREFIX = "והבלמשכ"
@@ -102,8 +107,13 @@ class Query:
         return bool(self.kinds or self.since or self.words or self.folders)
 
 
+def _english(text: str) -> str:
+    """Words of the other six languages in the English this parser knows ("фото со вчера" → "photos the yesterday")."""
+    return keywords.translate(keywords.normalize(text), LANG_DIR)
+
+
 def is_find_request(text: str) -> bool:
-    return bool(TRIGGERS.match(text))
+    return bool(TRIGGERS.match(text) or TRIGGERS.match(_english(text)))
 
 
 def _bare(token: str) -> list[str]:
@@ -132,15 +142,19 @@ def _next_month(start: datetime) -> datetime:
     return datetime(start.year + start.month // 12, start.month % 12 + 1, 1)
 
 
+def _first(match: re.Match) -> str:
+    return next(group for group in match.groups() if group)
+
+
 def _time_window(text: str, now: datetime, hebrew: bool) -> tuple[datetime | None, datetime | None, str, str]:
     """(since, until, label, text without the time phrase)."""
     today = _start_of_day(now)
     rules: list[tuple[str, Callable]] = [
-        (r"(?:last|past)\s+(\d{1,3})\s+days|(?:ב)?[־-]?\s*(\d{1,3})\s+(?:ה)?ימים\s+(?:ה)?אחרונים",
-         lambda m: (today - timedelta(days=int(m.group(1) or m.group(2)) - 1), None, "last_n_days")),
-        (r"(\d{1,3})\s+days?\s+ago|לפני\s+(\d{1,3})\s+ימים",
-         lambda m: (today - timedelta(days=int(m.group(1) or m.group(2))),
-                    today - timedelta(days=int(m.group(1) or m.group(2)) - 1), "days_ago")),
+        # "3 last days" and "ago 3 days": the word order of French, Spanish, German and Arabic, once translated.
+        (r"(?:last|past)\s+(\d{1,3})\s+days|(?:ב)?[־-]?\s*(\d{1,3})\s+(?:ה)?ימים\s+(?:ה)?אחרונים|(\d{1,3})\s+last\s+days",
+         lambda m: (today - timedelta(days=int(_first(m)) - 1), None, "last_n_days")),
+        (r"(\d{1,3})\s+days?\s+ago|לפני\s+(\d{1,3})\s+ימים|\bago\s+(\d{1,3})\s+days?",
+         lambda m: (today - timedelta(days=int(_first(m))), today - timedelta(days=int(_first(m)) - 1), "days_ago")),
         (r"\byesterday\b|[מב]?אתמול", lambda m: (today - timedelta(days=1), today, "yesterday")),
         (r"\btoday\b|[מב]?היום", lambda m: (today, None, "today")),
         (r"\blast\s+week\b|[במ]?(?:ה)?שבוע\s+(?:ה)?שעבר",
@@ -175,6 +189,8 @@ def parse(text: str, now: datetime | None = None, lang: str = "en") -> Query:
     now = now or datetime.now()
     hebrew = lang == "he" or bool(re.search(r"[֐-׿]", text))  # i18n: ok (Hebrew search words)
     query = Query(text)
+    if not TRIGGERS.match(text):  # not asked in English or Hebrew: read the other languages in English words
+        text = _english(text)
     # "ה-PDF" / "ה־PDF": a Hebrew prefix joined with a hyphen or maqaf.
     rest = re.sub(r"(?<=[\u0590-\u05FF])[-\u05BE](?=\w)", " ", TRIGGERS.sub(" ", text, count=1))
     query.since, query.until, query.time_label, rest = _time_window(rest, now, hebrew)

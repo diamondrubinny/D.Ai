@@ -14,9 +14,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
-from .recipes import Library, Recipe, find
+from dai_i18n import keywords
+
+from .recipes import REMOVE_WORDS, Library, Recipe, find
 from .schedule import Schedule, ScheduleError, parse as parse_schedule
 
 BUILD = (
@@ -29,6 +32,7 @@ APP_NOUN = (
 )
 WEB = r"(?:\b(?:website|web ?page|web ?app|html|site)\b|אתר|דף אינטרנט|דף|עמוד)"
 CLI = r"(?:\b(?:script|command line|cli|terminal)\b|סקריפט|שורת פקודה|שורת הפקודה|טרמינל|מסוף)"
+LANG_DIR = Path(__file__).parent / "lang"  # keyword packs for the six other languages (docs/I18N.md §10)
 EDIT = (
     r"^(?:please\s+)?(?:change|update|edit|improve|fix|modify|שנה|תשנה|עדכן|תעדכן|שפר|תשפר|תקן|תתקן|ערוך|תערוך)\s+"
     r"(?:את\s+)?(?:the\s+)?(?:app\s+|האפליקציה\s+|אפליקציה\s+)?([a-z][a-z0-9-]{1,30})(?![a-z0-9-])\s*[:,-]?\s*(.*)$"
@@ -63,7 +67,8 @@ def classify(text: str, library: Library, existing_apps: Iterable[str] = ()) -> 
     text = re.sub(r"\s+", " ", text.strip().lstrip("+").strip())
     if not text:
         return Intent("empty", text)
-    lowered = text.casefold()
+    # Recognized in English words; the request itself (for Diamond, and on screen) stays as it was written.
+    lowered = keywords.translate(keywords.normalize(text), LANG_DIR)
 
     if (m := re.match(EDIT, lowered, re.IGNORECASE)) and m.group(1) in set(existing_apps):
         return Intent("edit", text, app_name=m.group(1), instruction=m.group(2).strip() or text)
@@ -71,10 +76,14 @@ def classify(text: str, library: Library, existing_apps: Iterable[str] = ()) -> 
     # "every day at 18:00 ..." - something to do on a schedule (docs/EVOLVE.md §2), unless it asks
     # for an app ("build a pomodoro app that rings every 30 minutes" is an app, not an automation).
     try:
-        schedule, problem = parse_schedule(text), ""
+        schedule, problem = parse_schedule(lowered), ""
     except ScheduleError as exc:
         schedule, problem = None, str(exc)
-    recipe, removing = find(text, library)  # a ready recipe wins ("antivirus with a daily scan")
+    recipe, removing = find(text, library)
+    if lowered != text.casefold():  # written in another language: recognize it from the English words too
+        if recipe is None:
+            recipe, removing = find(lowered, library)
+        removing = removing or REMOVE_WORDS.search(lowered) is not None  # a ready recipe wins ("antivirus with a daily scan")
     if (schedule is not None or problem) and recipe is None and (not _has(APP_NOUN, lowered) or _has(CLI, lowered)):
         return Intent("automation", text, app_kind="cli", schedule=schedule, problem=problem)
 
