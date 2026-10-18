@@ -59,7 +59,7 @@ install_build_deps() {
   apt-get install -y --no-install-recommends \
     live-build debootstrap ca-certificates \
     xorriso squashfs-tools mtools dosfstools cpio \
-    isolinux syslinux-common grub-efi-amd64-bin grub-pc-bin python3-minimal
+    isolinux syslinux-common grub-efi-amd64-bin grub-pc-bin python3
 }
 
 configure() {
