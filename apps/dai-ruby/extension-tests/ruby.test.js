@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (c) 2026 Diamond Rubinny (d.Ai)
 // Ruby's extension: the rules (core.js) and the background against a fake browser.
-// Run: node --test apps/dai-ruby/extension-tests/
+// Run: node --test apps/dai-ruby/extension-tests/ruby.test.js
 "use strict";
 
 const test = require("node:test");

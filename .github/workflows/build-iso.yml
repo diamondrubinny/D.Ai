@@ -118,7 +118,7 @@ jobs:
         run: python3 -m unittest discover -s apps/dai-raz/tests -t apps/dai-raz -v
 
       - name: Unit tests (Ruby's extension - cleaning, remembering, spaces, snapshots - against a fake browser)
-        run: node --test apps/dai-ruby/extension-tests/
+        run: node --test apps/dai-ruby/extension-tests/ruby.test.js
 
       - name: Unit tests (dai-voice)
         env:
