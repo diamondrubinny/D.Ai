@@ -17,12 +17,13 @@ review in D.Ai Forge, D.Ai Tune or D.Ai Heal, and no AI reads your signals.
 from __future__ import annotations
 
 import json
-import os
 import shutil
 import subprocess
 import sys
 import time
 from dataclasses import asdict
+
+from dai_i18n import pick, ui_lang
 
 from . import __author__, __version__, scan, store
 
@@ -43,16 +44,11 @@ STRINGS = {
 
 
 def lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def t(key: str, language: str, **kwargs: object) -> str:
-    en, he = STRINGS[key]
-    return (he if language == "he" else en).format(**kwargs)
+    return pick(language, *STRINGS[key]).format(**kwargs)
 
 
 def open_argv(suggestion: scan.Suggestion) -> list[str]:

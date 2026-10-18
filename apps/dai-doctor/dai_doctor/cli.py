@@ -12,11 +12,12 @@
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from dataclasses import asdict
 from pathlib import Path
+
+from dai_i18n import pick, text, ui_lang
 
 from . import __author__, __version__
 from .clean import clean_user
@@ -27,11 +28,7 @@ MARK = {"ok": ("✓", "32"), "warn": ("⚠", "33"), "bad": ("✗", "31")}
 
 
 def _lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def _color(text: str, code: str) -> str:
@@ -59,9 +56,8 @@ def main(argv: list[str] | None = None) -> int:
     # Everything by default, except the hardware list (ask for it: dai-doctor hardware).
     topics = tuple(a for a in args if a in TOPICS) or ("slow", "disk", "battery")
     lang = _lang()
-    he = lang == "he"
     if not as_json:
-        print("בודק את המחשב…" if he else "Checking this computer…", file=sys.stderr)
+        print(pick(lang, "Checking this computer…", "בודק את המחשב…"), file=sys.stderr)
     facts = collect(home=Path.home(), topics=topics)
     findings = diagnose(facts, topics, lang)
     if as_json:
@@ -77,7 +73,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"    → {fix.label}")
     fixes = [(f, fix) for f in findings for fix in f.fixes if fix.kind in ("tune", "clean", "forge")]
     for finding, fix in fixes:
-        if not _ask(f"\n{fix.label}? [{'כ/ל' if he else 'y/N'}] "):
+        if not _ask(f"\n{fix.label}? [{'כ/ל' if lang == 'he' else 'y/N'}] "):  # i18n: command (the accepted answers)
             continue
         if fix.kind == "tune":
             # The plan is shown, authorized (polkit) and journaled for undo by D.Ai Tune.
@@ -87,9 +83,9 @@ def main(argv: list[str] | None = None) -> int:
             subprocess.run(["dai-forge", fix.payload], check=False)
         elif fix.kind == "clean":
             freed = clean_user(Path.home())
-            print(_color(("✓ פונו " if he else "✓ Freed ") + size(freed), "32"))
+            print(_color(text(lang, "✓ Freed {size}", "✓ פונו {size}", size=size(freed)), "32"))
     if not any(f.level != "ok" for f in findings):
-        print(_color("\nהכל נראה תקין." if he else "\nEverything looks fine.", "32"))
+        print(_color(pick(lang, "\nEverything looks fine.", "\nהכל נראה תקין."), "32"))
     return 0
 
 

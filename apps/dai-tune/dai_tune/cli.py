@@ -11,6 +11,8 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
+from dai_i18n import pick, text
+
 from . import __author__, __version__
 from .catalog import CATALOG
 from .context import Context, detect_lang
@@ -29,13 +31,12 @@ LABELS = {
 ICONS = {"hardens": "🛡 ", "weakens": "⚠ ", "neutral": "• "}
 
 
-def _l(lang: str, en: str, he: str) -> str:
-    return he if lang == "he" else en
+def _l(lang: str, en: str, he: str, **kwargs: object) -> str:
+    return text(lang, en, he, **kwargs)
 
 
 def _label(kind: str, value: str, lang: str) -> str:
-    en, he = LABELS[kind][value]
-    return he if lang == "he" else en
+    return pick(lang, *LABELS[kind][value])
 
 
 def _color(text: str, code: str) -> str:
@@ -71,7 +72,7 @@ def print_plan(plan: Plan, lang: str, heading: str = "") -> None:
         if row["note"]:
             print("     ↳ " + row["note"])
     for clause in plan.unknown:
-        print(_color("  ✗ " + _l(lang, f"Not understood: “{clause}”", f"לא הובן: „{clause}”"), "31"))
+        print(_color("  ✗ " + _l(lang, "Not understood: “{clause}”", "לא הובן: „{clause}”", clause=clause), "31"))
     for error in plan.errors:
         print(_color("  ✗ " + error, "31"))
 
@@ -275,7 +276,7 @@ def cmd_status(ctx: Context) -> int:
     lang = ctx.lang
     score, checks = assess(ctx, lang)
     color = "32" if score >= 80 else ("33" if score >= 50 else "31")
-    print(_color(_l(lang, f"Security score: {score}/100", f"ציון אבטחה: {score}/100"), "1;" + color))
+    print(_color(_l(lang, "Security score: {score}/100", "ציון אבטחה: {score}/100", score=score), "1;" + color))
     for check in checks:
         mark = _color("✓", "32") if check.ok else _color("✗", "31")
         detail = f" ({check.detail})" if check.detail else ""
@@ -295,7 +296,8 @@ def cmd_policy(ctx: Context, as_json: bool) -> int:
         print(json.dumps(rows, ensure_ascii=False, indent=2))
         return 0
     if not rows:
-        print(_l(lang, f"No organization policies ({POLICY_DIR}).", f"אין מדיניות ארגונית ({POLICY_DIR})."))
+        print(_l(lang, "No organization policies ({POLICY_DIR}).", "אין מדיניות ארגונית ({POLICY_DIR}).",
+                 POLICY_DIR=POLICY_DIR))
         return 0
     marks = {"applied": ("✓", "32"), "pending": ("…", "33"), "rejected": ("✗", "31")}
     for row in rows:
@@ -312,7 +314,7 @@ def cmd_help(lang: str) -> int:
     print(_l(lang, "D.Ai Tune — configure the system by writing what you need.",
              "D.Ai Tune — מתאימים את המערכת פשוט ע\"י כתיבה."))
     print(_l(lang, "Examples:", "דוגמאות:"))
-    for example in EXAMPLES[lang]:
+    for example in EXAMPLES.get(lang, EXAMPLES["en"]):  # sentences the rule parser understands
         print(f'  dai-tune "{example}"')
     print()
     print("  dai-tune status   " + _l(lang, "security score and fixes", "ציון אבטחה והמלצות"))

@@ -424,6 +424,15 @@ def main() -> int:
          lambda o: "Diamond Rubinny (d.Ai)" in o and "TIMER=enabled" in o and "Install an e-book reader" in o
          and "Let D.Ai do it every morning" in o and "MODE=600" in o and "foliate" in o and "FORGOTTEN" in o
          and "D.Ai Evolve is off" in o, 60),
+        # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
+        # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
+        ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "for l in ru_RU ar_EG pt_BR; do echo \"== $l\"; LANG=$l.UTF-8 dai-heal status 2>&1 | head -n 2; "
+         "LANG=$l.UTF-8 dai-tune status 2>&1 | head -n 1; done; echo '== he'; LANG=he_IL.UTF-8 dai-evolve wishes; "
+         "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_i18n; "
+         "print(\"I18N\", dai_i18n.__author__, dai_i18n.is_rtl(\"ar\"))'", True,
+         lambda o: "Traceback" not in o and o.count("== ") == 4 and "I18N Diamond Rubinny (d.Ai) True" in o
+         and re.search(r"== he\n[^\n]*[\u0590-\u05ff]", o) is not None, 60),
         # D.Ai OEM, the whole cycle in the live session (last: it resets the machine ID and journal).
         # LUKS is not part of it here (no installed disk); unit tests run it against a fake and real cryptsetup.
         ("oem: prepare, finish, cleanup", "dai-oem --version; sudo useradd -m -G sudo,audio,lpadmin oemtest; "

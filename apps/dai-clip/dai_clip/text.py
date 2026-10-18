@@ -4,8 +4,8 @@
 
 from __future__ import annotations
 
-import os
 import time
+from dai_i18n import pick, ui_lang
 
 STRINGS = {
     "title": ("Clipboard history", "היסטוריית העתקות"),
@@ -36,16 +36,11 @@ STRINGS = {
 
 
 def lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def t(key: str, language: str, **kwargs: object) -> str:
-    en, he = STRINGS[key]
-    return (he if language == "he" else en).format(**kwargs)
+    return pick(language, *STRINGS[key]).format(**kwargs)
 
 
 def age(then: float, now: float, language: str) -> str:

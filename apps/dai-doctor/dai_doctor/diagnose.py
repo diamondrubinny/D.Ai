@@ -12,6 +12,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from dai_i18n import text
+
 from .facts import Facts
 
 # Processes that are part of the desktop itself: never suggested for closing.
@@ -43,8 +45,8 @@ def size(n: float) -> str:
     return f"{n:.1f} TB"
 
 
-def _t(lang: str, en: str, he: str) -> str:
-    return he if lang == "he" else en
+def _t(lang: str, en: str, he: str, **kwargs: object) -> str:
+    return text(lang, en, he, **kwargs)
 
 
 def _apps(facts: Facts, key: str, limit: int = 3) -> list:
@@ -61,23 +63,25 @@ def slow(facts: Facts, lang: str) -> list[Finding]:
         names = ", ".join(f"{p.name} ({size(p.rss)})" for p in hogs)
         if free < 0.20:
             level = "bad" if free < 0.10 else "warn"
-            detail = _t(lang, f"Only {size(facts.mem_available)} of {size(facts.mem_total)} is free.",
-                        f"רק {size(facts.mem_available)} מתוך {size(facts.mem_total)} פנויים.")
+            detail = _t(lang, "Only {mem_available} of {mem_total} is free.",
+                        "רק {mem_available} מתוך {mem_total} פנויים.",
+                        mem_available=size(facts.mem_available), mem_total=size(facts.mem_total))
             if names:
-                detail += " " + _t(lang, f"Using the most: {names}.", f"הכי הרבה משתמשים: {names}.")
+                detail += " " + _t(lang, "Using the most: {names}.", "הכי הרבה משתמשים: {names}.", names=names)
             fixes = [Fix("advice", _t(lang, "Close apps or browser tabs you are not using",
                                       "סגרו אפליקציות או לשוניות דפדפן שלא בשימוש"))]
             findings.append(Finding("memory", level, _t(lang, "Memory is almost full", "הזיכרון כמעט מלא"), detail, fixes))
         else:
             findings.append(Finding("memory", "ok", _t(lang, "Enough free memory", "יש מספיק זיכרון פנוי"),
-                                    _t(lang, f"{size(facts.mem_available)} free", f"{size(facts.mem_available)} פנויים")))
+                                    _t(lang, "{mem_available} free", "{mem_available} פנויים",
+                                       mem_available=size(facts.mem_available))))
     if facts.swap_total and facts.mem_total and facts.mem_available / facts.mem_total < 0.2:
         used = facts.swap_total - facts.swap_free
         if used > facts.swap_total * 0.5:
             findings.append(Finding("swap", "warn", _t(lang, "The computer is using swap heavily",
                                                       "המחשב משתמש הרבה בזיכרון החלפה (swap)"),
-                                    _t(lang, f"{size(used)} in swap: things slow down when it is used.",
-                                       f"{size(used)} ב־swap: כשמשתמשים בו הכל מאט.")))
+                                    _t(lang, "{used} in swap: things slow down when it is used.",
+                                       "{used} ב־swap: כשמשתמשים בו הכל מאט.", used=size(used))))
     # Processor.
     busy = [p for p in _apps(facts, "cpu") if p.cpu >= 25]
     pressure = facts.load1 / max(facts.cores, 1)
@@ -85,22 +89,26 @@ def slow(facts: Facts, lang: str) -> list[Finding]:
         names = ", ".join(f"{p.name} ({p.cpu:.0f}%)" for p in busy) or "—"
         level = "bad" if pressure > 1.5 else "warn"
         findings.append(Finding("cpu", level, _t(lang, "The processor is busy", "המעבד עמוס"),
-                                _t(lang, f"Load {facts.load1:.1f} on {facts.cores} cores. Busiest: {names}.",
-                                   f"עומס {facts.load1:.1f} על {facts.cores} ליבות. הכי עמוסים: {names}."),
+                                _t(lang, "Load {load1:.1f} on {cores} cores. Busiest: {names}.",
+                                   "עומס {load1:.1f} על {cores} ליבות. הכי עמוסים: {names}.",
+                                   load1=facts.load1, cores=facts.cores, names=names),
                                 [Fix("advice", _t(lang, "Close or wait for the busiest app", "סגרו את האפליקציה העמוסה או חכו שתסיים"))]))
     else:
         findings.append(Finding("cpu", "ok", _t(lang, "The processor is not overloaded", "המעבד לא עמוס"),
-                                _t(lang, f"Load {facts.load1:.1f} on {facts.cores} cores",
-                                   f"עומס {facts.load1:.1f} על {facts.cores} ליבות")))
+                                _t(lang, "Load {load1:.1f} on {cores} cores",
+                                   "עומס {load1:.1f} על {cores} ליבות",
+                                   load1=facts.load1, cores=facts.cores)))
     if facts.failed_units:
         units = ", ".join(facts.failed_units[:5])
         findings.append(Finding("services", "warn", _t(lang, "Some system services failed", "שירותי מערכת נכשלו"),
-                                units, [Fix("advice", _t(lang, f"Details: journalctl -u {facts.failed_units[0]}",
-                                                         f"פרטים: journalctl -u {facts.failed_units[0]}"))]))
+                                units, [Fix("advice", _t(lang, "Details: journalctl -u {failed_units}",
+                                                         "פרטים: journalctl -u {failed_units}",
+                                                         failed_units=facts.failed_units[0]))]))
     if facts.uptime_days >= 14:
         findings.append(Finding("uptime", "warn", _t(lang, "Not restarted for a long time", "המחשב לא הופעל מחדש הרבה זמן"),
-                                _t(lang, f"{facts.uptime_days:.0f} days. A restart applies installed updates and frees memory.",
-                                   f"{facts.uptime_days:.0f} ימים. הפעלה מחדש מחילה עדכונים שהותקנו ומפנה זיכרון."),
+                                _t(lang, "{uptime_days:.0f} days. A restart applies installed updates and frees memory.",
+                                   "{uptime_days:.0f} ימים. הפעלה מחדש מחילה עדכונים שהותקנו ומפנה זיכרון.",
+                                   uptime_days=facts.uptime_days),
                                 [Fix("advice", _t(lang, "Restart when convenient", "הפעילו מחדש כשנוח"))]))
     return findings
 
@@ -114,25 +122,32 @@ def disk(facts: Facts, lang: str) -> list[Finding]:
         # A big disk with 11% free still has plenty of room: look at both.
         if ratio < 0.08 or free < 5 * 2**30:
             level = "bad" if ratio < 0.03 or free < 2 * 2**30 else "warn"
-            findings.append(Finding(f"disk:{mount}", level, _t(lang, f"Little free space on {mount}", f"מעט מקום פנוי ב־{mount}"),
-                                    _t(lang, f"{size(free)} free of {size(total)}.", f"{size(free)} פנויים מתוך {size(total)}.")))
+            findings.append(Finding(f"disk:{mount}", level, _t(lang, "Little free space on {mount}", "מעט מקום פנוי ב־{mount}",
+                                                               mount=mount),
+                                    _t(lang, "{free} free of {total}.", "{free} פנויים מתוך {total}.",
+                                       free=size(free), total=size(total))))
         else:
-            findings.append(Finding(f"disk:{mount}", "ok", _t(lang, f"Enough free space on {mount}", f"יש מספיק מקום ב־{mount}"),
-                                    _t(lang, f"{size(free)} free of {size(total)}", f"{size(free)} פנויים מתוך {size(total)}")))
+            findings.append(Finding(f"disk:{mount}", "ok", _t(lang, "Enough free space on {mount}", "יש מספיק מקום ב־{mount}",
+                                                              mount=mount),
+                                    _t(lang, "{free} free of {total}", "{free} פנויים מתוך {total}",
+                                       free=size(free), total=size(total))))
     system_caches = facts.caches.get("apt", 0) + max(0, facts.caches.get("journal", 0) - 200 * 2**20)
     if system_caches > 100 * 2**20:
         findings.append(Finding("system-caches", "warn",
-                                _t(lang, f"{size(system_caches)} can be freed in the system", f"אפשר לפנות {size(system_caches)} במערכת"),
+                                _t(lang, "{system_caches} can be freed in the system", "אפשר לפנות {system_caches} במערכת",
+                                   system_caches=size(system_caches)),
                                 _t(lang, "Downloaded package files and old system logs.", "קבצי התקנה שהורדו ויומני מערכת ישנים."),
                                 [Fix("tune", _t(lang, "Free this space (administrator)", "לפנות את המקום (מנהל)"),
                                      "free up disk space")]))
     user_caches = facts.caches.get("trash", 0) + facts.caches.get("thumbnails", 0)
     if user_caches > 50 * 2**20:
         findings.append(Finding("user-caches", "warn",
-                                _t(lang, f"{size(user_caches)} in the trash and picture previews",
-                                   f"{size(user_caches)} בסל המחזור ובתצוגות מקדימות של תמונות"),
-                                _t(lang, f"Trash {size(facts.caches.get('trash', 0))}, previews {size(facts.caches.get('thumbnails', 0))}.",
-                                   f"סל מחזור {size(facts.caches.get('trash', 0))}, תצוגות מקדימות {size(facts.caches.get('thumbnails', 0))}."),
+                                _t(lang, "{user_caches} in the trash and picture previews",
+                                   "{user_caches} בסל המחזור ובתצוגות מקדימות של תמונות",
+                                   user_caches=size(user_caches)),
+                                _t(lang, "Trash {trash}, previews {previews}.",
+                                   "סל מחזור {trash}, תצוגות מקדימות {previews}.",
+                                   trash=size(facts.caches.get("trash", 0)), previews=size(facts.caches.get("thumbnails", 0))),
                                 [Fix("clean", _t(lang, "Empty the trash and clear previews", "לרוקן את סל המחזור ולנקות תצוגות מקדימות"),
                                      "user")]))
     if facts.folders:
@@ -148,18 +163,19 @@ def power(facts: Facts, lang: str) -> list[Finding]:
     findings = []
     if bat.health is not None and bat.health < 70:
         findings.append(Finding("battery-health", "warn", _t(lang, "The battery is worn", "הסוללה שחוקה"),
-                                _t(lang, f"It holds {bat.health}% of its original capacity.",
-                                   f"היא מחזיקה {bat.health}% מהקיבולת המקורית שלה."),
+                                _t(lang, "It holds {health}% of its original capacity.",
+                                   "היא מחזיקה {health}% מהקיבולת המקורית שלה.", health=bat.health),
                                 [Fix("advice", _t(lang, "Consider replacing the battery", "שקלו להחליף סוללה"))]))
     if bat.status == "Discharging" and bat.capacity <= 30 and facts.power_profile != "power-saver":
-        findings.append(Finding("battery-low", "warn", _t(lang, f"Battery at {bat.capacity}%", f"הסוללה ב־{bat.capacity}%"),
+        findings.append(Finding("battery-low", "warn", _t(lang, "Battery at {capacity}%", "הסוללה ב־{capacity}%",
+                                                          capacity=bat.capacity),
                                 _t(lang, "Battery saver mode makes it last longer.", "מצב חיסכון בסוללה יאריך אותה."),
                                 [Fix("tune", _t(lang, "Turn on battery saver", "להפעיל חיסכון בסוללה"), "battery saver mode")]))
     if not findings:
-        health = f", {bat.health}% health" if bat.health is not None else ""
-        health_he = f", בריאות {bat.health}%" if bat.health is not None else ""
+        health = _t(lang, ", {health}% health", ", בריאות {health}%", health=bat.health) if bat.health is not None else ""
         findings.append(Finding("battery", "ok", _t(lang, "Battery is fine", "הסוללה תקינה"),
-                                _t(lang, f"{bat.capacity}% charged{health}", f"{bat.capacity}% טעונה{health_he}")))
+                                _t(lang, "{capacity}% charged{health}", "{capacity}% טעונה{health}",
+                                   capacity=bat.capacity, health=health)))
     return findings
 
 
@@ -183,10 +199,10 @@ def hardware(facts: Facts, lang: str) -> list[Finding]:
                                     f"{device.name} ({device.driver})"))
         else:
             findings.append(Finding(f"hw:{device.kind}", "bad", f"{label}: {_t(lang, 'no driver', 'אין דרייבר')}",
-                                    _t(lang, f"{device.name} has no driver loaded, so it will probably not work.",
-                                       f"ל־{device.name} לא נטען דרייבר, ולכן כנראה לא יעבוד."),
-                                    [Fix("advice", _t(lang, f"Search: linux driver {device.name}",
-                                                      f"חפשו: linux driver {device.name}"))]))
+                                    _t(lang, "{name} has no driver loaded, so it will probably not work.",
+                                       "ל־{name} לא נטען דרייבר, ולכן כנראה לא יעבוד.", name=device.name),
+                                    [Fix("advice", _t(lang, "Search: linux driver {name}",
+                                                      "חפשו: linux driver {name}", name=device.name))]))
     has_wifi_chip = any(d.kind == "wifi" and d.driver for d in facts.devices)
     if facts.wifi_blocked:
         findings.append(Finding("hw:wifi-off", "warn", _t(lang, "Wi-Fi is switched off", "ה־Wi-Fi כבוי"),
@@ -206,8 +222,8 @@ def update(facts: Facts, lang: str) -> list[Finding]:
     when = ""
     if facts.last_update:
         date, count = facts.last_update
-        when = _t(lang, f"The last update ({date}) changed {count} package(s). ",
-                  f"העדכון האחרון ({date}) שינה {count} חבילות. ")
+        when = _t(lang, "The last update ({date}) changed {count} package(s). ",
+                  "העדכון האחרון ({date}) שינה {count} חבילות. ", date=date, count=count)
     if facts.snapshots:
         return [Finding("update", "warn", _t(lang, "You can undo the last update", "אפשר לבטל את העדכון האחרון"),
                         when + _t(lang, "A snapshot of the system was taken before it. Your personal files are not touched.",
@@ -222,8 +238,9 @@ def update(facts: Facts, lang: str) -> list[Finding]:
                          Fix("advice", _t(lang, "See what changed: /var/log/apt/history.log",
                                           "מה השתנה: /var/log/apt/history.log"))])]
     return [Finding("update", "warn", _t(lang, "Updates cannot be undone on this disk", "על הדיסק הזה אי אפשר לבטל עדכונים"),
-                    when + _t(lang, f"Snapshots need a Btrfs system disk; this one is {facts.root_fs or 'unknown'}.",
-                              f"תמונות מצב דורשות דיסק מערכת מסוג Btrfs, וזה {facts.root_fs or 'לא ידוע'}."),
+                    when + _t(lang, "Snapshots need a Btrfs system disk; this one is {unknown}.",
+                              "תמונות מצב דורשות דיסק מערכת מסוג Btrfs, וזה {root_fs}.",
+                              unknown=facts.root_fs or 'unknown', root_fs=facts.root_fs or 'לא ידוע'),
                     [Fix("advice", _t(lang, "See what changed: /var/log/apt/history.log, and report it on GitHub",
                                       "מה השתנה: /var/log/apt/history.log, ודווחו ב־GitHub"))])]
 

@@ -34,6 +34,8 @@ from dai_tune.cli import apply_plan, cmd_undo
 from dai_tune.context import Context, detect_lang
 from dai_tune.planner import Plan, build_plan
 
+from dai_i18n import pick, qt_direction
+
 from . import __author__, __version__, apps
 from .ai import author_recipe, generate_app, partial_code
 from .workshop import TestResult, build
@@ -322,12 +324,10 @@ class ForgeWindow(QWidget):
     # -- helpers ------------------------------------------------------------
 
     def t(self, key: str) -> str:
-        en, he = STRINGS[key]
-        return he if self.lang == "he" else en
+        return pick(self.lang, *STRINGS[key])
 
     def label(self, kind: str, value: str) -> str:
-        en, he = LABELS[kind][value]
-        return he if self.lang == "he" else en
+        return pick(self.lang, *LABELS[kind][value])
 
     def _header(self) -> QHBoxLayout:
         row = QHBoxLayout()
@@ -471,7 +471,7 @@ class ForgeWindow(QWidget):
         if not self.admin:
             layout.addWidget(self._wrap("ℹ " + self.t("not_admin"), "Muted"))
         layout.addWidget(QLabel(self.t("ideas"), objectName="Section"))
-        self._chips(layout, [f"{icon}  {text}" for icon, text in IDEAS[self.lang]], strip_icon=True)
+        self._chips(layout, [f"{icon}  {text}" for icon, text in IDEAS.get(self.lang, IDEAS["en"])], strip_icon=True)
 
         library = load_library()
         layout.addWidget(QLabel(self.t("recipes"), objectName="Section"))
@@ -549,7 +549,7 @@ class ForgeWindow(QWidget):
         head.addWidget(QLabel(f"<span style='font-size:15pt; font-weight:700'>{verb}: {recipe.title(self.lang)}</span>"), 1)
         source = {"builtin": ("built-in", "מובנה"), "admin": ("administrator", "של המנהל"),
                   "user": ("your recipe", "מתכון שלך"), "ai": ("AI", "AI")}.get(recipe.source, ("", ""))
-        head.addWidget(QLabel(source[self.lang == "he"], objectName="BadgeAI" if recipe.source == "ai" else "Badge"))
+        head.addWidget(QLabel(pick(self.lang, *source), objectName="BadgeAI" if recipe.source == "ai" else "Badge"))
         card.addLayout(head)
         if recipe.about(self.lang) and not removing:
             card.addWidget(self._wrap(recipe.about(self.lang), "Muted"))
@@ -747,7 +747,7 @@ class ForgeWindow(QWidget):
         open_code = QPushButton(self.t("open_code"))
         open_code.clicked.connect(lambda: subprocess.Popen(["xdg-open", str(app.code_path)], start_new_session=True))
         change = QPushButton(self.t("change"))
-        change.clicked.connect(lambda: (self.ask.setText(("שנה את " if self.lang == "he" else "change ") + f"{app.name}: "),
+        change.clicked.connect(lambda: (self.ask.setText(("שנה את " if self.lang == "he" else "change ") + f"{app.name}: "),  # i18n: command
                                         self.ask.setFocus()))
         older = QPushButton(self.t("older"))
         older.setEnabled(bool(apps.versions(app)))
@@ -902,8 +902,7 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationVersion(__version__)
     app.setOrganizationName(__author__)
     lang = detect_lang()
-    if lang == "he":
-        app.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+    app.setLayoutDirection(qt_direction(lang))
     if "Noto Sans" in QFontDatabase.families():
         app.setFont(QFont("Noto Sans", 11))
     app.setStyleSheet(STYLE)

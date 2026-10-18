@@ -13,6 +13,7 @@ import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Sequence
+from dai_i18n import ui_lang
 
 # Commands run with a fixed, minimal environment (no inherited PATH tricks).
 SAFE_ENV = {
@@ -72,11 +73,7 @@ class Context:
 
 
 def detect_lang() -> str:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return "he" if value.startswith("he") else "en"
-    return "en"
+    return ui_lang()
 
 
 def write_file(path: Path, content: str | bytes, mode: int = 0o644) -> None:

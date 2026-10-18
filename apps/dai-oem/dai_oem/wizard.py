@@ -24,6 +24,8 @@ from PyQt6.QtWidgets import (
 
 from dai_forge.gui import ACCENT_2, BORDER, DANGER, STYLE as FORGE_STYLE, Bridge, Worker
 
+from dai_i18n import pick
+
 from . import __author__, __version__
 from .core import Machine, Owner, suggest_username, validation_errors
 
@@ -142,8 +144,7 @@ class SetupWindow(QWidget):
         self.show_page(0)
 
     def tr(self, key: str, **kwargs: object) -> str:  # noqa: D401 (not QObject.tr)
-        en, he = STRINGS[key]
-        return (he if self.language == "he" else en).format(**kwargs)
+        return pick(self.language, *STRINGS[key]).format(**kwargs)
 
     # -- pages -------------------------------------------------------------------
 

@@ -28,6 +28,8 @@ from dai_tune import posture
 from dai_tune.cli import describe
 from dai_tune.context import Context, detect_lang
 
+from dai_i18n import is_rtl, pick, qt_direction
+
 from . import __author__, __version__, core
 
 APP_ID = "dai-welcome"
@@ -199,11 +201,10 @@ class WelcomeWindow(QWidget):
     # -- helpers ------------------------------------------------------------
 
     def t(self, key: str, **kwargs: Any) -> str:
-        en, he = STRINGS[key]
-        return (he if self.lang == "he" else en).format(**kwargs)
+        return pick(self.lang, *STRINGS[key]).format(**kwargs)
 
     def pick(self, pair: tuple[str, str]) -> str:
-        return pair[1] if self.lang == "he" else pair[0]
+        return pick(self.lang, *pair)
 
     def _header(self) -> QHBoxLayout:
         row = QHBoxLayout()
@@ -253,7 +254,7 @@ class WelcomeWindow(QWidget):
     def _wrap(self, text: str, name: str = "") -> QLabel:
         # In Hebrew, a line that starts with a Latin word (a model, a shortcut)
         # must still read right to left: start it with a right-to-left mark.
-        if self.lang == "he":
+        if is_rtl(self.lang):
             text = "\u200f" + text
         label = QLabel(text, objectName=name) if name else QLabel(text)
         label.setWordWrap(True)
@@ -486,7 +487,7 @@ class WelcomeWindow(QWidget):
         card = self._card(layout)
         card.addWidget(QLabel(self.t("shortcuts_title"), objectName="Section"))
         for keys, en, he in STRINGS["shortcuts"]:
-            text = he if self.lang == "he" else en
+            text = pick(self.lang, en, he)
             card.addWidget(self._wrap(f"<b style='color:{ACCENT_2}'>{ltr(keys)}</b>&nbsp;&nbsp;{text}"))
 
     def show_error(self, text: str) -> None:
@@ -514,8 +515,7 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationName("D.Ai Welcome")
     app.setApplicationVersion(__version__)
     app.setOrganizationName(__author__)
-    if lang == "he":
-        app.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+    app.setLayoutDirection(qt_direction(lang))
     if "Noto Sans" in QFontDatabase.families():
         app.setFont(QFont("Noto Sans", 11))
     app.setStyleSheet(STYLE)

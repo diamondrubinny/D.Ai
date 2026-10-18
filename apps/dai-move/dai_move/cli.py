@@ -9,26 +9,23 @@
 
 from __future__ import annotations
 
-import os
 import sys
 from collections import Counter
 from pathlib import Path
+
+from dai_i18n import text, ui_lang
 
 from . import __author__, __version__
 from .browsers import bookmarks_html, wifi_names
 from .core import FOLDERS, execute, find_users, mount_points, plan
 
 
-def _he() -> bool:
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG"):
-        value = os.environ.get(var)
-        if value:
-            return value.startswith("he")
-    return False
+def _lang() -> str:
+    return ui_lang()
 
 
-def _l(en: str, he: str) -> str:
-    return he if _he() else en
+def _l(en: str, he: str, **kwargs: object) -> str:
+    return text(_lang(), en, he, **kwargs)
 
 
 def _size(n: int) -> str:
@@ -72,17 +69,19 @@ def main(argv: list[str] | None = None) -> int:
     links_html, links = bookmarks_html(user.home)
     networks = wifi_names(user.root)
 
-    print(_l(f"From Windows user “{user.name}” ({user.home}):", f"ממשתמש ה־Windows ‏„{user.name}” ‏({user.home}):"))
+    print(_l("From Windows user “{name}” ({home}):", "ממשתמש ה־Windows \u200f„{name}” \u200f({home}):",
+             name=user.name, home=user.home))
     for folder in FOLDERS.values():
         if per_folder.get(folder):
             print(f"  ~/{folder}: {per_folder[folder]} " + _l("files", "קבצים"))
-    print(_l(f"  Total {len(work.copies)} files, {_size(work.bytes)}", f"  סך הכל {len(work.copies)} קבצים, {_size(work.bytes)}"))
+    print(_l("  Total {copies} files, {_size}", "  סך הכל {copies} קבצים, {_size}",
+             copies=len(work.copies), _size=_size(work.bytes)))
     if work.renamed:
-        print(_l(f"  {work.renamed} names already exist here and get “(Windows)” — nothing is overwritten",
-                 f"  {work.renamed} שמות כבר קיימים כאן ויקבלו „(Windows)”. שום דבר לא נדרס"))
+        print(_l("  {renamed} names already exist here and get “(Windows)” — nothing is overwritten",
+                 "  {renamed} שמות כבר קיימים כאן ויקבלו „(Windows)”. שום דבר לא נדרס", renamed=work.renamed))
     if links:
-        print(_l(f"  {links} bookmarks from Chrome/Edge → ~/Bookmarks-from-Windows.html",
-                 f"  {links} סימניות מ־Chrome/Edge → ‏~/Bookmarks-from-Windows.html"))
+        print(_l("  {links} bookmarks from Chrome/Edge → ~/Bookmarks-from-Windows.html",
+                 "  {links} סימניות מ־Chrome/Edge → \u200f~/Bookmarks-from-Windows.html", links=links))
     if networks:
         print(_l("  Saved Wi-Fi networks (passwords stay encrypted by Windows; enter them once): ",
                  "  רשתות Wi-Fi שמורות (הסיסמאות נשארות מוצפנות אצל Windows, צריך להזין אותן פעם אחת): ")
@@ -104,7 +103,7 @@ def main(argv: list[str] | None = None) -> int:
         target = home / "Bookmarks-from-Windows.html"
         if not target.exists():
             target.write_text(links_html, encoding="utf-8")
-    print(_l(f"\n✓ Copied {copied} files.", f"\n✓ הועתקו {copied} קבצים."))
+    print(_l("\n✓ Copied {copied} files.", "\n✓ הועתקו {copied} קבצים.", copied=copied))
     if links:
         print(_l("Firefox: Bookmarks → Manage bookmarks → Import and Backup → Import Bookmarks from HTML.",
                  "‏Firefox: סימניות → ניהול סימניות → ייבוא וגיבוי → ייבוא סימניות מ־HTML."))

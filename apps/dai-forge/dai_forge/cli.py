@@ -18,6 +18,8 @@ from dai_tune.cli import _color, cmd_undo, execute_plan
 from dai_tune.context import Context, detect_lang
 from dai_tune.planner import build_plan
 
+from dai_i18n import pick, text
+
 from . import __author__, __version__, apps, paths
 from .ai import AIError, author_recipe, generate_app
 from .workshop import TestResult, build
@@ -35,8 +37,8 @@ SOURCE_LABELS = {
 }
 
 
-def _l(lang: str, en: str, he: str) -> str:
-    return he if lang == "he" else en
+def _l(lang: str, en: str, he: str, **kwargs: object) -> str:
+    return text(lang, en, he, **kwargs)
 
 
 def is_admin() -> bool:
@@ -59,10 +61,10 @@ def policy() -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def _ask(lang: str, en: str, he: str, default: bool = False) -> bool:
+def _ask(lang: str, en: str, he: str, default: bool = False, **kwargs: object) -> bool:
     if not sys.stdin.isatty():
         return default
-    answer = input(_l(lang, en, he)).strip().casefold()
+    answer = input(_l(lang, en, he, **kwargs)).strip().casefold()
     if not answer:
         return default
     return answer in ("y", "yes", "כ", "כן")
@@ -80,8 +82,7 @@ def _need_admin(lang: str) -> int:
 
 
 def _source(recipe: Recipe, lang: str) -> str:
-    en, he = SOURCE_LABELS.get(recipe.source, (recipe.source, recipe.source))
-    return he if lang == "he" else en
+    return pick(lang, *SOURCE_LABELS.get(recipe.source, (recipe.source, recipe.source)))
 
 
 def apply_recipe(recipe: Recipe, ctx: Context, removing: bool, dry_run: bool, assume_yes: bool) -> int:
@@ -128,7 +129,7 @@ def handle_unknown(text: str, ctx: Context, library: Library, dry_run: bool, ass
         if _ask(lang, "Save this recipe so you can reuse and share it? [y/N] ",
                 "לשמור את המתכון לשימוש חוזר ולשיתוף? [כ/ל] "):
             saved = save_user_recipe(Recipe(**{**recipe.__dict__, "source": "user"}))
-            print(_l(lang, f"Saved: {saved}", f"נשמר: {saved}"))
+            print(_l(lang, "Saved: {saved}", "נשמר: {saved}", saved=saved))
     return status
 
 
@@ -173,20 +174,25 @@ def _approve_pending(app: apps.App, lang: str) -> apps.App:
     if granted:
         app = apps.approve(app, granted)
     if app.pending_permissions:
-        print(_l(lang, f"  Not allowed: {', '.join(app.pending_permissions)}. Change later: dai-forge app permissions {app.name}",
-                 f"  לא אושר: {', '.join(app.pending_permissions)}. לשינוי: dai-forge app permissions {app.name}"))
+        print(_l(lang, "  Not allowed: {pending_permissions}. Change later: dai-forge app permissions {name}",
+                 "  לא אושר: {pending_permissions}. לשינוי: dai-forge app permissions {name}",
+                 pending_permissions=', '.join(app.pending_permissions), name=app.name))
     return app
 
 
 def _test_line(test: TestResult, repairs: int, lang: str) -> str:
-    fixed = _l(lang, f" (after {repairs} fix{'es' if repairs > 1 else ''} by the AI)",
-               f" (אחרי {repairs} תיקונים של ה־AI)") if repairs else ""
+    if repairs == 1:
+        fixed = _l(lang, " (after 1 fix by the AI)", " (אחרי 1 תיקונים של ה־AI)")
+    else:
+        fixed = _l(lang, " (after {repairs} fixes by the AI)", " (אחרי {repairs} תיקונים של ה־AI)", repairs=repairs) if repairs else ""
     if test.status == "passed":
-        return _color(_l(lang, f"  ✓ Tested in the sandbox: it works{fixed}", f"  ✓ נבדקה בארגז החול: עובדת{fixed}"), "32")
+        return _color(_l(lang, "  ✓ Tested in the sandbox: it works{fixed}", "  ✓ נבדקה בארגז החול: עובדת{fixed}",
+                         fixed=fixed), "32")
     if test.status == "failed":
         last = test.detail.splitlines()[-1][:200] if test.detail else ""
-        return _color(_l(lang, f"  ⚠ Still crashes when started{fixed}: {last}", f"  ⚠ עדיין קורסת בהפעלה{fixed}: {last}"), "33")
-    return _l(lang, f"  · Not tested: {test.detail}", f"  · לא נבדקה: {test.detail}")
+        return _color(_l(lang, "  ⚠ Still crashes when started{fixed}: {last}", "  ⚠ עדיין קורסת בהפעלה{fixed}: {last}",
+                         fixed=fixed, last=last), "33")
+    return _l(lang, "  · Not tested: {detail}", "  · לא נבדקה: {detail}", detail=test.detail)
 
 
 def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
@@ -200,22 +206,25 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     if intent.kind == "edit":
         current = apps.load(intent.app_name)
         request, kind, existing = intent.instruction, current.kind, current.code_path.read_text(encoding="utf-8")
-        print(_l(lang, f"Updating {current.title} with the local AI…", f"מעדכן את {current.title} עם ה־AI המקומי…"))
+        print(_l(lang, "Updating {title} with the local AI…", "מעדכן את {title} עם ה־AI המקומי…",
+                 title=current.title))
     else:
         current, request, kind, existing = None, intent.text, intent.app_kind, None
         kinds = {"gui": ("desktop app", "אפליקציה"), "cli": ("terminal tool", "כלי טרמינל"), "web": ("web app", "אפליקציית Web")}
         if automation:
-            print(_l(lang, f"Building an automation ({intent.schedule.describe('en')}) with the local AI…",
-                     f"בונה אוטומציה ({intent.schedule.describe('he')}) עם ה־AI המקומי…"))
+            print(_l(lang, "Building an automation ({schedule}) with the local AI…",
+                     "בונה אוטומציה ({schedule}) עם ה־AI המקומי…",
+                     schedule=intent.schedule.describe(lang)))
         else:
-            print(_l(lang, f"Building a {kinds[kind][0]} with the local AI (on this computer)…",
-                     f"בונה {kinds[kind][1]} עם ה־AI המקומי (במחשב הזה)…"))
+            print(_l(lang, "Building a {kind} with the local AI (on this computer)…",
+                     "בונה {kind} עם ה־AI המקומי (במחשב הזה)…",
+                     kind=_l(lang, *kinds[kind])))
     if current is not None and current.is_automation:
         automation = True
     def status(stage: str, repair: int, test: TestResult) -> None:
         if stage == "repairing":
-            print(_color(_l(lang, f"\n  ✗ It crashed when started; the AI is fixing it ({repair}/2)…",
-                            f"\n  ✗ קרסה בהפעלה; ה־AI מתקן ({repair}/2)…"), "33"))
+            print(_color(_l(lang, "\n  ✗ It crashed when started; the AI is fixing it ({repair}/2)…",
+                            "\n  ✗ קרסה בהפעלה; ה־AI מתקן ({repair}/2)…", repair=repair), "33"))
             print("    " + test.detail.splitlines()[-1][:200] if test.detail else "")
         elif stage == "testing":
             print(_l(lang, "\n  Testing it in the sandbox…", "\n  בודק אותה בארגז החול…"))
@@ -247,8 +256,9 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     app = _approve_pending(app, lang)
     if app.is_automation:
         return _activate_automation(app, lang)
-    print(_l(lang, f"  In the Start menu as “{app.title}”. Change it: + change {app.name}: …  ·  Undo: dai-forge app undo {app.name}",
-             f"  מופיעה בתפריט התחל בשם „{app.title}”. לשינוי: + שנה את {app.name}: …  ·  ביטול: dai-forge app undo {app.name}"))
+    print(_l(lang, "  In the Start menu as “{title}”. Change it: + change {name}: …  ·  Undo: dai-forge app undo {name}",
+             "  מופיעה בתפריט התחל בשם „{title}”. לשינוי: + שנה את {name}: …  ·  ביטול: dai-forge app undo {name}",
+             title=app.title, name=app.name))
     if _ask(lang, "Run it now? [Y/n] ", "להריץ עכשיו? [כ/ל] ", default=True):
         return run_app(app.name, lang, detach=app.kind != "cli")
     return 0
@@ -263,17 +273,18 @@ def _activate_automation(app: apps.App, lang: str) -> int:
     if app.pending_permissions:
         print(_l(lang, "  Not activated: it needs the permissions above.", "  לא הופעלה: היא צריכה את ההרשאות שלמעלה."))
         return 1
-    if not _ask(lang, f"Run it {describe}? [Y/n] ", f"להריץ אותה {describe}? [כ/ל] ", default=True):
-        print(_l(lang, f"  Saved, not active. Later: dai-forge auto resume {app.name}",
-                 f"  נשמרה ולא הופעלה. אחר כך: dai-forge auto resume {app.name}"))
+    if not _ask(lang, "Run it {describe}? [Y/n] ", "להריץ אותה {describe}? [כ/ל] ", default=True, describe=describe):
+        print(_l(lang, "  Saved, not active. Later: dai-forge auto resume {name}",
+                 "  נשמרה ולא הופעלה. אחר כך: dai-forge auto resume {name}", name=app.name))
         return 0
     try:
         automation.install(app)
     except apps.AppError as exc:
         print(_color(f"✗ {exc}", "31"))
         return 1
-    print(_color(_l(lang, f"✓ Active: {describe}. Stop: dai-forge auto pause {app.name}  ·  Log: dai-forge auto log {app.name}",
-                    f"✓ פעילה: {describe}. עצירה: dai-forge auto pause {app.name}  ·  יומן: dai-forge auto log {app.name}"), "32"))
+    print(_color(_l(lang, "✓ Active: {describe}. Stop: dai-forge auto pause {name}  ·  Log: dai-forge auto log {name}",
+                    "✓ פעילה: {describe}. עצירה: dai-forge auto pause {name}  ·  יומן: dai-forge auto log {name}",
+                    describe=describe, name=app.name), "32"))
     return 0
 
 
@@ -302,7 +313,8 @@ def cmd_auto(args: list[str], lang: str) -> int:
             return automation.run_background(app, apps.run_argv(app))
         if sub == "pause":
             automation.pause(name)
-            print(_l(lang, f"✓ Paused. Resume: dai-forge auto resume {name}", f"✓ הושהתה. חידוש: dai-forge auto resume {name}"))
+            print(_l(lang, "✓ Paused. Resume: dai-forge auto resume {name}", "✓ הושהתה. חידוש: dai-forge auto resume {name}",
+                     name=name))
             return 0
         if sub == "resume":
             automation.resume(name)
@@ -384,17 +396,19 @@ def cmd_app(args: list[str], lang: str) -> int:
         if sub == "show" and rest:
             app = apps.load(rest[0])
             print(json.dumps(app.to_json(), ensure_ascii=False, indent=2))
-            print(_l(lang, f"Versions kept: {apps.versions(app)}", f"גרסאות שמורות: {apps.versions(app)}"))
+            print(_l(lang, "Versions kept: {versions}", "גרסאות שמורות: {versions}",
+                     versions=apps.versions(app)))
             return 0
         if sub == "undo" and rest:
             app = apps.undo(apps.load(rest[0]))
-            print(_l(lang, f"✓ {app.name} is back to version {app.version}", f"✓ {app.name} חזרה לגרסה {app.version}"))
+            print(_l(lang, "✓ {name} is back to version {version}", "✓ {name} חזרה לגרסה {version}",
+                     name=app.name, version=app.version))
             return 0
         if sub == "permissions" and rest:
             app = apps.load(rest[0])
             if len(rest) == 3 and rest[1] == "revoke":
                 apps.revoke(app, rest[2])
-                print(_l(lang, f"✓ Revoked {rest[2]}", f"✓ ההרשאה {rest[2]} בוטלה"))
+                print(_l(lang, "✓ Revoked {rest}", "✓ ההרשאה {rest} בוטלה", rest=rest[2]))
                 return 0
             for permission in apps.PERMISSIONS:
                 state = "✓" if app.approved.get(permission) else ("?" if app.permissions.get(permission) else "✗")
@@ -403,7 +417,8 @@ def cmd_app(args: list[str], lang: str) -> int:
             return 0
         if sub == "remove" and rest:
             app = apps.load(rest[0])
-            if not _ask(lang, f"Delete {app.title} and its data? [y/N] ", f"למחוק את {app.title} ואת הנתונים שלה? [כ/ל] "):
+            if not _ask(lang, "Delete {title} and its data? [y/N] ", "למחוק את {title} ואת הנתונים שלה? [כ/ל] ",
+                        title=app.title):
                 print(_l(lang, "Cancelled.", "בוטל."))
                 return 1
             if app.is_automation:
@@ -483,7 +498,7 @@ def cmd_recipe(args: list[str], lang: str) -> int:
         text = json.dumps(recipe.to_json(), ensure_ascii=False, indent=2) + "\n"
         if sub == "export" and len(rest) > 1:
             Path(rest[1]).write_text(text, encoding="utf-8")
-            print(_l(lang, f"✓ Exported to {rest[1]}", f"✓ יוצא אל {rest[1]}"))
+            print(_l(lang, "✓ Exported to {rest}", "✓ יוצא אל {rest}", rest=rest[1]))
         else:
             print(text, end="")
         return 0
@@ -497,11 +512,13 @@ def cmd_recipe(args: list[str], lang: str) -> int:
             print(_color(f"✗ {exc}", "31"))
             return 1
         if recipe.id in library.recipes and library.recipes[recipe.id].source != "user":
-            print(_color(_l(lang, f"✗ '{recipe.id}' is a {library.recipes[recipe.id].source} recipe and cannot be replaced.",
-                            f"✗ '{recipe.id}' הוא מתכון {_source(library.recipes[recipe.id], lang)} ואי אפשר להחליף אותו."), "31"))
+            print(_color(_l(lang, "✗ '{id}' is a {source} recipe and cannot be replaced.",
+                            "✗ '{id}' הוא מתכון {_source} ואי אפשר להחליף אותו.",
+                            id=recipe.id, source=library.recipes[recipe.id].source, _source=_source(library.recipes[recipe.id], lang)), "31"))
             return 1
         saved = save_user_recipe(recipe)
-        print(_l(lang, f"✓ Imported {recipe.id} → {saved}", f"✓ יובא {recipe.id} → {saved}"))
+        print(_l(lang, "✓ Imported {id} → {saved}", "✓ יובא {id} → {saved}",
+                 id=recipe.id, saved=saved))
         return 0
     if sub == "remove" and rest:
         target = paths.user_recipes() / f"{rest[0]}.json"
@@ -524,7 +541,7 @@ def print_examples(lang: str, library: Library | None = None) -> None:
                "build an app for a shopping list", "build a web page with a mortgage calculator",
                "change shopping: add a delete button"],
     }
-    for example in examples[lang]:
+    for example in examples.get(lang, examples["en"]):  # requests the rule parser understands
         print(f'  dai-forge "{example}"')
     if library:
         print(_l(lang, "Recipes:", "מתכונים:") + " " + ", ".join(sorted(library.recipes)))
