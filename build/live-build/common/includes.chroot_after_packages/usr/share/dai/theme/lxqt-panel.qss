@@ -86,26 +86,27 @@ LXQtPanelPlugin > QToolButton:hover {
 #FancyMenu QToolButton:focus { background: rgba(124, 92, 255, 30%); border: 1px solid #7C5CFF; }
 #FancyMenu QToolButton:pressed { background: #5B3FD6; }
 
-/* customcommand plugins: keyboard layout pill (and the fallback command button) */
+/* customcommand plugins: the keyboard layout (its segment, #CustomPlugin, gives the shape) */
 #Custom {
-    margin: 8px 3px;
-    padding: 0 9px;
-    border-radius: 8px;
-    background: #1C2547;
-    border: 1px solid #2A3563;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    border-radius: 11px;
+    background: transparent;
     color: #E6E9F5;
     font-weight: bold;
 }
 #Custom:hover {
     background: #5B3FD6;
-    border: 1px solid #7C5CFF;
     color: #FFFFFF;
 }
 
-/* Command field next to Start (D.Ai panel plugin) */
-/* The plugin sets the field's height to iconSize + 10 (36 px); these margins are
+/* Command field next to Start (D.Ai panel plugin). lxqt-panel renames a plugin's
+ * widget to its theme id (plugin.cpp: setObjectName(themeId())), so the field is
+ * #DaiCommand in the panel; #DaiCommandField is the name it is created with.
+ * The plugin sets the field's height to iconSize + 10 (36 px); these margins are
  * inside that height, so 4 px each way leaves a 28 px field. */
-#DaiCommand QLineEdit,
+QLineEdit#DaiCommand,
 QLineEdit#DaiCommandField {
     margin: 4px 4px;
     padding: 2px 14px;
@@ -116,8 +117,8 @@ QLineEdit#DaiCommandField {
     color: #E6E9F5;
     selection-background-color: #5B3FD6;
 }
-QLineEdit#DaiCommandField:hover { border: 1px solid #7C5CFF; }
-QLineEdit#DaiCommandField:focus { border: 2px solid #22D3EE; }
+QLineEdit#DaiCommand:hover, QLineEdit#DaiCommandField:hover { border: 1px solid #7C5CFF; }
+QLineEdit#DaiCommand:focus, QLineEdit#DaiCommandField:focus { border: 2px solid #22D3EE; }
 
 /* Windows as icons with light: the active one glows with the violet→cyan
  * line (task-active.svg); one that asks for attention gets an amber edge,
