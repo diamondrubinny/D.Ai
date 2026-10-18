@@ -56,8 +56,8 @@ cleanup() {
 trap cleanup EXIT
 
 # Send commands to the QEMU human monitor over one connection.
-monitor() {
-  python3 - "$MONITOR_SOCK" "$@" <<'PY'
+monitor() { # monitor <command>...; MON=<socket> for another QEMU
+  python3 - "${MON:-$MONITOR_SOCK}" "$@" <<'PY'
 import socket, sys, time
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 sock.settimeout(10)
@@ -300,10 +300,75 @@ sleep 6
 monitor "screendump $ARTIFACT_DIR/mom-ru.png -f png" || log "warning: screenshot failed"
 type_keys esc
 
+# More of D.Ai, for the screenshots branch (docs/BASICS.md): mail, Find, Doctor, Heal, the on-screen keyboard
+# and the magnifier. Each one is closed again before the next.
+command_bar() { # command_bar <keys>...: open D.Ai Command, type, wait for the answer
+  type_keys meta_l-spc
+  sleep 2
+  type_keys "$@"
+  sleep 4
+}
+log "interactive: J, the mail client"
+sleep 1
+command_bar shift-4 spc d a i minus j ret
+sleep 6
+monitor "screendump $ARTIFACT_DIR/j.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
+log "interactive: D.Ai Find in the command bar"
+command_bar f i n d spc p h o t o s spc f r o m spc t o d a y
+monitor "screendump $ARTIFACT_DIR/find.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 1
+log "interactive: D.Ai Doctor in the command bar"
+command_bar w h y spc i s spc m y spc c o m p u t e r spc s l o w shift-slash
+sleep 4
+monitor "screendump $ARTIFACT_DIR/doctor.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 1
+log "interactive: D.Ai Heal (Super+F1)"
+type_keys meta_l-f1
+sleep 6
+monitor "screendump $ARTIFACT_DIR/heal.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 2
+log "interactive: the on-screen keyboard (Super+Alt+K)"
+type_keys meta_l-alt-k
+sleep 4
+monitor "screendump $ARTIFACT_DIR/keyboard.png -f png" || log "warning: screenshot failed"
+type_keys meta_l-alt-k
+sleep 2
+log "interactive: the magnifier (Super+=)"
+type_keys meta_l-equal meta_l-equal
+sleep 2
+monitor "screendump $ARTIFACT_DIR/magnifier.png -f png" || log "warning: screenshot failed"
+type_keys meta_l-minus meta_l-minus
+sleep 1
+
 if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2
   die "system checks failed (see $REPORT)"
 fi
+
+# The boot menu with the languages (docs/I18N.md §9): the checks above boot the kernel directly, so boot the
+# ISO once more through its own menu, open "Language" and take its picture. Only pictures: never a failure.
+log "screenshots: the boot menu and its Language submenu"
+kill "$QEMU_PID" 2>/dev/null || true
+wait "$QEMU_PID" 2>/dev/null || true
+MENU_SOCK="$ARTIFACT_DIR/qemu-menu.sock"
+qemu-system-x86_64 "${ACCEL[@]}" -m 1024 -cdrom "$ISO" -boot d -vga std -display none \
+  -monitor "unix:$MENU_SOCK,server,nowait" -no-reboot &
+QEMU_PID=$!
+sleep 8
+MON="$MENU_SOCK" monitor "sendkey down" "sendkey up" || true  # stop the countdown
+sleep 1
+MON="$MENU_SOCK" monitor "screendump $ARTIFACT_DIR/boot-menu.png -f png" || log "warning: screenshot failed"
+MON="$MENU_SOCK" monitor "sendkey down" "sendkey ret" || true
+sleep 2
+MON="$MENU_SOCK" monitor "screendump $ARTIFACT_DIR/boot-languages.png -f png" || log "warning: screenshot failed"
+kill "$QEMU_PID" 2>/dev/null || true
+wait "$QEMU_PID" 2>/dev/null || true
+rm -f -- "$MENU_SOCK"
 
 log "PASS"

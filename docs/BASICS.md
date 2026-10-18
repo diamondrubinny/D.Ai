@@ -14,7 +14,10 @@
 
 ## 2. Next (in order)
 
-1. 🔧 **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.**
+**Screenshots** (the `ci-screenshots` branch, from every CI run): in addition to the existing ones, `j.png`, `find.png`, `doctor.png`, `heal.png`, `keyboard.png`, `magnifier.png`, and the boot menu: `boot-menu.png` and `boot-languages.png`. For the boot menu, a second short boot of the ISO through its own menu runs at the end of the test.
+
+
+1. ✅ **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.** Passes on the VM in CI (be82d51).
    - **Why not the boot menu:** `grub-btrfs` does not exist in Debian 13.
    - **What it does:**
      - Finds the installed disk (a Btrfs or LUKS partition that is not in use) and opens it. The passphrase goes to cryptsetup on stdin.
@@ -30,7 +33,7 @@
    - **Checks:**
      - **Unit:** finding disks, the passphrase only on stdin, closing even after a wrong passphrase, reading snapper's files, the exact order of the commands, nothing changes without confirmation.
      - **VM** (`rescue: undo an update from the USB`): an "installed system" on a Btrfs image, with snapper's layout and read-only snapshots. After `dai-rescue` the file is as before the update, the old system is kept with its file from after the update, and the snapshots stay.
-2. 🔧 **Packages and shortcuts:** in an optional list (`basics.list.optional`), so a package Debian 13 does not have is left out rather than breaking the build.
+2. ✅ **Packages and shortcuts:** in an optional list (`basics.list.optional`), so a package Debian 13 does not have is left out rather than breaking the build.
    - **Firmware updates:** `fwupd`.
    - **Video and audio codecs:** GStreamer, including `libav`.
    - **Printers:** most work with no driver (IPP Everywhere): `ipp-usb`, `cups-browsed`, `avahi-daemon`. For the rest: `printer-driver-gutenprint`, `printer-driver-brlaser`, `hplip`.
