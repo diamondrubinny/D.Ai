@@ -48,7 +48,8 @@ def _clean(text: str) -> str:
 
 
 def kind(raw: bytes) -> str:
-    """"signed" (OpenPGP), "smime_signed", "encrypted" (OpenPGP), "inline_signed", "inline_encrypted" or ""."""
+    """"signed" (OpenPGP), "smime_signed", "encrypted" (OpenPGP), "smime_encrypted", "inline_signed",
+    "inline_encrypted" or ""."""
     message = email.message_from_bytes(raw[:MAX_INPUT], policy=email.policy.compat32)
     ctype = message.get_content_type()
     protocol = (message.get_param("protocol") or "").lower()
@@ -58,6 +59,9 @@ def kind(raw: bytes) -> str:
         return "smime_signed"
     if ctype == "multipart/encrypted" and protocol == "application/pgp-encrypted":
         return "encrypted"
+    if ctype in ("application/pkcs7-mime", "application/x-pkcs7-mime") and \
+            (message.get_param("smime-type") or "enveloped-data").lower() in ("enveloped-data", "authenveloped-data"):
+        return "smime_encrypted"
     head = raw[:MAX_INPUT]
     if b"-----BEGIN PGP SIGNED MESSAGE-----" in head:
         return "inline_signed"
@@ -134,16 +138,28 @@ def verify(raw: bytes, run: Callable = subprocess.run) -> Signature | None:
 def protected_subject(inner: bytes) -> str:
     """The real subject a decrypted message carries inside (protected headers), or ""."""
     part = email.message_from_bytes(inner[:MAX_INPUT], policy=email.policy.default)
+    if part.get_content_type() == "multipart/signed" and part.is_multipart():  # signed, then encrypted
+        part = next(iter(part.iter_parts()), part)
     if (part.get_param("protected-headers") or "") != "v1":
         return ""
     return _clean(str(part.get("Subject", "")))
 
 
 def decrypt(raw: bytes, run: Callable = subprocess.run) -> bytes | None:
-    """The inner message of an OpenPGP-encrypted mail, or None. Shown, never saved."""
-    if kind(raw) not in ("encrypted", "inline_encrypted"):
+    """The inner message of an OpenPGP- or S/MIME-encrypted mail, or None. Shown, never saved."""
+    what = kind(raw)
+    if what not in ("encrypted", "inline_encrypted", "smime_encrypted"):
         return None
     message = email.message_from_bytes(raw[:MAX_INPUT], policy=email.policy.compat32)
+    if what == "smime_encrypted":
+        der = message.get_payload(decode=True) or b""
+        try:
+            result = run(["gpgsm", "--batch", "--status-fd", "2", "--decrypt"], input=der, capture_output=True,
+                         timeout=DECRYPT_TIMEOUT, env={**os.environ, "LC_ALL": "C"})
+        except (OSError, subprocess.SubprocessError):
+            return None
+        ok = der and result.returncode == 0 and b"[GNUPG:] DECRYPTION_OKAY" in (result.stderr or b"")
+        return (result.stdout or None) if ok else None
     if message.is_multipart():
         parts = message.get_payload()
         armored = parts[1].get_payload(decode=True) if isinstance(parts, list) and len(parts) > 1 else b""
@@ -256,8 +272,51 @@ def signing_method(address: str, run: Callable = subprocess.run) -> str:
     return ""
 
 
+def _has_keys(tool: str, addresses: list[str], run: Callable) -> bool:
+    """Whether gpg (OpenPGP keys) or gpgsm (certificates) has a public key for every address."""
+    for address in addresses:
+        try:
+            found = run([tool, "--batch", "--with-colons", "--list-keys", f"<{address}>"], capture_output=True,
+                        timeout=TIMEOUT)
+        except (OSError, subprocess.SubprocessError):
+            return False
+        kinds = {line.split(b":", 1)[0] for line in (found.stdout or b"").splitlines()}
+        if found.returncode != 0 or not kinds & {b"pub", b"crt", b"crs"}:
+            return False
+    return True
+
+
+def _smime_encrypted(message: EmailMessage, sender: str, recipients: list[str], inner: bytes, sign: bool,
+                     run: Callable) -> bytes:
+    """S/MIME enveloped-data (RFC 8551 §3.3), to every recipient and to the sender; signed first when asked."""
+    if sign:
+        content_type, body = _smime_signature(sender, inner, run)
+        inner = b"Content-Type: " + content_type.encode() + b"\r\n\r\n" + body
+    args = [arg for a in [*recipients, sender] for arg in ("--recipient", a)]
+    try:
+        result = run(["gpgsm", "--batch", "--status-fd", "2", "--encrypt", *args], input=inner, capture_output=True,
+                     timeout=SIGN_TIMEOUT, env={**os.environ, "LC_ALL": "C"})
+    except (OSError, subprocess.SubprocessError):
+        raise ProtectError("gpg") from None
+    if result.returncode != 0 or not result.stdout:
+        raise ProtectError("recipient_key")
+    outer = copy.deepcopy(message)
+    del outer["Subject"]
+    outer["Subject"] = HIDDEN_SUBJECT
+    content_type = 'application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"'
+    head = _headers(outer, content_type) + (b"Content-Transfer-Encoding: base64\r\n"
+                                            b'Content-Disposition: attachment; filename="smime.p7m"\r\n')
+    return head + b"\r\n" + base64.encodebytes(result.stdout).replace(b"\n", b"\r\n")
+
+
 def _smime_signed(message: EmailMessage, sender: str, inner: bytes, run: Callable) -> bytes:
     """S/MIME multipart/signed (RFC 8551 §3.5.3) with gpgsm and the sender's certificate."""
+    content_type, body = _smime_signature(sender, inner, run)
+    return _headers(message, content_type) + b"\r\n" + body
+
+
+def _smime_signature(sender: str, inner: bytes, run: Callable) -> tuple[str, bytes]:
+    """(the multipart/signed Content-Type, its body) for an S/MIME signature over the inner part."""
     try:
         result = run(["gpgsm", "--batch", "--status-fd", "2", "--detach-sign", "--local-user", sender], input=inner,
                      capture_output=True, timeout=SIGN_TIMEOUT, env={**os.environ, "LC_ALL": "C"})
@@ -276,7 +335,7 @@ def _smime_signed(message: EmailMessage, sender: str, inner: bytes, run: Callabl
     body = (b"This is an S/MIME signed message\r\n--" + b + b"\r\n" + inner + b"\r\n--" + b + b"\r\n"
             b'Content-Type: application/pkcs7-signature; name="smime.p7s"\r\nContent-Transfer-Encoding: base64\r\n'
             b'Content-Disposition: attachment; filename="smime.p7s"\r\n\r\n' + der + b"\r\n--" + b + b"--\r\n")
-    return _headers(message, content_type) + b"\r\n" + body
+    return content_type, body
 
 
 def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = subprocess.run,
@@ -296,6 +355,12 @@ def protect(message: EmailMessage, sign: bool, encrypt: bool, run: Callable = su
         recipients = _addresses(message)
         if not recipients:
             raise ProtectError("recipient_key")
+        chosen = method
+        if chosen is None:  # OpenPGP when every recipient has an OpenPGP key, else S/MIME when all have certificates
+            chosen = "smime" if not _has_keys("gpg", recipients, run) and _has_keys("gpgsm", recipients, run) \
+                else "openpgp"
+        if chosen == "smime":
+            return _smime_encrypted(message, sender, recipients, inner, sign, run)
         args = ["--encrypt", *(arg for a in [*recipients, sender] for arg in ("--recipient", a))]
         if sign:
             args = ["--sign", "--local-user", sender, *args]

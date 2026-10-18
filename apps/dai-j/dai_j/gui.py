@@ -999,7 +999,7 @@ class MainWindow(QMainWindow):
         from . import pgp
 
         what = pgp.kind(raw)
-        if what in ("encrypted", "inline_encrypted"):
+        if what in ("encrypted", "inline_encrypted", "smime_encrypted"):
             self.security.setText(t("encrypted", self.lang))
             self.security.show()
             self.decrypt_button.show()
@@ -1036,6 +1036,8 @@ class MainWindow(QMainWindow):
                 lines = self.header.text().split("\n")
                 self.header.setText("\n".join(lines[:-1] + [subject]))
             self.security.setText(t("decrypted", self.lang))
+            if pgp.kind(inner) in ("signed", "smime_signed"):  # signed, then encrypted: check that signature too
+                self.security.setText(t("decrypted", self.lang) + "\n" + signature_text(pgp.verify(inner), self.lang))
         self.runner.start(lambda: pgp.decrypt(raw), done, lambda e: done(None))
 
     # Diamond (docs/MAIL.md §13): only when asked; the message is data, the answer is text

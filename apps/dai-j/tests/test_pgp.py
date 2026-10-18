@@ -245,6 +245,26 @@ class SmimeSendingTests(unittest.TestCase):
         self.assertIn("signed with S/MIME", mail.parse_body(raw).text)
         self.assertEqual(pgp.verify(raw.replace(b"S/MIME.", b"S/MIME!")).state, "bad")
 
+    def test_encrypted_with_certificates_and_decrypted(self):
+        from dai_j import compose, mail
+
+        draft = compose.Draft("Dana Test", "dana@example.org", "dana@example.org", subject="Plan",
+                              paragraphs=[("סוד, encrypted with S/MIME.", "rtl")])
+        for sign in (False, True):
+            raw = pgp.protect(compose.build(draft), sign=sign, encrypt=True)  # no OpenPGP key: S/MIME by itself
+            self.assertEqual(pgp.kind(raw), "smime_encrypted")
+            self.assertNotIn(b"encrypted with S/MIME", raw)
+            self.assertNotIn(b"Plan", raw)  # the subject only inside
+            inner = pgp.decrypt(raw)
+            self.assertIn("encrypted with S/MIME", mail.parse_body(inner).text)
+            self.assertEqual(pgp.protected_subject(inner), "Plan")
+            if sign:
+                self.assertEqual(pgp.kind(inner), "smime_signed")
+                self.assertEqual(pgp.verify(inner).state, "good")
+        with self.assertRaises(pgp.ProtectError):
+            pgp.protect(compose.build(compose.Draft("Dana Test", "dana@example.org", "nobody@example.net",
+                                                    paragraphs=[("x", "auto")])), sign=False, encrypt=True)
+
 
 class WindowTests(unittest.TestCase):
     @classmethod
