@@ -412,6 +412,18 @@ def main() -> int:
          lambda o: "crashy" in o and "crashed" in o and "ValueError: heal test" in o, 60),
         ("heal: program crash recorded", "sleep 60 & P=$!; sleep 0.5; kill -SEGV $P; sleep 4; dai-heal status", False,
          lambda o: "sleep crashed" in o, 40),
+        # D.Ai Evolve (docs/EVOLVE.md §3): a book no program opens and a command run every day become suggestions.
+        ("evolve: notices what is missing", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-evolve --version; "
+         "echo TIMER=$(systemctl --user is-enabled dai-evolve.timer); mkdir -p ~/Downloads && printf x > ~/Downloads/novel.epub; "
+         "for i in 1 2 3; do python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); "
+         "from dai_evolve.store import count_command; count_command(\">df -h /\")'; done; "
+         "dai-evolve scan; stat -c 'MODE=%a' ~/.local/state/dai/evolve/commands.json; "
+         "dai-forge --dry-run 'install ebook-reader' </dev/null | grep -i foliate | head -n 3; "
+         "dai-evolve off; test -e ~/.local/state/dai/evolve/commands.json || echo FORGOTTEN; dai-evolve; dai-evolve on >/dev/null; "
+         "rm -f ~/Downloads/novel.epub", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "TIMER=enabled" in o and "Install an e-book reader" in o
+         and "Let D.Ai do it every morning" in o and "MODE=600" in o and "foliate" in o and "FORGOTTEN" in o
+         and "D.Ai Evolve is off" in o, 60),
         # D.Ai OEM, the whole cycle in the live session (last: it resets the machine ID and journal).
         # LUKS is not part of it here (no installed disk); unit tests run it against a fake and real cryptsetup.
         ("oem: prepare, finish, cleanup", "dai-oem --version; sudo useradd -m -G sudo,audio,lpadmin oemtest; "
@@ -443,6 +455,8 @@ def main() -> int:
         ("calamares btrfs", "for f in /etc/calamares/modules/mount.conf /usr/share/calamares/modules/mount.conf; do "
          "test -f $f && echo \"== $f\" && grep -n -i -A3 'btrfs\\|subvol' $f | grep -v '^[0-9]*[-:] *#' | head -n 30; done; "
          "echo \"modules: $(ls /etc/calamares/modules/ | tr '\\n' ' ')\""),
+        # Packages of the D.Ai Evolve recipes (docs/EVOLVE.md §3) in this Debian release.
+        ("evolve recipe packages", "apt-cache policy foliate vlc gimp unar 7zip | grep -E '^[a-z0-9]|Candidate'"),
         ("layer-shell packages", "dpkg -l | grep -Ei 'layer-?shell' | cut -c1-80"),
     ]
 

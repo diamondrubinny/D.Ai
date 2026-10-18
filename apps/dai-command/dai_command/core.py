@@ -406,6 +406,10 @@ _STRINGS = {
     "move_title": ("Bring files and bookmarks from Windows", "העברת קבצים וסימניות מ־Windows"),
     "move_hint": ("D.Ai Move · shows what will be copied first · nothing is overwritten · Enter",
                   "D.Ai Move · מראה קודם מה יועתק · שום דבר לא נדרס · Enter"),
+    "build_this": ("Build or add it: ", "לבנות או להוסיף: "),
+    "build_this_hint": ("Not found · D.Ai Forge can build it or add it, after your review · Enter",
+                        "לא נמצא · D.Ai Forge יכול לבנות או להוסיף את זה, אחרי שתאשרו · Enter"),
+    "evolve_hint": ("D.Ai suggests · Enter to review · Delete to hide", "הצעה של D.Ai · Enter לבדיקה · Delete להסתרה"),
     "heal_title": ("Help & repair: what is not working?", "עזרה ותיקון: מה לא עובד?"),
     "heal_hint": ("D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter",
                   "D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter"),
@@ -447,7 +451,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | heal
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | heal | evolve
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -458,7 +462,7 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
     """Turn the typed text into an ordered list of actions."""
     text = query.strip()
     if not text:
-        return [
+        return evolve_actions() + [
             Action("history", entry, tr("history"), "document-open-recent", entry)
             for entry in reversed(list(history)[-6:])
         ]
@@ -517,7 +521,25 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
     if shutil.which(first):
         actions.append(Action("run", text, tr("background"), "system-run", text))
         actions.append(Action("terminal", text, tr("terminal"), "utilities-terminal", text))
+    elif not any(a.kind in ("app", "calc") for a in actions) and shutil.which("dai-forge-gui"):
+        # Nothing on this computer does it yet: offer to build or add it (docs/EVOLVE.md §3).
+        actions.append(Action("forge", tr("build_this") + text, tr("build_this_hint"), "applications-development", text))
     return actions
+
+
+EVOLVE_ICONS = {"wish": "applications-development", "repeat": "appointment-soon", "filetype": "system-software-install",
+                "doctor": "preferences-system", "heal": "help-browser"}
+
+
+def evolve_actions(limit: int = 2) -> list[Action]:
+    """What D.Ai Evolve noticed (read from its last scan; nothing is scanned here)."""
+    try:
+        from dai_evolve.scan import saved
+    except ImportError:
+        return []
+    lang = ui_language()
+    return [Action("evolve", f"✦ {s.title(lang)}", f"{s.why(lang)} · {tr('evolve_hint')}", EVOLVE_ICONS.get(s.kind, ""), s)
+            for s in saved()[:limit]]
 
 
 FILE_ICONS = {

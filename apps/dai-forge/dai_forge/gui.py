@@ -530,6 +530,7 @@ class ForgeWindow(QWidget):
 
     def ai_recipe(self, text: str) -> None:
         if not model_installed():
+            apps.record_wish(text, "no-model")
             self.show_no_model(self.t("no_match"))
             return
         self.show_working(self.t("writing_recipe"))
@@ -659,6 +660,7 @@ class ForgeWindow(QWidget):
             self.show_error(self.t("not_admin"))
             return
         if not model_installed():
+            apps.record_wish(intent.text, "no-model")
             self.show_no_model(self.t("no_model"))
             return
         current = apps.load(intent.app_name) if intent.kind == "edit" else None

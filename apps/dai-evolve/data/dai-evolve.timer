@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=Daily D.Ai Evolve scan (stop with: dai-evolve off)
+
+[Timer]
+OnCalendar=daily
+OnStartupSec=20min
+Persistent=true
+RandomizedDelaySec=30min
+
+[Install]
+WantedBy=timers.target

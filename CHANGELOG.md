@@ -26,6 +26,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - The Workshop: AI-built apps are tested in the sandbox and repaired from their error before you see them.
 - Automations: "+ every morning …" becomes a scheduled, sandboxed script on a user timer (schedule parsed by rules), with notifications and a log; `dai-forge auto`.
 - D.Ai Heal: crashes and failed services lead to a help & repair chat (Super+F1) with fixes applied only after you agree; D.Ai Tune `service.restart`.
+- D.Ai Evolve: notices what is missing (a file type no program opens, a command run again and again, a request Forge could not fulfil, Doctor and Heal findings) and suggests it in D.Ai Command, with at most one notification a day; local, 30 days, `dai-evolve off`. "Build or add it" in D.Ai Command when nothing is found. New Forge recipes: e-book reader, video player, image editor, archives.
 - D.Ai OEM: `dai-oem prepare` for refurbishers; a first-boot wizard where the new owner creates their account, names the computer and replaces the temporary disk encryption password; temporary users removed before the first login.
 - Education edition (`edu`) and organization policies (`/etc/dai/policy.d`, applied at boot and on change), including a screen-lock limit for every user.
 - LibreOffice (Writer, Calc, Impress) with the Hebrew interface and Hebrew/English spell checking in every edition.

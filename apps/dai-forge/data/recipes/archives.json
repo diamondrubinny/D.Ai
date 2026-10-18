@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "id": "archives",
+  "name": {
+    "en": "Archives (RAR, 7z)",
+    "he": "קבצים דחוסים (RAR, ‏7z)"
+  },
+  "description": {
+    "en": "Open RAR and 7z archives in the file manager's archiver (unar, 7zip).",
+    "he": "פתיחת קבצי RAR ו־7z בתוכנת הקבצים הדחוסים (unar, ‏7zip)."
+  },
+  "match": {
+    "en": [
+      "rar",
+      "7z",
+      "7zip",
+      "archives",
+      "unzip rar",
+      "compressed files"
+    ],
+    "he": [
+      "קבצים דחוסים",
+      "קובץ דחוס",
+      "לפתוח rar",
+      "rar",
+      "7z"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "unar",
+          "7zip"
+        ]
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}
