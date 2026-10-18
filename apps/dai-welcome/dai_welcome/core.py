@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
+from dai_i18n import ENGLISH_NAMES, SUPPORTED
 from dai_tune import posture
 from dai_tune.context import Context
 from dai_tune.planner import Plan, plan_from_text
@@ -73,10 +74,19 @@ def security_sentences(level: str, checks: list[posture.Check]) -> list[str]:
     return sentences
 
 
-def security_plan(level: str, ctx: Context) -> Plan | None:
-    """None when there is nothing to change; otherwise a fully valid plan."""
+def language_sentence(chosen: str, current: str) -> str:
+    """The Tune sentence that makes D.Ai speak the chosen language from the next login (docs/I18N.md §9)."""
+    if chosen == current:
+        return ""
+    if chosen not in SUPPORTED:
+        raise ValueError(f"unknown language: {chosen}")
+    return "language " + ENGLISH_NAMES[chosen].lower()
+
+
+def security_plan(level: str, ctx: Context, language: str = "") -> Plan | None:
+    """None when there is nothing to change; otherwise a fully valid plan (security, then the language)."""
     _, checks = posture.assess(ctx, ctx.lang)
-    sentences = security_sentences(level, checks)
+    sentences = security_sentences(level, checks) + ([language] if language else [])
     if not sentences:
         return None
     plan = plan_from_text(", ".join(sentences), ctx)

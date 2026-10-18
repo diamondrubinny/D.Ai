@@ -3611,3 +3611,19 @@ msgstr "Mit einem Schlüssel signiert, der nicht auf diesem Computer ist, daher 
 #: apps/dai-j/dai_j/text.py
 msgid "The signature could not be checked."
 msgstr "Die Signatur konnte nicht geprüft werden."
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Language"
+msgstr "Sprache"
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "D.Ai will speak this language from the next login. It is set up with the other changes, at the end."
+msgstr "D.Ai spricht diese Sprache ab der nächsten Anmeldung. Sie wird zusammen mit den anderen Änderungen am Ende eingerichtet."
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Only an administrator can add a language to this computer."
+msgstr "Nur ein Administrator kann diesem Computer eine Sprache hinzufügen."
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Security settings and language"
+msgstr "Sicherheitseinstellungen und Sprache"

@@ -17,7 +17,7 @@ from typing import Any, Callable
 from PyQt6.QtCore import QSize, Qt, QThread
 from PyQt6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
-    QApplication, QButtonGroup, QCheckBox, QFrame, QHBoxLayout, QLabel, QLayout, QProgressBar, QPushButton, QRadioButton,
+    QApplication, QButtonGroup, QCheckBox, QFrame, QGridLayout, QHBoxLayout, QLabel, QLayout, QProgressBar, QPushButton, QRadioButton,
     QScrollArea, QStackedWidget, QVBoxLayout, QWidget,
 )
 
@@ -28,7 +28,7 @@ from dai_tune import posture
 from dai_tune.cli import describe
 from dai_tune.context import Context, detect_lang
 
-from dai_i18n import is_rtl, pick, qt_direction
+from dai_i18n import NATIVE_NAMES, SUPPORTED, is_rtl, pick, qt_direction
 
 from . import __author__, __version__, core
 
@@ -56,6 +56,11 @@ STRINGS = {
               "מערכת מהירה, פרטית ומאובטחת, עם עוזר מובנה שרץ על המחשב הזה. "
               "כמה שאלות קצרות ואתם מוכנים. אפשר לדלג על כל שלב ולשנות אותו אחר כך."),
     "start": ("Let's start ✦", "מתחילים ✦"),
+    "language": ("Language", "שפה"),
+    "language_note": ("D.Ai will speak this language from the next login. It is set up with the other changes, "
+                      "at the end.", "D.Ai ידבר בשפה הזו מהכניסה הבאה. היא מוגדרת יחד עם שאר השינויים, בסוף."),
+    "language_admin": ("Only an administrator can add a language to this computer.",
+                       "רק מנהל המחשב יכול להוסיף שפה למחשב הזה."),
     "not_now": ("Not now", "לא עכשיו"),
     "back": ("Back", "חזרה"),
     "next": ("Next", "הבא"),
@@ -111,6 +116,7 @@ STRINGS = {
     "undo_note": ("Every system change can be undone: dai-tune undo", "אפשר לבטל כל שינוי במערכת: dai-tune undo"),
     "running": ("Setting up…", "מגדיר…"),
     "step_security": ("Security settings", "הגדרות אבטחה"),
+    "step_system": ("Security settings and language", "הגדרות אבטחה ושפה"),
     "done_title": ("You're all set ✓", "הכל מוכן ✓"),
     "some_failed": ("Some steps did not complete. You can retry later from the menu (Welcome to D.Ai).",
                     "חלק מהשלבים לא הושלמו. אפשר לנסות שוב אחר כך מהתפריט (ברוכים הבאים)."),
@@ -170,6 +176,7 @@ class WelcomeWindow(QWidget):
         self.options = core.ai_options(self.ram, _installed_models() if installed is None else installed)
         self.options = [o for o in self.options if o.model_id in self.catalog]
         self.level = "recommended" if self.admin else "keep"
+        self.system_lang = lang  # the language of this session; another choice is set up at the end
         self.score, self.checks = posture.assess(self.ctx, lang)
         self.runner = runner or core.run_setup
         self.threads: list[tuple[QThread, Worker]] = []
@@ -311,8 +318,42 @@ class WelcomeWindow(QWidget):
         layout.addStretch(1)
         self._title(layout, "hero")
         layout.addWidget(self._wrap(self.t("intro")))
-        layout.addStretch(2)
+        layout.addStretch(1)
+        self._languages(layout)
+        layout.addStretch(1)
         self._nav(self._button("not_now", self.not_now), self._button("start", lambda: self.go(1), primary=True))
+
+    def _languages(self, layout: QVBoxLayout) -> None:
+        card = self._card(layout, "Step")
+        card.addWidget(QLabel(self.t("language"), objectName="Section"))
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(18)
+        self.language_group = QButtonGroup(self)
+        for index, code in enumerate(SUPPORTED):
+            radio = QRadioButton(NATIVE_NAMES[code])
+            radio.setLayoutDirection(qt_direction(code))  # each name reads in its own direction
+            radio.setChecked(code == self.lang)
+            radio.setEnabled(self.admin or code == self.system_lang)
+            radio.toggled.connect(lambda on, c=code: on and self.choose_language(c))
+            self.language_group.addButton(radio)
+            grid.addWidget(radio, index // 4, index % 4)
+        card.addLayout(grid)
+        note = self.t("language_note") if self.admin else self.t("language_admin")
+        card.addWidget(self._wrap(note, "Muted"))
+
+    def choose_language(self, code: str) -> None:
+        """Speak the chosen language at once; Tune sets it up for the next login with the other changes."""
+        if code == self.lang:
+            return
+        self.lang = code
+        self.ctx.lang = code
+        self.score, self.checks = posture.assess(self.ctx, code)
+        self.setLayoutDirection(qt_direction(code))
+        self.setWindowTitle(self.t("window"))
+        self.show_step("welcome")
+        checked = self.language_group.checkedButton()
+        if checked is not None:
+            checked.setFocus()
 
     def page_security(self) -> None:
         layout = self._page()
@@ -377,7 +418,8 @@ class WelcomeWindow(QWidget):
         layout = self._page()
         self._title(layout, "summary_title")
         try:
-            plan = core.security_plan(self.level, self.ctx) if self.admin else None
+            language = core.language_sentence(self.lang, self.system_lang)
+            plan = core.security_plan(self.level, self.ctx, language) if self.admin else None
         except ValueError as exc:
             return self.show_error(str(exc))
         self.setup = core.Setup(plan, core.chosen_models(self.options))
@@ -413,7 +455,7 @@ class WelcomeWindow(QWidget):
         self._title(layout, "running")
         self.rows: dict[str, tuple[QLabel, QProgressBar | None]] = {}
         setup = self.setup or core.Setup()
-        items = ([("security", self.t("step_security"))] if setup.plan is not None else []) + \
+        items = ([("security", self._system_step())] if setup.plan is not None else []) + \
                 [(m, self.catalog[m].name) for m in setup.models]
         for key, text in items:
             card = self._card(layout, "Step")
@@ -472,7 +514,7 @@ class WelcomeWindow(QWidget):
         self._title(layout, "done_title")
         card = self._card(layout)
         for result in results:
-            name = self.t("step_security") if result.label == "security" else self.catalog[result.label].name
+            name = self._system_step() if result.label == "security" else self.catalog[result.label].name
             mark, color = ("✓", OK_GREEN) if result.ok else ("✗", DANGER)
             detail = f" — {result.detail}" if result.detail else ""
             card.addWidget(self._wrap(f"<span style='color:{color}'>{mark}</span> {name}{detail}"))
@@ -482,6 +524,11 @@ class WelcomeWindow(QWidget):
         layout.addStretch(1)
         buttons = [self._button("retry", lambda: self.show_step("summary"))] if failed else []
         self._nav(*buttons, self._button("go", self.close, primary=True))
+
+    def _system_step(self) -> str:
+        plan = self.setup.plan if self.setup else None
+        language = plan is not None and any(step.action == "session.language" for step in plan.steps)
+        return self.t("step_system" if language else "step_security")
 
     def _shortcuts(self, layout: QVBoxLayout) -> None:
         card = self._card(layout)

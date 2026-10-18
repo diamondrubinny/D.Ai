@@ -3611,3 +3611,19 @@ msgstr "موقّعة بمفتاح غير موجود على هذا الحاسوب
 #: apps/dai-j/dai_j/text.py
 msgid "The signature could not be checked."
 msgstr "تعذّر التحقق من التوقيع."
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Language"
+msgstr "اللغة"
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "D.Ai will speak this language from the next login. It is set up with the other changes, at the end."
+msgstr "سيتحدث D.Ai بهذه اللغة من تسجيل الدخول التالي. تُضبط مع بقية التغييرات، في النهاية."
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Only an administrator can add a language to this computer."
+msgstr "وحده مدير الحاسوب يستطيع إضافة لغة إلى هذا الحاسوب."
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Security settings and language"
+msgstr "إعدادات الأمان واللغة"

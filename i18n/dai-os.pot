@@ -318,7 +318,7 @@ msgid "Apply this change? [y/N] "
 msgstr ""
 
 #. he: אישור ✦
-#: apps/dai-welcome/dai_welcome/gui.py:62
+#: apps/dai-welcome/dai_welcome/gui.py:67
 msgid "Apply ✦"
 msgstr ""
 
@@ -333,7 +333,7 @@ msgid "Apps"
 msgstr ""
 
 #. he: אפליקציות שבונים ב־D.Ai Forge רצות בארגז חול, בלי אינטרנט ובלי גישה לקבצים, אלא אם תאשרו.
-#: apps/dai-welcome/dai_welcome/gui.py:99
+#: apps/dai-welcome/dai_welcome/gui.py:104
 msgid "Apps you build with D.Ai Forge run in a sandbox without internet or your files, unless you allow it."
 msgstr ""
 
@@ -380,7 +380,7 @@ msgid "Asking Diamond…"
 msgstr ""
 
 #. he: עוזר — עונה על שאלות ועוזר במערכת
-#: apps/dai-welcome/dai_welcome/gui.py:83
+#: apps/dai-welcome/dai_welcome/gui.py:88
 msgid "Assistant — answers questions and helps with the system"
 msgstr ""
 
@@ -418,7 +418,7 @@ msgstr ""
 #. he: חזרה
 #: apps/dai-forge/dai_forge/gui.py:133
 #: apps/dai-oem/dai_oem/wizard.py:73
-#: apps/dai-welcome/dai_welcome/gui.py:60
+#: apps/dai-welcome/dai_welcome/gui.py:65
 msgid "Back"
 msgstr ""
 
@@ -706,7 +706,7 @@ msgid "Code"
 msgstr ""
 
 #. he: קוד — מסביר ועורך קוד (D.Ai Code, ‏D.Ai Forge)
-#: apps/dai-welcome/dai_welcome/gui.py:84
+#: apps/dai-welcome/dai_welcome/gui.py:89
 msgid "Coding — explains and edits code (D.Ai Code, D.Ai Forge)"
 msgstr ""
 
@@ -888,6 +888,11 @@ msgstr ""
 msgid "D.Ai suggests · Enter to review · Delete to hide"
 msgstr ""
 
+#. he: D.Ai ידבר בשפה הזו מהכניסה הבאה. היא מוגדרת יחד עם שאר השינויים, בסוף.
+#: apps/dai-welcome/dai_welcome/gui.py:60
+msgid "D.Ai will speak this language from the next login. It is set up with the other changes, at the end."
+msgstr ""
+
 #. he: הקבצים של D.Ai כפי שהותקנו
 #: apps/dai-raz/dai_raz/cli.py:37
 msgid "D.Ai's files are as installed"
@@ -1002,12 +1007,12 @@ msgid "Diamond · Enter to ask (runs on this computer)"
 msgstr ""
 
 #. he: Diamond, ה־AI, רץ על המחשב הזה. שאלות, קבצים וקוד לא נשלחים לשום מקום.
-#: apps/dai-welcome/dai_welcome/gui.py:95
+#: apps/dai-welcome/dai_welcome/gui.py:100
 msgid "Diamond, the AI, runs on this computer. Prompts, files and code are not sent anywhere."
 msgstr ""
 
 #. he: Diamond, הבינה המקומית, וקול
-#: apps/dai-welcome/dai_welcome/gui.py:78
+#: apps/dai-welcome/dai_welcome/gui.py:83
 msgid "Diamond, the local AI, and voice"
 msgstr ""
 
@@ -1094,7 +1099,7 @@ msgid "Downloads"
 msgstr ""
 
 #. he: הורדות ({total} בסך הכל):
-#: apps/dai-welcome/dai_welcome/gui.py:109
+#: apps/dai-welcome/dai_welcome/gui.py:114
 #, python-brace-format
 msgid "Downloads ({total} in total):"
 msgstr ""
@@ -1181,7 +1186,7 @@ msgid "Every language works"
 msgstr ""
 
 #. he: אפשר לבטל כל שינוי במערכת: dai-tune undo
-#: apps/dai-welcome/dai_welcome/gui.py:111
+#: apps/dai-welcome/dai_welcome/gui.py:116
 msgid "Every system change can be undone: dai-tune undo"
 msgstr ""
 
@@ -1228,7 +1233,7 @@ msgid "Find settings"
 msgstr ""
 
 #. he: סיום
-#: apps/dai-welcome/dai_welcome/gui.py:63
+#: apps/dai-welcome/dai_welcome/gui.py:68
 msgid "Finish"
 msgstr ""
 
@@ -1391,7 +1396,7 @@ msgid "Gmail: use an app password (Google account → Security → 2-Step Verifi
 msgstr ""
 
 #. he: כדאי לדעת
-#: apps/dai-welcome/dai_welcome/gui.py:117
+#: apps/dai-welcome/dai_welcome/gui.py:123
 msgid "Good to know"
 msgstr ""
 
@@ -1591,7 +1596,7 @@ msgid "J – Mail"
 msgstr ""
 
 #. he: להשאיר כמו שזה
-#: apps/dai-welcome/dai_welcome/gui.py:73
+#: apps/dai-welcome/dai_welcome/gui.py:78
 msgid "Keep as it is"
 msgstr ""
 
@@ -1603,6 +1608,11 @@ msgstr ""
 #. he: שפות מקלדת: 
 #: apps/dai-tune/dai_tune/catalog.py:724
 msgid "Keyboard layouts: "
+msgstr ""
+
+#. he: שפה
+#: apps/dai-welcome/dai_welcome/gui.py:59
+msgid "Language"
 msgstr ""
 
 #. he: גיבוי אחרון:
@@ -1654,7 +1664,7 @@ msgid "Loading…"
 msgstr ""
 
 #. he: נעילת מסך אחרי 5 דקות, ועדכוני אבטחה אוטומטיים פעילים.
-#: apps/dai-welcome/dai_welcome/gui.py:67
+#: apps/dai-welcome/dai_welcome/gui.py:72
 msgid "Lock the screen after 5 minutes and keep automatic security updates on."
 msgstr ""
 
@@ -1729,7 +1739,7 @@ msgid "Messages"
 msgstr ""
 
 #. he: המודלים רצים על המחשב הזה: השאלות, הקוד והקול שלכם לא יוצאים ממנו. בחרו מה להוריד עכשיו (פעם אחת, מאומת ב־SHA-256, מ־Hugging Face). אפשר להוסיף עוד אחר כך.
-#: apps/dai-welcome/dai_welcome/gui.py:79
+#: apps/dai-welcome/dai_welcome/gui.py:84
 msgid "Models run on this computer: your questions, code and voice never leave it. Choose what to download now (once, verified by SHA-256 from Hugging Face). You can add more later."
 msgstr ""
 
@@ -1782,7 +1792,7 @@ msgstr ""
 
 #. he: הבא
 #: apps/dai-oem/dai_oem/wizard.py:74
-#: apps/dai-welcome/dai_welcome/gui.py:61
+#: apps/dai-welcome/dai_welcome/gui.py:66
 msgid "Next"
 msgstr ""
 
@@ -1817,7 +1827,7 @@ msgid "No backup for over a week — connect the backup drive."
 msgstr ""
 
 #. he: בלי שינויים כרגע. תמיד אפשר לכתוב אותם ב־D.Ai Command, למשל „נעל מסך אחרי 5 דקות”.
-#: apps/dai-welcome/dai_welcome/gui.py:74
+#: apps/dai-welcome/dai_welcome/gui.py:79
 msgid "No changes now. You can always type them in D.Ai Command, e.g. “lock the screen after 5 minutes”."
 msgstr ""
 
@@ -1919,7 +1929,7 @@ msgid "No such suggestion (run: dai-evolve suggest)."
 msgstr ""
 
 #. he: אין טלמטריה, אין פרסומות ואין חשבון. D.Ai OS לא מדווח עליכם כלום.
-#: apps/dai-welcome/dai_welcome/gui.py:93
+#: apps/dai-welcome/dai_welcome/gui.py:98
 msgid "No telemetry, no ads, no account. D.Ai OS does not report anything about you."
 msgstr ""
 
@@ -1947,7 +1957,7 @@ msgstr ""
 
 #. he: לא עכשיו
 #: apps/dai-heal/dai_heal/text.py:64
-#: apps/dai-welcome/dai_welcome/gui.py:59
+#: apps/dai-welcome/dai_welcome/gui.py:64
 msgid "Not now"
 msgstr ""
 
@@ -2041,7 +2051,7 @@ msgid "Nothing matches."
 msgstr ""
 
 #. he: אין מה לשנות. אפשר לסיים.
-#: apps/dai-welcome/dai_welcome/gui.py:110
+#: apps/dai-welcome/dai_welcome/gui.py:115
 msgid "Nothing to change — you can finish."
 msgstr ""
 
@@ -2127,13 +2137,18 @@ msgstr ""
 msgid "On. Suggestions appear in D.Ai Command (Super+Space)."
 msgstr ""
 
+#. he: רק מנהל המחשב יכול להוסיף שפה למחשב הזה.
+#: apps/dai-welcome/dai_welcome/gui.py:62
+msgid "Only an administrator can add a language to this computer."
+msgstr ""
+
 #. he: רק מנהל המחשב יכול להוסיף יכולות. אפשר לעיין.
 #: apps/dai-forge/dai_forge/gui.py:124
 msgid "Only an administrator can add capabilities. You can still look around."
 msgstr ""
 
 #. he: רק מנהל המחשב יכול לשנות את אבטחת המערכת. פנו למנהל המחשב.
-#: apps/dai-welcome/dai_welcome/gui.py:76
+#: apps/dai-welcome/dai_welcome/gui.py:81
 msgid "Only an administrator can change system security. Ask the administrator of this computer."
 msgstr ""
 
@@ -2346,7 +2361,7 @@ msgid "Ready"
 msgstr ""
 
 #. he: מוכן להגדרה
-#: apps/dai-welcome/dai_welcome/gui.py:106
+#: apps/dai-welcome/dai_welcome/gui.py:111
 msgid "Ready to set up"
 msgstr ""
 
@@ -2366,12 +2381,12 @@ msgid "Recipes:"
 msgstr ""
 
 #. he: מומלץ
-#: apps/dai-welcome/dai_welcome/gui.py:66
+#: apps/dai-welcome/dai_welcome/gui.py:71
 msgid "Recommended"
 msgstr ""
 
 #. he: כמו מומלץ, ובנוסף חסימת דיסק און קי וכיבוי Bluetooth. מתאים למחשבים עם מידע רגיש.
-#: apps/dai-welcome/dai_welcome/gui.py:70
+#: apps/dai-welcome/dai_welcome/gui.py:75
 msgid "Recommended, plus blocking USB storage devices and turning Bluetooth off. Good for computers that hold sensitive data."
 msgstr ""
 
@@ -2603,12 +2618,12 @@ msgid "Search: linux driver {name}"
 msgstr ""
 
 #. he: אבטחה
-#: apps/dai-welcome/dai_welcome/gui.py:64
+#: apps/dai-welcome/dai_welcome/gui.py:69
 msgid "Security"
 msgstr ""
 
 #. he: ציון האבטחה כרגע: {score}
-#: apps/dai-welcome/dai_welcome/gui.py:65
+#: apps/dai-welcome/dai_welcome/gui.py:70
 #, python-brace-format
 msgid "Security score now: {score}"
 msgstr ""
@@ -2625,12 +2640,17 @@ msgid "Security score: {score}/100"
 msgstr ""
 
 #. he: הגדרות אבטחה
-#: apps/dai-welcome/dai_welcome/gui.py:113
+#: apps/dai-welcome/dai_welcome/gui.py:118
 msgid "Security settings"
 msgstr ""
 
+#. he: הגדרות אבטחה ושפה
+#: apps/dai-welcome/dai_welcome/gui.py:119
+msgid "Security settings and language"
+msgstr ""
+
 #. he: עדכוני אבטחה של Debian מותקנים אוטומטית. עדכוני D.Ai רק כשאתם בוחרים.
-#: apps/dai-welcome/dai_welcome/gui.py:101
+#: apps/dai-welcome/dai_welcome/gui.py:106
 msgid "Security updates from Debian install automatically; D.Ai updates only when you choose to."
 msgstr ""
 
@@ -2730,7 +2750,7 @@ msgid "Setting it up. Enter the administrator password when asked."
 msgstr ""
 
 #. he: מגדיר…
-#: apps/dai-welcome/dai_welcome/gui.py:112
+#: apps/dai-welcome/dai_welcome/gui.py:117
 msgid "Setting up…"
 msgstr ""
 
@@ -2793,7 +2813,7 @@ msgid "Snoozed until {when}. It will come back unread."
 msgstr ""
 
 #. he: חלק מהשלבים לא הושלמו. אפשר לנסות שוב אחר כך מהתפריט (ברוכים הבאים).
-#: apps/dai-welcome/dai_welcome/gui.py:115
+#: apps/dai-welcome/dai_welcome/gui.py:121
 msgid "Some steps did not complete. You can retry later from the menu (Welcome to D.Ai)."
 msgstr ""
 
@@ -2814,7 +2834,7 @@ msgstr ""
 
 #. he: משהו השתבש
 #: apps/dai-forge/dai_forge/gui.py:147
-#: apps/dai-welcome/dai_welcome/gui.py:129
+#: apps/dai-welcome/dai_welcome/gui.py:135
 msgid "Something went wrong"
 msgstr ""
 
@@ -2868,7 +2888,7 @@ msgid "Start it again"
 msgstr ""
 
 #. he: מתחילים להשתמש
-#: apps/dai-welcome/dai_welcome/gui.py:127
+#: apps/dai-welcome/dai_welcome/gui.py:133
 msgid "Start using D.Ai"
 msgstr ""
 
@@ -2918,7 +2938,7 @@ msgid "Stop scheduled virus scans"
 msgstr ""
 
 #. he: מחמיר
-#: apps/dai-welcome/dai_welcome/gui.py:69
+#: apps/dai-welcome/dai_welcome/gui.py:74
 msgid "Strict"
 msgstr ""
 
@@ -2950,7 +2970,7 @@ msgid "Swap: {used} of {total} in use"
 msgstr ""
 
 #. he: שינויים במערכת (תתבקש סיסמת מנהל):
-#: apps/dai-welcome/dai_welcome/gui.py:107
+#: apps/dai-welcome/dai_welcome/gui.py:112
 msgid "System changes (the administrator password will be requested):"
 msgstr ""
 
@@ -3025,7 +3045,7 @@ msgid "The computer is using swap heavily"
 msgstr ""
 
 #. he: הדיסק מוצפן, אם בחרתם בהצפנה בזמן ההתקנה.
-#: apps/dai-welcome/dai_welcome/gui.py:103
+#: apps/dai-welcome/dai_welcome/gui.py:108
 msgid "The disk is encrypted if you chose encryption during installation."
 msgstr ""
 
@@ -3051,7 +3071,7 @@ msgid "The message was not sent. It is still here; try again."
 msgstr ""
 
 #. he: המיקרופון מקליט רק כשלוחצים על כפתור הקול, ומוצגת הודעה כל הזמן.
-#: apps/dai-welcome/dai_welcome/gui.py:97
+#: apps/dai-welcome/dai_welcome/gui.py:102
 msgid "The microphone records only while you press the voice button; a notification is shown the whole time."
 msgstr ""
 
@@ -3137,7 +3157,7 @@ msgid "This app asks to read and write ~/Documents. Allow? [y/N] "
 msgstr ""
 
 #. he: המחשב הזה: {ram} RAM
-#: apps/dai-welcome/dai_welcome/gui.py:90
+#: apps/dai-welcome/dai_welcome/gui.py:95
 #, python-brace-format
 msgid "This computer: {ram} RAM"
 msgstr ""
@@ -3228,7 +3248,7 @@ msgstr ""
 
 #. he: לנסות שוב
 #: apps/dai-forge/dai_forge/gui.py:148
-#: apps/dai-welcome/dai_welcome/gui.py:128
+#: apps/dai-welcome/dai_welcome/gui.py:134
 msgid "Try again"
 msgstr ""
 
@@ -3359,7 +3379,7 @@ msgid "Videos"
 msgstr ""
 
 #. he: הקלדה קולית — הכתבה בעברית ובאנגלית (Super+H)
-#: apps/dai-welcome/dai_welcome/gui.py:85
+#: apps/dai-welcome/dai_welcome/gui.py:90
 msgid "Voice typing — dictate in Hebrew and English (Super+H)"
 msgstr ""
 
@@ -3472,7 +3492,7 @@ msgid "You can undo the last update"
 msgstr ""
 
 #. he: הכל מוכן ✓
-#: apps/dai-welcome/dai_welcome/gui.py:114
+#: apps/dai-welcome/dai_welcome/gui.py:120
 msgid "You're all set ✓"
 msgstr ""
 
@@ -3514,7 +3534,7 @@ msgid "Your name (what people see)"
 msgstr ""
 
 #. he: הפרטיות שלכם
-#: apps/dai-welcome/dai_welcome/gui.py:91
+#: apps/dai-welcome/dai_welcome/gui.py:96
 msgid "Your privacy"
 msgstr ""
 
@@ -3540,7 +3560,7 @@ msgid "administrator"
 msgstr ""
 
 #. he: כבר מותקן
-#: apps/dai-welcome/dai_welcome/gui.py:88
+#: apps/dai-welcome/dai_welcome/gui.py:93
 msgid "already installed"
 msgstr ""
 
@@ -3684,7 +3704,7 @@ msgid "imports code dynamically"
 msgstr ""
 
 #. he: כלול בעוזר במחשב הזה
-#: apps/dai-welcome/dai_welcome/gui.py:87
+#: apps/dai-welcome/dai_welcome/gui.py:92
 msgid "included in the assistant on this computer"
 msgstr ""
 
@@ -3877,7 +3897,7 @@ msgid "the camera"
 msgstr ""
 
 #. he: למחשב הזה מעט זיכרון; זה עלול להיות איטי
-#: apps/dai-welcome/dai_welcome/gui.py:89
+#: apps/dai-welcome/dai_welcome/gui.py:94
 msgid "this computer has little memory; it may be slow"
 msgstr ""
 
@@ -4188,7 +4208,7 @@ msgid "{repo} already exists; it is not overwritten."
 msgstr ""
 
 #. he: הורדה של {size} · דורש {ram} RAM
-#: apps/dai-welcome/dai_welcome/gui.py:86
+#: apps/dai-welcome/dai_welcome/gui.py:91
 #, python-brace-format
 msgid "{size} download · needs {ram} RAM"
 msgstr ""

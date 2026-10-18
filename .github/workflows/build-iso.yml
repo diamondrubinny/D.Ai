@@ -67,6 +67,11 @@ jobs:
       - name: Website (Hebrew RTL, AA contrast, no trackers, links)
         run: python3 -m unittest tests/site/test_site.py -v
 
+      - name: Boot menu languages (GRUB and syslinux)
+        run: |
+          sudo apt-get install -y -qq --no-install-recommends grub-common >/dev/null || true
+          python3 -m unittest tests/boot/test_boot_languages.py -v
+
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
 

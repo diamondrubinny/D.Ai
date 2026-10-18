@@ -1,0 +1,125 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""Boot menu languages (docs/I18N.md §9): a "Language" submenu in GRUB and syslinux.
+
+live-build writes the boot menus during the binary stage; this hook runs after
+it, in the binary tree, and copies the default live entry once per language,
+changing only `locales=` and `keyboard-layouts=` (live-config sets LANG from
+the first locale and the keyboard from the layouts). The default entry, its
+timeout and everything else stay as live-build wrote them.
+
+The labels are ASCII on purpose: GRUB and syslinux draw text left to right with
+whatever font they have, so Hebrew and Arabic would come out reversed or as boxes.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+MARK = "dai-languages"
+TITLE = "Language: English, Hebrew, Arabic, Russian..."
+# code, label, locales (the first one is the language), keyboard layouts (Alt+Shift switches)
+LANGUAGES = (
+    ("en", "English", "en_US.UTF-8,he_IL.UTF-8", "us,il"),
+    ("he", "Hebrew - Ivrit", "he_IL.UTF-8,en_US.UTF-8", "il,us"),
+    ("ar", "Arabic - al-Arabiya", "ar_EG.UTF-8,en_US.UTF-8", "ara,us,il"),
+    ("ru", "Russian - Russkiy", "ru_RU.UTF-8,en_US.UTF-8", "ru,us,il"),
+    ("es", "Spanish - Espanol", "es_ES.UTF-8,en_US.UTF-8", "es,us,il"),
+    ("fr", "French - Francais", "fr_FR.UTF-8,en_US.UTF-8", "fr,us,il"),
+    ("de", "German - Deutsch", "de_DE.UTF-8,en_US.UTF-8", "de,us,il"),
+    ("pt", "Portuguese - Portugues", "pt_BR.UTF-8,en_US.UTF-8", "br,us,il"),
+)
+
+
+def with_language(cmdline: str, locales: str, layouts: str) -> str:
+    """The same kernel command line, in another language."""
+    for key, value in (("locales", locales), ("keyboard-layouts", layouts)):
+        if re.search(rf"(?<!\S){key}=\S*", cmdline):
+            cmdline = re.sub(rf"(?<!\S){key}=\S*", f"{key}={value}", cmdline)
+        else:
+            cmdline = f"{cmdline} {key}={value}"
+    return cmdline
+
+
+def _grub_block(text: str) -> tuple[int, int] | None:
+    """(start, end) of the first menuentry that boots the live system, braces included."""
+    for match in re.finditer(r"^[ \t]*menuentry\b[^\n]*\{[ \t]*\n", text, re.M):
+        depth, index = 1, match.end()
+        while depth and index < len(text):
+            depth += {"{": 1, "}": -1}.get(text[index], 0)
+            index += 1
+        body = text[match.end():index - 1]
+        if re.search(r"^\s*linux\s.*\bboot=live\b", body, re.M):
+            return match.start(), index
+    return None
+
+
+def patch_grub(text: str) -> str | None:
+    """The GRUB menu with the submenu after the default live entry, or None when there is nothing to do."""
+    if MARK in text:
+        return None
+    found = _grub_block(text)
+    if found is None:
+        return None
+    start, end = found
+    block = text[start:end]
+    header_end = block.index("\n") + 1
+    body = block[header_end:block.rindex("}")]
+    entries = []
+    for code, label, locales, layouts in LANGUAGES:
+        lines = [re.sub(r"^(\s*linux\s+)(.*)$", lambda m: m.group(1) + with_language(m.group(2), locales, layouts), line)
+                 for line in body.splitlines()]
+        inner = "\n".join("\t" + line for line in lines if line.strip())
+        entries.append(f'\tmenuentry "{label}" --id {MARK}-{code} {{\n{inner}\n\t}}')
+    submenu = f'\nsubmenu "{TITLE}" --id {MARK} {{\n' + "\n".join(entries) + "\n}\n"
+    return text[:end] + submenu + text[end:]
+
+
+def patch_syslinux(text: str) -> str | None:
+    """The syslinux menu with a "Language" submenu after the default live entry, or None."""
+    if MARK in text:
+        return None
+    lines = text.splitlines(keepends=True)
+    for index, line in enumerate(lines):
+        if not re.match(r"^\s*label\s", line, re.I):
+            continue
+        block_end = index + 1
+        while block_end < len(lines) and not re.match(r"^\s*(label|menu\s+(begin|end))\b", lines[block_end], re.I):
+            block_end += 1
+        block = lines[index + 1:block_end]
+        if not any(re.match(r"^\s*append\s.*\bboot=live\b", entry, re.I) for entry in block):
+            continue
+        kept = [entry.strip() for entry in block
+                if entry.strip() and not re.match(r"^\s*menu\s+(label|default)\b", entry, re.I)]
+        out = [f"\nmenu begin {MARK}\n", f"\tmenu label {TITLE}\n"]
+        for code, label, locales, layouts in LANGUAGES:
+            out += [f"\tlabel {MARK}-{code}\n", f"\t\tmenu label {label}\n"]
+            for entry in kept:
+                entry = re.sub(r"^(append\s+)(.*)$", lambda m: m.group(1) + with_language(m.group(2), locales, layouts),
+                               entry, flags=re.I)
+                out.append(f"\t\t{entry}\n")
+        out += [f"\tlabel {MARK}-back\n", "\t\tmenu label Back\n", "\t\tmenu exit\n", "menu end\n"]
+        return "".join(lines[:block_end] + out + lines[block_end:])
+    return None
+
+
+def main(root: Path) -> int:
+    patched = []
+    for pattern, patch in (("boot/grub/*.cfg", patch_grub), ("isolinux/*.cfg", patch_syslinux),
+                           ("syslinux/*.cfg", patch_syslinux)):
+        for path in sorted(root.glob(pattern)):
+            new = patch(path.read_text(encoding="utf-8", errors="surrogateescape"))
+            if new is not None:
+                path.write_text(new, encoding="utf-8", errors="surrogateescape")
+                patched.append(str(path.relative_to(root)))
+    print(f"D.Ai boot languages: {', '.join(patched) or 'no live menu entry found'}")
+    return 0
+
+
+if __name__ == "__main__":
+    # live-build runs binary hooks inside the binary tree; also accept the build directory.
+    here = Path.cwd()
+    sys.exit(main(here / "binary" if (here / "binary" / "live").is_dir() else here))

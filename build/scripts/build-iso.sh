@@ -97,7 +97,7 @@ configure() {
   # Layer the shared config first, then the edition-specific overrides.
   cp -a "$LB_SRC/common/." config/
   cp -a "$LB_SRC/editions/$EDITION/." config/
-  chmod 0755 config/hooks/normal/*.hook.chroot
+  chmod 0755 config/hooks/normal/*.hook.chroot config/hooks/normal/*.hook.binary
   # Qt draws SVG files (the D.Ai diamond on Start, in D.Ai Command and Forge)
   # through its SVG plugins. Newer Debian Qt packages ship them separately
   # from libqt6svg6; recommends are not installed, so add them explicitly.

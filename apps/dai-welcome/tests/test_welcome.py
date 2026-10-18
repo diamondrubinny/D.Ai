@@ -74,6 +74,17 @@ class SecurityTests(WelcomeTestCase):
         self.assertIsNone(core.security_plan("keep", self.ctx))
 
 
+class LanguageTests(WelcomeTestCase):
+    def test_the_sentence_and_the_plan(self):
+        self.assertEqual(core.language_sentence("ru", "he"), "language russian")
+        self.assertEqual(core.language_sentence("he", "he"), "")
+        with self.assertRaises(ValueError):
+            core.language_sentence("xx; rm", "he")
+        plan = core.security_plan("keep", self.ctx, core.language_sentence("pt", "en"))
+        self.assertTrue(plan.ok)
+        self.assertEqual([step.action for step in plan.steps], ["system.locale", "session.language"])
+
+
 class ModelTests(WelcomeTestCase):
     def test_ram(self):
         meminfo = self.root / "meminfo"
@@ -213,6 +224,38 @@ class WindowTests(WelcomeTestCase):
         self.assertIn("Nothing to change", self.texts(win))
         self.click(win, "Finish")
         self.assertTrue(core.state_path(self.home).exists())
+
+    def test_choosing_a_language(self):
+        from dai_i18n import NATIVE_NAMES
+
+        win = self.window()
+        radios = {r.text(): r for r in win.findChildren(QRadioButton) if r.isVisible()}
+        self.assertTrue(radios["English"].isChecked())
+        self.assertEqual(len([n for n in NATIVE_NAMES.values() if n in radios]), 8)
+        radios["العربية"].setChecked(True)
+        self.app.processEvents()
+        self.assertEqual(win.lang, "ar")
+        self.assertEqual(win.layoutDirection(), Qt.LayoutDirection.RightToLeft)  # the wizard speaks it at once
+        checked = [r for r in win.findChildren(QRadioButton) if r.isVisible() and r.isChecked()]
+        self.assertEqual([r.text() for r in checked], ["العربية"])
+        win.level = "keep"
+        for box in win.findChildren(QCheckBox):
+            box.setChecked(False)
+        for option in win.options:
+            option.checked = False
+        self.goto(win, "summary")
+        actions = [step.action for step in win.setup.plan.steps]
+        self.assertEqual(actions, ["system.locale", "session.language"])  # set up at the end, with Tune
+        win.choose_language("en")
+        self.goto(win, "summary")
+        self.assertIsNone(win.setup.plan)
+
+    def test_only_an_administrator_adds_a_language(self):
+        win = self.window(admin=False)
+        radios = {r.text(): r for r in win.findChildren(QRadioButton) if r.isVisible()}
+        self.assertTrue(radios["English"].isEnabled())
+        self.assertFalse(radios["Русский"].isEnabled())
+        self.assertIn("Only an administrator can add a language", self.texts(win))
 
     def test_escape_means_not_now(self):
         win = self.window()

@@ -568,6 +568,12 @@ def main() -> int:
          "dai-forge recipe list 2>/dev/null | grep -c language- ; rm -f ~/.config/dai/language.env", True,
          lambda o: "RC=0" in o and "ru_RU.UTF-8 UTF-8" in o and re.search(r"^ru_RU\.utf8$", o, re.M | re.I) is not None
          and "LANG=ru_RU.UTF-8" in o and "LANGUAGE=ru:en" in o and re.search(r"^6$", o, re.M) is not None, 180),
+        # i18n stage 3b (docs/I18N.md §9): the boot menu on the medium has the eight languages, and the default
+        # entry (the one this test booted) is still English and Hebrew.
+        ("i18n: boot menu languages", "grep -ho 'dai-languages-[a-z]*' /run/live/medium/boot/grub/grub.cfg "
+         "/run/live/medium/isolinux/live.cfg 2>/dev/null | sort -u | tr '\\n' ' '; echo; grep -o 'locales=[^ ]*' /proc/cmdline",
+         True, lambda o: all(f"dai-languages-{c} " in o for c in ("en", "he", "ar", "ru", "es", "fr", "de", "pt"))
+         and "locales=en_US.UTF-8,he_IL.UTF-8" in o, 30),
         # J stage 2b (docs/MAIL.md §11): a Thunderbird "Local Folders" mbox is copied into J's local folders, the
         # message marked deleted is not, importing again adds nothing, and Thunderbird's file is not changed.
         ("j: mail kept on this computer", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
