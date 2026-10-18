@@ -280,6 +280,26 @@ sleep 5
 monitor "screendump $ARTIFACT_DIR/clip.png -f png" || log "warning: screenshot failed"
 type_keys esc
 
+# docs/I18N.md §11: the same windows in Arabic (right to left) and Russian, started from the command bar
+# with "$ LANG=xx app" (the D.Ai apps read the language from LANG; the catalogs are on the image).
+log "interactive: D.Ai Welcome in Arabic"
+sleep 2
+type_keys meta_l-spc
+sleep 2
+type_keys shift-4 spc shift-l shift-a shift-n shift-g equal a r spc d a i minus w e l c o m e ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/welcome-ar.png -f png" || log "warning: screenshot failed"
+type_keys esc
+sleep 2
+
+log "interactive: MOM in Russian"
+type_keys meta_l-spc
+sleep 2
+type_keys shift-4 spc shift-l shift-a shift-n shift-g equal r u spc d a i minus m o m ret
+sleep 6
+monitor "screendump $ARTIFACT_DIR/mom-ru.png -f png" || log "warning: screenshot failed"
+type_keys esc
+
 if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2
