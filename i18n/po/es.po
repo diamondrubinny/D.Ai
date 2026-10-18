@@ -6,38 +6,22 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: apps/dai-forge/dai_forge/cli.py:230
-msgid ""
-"\n"
-"  Testing it in the sandbox…"
-msgstr ""
-"\n"
-"  Probándola en el entorno aislado…"
+msgid "\n  Testing it in the sandbox…"
+msgstr "\n  Probándola en el entorno aislado…"
 
 #: apps/dai-forge/dai_forge/cli.py:226
 #, python-brace-format
-msgid ""
-"\n"
-"  ✗ It crashed when started; Diamond is fixing it ({repair}/2)…"
-msgstr ""
-"\n"
-"  ✗ Se cerró al iniciarse; Diamond la está arreglando ({repair}/2)…"
+msgid "\n  ✗ It crashed when started; Diamond is fixing it ({repair}/2)…"
+msgstr "\n  ✗ Se cerró al iniciarse; Diamond la está arreglando ({repair}/2)…"
 
 #: apps/dai-doctor/dai_doctor/cli.py:88
-msgid ""
-"\n"
-"Everything looks fine."
-msgstr ""
-"\n"
-"Todo parece estar bien."
+msgid "\nEverything looks fine."
+msgstr "\nTodo parece estar bien."
 
 #: apps/dai-move/dai_move/cli.py:106
 #, python-brace-format
-msgid ""
-"\n"
-"✓ Copied {copied} files."
-msgstr ""
-"\n"
-"✓ Archivos copiados: {copied}."
+msgid "\n✓ Copied {copied} files."
+msgstr "\n✓ Archivos copiados: {copied}."
 
 #: apps/dai-forge/dai_forge/cli.py:259
 #, python-brace-format
@@ -1303,20 +1287,8 @@ msgstr "Nombre"
 
 #: apps/dai-oem/dai_oem/wizard.py:63
 #, python-brace-format
-msgid ""
-"Name: {name}\n"
-"User: {user} (administrator)\n"
-"Computer: {host}\n"
-"{luks}\n"
-"\n"
-"After “Finish” the computer restarts. The temporary user it came with is deleted."
-msgstr ""
-"Nombre: {name}\n"
-"Usuario: {user} (administrador)\n"
-"Equipo: {host}\n"
-"{luks}\n"
-"\n"
-"Al pulsar “Terminar” el equipo se reinicia. El usuario temporal con el que venía se elimina."
+msgid "Name: {name}\nUser: {user} (administrator)\nComputer: {host}\n{luks}\n\nAfter “Finish” the computer restarts. The temporary user it came with is deleted."
+msgstr "Nombre: {name}\nUsuario: {user} (administrador)\nEquipo: {host}\n{luks}\n\nAl pulsar “Terminar” el equipo se reinicia. El usuario temporal con el que venía se elimina."
 
 #: apps/dai-tune/dai_tune/catalog.py:1162
 msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it. Up to 10 snapshots are kept."
@@ -1341,12 +1313,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: apps/dai-move/dai_move/cli.py:53
-msgid ""
-"No Windows user folders found. Connect the Windows drive (or a copy of C:\\Users\\<name>) and open it once in the file manager, then try again.\n"
-"A BitLocker-encrypted drive cannot be read here: copy the files to a USB drive from Windows first."
-msgstr ""
-"No se encontraron carpetas de usuario de Windows. Conecta la unidad de Windows (o una copia de C:\\Users\\<name>) y ábrela una vez en el administrador de archivos; después vuelve a intentarlo.\n"
-"Una unidad cifrada con BitLocker no se puede leer aquí: primero copia los archivos a una unidad USB desde Windows."
+msgid "No Windows user folders found. Connect the Windows drive (or a copy of C:\\Users\\<name>) and open it once in the file manager, then try again.\nA BitLocker-encrypted drive cannot be read here: copy the files to a USB drive from Windows first."
+msgstr "No se encontraron carpetas de usuario de Windows. Conecta la unidad de Windows (o una copia de C:\\Users\\<name>) y ábrela una vez en el administrador de archivos; después vuelve a intentarlo.\nUna unidad cifrada con BitLocker no se puede leer aquí: primero copia los archivos a una unidad USB desde Windows."
 
 #: apps/dai-forge/dai_forge/gui.py:129
 msgid "No apps yet — ask for one above."
@@ -2092,12 +2060,8 @@ msgstr "Algo salió mal: {detail}"
 
 #: apps/dai-oem/dai_oem/wizard.py:71
 #, python-brace-format
-msgid ""
-"Something went wrong: {error}\n"
-"Nothing was lost. Check the details and try again."
-msgstr ""
-"Algo salió mal: {error}\n"
-"No se perdió nada. Revisa los detalles y vuelve a intentarlo."
+msgid "Something went wrong: {error}\nNothing was lost. Check the details and try again."
+msgstr "Algo salió mal: {error}\nNo se perdió nada. Revisa los detalles y vuelve a intentarlo."
 
 #: apps/dai-doctor/dai_doctor/diagnose.py:184
 msgid "Sound"
@@ -2337,16 +2301,8 @@ msgstr "Este plan DEBILITA la seguridad. Escribe \"yes\" para aplicarlo: "
 
 #: apps/dai-oem/dai_oem/cli.py:25
 #, python-brace-format
-msgid ""
-"This prepares the computer for its new owner:\n"
-"  • at the next start, a short setup asks for their name, user, password, computer name{luks}\n"
-"  • the temporary user {user} and everything in its home folder are deleted after that\n"
-"  • package caches, system logs, the machine ID and SSH host keys are reset now\n"
-msgstr ""
-"Esto prepara el equipo para su nuevo dueño:\n"
-"  • en el próximo inicio, una breve configuración le pide su nombre, usuario, contraseña y nombre del equipo{luks}\n"
-"  • después se eliminan el usuario temporal {user} y todo lo que haya en su carpeta personal\n"
-"  • ahora se restablecen las cachés de paquetes, los registros del sistema, el ID de la máquina y las claves de host SSH\n"
+msgid "This prepares the computer for its new owner:\n  • at the next start, a short setup asks for their name, user, password, computer name{luks}\n  • the temporary user {user} and everything in its home folder are deleted after that\n  • package caches, system logs, the machine ID and SSH host keys are reset now\n"
+msgstr "Esto prepara el equipo para su nuevo dueño:\n  • en el próximo inicio, una breve configuración le pide su nombre, usuario, contraseña y nombre del equipo{luks}\n  • después se eliminan el usuario temporal {user} y todo lo que haya en su carpeta personal\n  • ahora se restablecen las cachés de paquetes, los registros del sistema, el ID de la máquina y las claves de host SSH\n"
 
 #: apps/dai-j/dai_j/text.py:67
 msgid "This provider accepts only its own sign-in page, which J does not support yet. Meanwhile, Thunderbird works: type \"+ thunderbird\" in D.Ai Command."
