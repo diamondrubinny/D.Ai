@@ -3272,3 +3272,77 @@ msgstr "الكاميرا"
 #: apps/dai-privacy/dai_privacy/text.py
 msgid "camera or screen sharing"
 msgstr "الكاميرا أو مشاركة الشاشة"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Ask Diamond"
+msgstr "اسأل Diamond"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "Close {name}"
+msgstr "إغلاق {name}"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "Close {name} (frees {memory})"
+msgstr "إغلاق {name} (يحرّر {memory})"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "Diamond about {name}"
+msgstr "Diamond عن {name}"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Diamond is not available, so this comes from the facts alone."
+msgstr "Diamond غير متاح، لذلك يعتمد هذا على الحقائق وحدها."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Diamond is thinking…"
+msgstr "Diamond يفكّر…"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Fewer apps at login…"
+msgstr "تطبيقات أقل عند تسجيل الدخول…"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "It is part of the session; closing it can end the session."
+msgstr "إنه جزء من الجلسة، وإغلاقه قد ينهي الجلسة."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "It runs in a D.Ai Forge sandbox."
+msgstr "يعمل داخل صندوق حماية من D.Ai Forge."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "It uses {memory} of memory and {cpu}% of the processor ({processes})."
+msgstr "يستخدم {memory} من الذاكرة و{cpu}% من المعالج ({processes})."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "It was installed with the package {package}."
+msgstr "ثُبّت مع الحزمة {package}."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Nothing looks overloaded right now."
+msgstr "لا شيء يبدو مُثقلًا الآن."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Only these facts, on this computer. Secrets in the command line are hidden."
+msgstr "هذه الحقائق فقط، على هذا الحاسوب. الأسرار في سطر الأوامر مخفية."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "What was sent to Diamond"
+msgstr "ما أُرسل إلى Diamond"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Why is the computer slow?"
+msgstr "لماذا الحاسوب بطيء؟"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "an app without a description"
+msgstr "تطبيق بلا وصف"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "{name} is using {cpu}% of the processor."
+msgstr "{name} يستخدم {cpu}% من المعالج."

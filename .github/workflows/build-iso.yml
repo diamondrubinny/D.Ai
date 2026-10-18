@@ -101,7 +101,7 @@ jobs:
 
       - name: Unit tests (dai-mom, the task manager, with a fake /proc and the window)
         env:
-          PYTHONPATH: apps/dai-mom:apps/dai-i18n:apps/dai-status:apps/dai-raz
+          PYTHONPATH: apps/dai-mom:apps/dai-i18n:apps/dai-status:apps/dai-clip:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-mom/tests -t apps/dai-mom -v
 

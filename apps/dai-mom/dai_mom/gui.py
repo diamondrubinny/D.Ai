@@ -118,13 +118,19 @@ def _ask(parent: QWidget, title: str, body: str, action: str, lang: str) -> bool
 class MomWindow(QMainWindow):
     def __init__(self, lang: str | None = None, source: Callable[[], tuple[list, Perf]] | None = None,
                  closer=actions.close, ask=_ask, spawn=_spawn, interval: int = 2000, services_runner=None,
-                 autostart: tuple[Path | None, list[Path] | None] = (None, None)) -> None:
+                 autostart: tuple[Path | None, list[Path] | None] = (None, None), ai=None,
+                 ai_inline: bool = False, doctor=None) -> None:
         super().__init__()
         self.lang = lang or ui_lang()
         self.source = source or LiveSource(self.lang)
         self.closer = closer
         self.ask = ask
         self.spawn = spawn
+        self.ai = ai              # Diamond (diamond.answer by default); tests pass their own
+        self.ai_inline = ai_inline
+        self.doctor = doctor      # → D.Ai Doctor's findings for "why is it slow?"
+        self.perf = Perf()
+        self.dialog = None
         self.apps: dict[str, apps_mod.App] = {}
         self.items: dict[str, QTreeWidgetItem] = {}
         self.setWindowTitle(t("title", self.lang))
@@ -184,12 +190,17 @@ class MomWindow(QMainWindow):
         self.close_button.clicked.connect(lambda: self.close_selected(False))
         self.force_button = QPushButton(embed(t("force", self.lang), self.lang), objectName="Danger")
         self.force_button.clicked.connect(lambda: self.close_selected(True))
+        self.ask_button = QPushButton(embed("✦ " + t("ask_diamond", self.lang), self.lang))
+        self.ask_button.setToolTip(t("ask_diamond", self.lang) + " · ?")
+        self.ask_button.clicked.connect(self.ask_diamond)
+        row.addWidget(self.ask_button)
         row.addWidget(self.close_button)
         row.addWidget(self.force_button)
         layout.addLayout(row)
 
         QShortcut(QKeySequence(Qt.Key.Key_Delete), self.tree, lambda: self.close_selected(False))
         QShortcut(QKeySequence("Shift+Delete"), self.tree, lambda: self.close_selected(True))
+        QShortcut(QKeySequence("?"), self.tree, self.ask_diamond)
         QShortcut(QKeySequence.StandardKey.Find, self, self.search.setFocus)
         QShortcut(QKeySequence(Qt.Key.Key_Escape), self, self._escape)
         self.search.returnPressed.connect(self.tree.setFocus)
@@ -210,10 +221,9 @@ class MomWindow(QMainWindow):
             layout.addWidget(bar)
             self.bars[key] = (label, bar)
         layout.addStretch(1)
-        slow = QPushButton(embed(t("slow", self.lang) + " ›", self.lang))
-        slow.clicked.connect(lambda: self.spawn(["x-terminal-emulator", "-e", "bash", "-c",
-                                                 'dai-doctor slow; echo; read -r -p "Enter ↵" _']))
-        layout.addWidget(slow, 0, Qt.AlignmentFlag.AlignLeading)
+        self.slow_button = QPushButton(embed("✦ " + t("slow", self.lang), self.lang))
+        self.slow_button.clicked.connect(self.why_slow)
+        layout.addWidget(self.slow_button, 0, Qt.AlignmentFlag.AlignLeading)
         return page
 
     def _tab_shown(self, index: int) -> None:
@@ -228,6 +238,7 @@ class MomWindow(QMainWindow):
         self.apps = {a.key: a for a in found}
         self._fill_tree(found)
         self._fill_performance(perf)
+        self.perf = perf
         shown = [a for a in found if a.is_app]
         self.summary.setText(t("summary", self.lang, apps=len(shown), procs=sum(len(a.processes) for a in found)))
         self._filter(self.search.text())
@@ -350,6 +361,7 @@ class MomWindow(QMainWindow):
     def _update_buttons(self) -> None:
         app = self.selected_app()
         self.close_button.setEnabled(app is not None)
+        self.ask_button.setEnabled(app is not None)
         self.force_button.setEnabled(app is not None and not app.protected)
 
     def close_selected(self, force: bool) -> None:
@@ -379,6 +391,48 @@ class MomWindow(QMainWindow):
         if not force:
             QTimer.singleShot(3000, lambda: self._offer_force(app))
         QTimer.singleShot(300, self.refresh)
+
+    # Diamond (docs/MOM.md §11)
+
+    def _open_diamond(self, title: str, prepare, suggestions: list) -> None:
+        from .ask import DiamondDialog
+
+        self.dialog = DiamondDialog(self.lang, title, prepare, suggestions, self._suggested, ai=self.ai,
+                                    inline=self.ai_inline, parent=self)
+        self.dialog.setStyleSheet(STYLE + DIALOG_STYLE)
+        self.dialog.open()
+
+    def ask_diamond(self) -> None:
+        app = self.selected_app()
+        if app is None:
+            return
+        from . import diamond
+
+        def prepare():
+            facts = diamond.facts_for(app)
+            return diamond.what_messages(facts, self.lang), diamond.local_what(facts, self.lang)
+        self._open_diamond(t("diamond_title", self.lang, name=app.name), prepare, [])
+
+    def why_slow(self) -> None:
+        from . import diamond
+
+        found, perf = list(self.apps.values()), self.perf
+
+        def prepare():
+            data = diamond.slow_facts(found, perf, (self.doctor or diamond.doctor_findings)(self.lang))
+            return diamond.slow_messages(data, self.lang), diamond.local_why(data, self.lang)
+        self._open_diamond(t("diamond_slow_title", self.lang), prepare, diamond.suggestions(found, perf, self.lang))
+
+    def _suggested(self, suggestion) -> None:
+        """A button from MOM's own list: it does what the same button elsewhere in MOM does."""
+        if suggestion.kind == "startup":
+            self.tabs.setCurrentWidget(self.startup)
+        elif suggestion.kind == "close":
+            item = self._item_for(suggestion.key)
+            if item is not None:
+                self.tabs.setCurrentIndex(0)
+                self.tree.setCurrentItem(item)
+                self.close_selected(False)
 
     def _offer_force(self, app: apps_mod.App) -> None:
         if app.protected or not actions.still_running(app):
@@ -412,6 +466,14 @@ class MomWindow(QMainWindow):
             self.search.clear()
         else:
             self.close()
+
+
+DIALOG_STYLE = """
+QDialog { background: #0B1020; }
+QLabel#Big { font-size: 13pt; font-weight: 600; }
+QPlainTextEdit { background: #141B33; border: 1px solid #2A3563; border-radius: 10px; font-family: monospace; }
+QLabel:focus { border: 1px dashed #22D3EE; }
+"""
 
 
 def main(server=None) -> int:

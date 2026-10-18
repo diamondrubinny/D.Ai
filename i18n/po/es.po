@@ -3272,3 +3272,77 @@ msgstr "cámara"
 #: apps/dai-privacy/dai_privacy/text.py
 msgid "camera or screen sharing"
 msgstr "cámara o compartir pantalla"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Ask Diamond"
+msgstr "Preguntar a Diamond"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "Close {name}"
+msgstr "Cerrar {name}"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "Close {name} (frees {memory})"
+msgstr "Cerrar {name} (libera {memory})"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "Diamond about {name}"
+msgstr "Diamond sobre {name}"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Diamond is not available, so this comes from the facts alone."
+msgstr "Diamond no está disponible, así que esto se basa solo en los datos."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Diamond is thinking…"
+msgstr "Diamond está pensando…"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Fewer apps at login…"
+msgstr "Menos apps al iniciar sesión…"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "It is part of the session; closing it can end the session."
+msgstr "Forma parte de la sesión; cerrarlo puede terminar la sesión."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "It runs in a D.Ai Forge sandbox."
+msgstr "Se ejecuta en un entorno aislado de D.Ai Forge."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "It uses {memory} of memory and {cpu}% of the processor ({processes})."
+msgstr "Usa {memory} de memoria y el {cpu}% del procesador ({processes})."
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "It was installed with the package {package}."
+msgstr "Se instaló con el paquete {package}."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Nothing looks overloaded right now."
+msgstr "Ahora mismo nada parece sobrecargado."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Only these facts, on this computer. Secrets in the command line are hidden."
+msgstr "Solo estos datos, en este equipo. Los secretos de la línea de órdenes están ocultos."
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "What was sent to Diamond"
+msgstr "Qué se envió a Diamond"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "Why is the computer slow?"
+msgstr "¿Por qué va lento el equipo?"
+
+#: apps/dai-mom/dai_mom/text.py
+msgid "an app without a description"
+msgstr "una app sin descripción"
+
+#: apps/dai-mom/dai_mom/text.py
+#, python-brace-format
+msgid "{name} is using {cpu}% of the processor."
+msgstr "{name} está usando el {cpu}% del procesador."

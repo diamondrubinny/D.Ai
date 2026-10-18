@@ -530,6 +530,17 @@ def main() -> int:
          "sorted(x[\"key\"] for x in a if x[\"protected\"])[:6])'", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "RC_CLOSE=0" in o and "TEST_GONE" in o
          and "RC_PROTECT=3" in o and "LABWC_ALIVE" in o and "proc:labwc" in o, 60),
+        # MOM stage 3 (docs/MOM.md §11): Diamond's facts about a process whose command line holds a password show
+        # the password hidden; "explain" and "why" always answer (the local answer when no model is installed).
+        ("mom: Diamond explains, secrets hidden", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "python3 -c 'import time; time.sleep(300)' --password hunter2 --token=abc123def456 & P=$!; sleep 1; "
+         "dai-mom explain $P --facts > /tmp/mom-facts.txt; echo RC_FACTS=$?; "
+         "grep -c hunter2 /tmp/mom-facts.txt || echo NO_PASSWORD; grep -c abc123def456 /tmp/mom-facts.txt || "
+         "echo NO_TOKEN; grep -q '‹hidden›' /tmp/mom-facts.txt && echo HIDDEN_SHOWN; "
+         "timeout 60 dai-mom explain $P > /tmp/mom-explain.txt; echo RC_EXPLAIN=$?; head -c 300 /tmp/mom-explain.txt; "
+         "timeout 60 dai-mom why | head -n 5; kill $P", True,
+         lambda o: "RC_FACTS=0" in o and "NO_PASSWORD" in o and "NO_TOKEN" in o and "HIDDEN_SHOWN" in o
+         and "RC_EXPLAIN=0" in o, 150),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "

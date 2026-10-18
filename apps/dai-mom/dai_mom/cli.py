@@ -10,6 +10,9 @@
   dai-mom services                  what runs in the background (yours, then the system's)
   dai-mom startup [on|off NAME.desktop]
                                     the apps that start at login, or turn one on or off
+  dai-mom explain NAME|PID [--facts]
+                                    Diamond explains an app (--facts: only what would be sent)
+  dai-mom why                       why the computer is slow, from D.Ai Doctor and Diamond
   dai-mom --version
 """
 
@@ -92,6 +95,42 @@ def main(argv: list[str] | None = None) -> int:
                 return 1
         for item in bg.login_items(lang):
             print(f"{'on ' if item.enabled else 'off'} {item.id}  {item.name}")
+        return 0
+    if command == "explain":
+        from . import diamond
+
+        names = [a for a in rest if not a.startswith("--")]
+        app = apps.find(current(lang), names[0]) if len(names) == 1 else None
+        if app is None:
+            print(t("not_found", lang, name=names[0] if names else ""), file=sys.stderr)
+            return 1
+        if names[0].isdigit():  # that one process, by its own name, not the oldest one of its app
+            process = next(p for p in app.processes if p.pid == int(names[0]))
+            app = apps.App(key=f"pid:{process.pid}", name=process.name, processes=[process], is_app=False,
+                           sandboxed=process.name == "bwrap", protected=process.name in apps.PROTECTED)
+        facts = diamond.facts_for(app)
+        messages = diamond.what_messages(facts, lang)
+        if "--facts" in rest:
+            print(messages[-1]["content"])
+            return 0
+        print(diamond.answer(messages) or diamond.local_what(facts, lang))
+        return 0
+    if command == "why":
+        from types import SimpleNamespace
+
+        from . import diamond
+
+        before = procs.cpu_total()
+        found = current(lang)  # samples for half a second
+        busy, total = procs.cpu_total()
+        mem = procs.memory_totals()
+        perf = SimpleNamespace(cpu=(busy - before[0]) / max(total - before[1], 1) * 100,
+                               mem_total=mem.get("MemTotal", 0),
+                               mem_used=mem.get("MemTotal", 0) - mem.get("MemAvailable", 0))
+        data = diamond.slow_facts(found, perf, diamond.doctor_findings(lang))
+        print(diamond.answer(diamond.slow_messages(data, lang)) or diamond.local_why(data, lang))
+        for suggestion in diamond.suggestions(found, perf, lang):
+            print(f"  • {suggestion.label}")
         return 0
     if command == "close":
         names = [a for a in rest if not a.startswith("--")]
