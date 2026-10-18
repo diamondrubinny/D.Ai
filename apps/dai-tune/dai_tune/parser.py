@@ -10,7 +10,10 @@ the same validation.
 
 from __future__ import annotations
 
+import json
 import re
+from functools import lru_cache
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -131,8 +134,34 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip().casefold())
 
 
+@lru_cache(maxsize=1)
+def _packs() -> tuple[tuple[re.Pattern, str], ...]:
+    """The keyword packs (lang/<xx>.json, docs/I18N.md §10): words in the other six languages → the English
+    this parser already understands. Data only; the longest phrase wins, and only whole words are replaced."""
+    phrases: dict[str, str] = {}
+    for path in sorted((Path(__file__).parent / "lang").glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if data.get("format") != 1 or not isinstance(data.get("phrases"), dict):
+            continue
+        for foreign, english in data["phrases"].items():
+            if isinstance(foreign, str) and isinstance(english, str) and re.fullmatch(r"[a-z0-9 .:'-]+", english):
+                phrases.setdefault(_normalize(foreign), english)
+    ordered = sorted(phrases.items(), key=lambda item: -len(item[0]))
+    return tuple((re.compile(rf"(?<![\w-]){re.escape(foreign)}(?![\w-])"), english) for foreign, english in ordered)
+
+
+def translate(text: str) -> str:
+    """"заблокируй флешки" → "block usb"; Hebrew and English pass through unchanged."""
+    for pattern, english in _packs():
+        text = pattern.sub(english, text)
+    return text
+
+
 def split_clauses(text: str) -> list[str]:
-    return [c.strip(" .!?") for c in _SPLIT.split(_normalize(text)) if c and c.strip(" .!?")]
+    return [c.strip(" .!?") for c in _SPLIT.split(translate(_normalize(text))) if c and c.strip(" .!?")]
 
 
 def _has(pattern: str, clause: str) -> bool:
@@ -287,6 +316,15 @@ def _uncovered_topics(clause: str, requests: list[Request]) -> list[str]:
     return missing
 
 
+def _only_device(clause: str) -> str | None:
+    """The device a verbless clause names ("the camera"), or None when it says more than that."""
+    found = [kind for kind, pattern in DEVICES.items() if re.search(pattern, clause, re.IGNORECASE)]
+    if len(found) != 1:
+        return None
+    rest = re.sub(DEVICES[found[0]], "", clause, flags=re.IGNORECASE)
+    return found[0] if re.fullmatch(r"\s*(?:the|its|ה|את ה?)?\s*", rest) else None
+
+
 def parse(text: str) -> ParseResult:
     result = ParseResult()
     for clause in split_clauses(text):
@@ -301,6 +339,14 @@ def parse(text: str) -> ParseResult:
             # "install vlc and gimp": the clause after "and" continues the list.
             names = previous.params["names"] + _package_names(clause)
             result.requests[-1] = Request(previous.action, {"names": names}, previous.source + ", " + clause)
+        elif (
+            not requests
+            and previous is not None
+            and previous.action in ("device.block", "device.allow")
+            and (kind := _only_device(clause)) is not None
+        ):
+            # "turn off bluetooth and camera": the camera gets the same verb.
+            result.requests.append(Request(previous.action, {"kind": kind}, clause))
         elif requests and not _uncovered_topics(clause, requests):
             result.requests.extend(requests)
         else:

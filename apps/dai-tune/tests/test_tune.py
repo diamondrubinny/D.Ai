@@ -721,3 +721,55 @@ class LanguageTests(TuneTestCase):
         self.assertEqual(result.requests[0].params, {"layouts": ["us", "ara", "pt"]})
         spec = catalog.CATALOG["keyboard.layouts"]
         self.assertEqual(spec.validate({"layouts": ["ar", "us"]}, self.ctx), {"layouts": ["ara", "us"]})  # old name
+
+
+
+class KeywordPackTests(unittest.TestCase):
+    """docs/I18N.md §10: Tune in the six other languages, through data files (dai_tune/lang/*.json)."""
+
+    CASES = [
+     ("заблокируй флешки", "device.block"), ("открой порт 8080", "firewall.open_port"), ("включи автоматические обновления", "updates.auto"),
+     ("заблокировать экран через 5 минут", "session.lock"), ("освободи место на диске", "system.clean"), ("отмени последнее обновление", "snapshots.undo_update"),
+     ("режим экономии батареи", "power.profile"), ("установи vlc", "packages.install"), ("отключи блютуз и камеру", "device.block"),
+     ("احظر الفلاشة", "device.block"), ("افتح المنفذ 8080", "firewall.open_port"), ("فعّل التحديثات التلقائية", "updates.auto"),
+     ("اقفل الشاشة بعد 5 دقائق", "session.lock"), ("حرر مساحة القرص", "system.clean"), ("تراجع عن آخر تحديث", "snapshots.undo_update"),
+     ("bloquear usb", "device.block"), ("abrir puerto 8080", "firewall.open_port"), ("activar actualizaciones automáticas", "updates.auto"),
+     ("bloquear la pantalla después de 5 minutos", "session.lock"), ("liberar espacio en disco", "system.clean"), ("deshacer la última actualización", "snapshots.undo_update"),
+     ("instalar vlc y gimp", "packages.install"), ("ahorro de batería", "power.profile"),
+     ("bloquer les clés usb", "device.block"), ("ouvrir le port 8080", "firewall.open_port"), ("activer les mises à jour automatiques", "updates.auto"),
+     ("verrouiller l'écran après 5 minutes", "session.lock"), ("libérer de l'espace disque", "system.clean"), ("annuler la dernière mise à jour", "snapshots.undo_update"),
+     ("USB-Sticks sperren", "device.block"), ("Port 8080 öffnen", "firewall.open_port"), ("automatische Updates aktivieren", "updates.auto"),
+     ("Bildschirm nach 5 Minuten sperren", "session.lock"), ("Speicherplatz freigeben", "system.clean"), ("letztes Update rückgängig machen", "snapshots.undo_update"),
+     ("installiere vlc", "packages.install"), ("Energiesparmodus", "power.profile"),
+     ("bloquear pendrive", "device.block"), ("abrir porta 8080", "firewall.open_port"), ("ativar atualizações automáticas", "updates.auto"),
+     ("bloquear a tela após 5 minutos", "session.lock"), ("liberar espaço em disco", "system.clean"), ("desfazer a última atualização", "snapshots.undo_update"),
+     ("block usb", "device.block"), ("חסום דיסק און קי", "device.block"), ("נעל מסך אחרי 5 דקות", "session.lock"),
+    ]
+
+    def test_each_language_reaches_the_same_actions(self):
+        for text, action in self.CASES:
+            result = parser.parse(text)
+            self.assertIn(action, [r.action for r in result.requests], text)
+            self.assertEqual(result.unknown, [], text)
+
+    def test_hebrew_and_english_are_untouched(self):
+        for lang in ("he", "en"):
+            for example in parser.EXAMPLES[lang]:
+                normalized = parser._normalize(example)
+                self.assertEqual(parser.translate(normalized), normalized, example)
+
+    def test_packs_are_data_in_the_expected_shape(self):
+        directory = Path(parser.__file__).parent / "lang"
+        codes = sorted(p.stem for p in directory.glob("*.json"))
+        self.assertEqual(codes, ["ar", "de", "es", "fr", "pt", "ru"])
+        for path in directory.glob("*.json"):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual((data["format"], data["lang"]), (1, path.stem))
+            for foreign, english in data["phrases"].items():
+                self.assertRegex(english, r"^[a-z0-9 .:'-]+$", f"{path.name}: {foreign}")
+
+    def test_a_verb_carries_to_the_next_device_only(self):
+        result = parser.parse("turn off bluetooth and camera")
+        self.assertEqual([(r.action, r.params["kind"]) for r in result.requests],
+                         [("device.block", "bluetooth"), ("device.block", "camera")])
+        self.assertEqual(parser.parse("block usb and the camera please").unknown, ["the camera please"])  # no guess
