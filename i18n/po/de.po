@@ -3493,3 +3493,25 @@ msgstr "Ins Russische korrigieren · Enter zum Kopieren"
 #: apps/dai-command/dai_command/core.py
 msgid "Fix to Arabic · Enter to copy"
 msgstr "Ins Arabische korrigieren · Enter zum Kopieren"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "Copying {count} folders. The other app's files are only read…"
+msgstr "{count} Ordner werden kopiert. Die Dateien der anderen App werden nur gelesen…"
+
+#: apps/dai-j/dai_j/text.py
+msgid "Import mail kept on this computer"
+msgstr "Auf diesem Computer gespeicherte E-Mails importieren"
+
+#: apps/dai-j/dai_j/text.py
+msgid "No mail from Thunderbird, Betterbird or Evolution was found on this computer."
+msgstr "Auf diesem Computer wurden keine E-Mails von Thunderbird, Betterbird oder Evolution gefunden."
+
+#: apps/dai-j/dai_j/text.py
+msgid "On this computer"
+msgstr "Auf diesem Computer"
+
+#: apps/dai-j/dai_j/text.py
+#, python-brace-format
+msgid "{added} messages copied into {folders} local folders."
+msgstr "{added} Nachrichten in {folders} lokale Ordner kopiert."

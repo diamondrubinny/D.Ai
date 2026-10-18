@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFormL
 
 from dai_i18n import embed, qt_direction, ui_lang
 
-from . import __author__, __version__, accounts as acc, compose, discover, engine, mail, sanitize
+from . import __author__, __version__, accounts as acc, compose, discover, engine, localmail, mail, sanitize
 from .text import error, t
 
 ROLE = Qt.ItemDataRole.UserRole
@@ -577,7 +577,8 @@ class MainWindow(QMainWindow):
                                        ("reply_all", "Ctrl+Shift+R", lambda: self.reply(True)),
                                        ("forward", "Ctrl+Shift+F", self.forward), ("delete", "Delete", self.delete),
                                        ("mark_unread", "Ctrl+U", self.mark_unread), ("refresh", "F5", self.sync_all),
-                                       ("add_account", "", self.add_account), ("import", "", lambda: self.import_accounts())):
+                                       ("add_account", "", self.add_account), ("import", "", lambda: self.import_accounts()),
+                                       ("import_mail", "", lambda: self.import_mail())):
             action = QAction(t(key, self.lang), self)
             if shortcut:
                 action.setShortcut(QKeySequence(shortcut))
@@ -660,9 +661,9 @@ class MainWindow(QMainWindow):
     # Views
 
     def refresh_views(self) -> None:
-        self.stack.setCurrentIndex(1 if self.accounts else 0)
+        self.stack.setCurrentIndex(1 if self.accounts or self.store.folders(localmail.LOCAL) else 0)
         for key, action in self.actions_by_key.items():
-            action.setEnabled(bool(self.accounts) or key in ("add_account", "import"))
+            action.setEnabled(bool(self.accounts) or key in ("add_account", "import", "import_mail"))
         selected = self._folder_key()
         self.folders.clear()
         ids = [a.id for a in self.accounts]
@@ -678,6 +679,17 @@ class MainWindow(QMainWindow):
                 label = t(role, self.lang) if role in ("inbox", "sent", "drafts", "trash", "junk", "archive", "all") else name
                 child = QTreeWidgetItem([label])
                 child.setData(0, ROLE, ("folder", name, account.id))
+                child.setToolTip(0, name)
+                item.addChild(child)
+            item.setExpanded(True)
+        local = self.store.folders(localmail.LOCAL)
+        if local:  # mail imported from other apps: kept on this computer, no server
+            item = QTreeWidgetItem([t("local_folders", self.lang)])
+            item.setData(0, ROLE, None)
+            self.folders.addTopLevelItem(item)
+            for name, _role in local:
+                child = QTreeWidgetItem([name])
+                child.setData(0, ROLE, ("folder", name, localmail.LOCAL))
                 child.setToolTip(0, name)
                 item.addChild(child)
             item.setExpanded(True)
@@ -759,6 +771,13 @@ class MainWindow(QMainWindow):
                                        t("to_line", self.lang, to=f"{LRI}{row['recipients'] or ''}{PDI}"),
                                        row["subject"] or t("no_subject", self.lang)]))
         self.notice.hide()
+        if row["account"] == localmail.LOCAL:  # kept whole on this computer when it was imported
+            raw = self.store.body(localmail.LOCAL, row["folder"], row["uid"])
+            self.show_body(mail.parse_body(raw or b""))
+            self.store.set_seen(localmail.LOCAL, row["folder"], row["uid"])
+            row["seen"] = 1
+            self._style_row(item, row)
+            return
         self.reader.setPlainText(t("loading", self.lang))
         password = self.password_for(account) if account else None
         if account is None or password is None:
@@ -791,6 +810,30 @@ class MainWindow(QMainWindow):
             notes.append(t("attachments", self.lang, names=", ".join(n for n, _ in body.attachments[:8])))
         self.notice.setText("\n".join(notes))
         self.notice.setVisible(bool(notes))
+
+    def import_mail(self, sources: list | None = None) -> None:
+        """Copy the mail other apps keep on this computer into local folders (their files are only read)."""
+        found = localmail.find_sources() if sources is None else sources
+        if not found:
+            self.statusBar().showMessage(t("import_mail_none", self.lang), 8000)
+            return
+        self.statusBar().showMessage(t("import_mail_running", self.lang, count=len(found)))
+
+        def work():
+            from .store import Store
+
+            store = Store(self.db)
+            try:
+                return [localmail.import_source(store, source) for source in found]
+            finally:
+                store.close()
+
+        def done(results) -> None:
+            added = sum(r.added for r in results)
+            self.statusBar().showMessage(t("import_mail_done", self.lang, added=added, folders=len(results)), 10000)
+            self.refresh_views()
+
+        self.runner.start(work, done, lambda e: self.statusBar().showMessage(error(e, self.lang)))
 
     def _open_link(self, url: QUrl) -> None:
         if url.scheme() == "mailto":
@@ -903,6 +946,11 @@ class MainWindow(QMainWindow):
 
     def delete(self) -> None:
         row = self.current
+        if row and row["account"] == localmail.LOCAL:
+            self._step(1)
+            self.store.remove(localmail.LOCAL, row["folder"], row["uid"])
+            self.show_folder()
+            return
         account = self._account(row["account"]) if row else None
         password = self.password_for(account) if account else None
         if row is None or password is None:
@@ -915,6 +963,11 @@ class MainWindow(QMainWindow):
     def mark_unread(self) -> None:
         row = self.current
         item = self.list.currentItem()
+        if row and item is not None and row["account"] == localmail.LOCAL:
+            self.store.set_seen(localmail.LOCAL, row["folder"], row["uid"], False)
+            row["seen"] = 0
+            self._style_row(item, row)
+            return
         account = self._account(row["account"]) if row else None
         password = self.password_for(account) if account else None
         if row is None or password is None or item is None:

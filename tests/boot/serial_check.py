@@ -568,6 +568,19 @@ def main() -> int:
          "dai-forge recipe list 2>/dev/null | grep -c language- ; rm -f ~/.config/dai/language.env", True,
          lambda o: "RC=0" in o and "ru_RU.UTF-8 UTF-8" in o and re.search(r"^ru_RU\.utf8$", o, re.M | re.I) is not None
          and "LANG=ru_RU.UTF-8" in o and "LANGUAGE=ru:en" in o and re.search(r"^6$", o, re.M) is not None, 180),
+        # J stage 2b (docs/MAIL.md §11): a Thunderbird "Local Folders" mbox is copied into J's local folders, the
+        # message marked deleted is not, importing again adds nothing, and Thunderbird's file is not changed.
+        ("j: mail kept on this computer", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "D=~/.thunderbird/t.default; mkdir -p \"$D/Mail/Local Folders\"; echo 'user_pref(\"x\", 1);' > $D/prefs.js; "
+         "printf 'From a@b Mon Oct 12 10:00:00 2026\\nFrom: Dana <dana@example.org>\\nSubject: Kept\\n"
+         "Message-ID: <k1@example.org>\\nX-Mozilla-Status: 0001\\n\\nhello\\n\\n"
+         "From a@b Mon Oct 12 10:01:00 2026\\nFrom: Dana <dana@example.org>\\nSubject: Gone\\n"
+         "Message-ID: <k2@example.org>\\nX-Mozilla-Status: 0009\\n\\nbye\\n' > \"$D/Mail/Local Folders/Inbox\"; "
+         "S=$(md5sum \"$D/Mail/Local Folders/Inbox\"); dai-j import-mail | tr -d ' \\n'; echo; dai-j import-mail | tr -d ' \\n'; "
+         "echo; [ \"$S\" = \"$(md5sum \"$D/Mail/Local Folders/Inbox\")\" ] && echo SOURCE_UNTOUCHED; "
+         "stat -c %a ~/.local/share/dai-j/mail.sqlite; rm -rf ~/.thunderbird", True,
+         lambda o: '"added":1,"skipped":1' in o and '"added":0,"skipped":2' in o and "SOURCE_UNTOUCHED" in o
+         and re.search(r"^600$", o, re.M) is not None, 60),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "

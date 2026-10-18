@@ -206,7 +206,7 @@ msgid "About you"
 msgstr ""
 
 #. he: חשבונות שנמצאו במחשב הזה
-#: apps/dai-j/dai_j/text.py:100
+#: apps/dai-j/dai_j/text.py:108
 msgid "Accounts found on this computer"
 msgstr ""
 
@@ -242,7 +242,7 @@ msgid "Add the Flathub app store"
 msgstr ""
 
 #. he: הוספת החשבונות המסומנים
-#: apps/dai-j/dai_j/text.py:107
+#: apps/dai-j/dai_j/text.py:115
 msgid "Add the checked accounts"
 msgstr ""
 
@@ -600,7 +600,7 @@ msgid "Cannot reach the mail server. Check the Internet connection and the serve
 msgstr ""
 
 #. he: עותק
-#: apps/dai-j/dai_j/text.py:118
+#: apps/dai-j/dai_j/text.py:126
 msgid "Cc"
 msgstr ""
 
@@ -620,7 +620,7 @@ msgid "Check mail"
 msgstr ""
 
 #. he: בדקו את הכתובות האלה: {bad}
-#: apps/dai-j/dai_j/text.py:126
+#: apps/dai-j/dai_j/text.py:134
 #, python-brace-format
 msgid "Check these addresses: {bad}"
 msgstr ""
@@ -759,6 +759,12 @@ msgstr ""
 #. he: להעתיק עכשיו? [כ/ל] 
 #: apps/dai-move/dai_move/cli.py:95
 msgid "Copy now? [y/N] "
+msgstr ""
+
+#. he: מעתיקים {count} תיקיות. הקבצים של התוכנה האחרת רק נקראים…
+#: apps/dai-j/dai_j/text.py:103
+#, python-brace-format
+msgid "Copying {count} folders. The other app's files are only read…"
 msgstr ""
 
 #. he: צור ✦
@@ -976,12 +982,12 @@ msgid "Diamond, the local AI, and voice"
 msgstr ""
 
 #. he: ויתור
-#: apps/dai-j/dai_j/text.py:129
+#: apps/dai-j/dai_j/text.py:137
 msgid "Discard"
 msgstr ""
 
 #. he: לוותר על ההודעה הזו?
-#: apps/dai-j/dai_j/text.py:128
+#: apps/dai-j/dai_j/text.py:136
 msgid "Discard this message?"
 msgstr ""
 
@@ -1313,7 +1319,7 @@ msgstr ""
 
 #. he: מאת
 #: apps/dai-j/dai_j/text.py:22
-#: apps/dai-j/dai_j/text.py:116
+#: apps/dai-j/dai_j/text.py:124
 msgid "From"
 msgstr ""
 
@@ -1437,6 +1443,11 @@ msgstr ""
 #. he: ייבוא מתוכנת דואר אחרת
 #: apps/dai-j/dai_j/text.py:99
 msgid "Import from another mail app"
+msgstr ""
+
+#. he: ייבוא הדואר ששמור במחשב
+#: apps/dai-j/dai_j/text.py:100
+msgid "Import mail kept on this computer"
 msgstr ""
 
 #. he: לשפר
@@ -1570,7 +1581,7 @@ msgid "Last backup: "
 msgstr ""
 
 #. he: משמאל לימין
-#: apps/dai-j/dai_j/text.py:125
+#: apps/dai-j/dai_j/text.py:133
 msgid "Left to right"
 msgstr ""
 
@@ -1668,7 +1679,7 @@ msgstr ""
 
 #. he: הודעה
 #: apps/dai-j/dai_j/text.py:21
-#: apps/dai-j/dai_j/text.py:120
+#: apps/dai-j/dai_j/text.py:128
 msgid "Message"
 msgstr ""
 
@@ -1725,7 +1736,7 @@ msgstr ""
 
 #. he: הודעה חדשה
 #: apps/dai-j/dai_j/text.py:29
-#: apps/dai-j/dai_j/text.py:115
+#: apps/dai-j/dai_j/text.py:123
 msgid "New message"
 msgstr ""
 
@@ -1785,6 +1796,11 @@ msgstr ""
 msgid "No keyring: the password is kept only until J closes."
 msgstr ""
 
+#. he: לא נמצא במחשב דואר של Thunderbird, ‏Betterbird או Evolution.
+#: apps/dai-j/dai_j/text.py:101
+msgid "No mail from Thunderbird, Betterbird or Evolution was found on this computer."
+msgstr ""
+
 #. he: לא נמצאו קבצים מתאימים
 #: apps/dai-command/dai_command/core.py:443
 msgid "No matching files"
@@ -1808,7 +1824,7 @@ msgid "No organization policies ({POLICY_DIR})."
 msgstr ""
 
 #. he: לא נמצאה תוכנת דואר אחרת עם חשבונות (Thunderbird, ‏Betterbird, ‏Evolution, ‏Claws Mail, ‏Mutt).
-#: apps/dai-j/dai_j/text.py:101
+#: apps/dai-j/dai_j/text.py:109
 msgid "No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, Mutt)."
 msgstr ""
 
@@ -2039,6 +2055,11 @@ msgstr ""
 msgid "Off. What was kept has been deleted."
 msgstr ""
 
+#. he: במחשב הזה
+#: apps/dai-j/dai_j/text.py:107
+msgid "On this computer"
+msgstr ""
+
 #. he: ב־{stamp}, {sender} כתב/ה:
 #: apps/dai-j/dai_j/compose.py:83
 #, python-brace-format
@@ -2067,7 +2088,7 @@ msgid "Only an administrator can change system security. Ask the administrator o
 msgstr ""
 
 #. he: רק ההגדרות מועתקות, והתוכנה האחרת לא משתנה. J יבקש כל סיסמה בכניסה הראשונה.
-#: apps/dai-j/dai_j/text.py:104
+#: apps/dai-j/dai_j/text.py:112
 msgid "Only the settings are copied; the other app is not changed. J asks for each password the first time it signs in."
 msgstr ""
 
@@ -2415,7 +2436,7 @@ msgid "Right now · Enter for the privacy log"
 msgstr ""
 
 #. he: מימין לשמאל
-#: apps/dai-j/dai_j/text.py:124
+#: apps/dai-j/dai_j/text.py:132
 msgid "Right to left"
 msgstr ""
 
@@ -2591,12 +2612,12 @@ msgstr ""
 
 #. he: שליחה
 #: apps/dai-heal/dai_heal/text.py:21
-#: apps/dai-j/dai_j/text.py:121
+#: apps/dai-j/dai_j/text.py:129
 msgid "Send"
 msgstr ""
 
 #. he: שולח…
-#: apps/dai-j/dai_j/text.py:122
+#: apps/dai-j/dai_j/text.py:130
 msgid "Sending…"
 msgstr ""
 
@@ -2606,7 +2627,7 @@ msgid "Sent"
 msgstr ""
 
 #. he: נשלח.
-#: apps/dai-j/dai_j/text.py:123
+#: apps/dai-j/dai_j/text.py:131
 msgid "Sent."
 msgstr ""
 
@@ -2826,7 +2847,7 @@ msgstr ""
 
 #. he: נושא
 #: apps/dai-j/dai_j/text.py:23
-#: apps/dai-j/dai_j/text.py:119
+#: apps/dai-j/dai_j/text.py:127
 msgid "Subject"
 msgstr ""
 
@@ -3081,7 +3102,7 @@ msgid "Thu"
 msgstr ""
 
 #. he: אל
-#: apps/dai-j/dai_j/text.py:117
+#: apps/dai-j/dai_j/text.py:125
 msgid "To"
 msgstr ""
 
@@ -3297,7 +3318,7 @@ msgid "When: {when}"
 msgstr ""
 
 #. he: למי ההודעה? הוסיפו כתובת בשדה אל.
-#: apps/dai-j/dai_j/text.py:127
+#: apps/dai-j/dai_j/text.py:135
 msgid "Who is it for? Add an address in To."
 msgstr ""
 
@@ -3716,7 +3737,7 @@ msgid "signals other processes"
 msgstr ""
 
 #. he: נכנס רק דרך הדף של הספק (עוד לא נתמך)
-#: apps/dai-j/dai_j/text.py:109
+#: apps/dai-j/dai_j/text.py:117
 msgid "signs in only through the provider's page (not supported yet)"
 msgstr ""
 
@@ -3788,7 +3809,7 @@ msgid "unread"
 msgstr ""
 
 #. he: השתמש בחיבור לא מוצפן; J מתחבר רק עם הצפנה
-#: apps/dai-j/dai_j/text.py:111
+#: apps/dai-j/dai_j/text.py:119
 msgid "used without encryption; J connects only with encryption"
 msgstr ""
 
@@ -3863,8 +3884,14 @@ msgstr ""
 msgid "your recipe"
 msgstr ""
 
+#. he: {added} הודעות הועתקו ל־{folders} תיקיות מקומיות.
+#: apps/dai-j/dai_j/text.py:105
+#, python-brace-format
+msgid "{added} messages copied into {folders} local folders."
+msgstr ""
+
 #. he: {address} · מ־{source} · {host}
-#: apps/dai-j/dai_j/text.py:108
+#: apps/dai-j/dai_j/text.py:116
 #, python-brace-format
 msgid "{address} · from {source} · {host}"
 msgstr ""
@@ -3888,7 +3915,7 @@ msgid "{capacity}% charged{health}"
 msgstr ""
 
 #. he: נוספו חשבונות: {count}. בדקו דואר כדי להיכנס.
-#: apps/dai-j/dai_j/text.py:113
+#: apps/dai-j/dai_j/text.py:121
 #, python-brace-format
 msgid "{count} account(s) added. Check mail to sign in."
 msgstr ""

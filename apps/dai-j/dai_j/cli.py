@@ -7,6 +7,8 @@
   dai-j discover ADDRESS     which servers J would use for an address, as JSON (nothing is signed in)
   dai-j import [--add]       accounts found in Thunderbird, Betterbird, Evolution, Claws Mail and Mutt
                              (read-only; --add adds them to J; passwords are asked at the first sign-in)
+  dai-j import-mail [PATH]    copy the mail Thunderbird, Betterbird or Evolution keep on this computer (or one
+                             mbox file / Maildir folder) into J's local folders; the other app's files are only read
   dai-j --version
 """
 
@@ -14,6 +16,7 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 
 from . import __author__, __version__
 
@@ -54,6 +57,28 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"added": [a.address for a in new]}, indent=2))
             return 0
         print(json.dumps([{**asdict(f), "usable": f.usable} for f in found], indent=2, ensure_ascii=False))
+        return 0
+    if args and args[0] == "import-mail":
+        from . import accounts as acc, localmail
+        from .store import Store
+
+        if len(args) == 2:
+            source = localmail.source_for_path(Path(args[1]))
+            if source is None:
+                print(f"not an mbox file or a Maildir folder: {args[1]}", file=sys.stderr)
+                return 1
+            sources = [source]
+        else:
+            sources = localmail.find_sources()
+        directory = acc.data_dir()
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        store = Store(directory / "mail.sqlite")
+        report = []
+        for source in sources:
+            result = localmail.import_source(store, source)
+            report.append({"folder": source.name, "from": source.app, "added": result.added, "skipped": result.skipped})
+        store.close()
+        print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0
     if len(args) > 1 or args and not args[0].startswith("mailto:"):
         print(__doc__.strip(), file=sys.stderr)

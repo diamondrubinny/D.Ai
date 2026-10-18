@@ -97,6 +97,14 @@ STRINGS = {
     "e_unknown": ("Something went wrong: {detail}", "משהו השתבש: {detail}"),
     # Import (docs/MAIL.md §3.1)
     "import": ("Import from another mail app", "ייבוא מתוכנת דואר אחרת"),
+    "import_mail": ("Import mail kept on this computer", "ייבוא הדואר ששמור במחשב"),
+    "import_mail_none": ("No mail from Thunderbird, Betterbird or Evolution was found on this computer.",
+                         "לא נמצא במחשב דואר של Thunderbird, ‏Betterbird או Evolution."),
+    "import_mail_running": ("Copying {count} folders. The other app's files are only read…",
+                            "מעתיקים {count} תיקיות. הקבצים של התוכנה האחרת רק נקראים…"),
+    "import_mail_done": ("{added} messages copied into {folders} local folders.",
+                         "{added} הודעות הועתקו ל־{folders} תיקיות מקומיות."),
+    "local_folders": ("On this computer", "במחשב הזה"),
     "import_title": ("Accounts found on this computer", "חשבונות שנמצאו במחשב הזה"),
     "import_none": ("No other mail app with accounts was found (Thunderbird, Betterbird, Evolution, Claws Mail, "
                     "Mutt).", "לא נמצאה תוכנת דואר אחרת עם חשבונות (Thunderbird, ‏Betterbird, ‏Evolution, "
