@@ -402,6 +402,20 @@ def main() -> int:
          lambda o: "FS btrfs" in o and "ENABLED True" in o and re.search(r"UNDONE \(\d+, \d+\) before update", o) is not None
          and "REDONE after update" in o and "DISABLED True" in o
          and ("Undo the last software update" in o or "ביטול העדכון האחרון" in o), 180),
+        # D.Ai Rescue (docs/BASICS.md): an "installed" system on a Btrfs image (with "@" and its own snapper), a
+        # pretend update, then dai-rescue from outside it undoes the update, and a safety snapshot is left.
+        # A subshell: `set -e` and the variables must not reach the shell the later checks run in.
+        ("rescue: undo an update from the USB", "( set -e; I=/tmp/inst.img; M=/mnt/dai-inst; truncate -s 600M $I; "
+         "sudo mkfs.btrfs -q $I; sudo mkdir -p $M; sudo mount -o loop $I $M; sudo btrfs -q subvolume create $M/@; "
+         "sudo mkdir -p $M/@/etc/default; sudo cp /etc/os-release $M/@/etc/; sudo cp -r /etc/snapper $M/@/etc/; "
+         "sudo cp /etc/default/snapper $M/@/etc/default/ 2>/dev/null || true; "
+         "S='sudo snapper --no-dbus --root '$M/@' -c root'; $S create-config / ; "
+         "echo before | sudo tee $M/@/app.conf >/dev/null; P=$($S create -t pre -d apt -p); "
+         "echo after | sudo tee $M/@/app.conf >/dev/null; $S create -t post --pre-number $P -d apt; sudo umount $M; "
+         "D=$(sudo losetup -f --show $I); set +e; sudo dai-rescue --device $D --undo-last-update --yes </dev/null; "
+         "echo RESCUE_RC=$?; sudo mount -o subvolid=5 $D $M; printf 'FILE='; cat $M/@/app.conf; "
+         "$S list | tail -n 2; sudo umount $M; sudo losetup -d $D; rm -f $I )", True,
+         lambda o: "RESCUE_RC=0" in o and "FILE=before" in o and "dai: before undoing an update" in o, 180),
         # Automations (docs/EVOLVE.md §2): a real user timer, a sandboxed run, NOTIFY → notification and log.
         ("forge: automation on a timer", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
          "printf 'import shutil\\nfree = shutil.disk_usage(\"/\").free // 2**30\\nprint(f\"NOTIFY: {free} GB free\")\\n' > /tmp/disk.py; "

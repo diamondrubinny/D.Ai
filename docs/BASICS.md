@@ -14,7 +14,16 @@
 
 ## 2. Next (in order)
 
-1. **Recovery from the boot menu:** returning to a snapshot when the system does not boot.
+1. 🔧 **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.**
+   - **Why not the boot menu:** `grub-btrfs` does not exist in Debian 13.
+   - **What it does:**
+     - Finds the installed disk (a Btrfs or LUKS partition that is not in use) and opens it. The passphrase goes to cryptsetup on stdin.
+     - Runs the snapper of the installed system (`--root`) and shows when the last update was.
+     - After confirmation, undoes that update. First it takes a safety snapshot, so the rescue itself can be undone too.
+     - At the end the disk is always unmounted and closed again.
+   - **Checks:**
+     - **Unit:** finding disks, the passphrase only on stdin, closing even after a wrong passphrase, nothing changes without confirmation.
+     - **VM** (`rescue: undo an update from the USB`): a real "installed system" on a Btrfs image, a pretend update, then `dai-rescue`. The file goes back, and a safety snapshot exists.
 2. **Firmware updates:** `fwupd`.
 3. **Hibernation with LUKS:** swap or a swapfile.
 4. **Unlocking with TPM:** `systemd-cryptenroll`.

@@ -50,7 +50,7 @@ jobs:
             build/live-build/common/includes.chroot_after_packages/usr/bin/startdai-wayland \
             build/live-build/common/includes.chroot_after_packages/usr/bin/dai-screenshot \
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
-            apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper \
+            apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper apps/dai-tune/data/dai-rescue \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models apps/dai-ruby/data/dai-ruby-diamond \
             apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code apps/dai-welcome/data/dai-welcome apps/dai-find/data/dai-find apps/dai-doctor/data/dai-doctor apps/dai-privacy/data/dai-privacy apps/dai-backup/data/dai-backup apps/dai-move/data/dai-move apps/dai-clip/data/dai-clip apps/dai-heal/data/dai-heal apps/dai-evolve/data/dai-evolve apps/dai-quick/data/dai-quick apps/dai-mom/data/dai-mom apps/dai-j/data/dai-j apps/dai-raz/data/dai-raz apps/dai-raz/data/dai-raz-guard apps/dai-tune/data/dai-snapshots-firstboot apps/dai-oem/data/dai-oem apps/dai-oem/data/dai-oem-helper apps/dai-oem/data/dai-oem-setup apps/dai-oem/data/labwc/autostart \
             build/live-build/common/includes.chroot_after_packages/usr/bin/dai-install
