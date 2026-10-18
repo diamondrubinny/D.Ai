@@ -7,14 +7,14 @@
 
 | What | Problem | Fix | Check on the VM | Status |
 |------|---------|-----|-----------------|--------|
-| Drives mount by themselves | `udisks2` and `gvfs` were not in the package list, and recommends are off | `udisks2`, `gvfs`, `gvfs-backends` | `os: drives mount by themselves` | 🔧 |
-| Screens on Wayland | `lxqt-config-monitor` works only on X11 | `wlr-randr`, and `wdisplays` (a window, an optional package) | `os: screens on Wayland` | 🔧 |
-| Screenshots | `screengrab` does not work well on Wayland | `dai-screenshot` (grim): Print for the whole screen, Shift+Print for an area (slurp). To `~/Pictures/Screenshots` and the clipboard | `os: screenshot (Print)` | 🔧 |
-| Secure Boot | The ISO did not ask live-build for Debian's signed shim and GRUB | `lb config --uefi-secure-boot enable` | `os: secure boot shim` (information only for now) | 🔧 **Requires verification on real hardware with Secure Boot on** |
+| Drives mount by themselves | `udisks2` and `gvfs` were not in the package list, and recommends are off | `udisks2`, `gvfs`, `gvfs-backends` | `os: drives mount by themselves` | ✅ udisks2 active, gvfs present |
+| Screens on Wayland | `lxqt-config-monitor` works only on X11 | `wlr-randr`, and `wdisplays` (a window, an optional package) | `os: screens on Wayland` | ✅ `wlr-randr` reads the screen (1280x800), `wdisplays` installed |
+| Screenshots | `screengrab` does not work well on Wayland | `dai-screenshot` (grim): Print for the whole screen, Shift+Print for an area (slurp). To `~/Pictures/Screenshots` and the clipboard | `os: screenshot (Print)` | ✅ a real screenshot is saved |
+| Secure Boot | The ISO did not ask live-build for Debian's signed shim and GRUB | `lb config --uefi-secure-boot enable` | `os: secure boot shim` (information only for now) | ✅ on the medium `EFI/boot/bootx64.efi` is Debian's shim, and `grubx64.efi` is next to it. **Still requires verification on real hardware with Secure Boot on** |
 
 ## 2. Next (in order)
 
-1. 🔧 **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.**
+1. 🔧 **Recovery when the system does not boot: `dai-rescue` from the D.Ai USB.** (The first VM check failed in its own setup: `snapper create-config --root` checks the filesystem of the live system, so `--fstype btrfs` was added, as installers do.)
    - **Why not the boot menu:** `grub-btrfs` does not exist in Debian 13.
    - **What it does:**
      - Finds the installed disk (a Btrfs or LUKS partition that is not in use) and opens it. The passphrase goes to cryptsetup on stdin.
@@ -31,7 +31,7 @@
    - **Night light:** Super+Alt+N (`dai-nightlight`, ‏wlsunset, 19:00-07:00).
    - **On-screen keyboard:** Super+Alt+K (`dai-keyboard`, ‏wvkbd).
    - **Screen magnifier:** labwc's own. Super+= closer, Super+- back, Super+Alt+M on and off. **Requires verification** that the labwc version in Debian 13 supports these actions.
-   - **Checks on the VM:** `os: firmware, codecs, printers` and `os: night light and on-screen keyboard`. Information only (WARN) until we see what Debian has.
+   - **Checks on the VM:** `os: night light and on-screen keyboard` ✅ (labwc 0.8.3, wlsunset runs, wvkbd installed). `os: firmware, codecs, printers`: the first run showed fwupd and hplip installed. The check itself was wrong (`fwupdmgr --version` does not print "fwupd"), and it was fixed.
 3. **Hibernation with LUKS:** swap or a swapfile.
 4. **Unlocking with TPM:** `systemd-cryptenroll`.
 5. **Phone connection:** KDE Connect.

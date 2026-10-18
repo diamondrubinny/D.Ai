@@ -409,7 +409,7 @@ def main() -> int:
          "sudo mkfs.btrfs -q $I; sudo mkdir -p $M; sudo mount -o loop $I $M; sudo btrfs -q subvolume create $M/@; "
          "sudo mkdir -p $M/@/etc/default; sudo cp /etc/os-release $M/@/etc/; sudo cp -r /etc/snapper $M/@/etc/; "
          "sudo cp /etc/default/snapper $M/@/etc/default/ 2>/dev/null || true; "
-         "S='sudo snapper --no-dbus --root '$M/@' -c root'; $S create-config / ; "
+         "S='sudo snapper --no-dbus --root '$M/@' -c root'; $S create-config --fstype btrfs / ; "
          "echo before | sudo tee $M/@/app.conf >/dev/null; P=$($S create -t pre -d apt -p); "
          "echo after | sudo tee $M/@/app.conf >/dev/null; $S create -t post --pre-number $P -d apt; sudo umount $M; "
          "D=$(sudo losetup -f --show $I); set +e; sudo dai-rescue --device $D --undo-last-update --yes </dev/null; "
@@ -619,10 +619,10 @@ def main() -> int:
          "printf '%s ' \"$f\"; grep -c -a 'UEFI SHIM' \"$f\"; done; find /run/live/medium -iname 'grubx64.efi' | head -n 2",
          False, lambda o: re.search(r" [1-9]\d*$", o, re.M) is not None, 60),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
-        ("os: firmware, codecs, printers", "fwupdmgr --version 2>/dev/null | head -n 1; "
-         "gst-inspect-1.0 libav 2>/dev/null | grep -m1 -i version; ls /usr/share/ppd 2>/dev/null | head -n 3; "
-         "command -v hp-setup", False,
-         lambda o: "fwupd" in o.lower() and "version" in o.lower(), 60),
+        ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
+         "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "
+         "command -v hp-setup && echo HPLIP; systemctl is-enabled ipp-usb cups-browsed 2>/dev/null", False,
+         lambda o: "FWUPD" in o and "HPLIP" in o and re.search(r"^[23]$", o, re.M) is not None, 60),
         ("os: night light and on-screen keyboard", WAYLAND_ENV + "labwc --version 2>&1 | head -n 1; "
          "timeout 3 wlsunset -t 4000 -T 6500 -S 07:00 -s 19:00 >/dev/null 2>&1; echo SUNSET_RC=$?; "
          "command -v wvkbd-mobintl && echo WVKBD; test -x /usr/bin/dai-nightlight && test -x /usr/bin/dai-keyboard && echo SCRIPTS",
