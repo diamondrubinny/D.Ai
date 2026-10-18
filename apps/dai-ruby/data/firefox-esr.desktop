@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Ruby (docs/BROWSER.md): D.Ai's browsing experience on Firefox ESR, unmodified.
+# It replaces Debian's menu entry of the same name (dpkg-divert in dai-ruby's preinst),
+# so there is one browser in the menu and the windows keep Firefox's app id.
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Ruby
+Name[he]=רובי
+GenericName=Web browser (Firefox ESR)
+GenericName[he]=דפדפן (Firefox ESR)
+Comment=Private browsing by default: no ads, no pop-ups, cookies cleared when you close it
+Comment[he]=גלישה פרטית כברירת מחדל: בלי פרסומות, בלי חלונות קופצים, והעוגיות נמחקות בסגירה
+Exec=/usr/lib/firefox-esr/firefox-esr %u
+TryExec=/usr/lib/firefox-esr/firefox-esr
+Icon=dai-ruby
+Terminal=false
+StartupNotify=true
+StartupWMClass=firefox-esr
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;application/pdf;x-scheme-handler/http;x-scheme-handler/https;
+Keywords=browser;internet;web;firefox;ruby;דפדפן;אינטרנט;רובי;
+Actions=new-window;new-private-window;
+
+[Desktop Action new-window]
+Name=New window
+Name[he]=חלון חדש
+Exec=/usr/lib/firefox-esr/firefox-esr --new-window %u
+
+[Desktop Action new-private-window]
+Name=New private window
+Name[he]=חלון פרטי חדש
+Exec=/usr/lib/firefox-esr/firefox-esr --private-window %u

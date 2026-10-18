@@ -284,6 +284,43 @@ EOF
     "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic"
 }
 
+build_ruby() { # Ruby (docs/BROWSER.md): D.Ai's browsing experience on Debian's Firefox ESR, unmodified.
+  local root="$WORK/dai-ruby" ruby="$REPO_ROOT/apps/dai-ruby/data"
+  install -d "$root/etc/firefox/policies" "$root/usr/share/applications" "$root/usr/share/dai/ruby" \
+    "$root/usr/share/icons/hicolor/scalable/apps"
+  # Firefox reads /etc/firefox/policies/policies.json on Linux; root-owned, 0644.
+  install -m 0644 "$ruby/policies.json" "$root/etc/firefox/policies/policies.json"
+  install -m 0644 "$ruby/firefox-esr.desktop" "$root/usr/share/applications/firefox-esr.desktop"
+  install -m 0644 "$ruby/start.html" "$root/usr/share/dai/ruby/start.html"
+  install -m 0644 "$ruby/dai-ruby.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-ruby.svg"
+  install -d "$root/DEBIAN"
+  # One browser in the menu: Debian's entry moves aside (not deleted) while dai-ruby is installed.
+  cat >"$root/DEBIAN/preinst" <<'EOF2'
+#!/bin/sh
+# D.Ai OS — Diamond Rubinny (d.Ai)
+set -e
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+  dpkg-divert --package dai-ruby --add --rename \
+    --divert /usr/share/applications/firefox-esr.desktop.debian /usr/share/applications/firefox-esr.desktop
+fi
+exit 0
+EOF2
+  cat >"$root/DEBIAN/postrm" <<'EOF2'
+#!/bin/sh
+# D.Ai OS — Diamond Rubinny (d.Ai)
+set -e
+if [ "$1" = remove ] || [ "$1" = abort-install ] || [ "$1" = disappear ]; then
+  dpkg-divert --package dai-ruby --remove --rename \
+    --divert /usr/share/applications/firefox-esr.desktop.debian /usr/share/applications/firefox-esr.desktop
+fi
+exit 0
+EOF2
+  chmod 0755 "$root/DEBIAN/preinst" "$root/DEBIAN/postrm"
+  finish "$root" dai-ruby all "firefox-esr" \
+    "Ruby: private browsing on Firefox ESR (ad and pop-up blocking, automatic cookie cleaning)" \
+    "firefox-esr-l10n-he"
+}
+
 build_runtime() { # build_runtime <dist> <name> <dir> <check-binary> <description>
   local dist="$1" name="$2" dir="$3" check="$4" description="$5"
   if [[ -z "$dist" ]]; then
@@ -318,6 +355,7 @@ main() {
   rm -f -- "$OUT_DIR"/dai-*.deb
   log "version $VERSION → $OUT_DIR"
   build_apps
+  build_ruby
   build_runtime "${DAI_LLAMA_DIST:-}" dai-llama-runtime llama llama-server "llama.cpp runtime for the D.Ai local AI"
   build_runtime "${DAI_WHISPER_DIST:-}" dai-whisper-runtime whisper whisper-cli "whisper.cpp runtime for D.Ai Voice"
   build_panel_plugin

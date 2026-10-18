@@ -1,0 +1,128 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- Ruby's first page (docs/BROWSER.md §4): what is on, and how to keep a site signed in.
+     Local file, no network, no trackers. Hebrew right-to-left; the language follows the browser. -->
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<title>Ruby · D.Ai</title>
+<style>
+  :root { --bg: #0B1020; --card: #141B33; --line: #2A3563; --text: #E6E9F5; --muted: #AEB6D9; --ruby: #FF6B8F; --cyan: #22D3EE; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 "Noto Sans", "Noto Sans Hebrew", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 20px 64px; }
+  h1 { font-size: 2.1rem; margin: 0 0 4px; }
+  h1 span { color: var(--ruby); }
+  .lead { color: var(--muted); margin: 0 0 32px; }
+  h2 { font-size: 1.2rem; margin: 0 0 8px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin: 0 0 14px; }
+  ul { margin: 0; padding-inline-start: 1.2em; }
+  li { margin: 4px 0; }
+  kbd { background: #1C2547; border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; font-family: inherit; }
+  .muted { color: var(--muted); font-size: 0.95rem; }
+  a { color: var(--cyan); }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+  nav { margin: 0 0 24px; }
+  button { background: transparent; color: var(--cyan); border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; font: inherit; cursor: pointer; }
+  footer { color: var(--muted); font-size: 0.9rem; margin-top: 28px; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: no-preference) { section { transition: border-color .2s; } section:hover { border-color: #7C5CFF; } }
+</style>
+</head>
+<body>
+<main>
+  <nav aria-label="Language / שפה">
+    <button type="button" id="switch" lang="en">English</button>
+  </nav>
+
+  <div id="he">
+    <h1>ברוכים הבאים ל־<span>Ruby</span></h1>
+    <p class="lead">החוויה של D.Ai לגלישה פרטית, על בסיס Firefox ESR, שמקבל עדכוני אבטחה מ־Debian.</p>
+    <section>
+      <h2>מה כבר פועל</h2>
+      <ul>
+        <li><strong>חסימת פרסומות ועוקבים</strong> עם uBlock Origin המלא, כולל באנרים של "אשרו עוגיות".</li>
+        <li><strong>חלונות קופצים חסומים.</strong></li>
+        <li><strong>עוגיות של צד שלישי חסומות,</strong> וכל אתר מקבל "צנצנת עוגיות" נפרדת.</li>
+        <li><strong>חיבור מאובטח בלבד (HTTPS)</strong>, עם אזהרה לפני אתר לא מוצפן.</li>
+        <li><strong>אין טלמטריה, אין פרסומות בדף הבית ואין AI שנדחף.</strong> Diamond, ה־AI של D.Ai, יגיע רק בלחיצה, ושום דבר לא יוצא מהמחשב.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>ניקוי אוטומטי</h2>
+      <p>כשסוגרים את Ruby, <strong>העוגיות, נתוני האתרים והמטמון נמחקים.</strong> ההיסטוריה, הסימניות, הסיסמאות השמורות והלשוניות הפתוחות נשארים.</p>
+      <p><strong>להישאר מחוברים לאתר מסוים:</strong> הגדרות ← פרטיות ואבטחה ← עוגיות ונתוני אתרים ← "ניהול חריגות", ואז כתובת האתר ← "אפשר". בקרוב: כפתור "זכור את האתר הזה" בלחיצה אחת.</p>
+      <p class="muted">רוצים לבטל את הניקוי? באותו מקום: לבטל את "מחיקת עוגיות ונתוני אתרים כאשר Firefox נסגר".</p>
+    </section>
+    <section>
+      <h2>סביבות</h2>
+      <p>עבודה, בית, לימודים: כל סביבה בלשוניות בצבע משלה, עם עוגיות וחשבונות נפרדים. לחצו על סמל המיכלים בסרגל.</p>
+    </section>
+    <section>
+      <h2>קיצורים</h2>
+      <ul>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>: חלון פרטי</li>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>: פתיחה מחדש של לשונית שנסגרה</li>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Delete</kbd>: מחיקת היסטוריה עכשיו</li>
+      </ul>
+    </section>
+    <footer>Ruby מבוסס על Firefox ESR של Mozilla, בלי שינוי בקוד. ‏Firefox הוא סימן מסחר של Mozilla Foundation.<br>© 2026 Diamond Rubinny (d.Ai) · D.Ai OS</footer>
+  </div>
+
+  <div id="en" lang="en" dir="ltr" hidden>
+    <h1>Welcome to <span>Ruby</span></h1>
+    <p class="lead">D.Ai's private browsing experience, built on Firefox ESR with security updates from Debian.</p>
+    <section>
+      <h2>Already on</h2>
+      <ul>
+        <li><strong>Ads and trackers blocked</strong> by the full uBlock Origin, including "accept cookies" banners.</li>
+        <li><strong>Pop-ups blocked.</strong></li>
+        <li><strong>Third-party cookies blocked,</strong> and every site gets its own cookie jar.</li>
+        <li><strong>Secure connections only (HTTPS)</strong>, with a warning before an unencrypted site.</li>
+        <li><strong>No telemetry, no ads on the home page, no AI pushed on you.</strong> Diamond, D.Ai's AI, will come only when you click, and nothing leaves the computer.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Automatic cleaning</h2>
+      <p>When you close Ruby, <strong>cookies, site data and the cache are deleted.</strong> History, bookmarks, saved passwords and open tabs stay.</p>
+      <p><strong>To stay signed in to a site:</strong> Settings → Privacy &amp; Security → Cookies and Site Data → "Manage Exceptions", then the site's address → "Allow". Coming soon: a one-click "Remember this site" button.</p>
+      <p class="muted">Want to turn cleaning off? Same place: clear "Delete cookies and site data when Firefox is closed".</p>
+    </section>
+    <section>
+      <h2>Spaces</h2>
+      <p>Work, home, school: each space has tabs in its own colour, with separate cookies and accounts. Click the containers icon in the toolbar.</p>
+    </section>
+    <section>
+      <h2>Shortcuts</h2>
+      <ul>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>: private window</li>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>: reopen a closed tab</li>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Delete</kbd>: clear history now</li>
+      </ul>
+    </section>
+    <footer>Ruby is built on Mozilla's Firefox ESR, unmodified. Firefox is a trademark of the Mozilla Foundation.<br>© 2026 Diamond Rubinny (d.Ai) · D.Ai OS</footer>
+  </div>
+</main>
+<script>
+  // Hebrew for Hebrew browsers, English for the rest; the button switches.
+  (function () {
+    var he = document.getElementById("he"), en = document.getElementById("en"), button = document.getElementById("switch");
+    function show(lang) {
+      var hebrew = lang === "he";
+      he.hidden = !hebrew;
+      en.hidden = hebrew;
+      document.documentElement.lang = hebrew ? "he" : "en";
+      document.documentElement.dir = hebrew ? "rtl" : "ltr";
+      button.textContent = hebrew ? "English" : "עברית";
+      button.lang = hebrew ? "en" : "he";
+    }
+    var current = (navigator.language || "he").slice(0, 2) === "he" ? "he" : "en";
+    show(current);
+    button.addEventListener("click", function () { current = current === "he" ? "en" : "he"; show(current); });
+  })();
+</script>
+</body>
+</html>
