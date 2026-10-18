@@ -728,4 +728,4 @@ class WindowTests(ForgeTestCase):
     def test_without_model_offers_download(self):
         with mock.patch.object(gui, "model_installed", lambda: False):
             self.ask("build an app for a shopping list")
-        self.assertIn("local AI model", self.texts())
+        self.assertIn("Diamond, the local AI", self.texts())

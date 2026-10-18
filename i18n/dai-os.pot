@@ -10,10 +10,10 @@ msgstr ""
 msgid "\n  Testing it in the sandbox…"
 msgstr ""
 
-#. he:    ✗ קרסה בהפעלה; ה־AI מתקן ({repair}/2)…
+#. he:    ✗ קרסה בהפעלה; Diamond מתקן ({repair}/2)…
 #: apps/dai-forge/dai_forge/cli.py:226
 #, python-brace-format
-msgid "\n  ✗ It crashed when started; the AI is fixing it ({repair}/2)…"
+msgid "\n  ✗ It crashed when started; Diamond is fixing it ({repair}/2)…"
 msgstr ""
 
 #. he:  הכל נראה תקין.
@@ -96,15 +96,15 @@ msgstr ""
 msgid "  ✓ Tested in the sandbox: it works{fixed}"
 msgstr ""
 
-#. he:  (אחרי 1 תיקונים של ה־AI)
+#. he:  (אחרי 1 תיקונים של Diamond)
 #: apps/dai-forge/dai_forge/cli.py:185
-msgid " (after 1 fix by the AI)"
+msgid " (after 1 fix by Diamond)"
 msgstr ""
 
-#. he:  (אחרי {repairs} תיקונים של ה־AI)
+#. he:  (אחרי {repairs} תיקונים של Diamond)
 #: apps/dai-forge/dai_forge/cli.py:187
 #, python-brace-format
-msgid " (after {repairs} fixes by the AI)"
+msgid " (after {repairs} fixes by Diamond)"
 msgstr ""
 
 #. he:  (לא מחובר)
@@ -147,6 +147,11 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:175
 #, python-brace-format
 msgid ", {health}% health"
+msgstr ""
+
+#. he: תהליך אחד
+#: apps/dai-mom/dai_mom/text.py:25
+msgid "1 process"
 msgstr ""
 
 #. he: מערכת מהירה, פרטית ומאובטחת, עם עוזר מובנה שרץ על המחשב הזה. כמה שאלות קצרות ואתם מוכנים. אפשר לדלג על כל שלב ולשנות אותו אחר כך.
@@ -266,6 +271,11 @@ msgstr ""
 msgid "Apply? [y/N] "
 msgstr ""
 
+#. he: אפליקציות
+#: apps/dai-mom/dai_mom/text.py:13
+msgid "Apps"
+msgstr ""
+
 #. he: אפליקציות שבונים ב־D.Ai Forge רצות בארגז חול, בלי אינטרנט ובלי גישה לקבצים, אלא אם תאשרו.
 #: apps/dai-welcome/dai_welcome/gui.py:99
 msgid "Apps you build with D.Ai Forge run in a sandbox without internet or your files, unless you allow it."
@@ -281,15 +291,21 @@ msgstr ""
 msgid "Ask D.Ai…"
 msgstr ""
 
-#. he: מבקש מה־AI המקומי לערוך את {rel}…
-#: apps/dai-code/dai_code/cli.py:106
+#. he: ביקשנו מ־{name} להיסגר.
+#: apps/dai-mom/dai_mom/text.py:47
 #, python-brace-format
-msgid "Asking the local AI to edit {rel}…"
+msgid "Asked {name} to close."
 msgstr ""
 
-#. he: שואל את ה־AI המקומי…
+#. he: מבקש מ־Diamond לערוך את {rel}…
+#: apps/dai-code/dai_code/cli.py:106
+#, python-brace-format
+msgid "Asking Diamond to edit {rel}…"
+msgstr ""
+
+#. he: שואל את Diamond…
 #: apps/dai-tune/dai_tune/cli.py:143
-msgid "Asking the local AI…"
+msgid "Asking Diamond…"
 msgstr ""
 
 #. he: עוזר — עונה על שאלות ועוזר במערכת
@@ -417,31 +433,41 @@ msgstr ""
 msgid "Build or add it: "
 msgstr ""
 
-#. he: בנייה עם AI מקומי · רץ בארגז חול · Enter
+#. he: בנייה עם Diamond · רץ בארגז חול · Enter
 #: apps/dai-command/dai_command/core.py:395
-msgid "Build with local AI · runs in a sandbox · Enter"
+msgid "Build with Diamond · runs in a sandbox · Enter"
 msgstr ""
 
-#. he: בונה {kind} עם ה־AI המקומי (במחשב הזה)…
+#. he: בונה {kind} עם Diamond (במחשב הזה)…
 #: apps/dai-forge/dai_forge/cli.py:219
 #, python-brace-format
-msgid "Building a {kind} with the local AI (on this computer)…"
+msgid "Building a {kind} with Diamond (on this computer)…"
 msgstr ""
 
-#. he: בונה אוטומציה ({schedule}) עם ה־AI המקומי…
+#. he: בונה אוטומציה ({schedule}) עם Diamond…
 #: apps/dai-forge/dai_forge/cli.py:215
 #, python-brace-format
-msgid "Building an automation ({schedule}) with the local AI…"
+msgid "Building an automation ({schedule}) with Diamond…"
 msgstr ""
 
-#. he: בנייה דורשת מודל AI מקומי (כ־1.1GB, הורדה חד־פעמית עם אימות).
+#. he: בנייה דורשת את Diamond, ה־AI המקומי (כ־1.1GB, הורדה חד־פעמית עם אימות).
 #: apps/dai-forge/dai_forge/gui.py:158
-msgid "Building needs a local AI model (about 1.1 GB, downloaded once and verified)."
+msgid "Building needs Diamond, the local AI (about 1.1 GB, downloaded once and verified)."
+msgstr ""
+
+#. he: מעבד
+#: apps/dai-mom/dai_mom/text.py:18
+msgid "CPU"
 msgstr ""
 
 #. he: מצלמה
 #: apps/dai-doctor/dai_doctor/diagnose.py:184
 msgid "Camera"
+msgstr ""
+
+#. he: ביטול
+#: apps/dai-mom/dai_mom/text.py:56
+msgid "Cancel"
 msgstr ""
 
 #. he: בוטל.
@@ -491,6 +517,11 @@ msgstr ""
 msgid "Clipboard history"
 msgstr ""
 
+#. he: סגירה
+#: apps/dai-mom/dai_mom/text.py:21
+msgid "Close"
+msgstr ""
+
 #. he: סגרו אפליקציות או לשוניות דפדפן שלא בשימוש
 #: apps/dai-doctor/dai_doctor/diagnose.py:71
 msgid "Close apps or browser tabs you are not using"
@@ -505,6 +536,12 @@ msgstr ""
 #: apps/dai-tune/dai_tune/catalog.py:332
 #, python-brace-format
 msgid "Close port {port}/{proto}"
+msgstr ""
+
+#. he: לסגור את {name}?
+#: apps/dai-mom/dai_mom/text.py:32
+#, python-brace-format
+msgid "Close {name}?"
 msgstr ""
 
 #. he: קוד
@@ -685,6 +722,11 @@ msgstr ""
 msgid "Delete {title} and its data? [y/N] "
 msgstr ""
 
+#. he: Delete: סגירה · Shift+Delete: סגירה בכוח
+#: apps/dai-mom/dai_mom/text.py:55
+msgid "Delete: close · Shift+Delete: force close"
+msgstr ""
+
 #. he: שולחן העבודה
 #: apps/dai-find/dai_find/search.py:26
 msgid "Desktop"
@@ -694,6 +736,51 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:104
 #, python-brace-format
 msgid "Details: journalctl -u {failed_units}"
+msgstr ""
+
+#. he: Diamond מוסיף:
+#: apps/dai-heal/dai_heal/text.py:47
+msgid "Diamond adds:"
+msgstr ""
+
+#. he: Diamond לא זמין (dai-models install qwen2.5-0.5b).
+#: apps/dai-tune/dai_tune/cli.py:146
+msgid "Diamond is not available (dai-models install qwen2.5-0.5b)."
+msgstr ""
+
+#. he: Diamond לא מוכן. התקינו מודל: dai-models install qwen2.5-0.5b
+#: apps/dai-command/dai_command/core.py:374
+msgid "Diamond is not ready. Install a model: dai-models install qwen2.5-0.5b"
+msgstr ""
+
+#. he: Diamond כותב מתכון…
+#: apps/dai-forge/dai_forge/gui.py:140
+msgid "Diamond is writing a recipe…"
+msgstr ""
+
+#. he: Diamond כותב את האפליקציה, במחשב הזה. שום דבר לא יוצא ממנו.
+#: apps/dai-forge/dai_forge/gui.py:141
+msgid "Diamond is writing your app — on this computer, nothing leaves it."
+msgstr ""
+
+#. he: Diamond לא הציע שינוי.
+#: apps/dai-code/dai_code/cli.py:117
+msgid "Diamond proposed no change."
+msgstr ""
+
+#. he: Diamond · Enter לשאלה (רץ במחשב הזה)
+#: apps/dai-command/dai_command/core.py:373
+msgid "Diamond · Enter to ask (runs on this computer)"
+msgstr ""
+
+#. he: Diamond, ה־AI, רץ על המחשב הזה. שאלות, קבצים וקוד לא נשלחים לשום מקום.
+#: apps/dai-welcome/dai_welcome/gui.py:95
+msgid "Diamond, the AI, runs on this computer. Prompts, files and code are not sent anywhere."
+msgstr ""
+
+#. he: Diamond, הבינה המקומית, וקול
+#: apps/dai-welcome/dai_welcome/gui.py:78
+msgid "Diamond, the local AI, and voice"
 msgstr ""
 
 #. he: הצפנת דיסק
@@ -714,6 +801,12 @@ msgstr ""
 #. he: הצפנת דיסק: כבויה
 #: apps/dai-oem/dai_oem/wizard.py:68
 msgid "Disk encryption: off"
+msgstr ""
+
+#. he: דיסק: {free} פנויים מתוך {total}
+#: apps/dai-mom/dai_mom/text.py:53
+#, python-brace-format
+msgid "Disk: {free} free of {total}"
 msgstr ""
 
 #. he: לא להפריע
@@ -876,9 +969,9 @@ msgstr ""
 msgid "Firewall blocks unsolicited incoming traffic"
 msgstr ""
 
-#. he: תיקון האפליקציה עם ה־AI
+#. he: תיקון האפליקציה עם Diamond
 #: apps/dai-heal/dai_heal/text.py:51
-msgid "Fix the app with the AI"
+msgid "Fix the app with Diamond"
 msgstr ""
 
 #. he: תיקון לאנגלית · Enter להעתקה
@@ -910,6 +1003,23 @@ msgstr ""
 #. he: למשל: הצליל לא עובד
 #: apps/dai-heal/dai_heal/text.py:20
 msgid "For example: the sound does not work"
+msgstr ""
+
+#. he: סגירה בכוח
+#: apps/dai-mom/dai_mom/text.py:22
+msgid "Force close"
+msgstr ""
+
+#. he: לסגור בכוח את {name}?
+#: apps/dai-mom/dai_mom/text.py:30
+#, python-brace-format
+msgid "Force close {name}?"
+msgstr ""
+
+#. he: סגירה בכוח מאבדת עבודה שלא נשמרה. הוסיפו ‎--yes‎ כדי לסגור בכוח את {name}.
+#: apps/dai-mom/dai_mom/text.py:41
+#, python-brace-format
+msgid "Forcing loses unsaved work. Add --yes to force {name} closed."
 msgstr ""
 
 #. he: פינוי מקום: קבצי התקנה שהורדו ויומני מערכת ישנים
@@ -1028,6 +1138,11 @@ msgstr ""
 msgid "Improve"
 msgstr ""
 
+#. he: התקינו את Diamond כדי שיכתוב מתכון: dai-models install qwen2.5-0.5b
+#: apps/dai-forge/dai_forge/cli.py:114
+msgid "Install Diamond (the local AI) so it can write one: dai-models install qwen2.5-0.5b"
+msgstr ""
+
 #. he: התקנה מ־Flathub: 
 #: apps/dai-tune/dai_tune/catalog.py:936
 msgid "Install from Flathub: "
@@ -1038,20 +1153,15 @@ msgstr ""
 msgid "Install printing (D.Ai Forge)"
 msgstr ""
 
-#. he: התקינו את ה־AI המקומי כדי שיכתוב מתכון: dai-models install qwen2.5-0.5b
-#: apps/dai-forge/dai_forge/cli.py:114
-msgid "Install the local AI so it can write one: dai-models install qwen2.5-0.5b"
-msgstr ""
-
 #. he: התקנת: 
 #: apps/dai-tune/dai_tune/catalog.py:449
 msgid "Install: "
 msgstr ""
 
-#. he: קרסה בהפעלה; ה־AI מתקן ({n}/2)…
+#. he: קרסה בהפעלה; Diamond מתקן ({n}/2)…
 #: apps/dai-forge/dai_forge/gui.py:110
 #, python-brace-format
-msgid "It crashed when started; the AI is fixing it ({n}/2)…"
+msgid "It crashed when started; Diamond is fixing it ({n}/2)…"
 msgstr ""
 
 #. he: היא עוד לא רצה.
@@ -1134,26 +1244,6 @@ msgstr ""
 msgid "Load {load1:.1f} on {cores} cores. Busiest: {names}."
 msgstr ""
 
-#. he: בינה מקומית וקול
-#: apps/dai-welcome/dai_welcome/gui.py:78
-msgid "Local AI and voice"
-msgstr ""
-
-#. he: ה־AI המקומי לא זמין (dai-models install qwen2.5-0.5b).
-#: apps/dai-tune/dai_tune/cli.py:146
-msgid "Local AI is not available (dai-models install qwen2.5-0.5b)."
-msgstr ""
-
-#. he: ה־AI המקומי לא מוכן. התקינו מודל: dai-models install qwen2.5-0.5b
-#: apps/dai-command/dai_command/core.py:374
-msgid "Local AI is not ready. Install a model: dai-models install qwen2.5-0.5b"
-msgstr ""
-
-#. he: AI מקומי · Enter לשאלה (רץ במחשב הזה)
-#: apps/dai-command/dai_command/core.py:373
-msgid "Local AI · Enter to ask (runs on this computer)"
-msgstr ""
-
 #. he: נעילת מסך אחרי 5 דקות, ועדכוני אבטחה אוטומטיים פעילים.
 #: apps/dai-welcome/dai_welcome/gui.py:67
 msgid "Lock the screen after 5 minutes and keep automatic security updates on."
@@ -1165,14 +1255,35 @@ msgstr ""
 msgid "Lock the screen after {minutes} minutes of inactivity"
 msgstr ""
 
+#. he: MOM לא רצה כ־root.
+#: apps/dai-mom/dai_mom/text.py:45
+msgid "MOM does not run as root."
+msgstr ""
+
+#. he: MOM – מנהל המשימות
+#: apps/dai-mom/dai_mom/text.py:12
+msgid "MOM – Task manager"
+msgstr ""
+
 #. he: האפליקציות שלי
 #: apps/dai-forge/dai_forge/gui.py:128
 msgid "MY APPS"
 msgstr ""
 
+#. he: זיכרון
+#: apps/dai-mom/dai_mom/text.py:17
+msgid "Memory"
+msgstr ""
+
 #. he: הזיכרון כמעט מלא
 #: apps/dai-doctor/dai_doctor/diagnose.py:73
 msgid "Memory is almost full"
+msgstr ""
+
+#. he: זיכרון: {used} מתוך {total} בשימוש
+#: apps/dai-mom/dai_mom/text.py:51
+#, python-brace-format
+msgid "Memory: {used} of {total} in use"
 msgstr ""
 
 #. he: המודלים רצים על המחשב הזה: השאלות, הקוד והקול שלכם לא יוצאים ממנו. בחרו מה להוריד עכשיו (פעם אחת, מאומת ב־SHA-256, מ־Hugging Face). אפשר להוסיף עוד אחר כך.
@@ -1193,6 +1304,11 @@ msgstr ""
 #. he: השתקת מיק׳
 #: apps/dai-quick/dai_quick/gui.py:29
 msgid "Mute mic"
+msgstr ""
+
+#. he: שם
+#: apps/dai-mom/dai_mom/text.py:16
+msgid "Name"
 msgstr ""
 
 #. he: שם: {name} משתמש: {user} (מנהל) מחשב: {host} {luks}  אחרי „סיום” המחשב יופעל מחדש. המשתמש הזמני שהגיע עם המחשב יימחק.
@@ -1304,14 +1420,14 @@ msgstr ""
 msgid "No recipe matches this request."
 msgstr ""
 
-#. he: אין מתכון מתאים. מבקש מה־AI המקומי לכתוב אחד…
+#. he: אין מתכון מתאים. מבקש מ־Diamond לכתוב אחד…
 #: apps/dai-forge/dai_forge/cli.py:120
-msgid "No recipe matches. Asking the local AI to write one…"
+msgid "No recipe matches. Asking Diamond to write one…"
 msgstr ""
 
-#. he: אין מתכון עדיין · ה־AI המקומי יכתוב מתכון לבדיקה · Enter
+#. he: אין מתכון עדיין · Diamond יכתוב מתכון לבדיקה · Enter
 #: apps/dai-command/dai_command/core.py:398
-msgid "No recipe yet · the local AI will write one for review · Enter"
+msgid "No recipe yet · Diamond will write one for review · Enter"
 msgstr ""
 
 #. he: אין בקשות שלא נמצאו להן תוצאות ב־30 הימים האחרונים.
@@ -1372,9 +1488,9 @@ msgstr ""
 msgid "Not tested: {why}"
 msgstr ""
 
-#. he: הכללים לא הבינו. לבקש פרשנות מה־AI המקומי? [כ/ל] 
+#. he: הכללים לא הבינו. לבקש פרשנות מ־Diamond? [כ/ל] 
 #: apps/dai-tune/dai_tune/cli.py:139
-msgid "Not understood by the rules. Ask the local AI to interpret? [y/N] "
+msgid "Not understood by the rules. Ask Diamond to interpret? [y/N] "
 msgstr ""
 
 #. he: לא הובן — Enter לדוגמאות
@@ -1386,6 +1502,17 @@ msgstr ""
 #: apps/dai-tune/dai_tune/cli.py:75
 #, python-brace-format
 msgid "Not understood: “{clause}”"
+msgstr ""
+
+#. he: הערות
+#: apps/dai-mom/dai_mom/text.py:19
+msgid "Notes"
+msgstr ""
+
+#. he: שום דבר בשם {name} לא רץ.
+#: apps/dai-mom/dai_mom/text.py:46
+#, python-brace-format
+msgid "Nothing called {name} is running."
 msgstr ""
 
 #. he: לא נמצא כלום.
@@ -1522,6 +1649,11 @@ msgstr ""
 msgid "Opened again. If it crashes again, I will tell you."
 msgstr ""
 
+#. he: תהליכים נוספים
+#: apps/dai-mom/dai_mom/text.py:20
+msgid "Other processes"
+msgstr ""
+
 #. he: החבילות מגיעות רק ממאגרי Debian/D.Ai החתומים.
 #: apps/dai-tune/dai_tune/catalog.py:452
 msgid "Packages come only from the signed Debian/D.Ai repositories."
@@ -1541,6 +1673,11 @@ msgstr ""
 #: apps/dai-clip/dai_clip/text.py:31
 #, python-brace-format
 msgid "Paused until {time} · {n} items"
+msgstr ""
+
+#. he: ביצועים
+#: apps/dai-mom/dai_mom/text.py:14
+msgid "Performance"
 msgstr ""
 
 #. he: מצב ביצועים (מהיר יותר, צורך יותר חשמל)
@@ -1576,6 +1713,12 @@ msgstr ""
 #. he: יומן פרטיות…
 #: apps/dai-privacy/dai_privacy/text.py:24
 msgid "Privacy log…"
+msgstr ""
+
+#. he: מעבד: {value}%
+#: apps/dai-mom/dai_mom/text.py:50
+#, python-brace-format
+msgid "Processor: {value}%"
 msgstr ""
 
 #. he: תוכנות קורסות בדרך כלל בגלל הגדרות פגומות או באג. הפעלה מחדש עוזרת לא פעם, ואם זה חוזר, העברת ההגדרות שלה הצידה (הן נשמרות) בדרך כלל מתקנת.
@@ -2020,6 +2163,12 @@ msgstr ""
 msgid "Super+F1 opens help"
 msgstr ""
 
+#. he: זיכרון החלפה: {used} מתוך {total} בשימוש
+#: apps/dai-mom/dai_mom/text.py:52
+#, python-brace-format
+msgid "Swap: {used} of {total} in use"
+msgstr ""
+
 #. he: שינויים במערכת (תתבקש סיסמת מנהל):
 #: apps/dai-welcome/dai_welcome/gui.py:107
 msgid "System changes (the administrator password will be requested):"
@@ -2060,21 +2209,6 @@ msgstr ""
 msgid "Testing it in the sandbox…"
 msgstr ""
 
-#. he: הקוד של ה־AI נדחה
-#: apps/dai-forge/dai_forge/cli.py:253
-msgid "The AI code was rejected"
-msgstr ""
-
-#. he: ה־AI לא הציע שינוי.
-#: apps/dai-code/dai_code/cli.py:117
-msgid "The AI proposed no change."
-msgstr ""
-
-#. he: ה־AI רץ על המחשב הזה. שאלות, קבצים וקוד לא נשלחים לשום מקום.
-#: apps/dai-welcome/dai_welcome/gui.py:95
-msgid "The AI runs on this computer. Prompts, files and code are not sent anywhere."
-msgstr ""
-
 #. he: הסוללה שחוקה
 #: apps/dai-doctor/dai_doctor/diagnose.py:165
 msgid "The battery is worn"
@@ -2083,6 +2217,11 @@ msgstr ""
 #. he: היסטוריית ההעתקות נוקתה.
 #: apps/dai-clip/dai_clip/text.py:23
 msgid "The clipboard history was cleared."
+msgstr ""
+
+#. he: הקוד של Diamond נדחה
+#: apps/dai-forge/dai_forge/cli.py:253
+msgid "The code from Diamond was rejected"
 msgstr ""
 
 #. he: המחשב משתמש הרבה בזיכרון החלפה (swap)
@@ -2099,21 +2238,6 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:225
 #, python-brace-format
 msgid "The last update ({date}) changed {count} package(s). "
-msgstr ""
-
-#. he: ה־AI המקומי מוסיף:
-#: apps/dai-heal/dai_heal/text.py:47
-msgid "The local AI adds:"
-msgstr ""
-
-#. he: ה־AI המקומי כותב מתכון…
-#: apps/dai-forge/dai_forge/gui.py:140
-msgid "The local AI is writing a recipe…"
-msgstr ""
-
-#. he: ה־AI המקומי כותב את האפליקציה, במחשב הזה. שום דבר לא יוצא ממנו.
-#: apps/dai-forge/dai_forge/gui.py:141
-msgid "The local AI is writing your app — on this computer, nothing leaves it."
 msgstr ""
 
 #. he: המיקרופון מקליט רק כשלוחצים על כפתור הקול, ומוצגת הודעה כל הזמן.
@@ -2142,9 +2266,9 @@ msgstr ""
 msgid "The two passwords are not the same."
 msgstr ""
 
-#. he: אין מתכון מוכן לזה, וה־AI המקומי עוד לא מותקן.
+#. he: אין מתכון מוכן לזה, ו־Diamond עוד לא מותקן.
 #: apps/dai-forge/dai_forge/gui.py:162
-msgid "There is no ready recipe for this, and the local AI is not installed yet."
+msgid "There is no ready recipe for this, and Diamond (the local AI) is not installed yet."
 msgstr ""
 
 #. he: חושב…
@@ -2173,9 +2297,9 @@ msgstr ""
 msgid "This computer: {ram} RAM"
 msgstr ""
 
-#. he: זו אפליקציה שבנית עם D.Ai Forge. אפשר לתקן אותה: ה־AI המקומי קורא את השגיאה, משנה את הקוד ובודק אותה בארגז החול לפני שתפתחו אותה. הגרסה הנוכחית נשמרת.
+#. he: זו אפליקציה שבנית עם D.Ai Forge. אפשר לתקן אותה: Diamond קורא את השגיאה, משנה את הקוד ובודק אותה בארגז החול לפני שתפתחו אותה. הגרסה הנוכחית נשמרת.
 #: apps/dai-heal/dai_heal/text.py:43
-msgid "This is an app you built with D.Ai Forge. I can fix it: the local AI reads the error, changes the code, and tests it in the sandbox before you open it. The current version is kept."
+msgid "This is an app you built with D.Ai Forge. I can fix it: Diamond reads the error, changes the code, and tests it in the sandbox before you open it. The current version is kept."
 msgstr ""
 
 #. he: זה מחליש את האבטחה. הקלידו „כן” לאישור:
@@ -2242,6 +2366,11 @@ msgstr ""
 msgid "Turn on battery saver"
 msgstr ""
 
+#. he: הקלידו כדי למצוא אפליקציה…
+#: apps/dai-mom/dai_mom/text.py:15
+msgid "Type to find an app…"
+msgstr ""
+
 #. he: כתבו את השם שלך.
 #: apps/dai-oem/dai_oem/wizard.py:76
 msgid "Type your name."
@@ -2272,14 +2401,20 @@ msgstr ""
 msgid "Undone. The system is back to how it was."
 msgstr ""
 
+#. he: עבודה שלא נשמרה ב־{name} תאבד.
+#: apps/dai-mom/dai_mom/text.py:31
+#, python-brace-format
+msgid "Unsaved work in {name} will be lost."
+msgstr ""
+
 #. he: עדכון אפליקציה: 
 #: apps/dai-command/dai_command/core.py:401
 msgid "Update app: "
 msgstr ""
 
-#. he: עדכון האפליקציה עם AI מקומי · הגרסה הקודמת נשמרת · Enter
+#. he: עדכון האפליקציה עם Diamond · הגרסה הקודמת נשמרת · Enter
 #: apps/dai-command/dai_command/core.py:396
-msgid "Update this app with local AI · previous version kept · Enter"
+msgid "Update this app with Diamond · previous version kept · Enter"
 msgstr ""
 
 #. he: על הדיסק הזה אי אפשר לבטל עדכונים
@@ -2287,10 +2422,10 @@ msgstr ""
 msgid "Updates cannot be undone on this disk"
 msgstr ""
 
-#. he: מעדכן את {title} עם ה־AI המקומי…
+#. he: מעדכן את {title} עם Diamond…
 #: apps/dai-forge/dai_forge/cli.py:209
 #, python-brace-format
-msgid "Updating {title} with the local AI…"
+msgid "Updating {title} with Diamond…"
 msgstr ""
 
 #. he: שם משתמש (באנגלית, לכניסה למחשב)
@@ -2372,6 +2507,11 @@ msgstr ""
 msgid "Who used it"
 msgstr ""
 
+#. he: למה המחשב איטי?
+#: apps/dai-mom/dai_mom/text.py:23
+msgid "Why is it slow?"
+msgstr ""
+
 #. he: נמצא כרטיס Wi-Fi אבל הוא לא מוכן
 #: apps/dai-doctor/dai_doctor/diagnose.py:213
 msgid "Wi-Fi chip found but not ready"
@@ -2403,9 +2543,9 @@ msgstr ""
 msgid "Worth knowing about the code:"
 msgstr ""
 
-#. he: נכתב ע״י ה־AI המקומי — בדקו כל צעד
+#. he: נכתב ע״י Diamond — בדקו כל צעד
 #: apps/dai-forge/dai_forge/gui.py:136
-msgid "Written by the local AI — review every step"
+msgid "Written by Diamond — review every step"
 msgstr ""
 
 #. he: אפשר לבטל את העדכון האחרון
@@ -2680,6 +2820,11 @@ msgstr ""
 msgid "opens terminals"
 msgstr ""
 
+#. he: חלק מההפעלה
+#: apps/dai-mom/dai_mom/text.py:28
+msgid "part of the session"
+msgstr ""
+
 #. he: יומן פרטיות (30 יום, במחשב הזה)
 #: apps/dai-command/dai_command/core.py:406
 msgid "privacy log (30 days, on this computer)"
@@ -2808,9 +2953,9 @@ msgstr ""
 msgid "writing code…"
 msgstr ""
 
-#. he: נכתב ע"י ה־AI המקומי
+#. he: נכתב ע"י Diamond
 #: apps/dai-forge/dai_forge/cli.py:36
-msgid "written by the local AI"
+msgid "written by Diamond"
 msgstr ""
 
 #. he: החשבון שלך
@@ -2824,6 +2969,12 @@ msgstr ""
 msgid "your recipe"
 msgstr ""
 
+#. he: {apps} אפליקציות · {procs} תהליכים
+#: apps/dai-mom/dai_mom/text.py:54
+#, python-brace-format
+msgid "{apps} apps · {procs} processes"
+msgstr ""
+
 #. he: {app} הפסיק להשתמש ב{device}
 #: apps/dai-privacy/dai_privacy/text.py:21
 #, python-brace-format
@@ -2834,6 +2985,12 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:177
 #, python-brace-format
 msgid "{capacity}% charged{health}"
+msgstr ""
+
+#. he: {count} תהליכים
+#: apps/dai-mom/dai_mom/text.py:24
+#, python-brace-format
+msgid "{count} processes"
 msgstr ""
 
 #. he: {drive} אינה תיקייה שאפשר לכתוב אליה
@@ -2866,6 +3023,12 @@ msgstr ""
 msgid "{mem_available} free"
 msgstr ""
 
+#. he: {name} שייך למערכת; MOM סוגרת רק את האפליקציות שלכם.
+#: apps/dai-mom/dai_mom/text.py:43
+#, python-brace-format
+msgid "{name} belongs to the system; MOM only closes your own apps."
+msgstr ""
+
 #. he: {name} קרסה{times}.
 #: apps/dai-heal/dai_heal/text.py:28
 #, python-brace-format
@@ -2876,6 +3039,42 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:202
 #, python-brace-format
 msgid "{name} has no driver loaded, so it will probably not work."
+msgstr ""
+
+#. he: {name} עדיין לא נסגר. לסגור בכוח?
+#: apps/dai-mom/dai_mom/text.py:49
+#, python-brace-format
+msgid "{name} has not closed yet. Force close?"
+msgstr ""
+
+#. he: {name} הוא חלק מההפעלה, ואי אפשר לסגור אותו בכוח.
+#: apps/dai-mom/dai_mom/text.py:37
+#, python-brace-format
+msgid "{name} is part of the session and cannot be forced closed."
+msgstr ""
+
+#. he: {name} הוא חלק מההפעלה. הוסיפו ‎--yes‎ כדי לסגור בכל זאת.
+#: apps/dai-mom/dai_mom/text.py:39
+#, python-brace-format
+msgid "{name} is part of the session. Add --yes to close it anyway."
+msgstr ""
+
+#. he: {name} הוא חלק מההפעלה. סגירה שלו יכולה לסיים את ההפעלה, או לעצור את הצליל ואת שורת המשימות עד הכניסה הבאה.
+#: apps/dai-mom/dai_mom/text.py:33
+#, python-brace-format
+msgid "{name} is part of the session. Closing it can end the session or stop the sound and the taskbar until you log in again."
+msgstr ""
+
+#. he: {name} נסגר בכוח.
+#: apps/dai-mom/dai_mom/text.py:48
+#, python-brace-format
+msgid "{name} was forced closed."
+msgstr ""
+
+#. he: {name}, {memory} זיכרון, {cpu} אחוז מעבד
+#: apps/dai-mom/dai_mom/text.py:29
+#, python-brace-format
+msgid "{name}, {memory} memory, {cpu} percent CPU"
 msgstr ""
 
 #. he: לפני {n} שע׳
@@ -2936,6 +3135,12 @@ msgstr ""
 #: apps/dai-doctor/dai_doctor/diagnose.py:145
 #, python-brace-format
 msgid "{user_caches} in the trash and picture previews"
+msgstr ""
+
+#. he: {value}% מעבד
+#: apps/dai-mom/dai_mom/text.py:57
+#, python-brace-format
+msgid "{value}% CPU"
 msgstr ""
 
 #. he: ⚠ עדיין קורסת בהפעלה. נסו „שינוי” עם יותר פרטים, או מודל גדול יותר.
@@ -3034,7 +3239,7 @@ msgstr ""
 msgid "✓ Tested in the sandbox: it works"
 msgstr ""
 
-#. he: ✓ נבדקה בארגז החול: עובדת (ה־AI תיקן {n} בעיות)
+#. he: ✓ נבדקה בארגז החול: עובדת (Diamond תיקן {n} בעיות)
 #: apps/dai-forge/dai_forge/gui.py:112
 #, python-brace-format
 msgid "✓ Tested in the sandbox: it works (the AI fixed {n} problem(s))"
@@ -3112,5 +3317,15 @@ msgstr ""
 #. he: 🎙 מקליט… לחצו שוב לסיום
 #: apps/dai-voice/dai_voice/cli.py:26
 msgid "🎙 Recording… press again to finish"
+msgstr ""
+
+#. he: 🔴 מקליט
+#: apps/dai-mom/dai_mom/text.py:27
+msgid "🔴 recording"
+msgstr ""
+
+#. he: 🛡 ארגז חול
+#: apps/dai-mom/dai_mom/text.py:26
+msgid "🛡 sandbox"
 msgstr ""
 

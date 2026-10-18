@@ -33,7 +33,7 @@ SOURCE_LABELS = {
     "builtin": ("built-in", "מובנה"),
     "admin": ("administrator", "של המנהל"),
     "user": ("your recipe", "מתכון שלך"),
-    "ai": ("written by the local AI", "נכתב ע\"י ה־AI המקומי"),
+    "ai": ("written by Diamond", "נכתב ע\"י Diamond"),
 }
 
 
@@ -111,13 +111,13 @@ def handle_unknown(text: str, ctx: Context, library: Library, dry_run: bool, ass
     if not model_installed():
         apps.record_wish(text, "no-model")
         print(_l(lang, "No recipe matches this request.", "אין מתכון שמתאים לבקשה."))
-        print(_l(lang, "Install the local AI so it can write one: dai-models install qwen2.5-0.5b",
-                 "התקינו את ה־AI המקומי כדי שיכתוב מתכון: dai-models install qwen2.5-0.5b"))
+        print(_l(lang, "Install Diamond (the local AI) so it can write one: dai-models install qwen2.5-0.5b",
+                 "התקינו את Diamond כדי שיכתוב מתכון: dai-models install qwen2.5-0.5b"))
         print_examples(lang, library)
         return 2
     if not is_admin():
         return _need_admin(lang)
-    print(_l(lang, "No recipe matches. Asking the local AI to write one…", "אין מתכון מתאים. מבקש מה־AI המקומי לכתוב אחד…"))
+    print(_l(lang, "No recipe matches. Asking Diamond to write one…", "אין מתכון מתאים. מבקש מ־Diamond לכתוב אחד…"))
     try:
         recipe = author_recipe(text)
     except AIError as exc:
@@ -182,9 +182,9 @@ def _approve_pending(app: apps.App, lang: str) -> apps.App:
 
 def _test_line(test: TestResult, repairs: int, lang: str) -> str:
     if repairs == 1:
-        fixed = _l(lang, " (after 1 fix by the AI)", " (אחרי 1 תיקונים של ה־AI)")
+        fixed = _l(lang, " (after 1 fix by Diamond)", " (אחרי 1 תיקונים של Diamond)")
     else:
-        fixed = _l(lang, " (after {repairs} fixes by the AI)", " (אחרי {repairs} תיקונים של ה־AI)", repairs=repairs) if repairs else ""
+        fixed = _l(lang, " (after {repairs} fixes by Diamond)", " (אחרי {repairs} תיקונים של Diamond)", repairs=repairs) if repairs else ""
     if test.status == "passed":
         return _color(_l(lang, "  ✓ Tested in the sandbox: it works{fixed}", "  ✓ נבדקה בארגז החול: עובדת{fixed}",
                          fixed=fixed), "32")
@@ -206,25 +206,25 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     if intent.kind == "edit":
         current = apps.load(intent.app_name)
         request, kind, existing = intent.instruction, current.kind, current.code_path.read_text(encoding="utf-8")
-        print(_l(lang, "Updating {title} with the local AI…", "מעדכן את {title} עם ה־AI המקומי…",
+        print(_l(lang, "Updating {title} with Diamond…", "מעדכן את {title} עם Diamond…",
                  title=current.title))
     else:
         current, request, kind, existing = None, intent.text, intent.app_kind, None
         kinds = {"gui": ("desktop app", "אפליקציה"), "cli": ("terminal tool", "כלי טרמינל"), "web": ("web app", "אפליקציית Web")}
         if automation:
-            print(_l(lang, "Building an automation ({schedule}) with the local AI…",
-                     "בונה אוטומציה ({schedule}) עם ה־AI המקומי…",
+            print(_l(lang, "Building an automation ({schedule}) with Diamond…",
+                     "בונה אוטומציה ({schedule}) עם Diamond…",
                      schedule=intent.schedule.describe(lang)))
         else:
-            print(_l(lang, "Building a {kind} with the local AI (on this computer)…",
-                     "בונה {kind} עם ה־AI המקומי (במחשב הזה)…",
+            print(_l(lang, "Building a {kind} with Diamond (on this computer)…",
+                     "בונה {kind} עם Diamond (במחשב הזה)…",
                      kind=_l(lang, *kinds[kind])))
     if current is not None and current.is_automation:
         automation = True
     def status(stage: str, repair: int, test: TestResult) -> None:
         if stage == "repairing":
-            print(_color(_l(lang, "\n  ✗ It crashed when started; the AI is fixing it ({repair}/2)…",
-                            "\n  ✗ קרסה בהפעלה; ה־AI מתקן ({repair}/2)…", repair=repair), "33"))
+            print(_color(_l(lang, "\n  ✗ It crashed when started; Diamond is fixing it ({repair}/2)…",
+                            "\n  ✗ קרסה בהפעלה; Diamond מתקן ({repair}/2)…", repair=repair), "33"))
             print("    " + test.detail.splitlines()[-1][:200] if test.detail else "")
         elif stage == "testing":
             print(_l(lang, "\n  Testing it in the sandbox…", "\n  בודק אותה בארגז החול…"))
@@ -250,7 +250,7 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
         app, findings = apps.save(name, title, kind, result["code"], permissions, request,
                                   generator="ai", tested=test.status, schedule=schedule if automation else None)
     except apps.AppError as exc:
-        print(_color(f"\n✗ {_l(lang, 'The AI code was rejected', 'הקוד של ה־AI נדחה')}: {exc}", "31"))
+        print(_color(f"\n✗ {_l(lang, 'The code from Diamond was rejected', 'הקוד של Diamond נדחה')}: {exc}", "31"))
         return 1
     _show_result(app, findings, lang)
     app = _approve_pending(app, lang)

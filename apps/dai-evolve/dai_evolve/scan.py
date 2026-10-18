@@ -87,9 +87,9 @@ def from_wishes(wishes: list[dict], model_ready: bool) -> list[Suggestion]:
             out.append(Suggestion(
                 _key("wish", norm), "wish",
                 f"Build it for you: “{text}”", f"לבנות לך את זה: „{text}”",
-                "You asked for this and the AI model is installed now; try again?" if retry else
+                "You asked for this and Diamond is installed now; try again?" if retry else
                 f"You looked for this {len(items)} times and found nothing.",
-                "ביקשת את זה, ועכשיו מודל ה־AI מותקן. לנסות שוב?" if retry else
+                "ביקשת את זה, ועכשיו Diamond מותקן. לנסות שוב?" if retry else
                 f"חיפשת את זה {len(items)} פעמים ולא נמצא כלום.",
                 "forge", text))
     return out

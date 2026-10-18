@@ -113,7 +113,7 @@ class ScanTests(Base):
         self.assertEqual(self.scan(), [])
         found = self.scan(model_ready=True)
         self.assertEqual(found[0].payload, "build a habit tracker")
-        self.assertIn("model", found[0].why("en"))
+        self.assertIn("Diamond is installed", found[0].why("en"))
 
     def test_repeated_command_becomes_an_automation_request(self):
         for _ in range(3):

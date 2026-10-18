@@ -439,6 +439,16 @@ def main() -> int:
          "grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and '"wifi"' in o and '"volume"' in o and '"security"' in o
          and re.search(r"CLOCK=[1-9]", o) is not None and "DND_ON True" in o and "DND_OFF False" in o, 60),
+        # MOM (docs/MOM.md stage 1): closes the user's own app, refuses to force a part of the session, and
+        # groups processes into apps. A copy of sleep with its own name, so nothing else in the session is hit.
+        ("mom: closes apps, protects the session", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom --version; "
+         "cp /usr/bin/sleep /tmp/dai-mom-test; /tmp/dai-mom-test 300 & sleep 1; dai-mom close dai-mom-test; "
+         "echo RC_CLOSE=$?; sleep 1; pgrep -x dai-mom-test || echo TEST_GONE; dai-mom close --force labwc --yes; "
+         "echo RC_PROTECT=$?; pgrep -x labwc >/dev/null && echo LABWC_ALIVE; dai-mom list --json | "
+         "python3 -c 'import json, sys; a = json.load(sys.stdin); print(\"APPS\", len(a), "
+         "sorted(x[\"key\"] for x in a if x[\"protected\"])[:6])'", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "RC_CLOSE=0" in o and "TEST_GONE" in o
+         and "RC_PROTECT=3" in o and "LABWC_ALIVE" in o and "proc:labwc" in o, 60),
         # Languages (docs/I18N.md stage 1): every app reads the language through dai_i18n; other languages fall
         # back to English until their catalog exists, Hebrew stays Hebrew, and nothing crashes.
         ("i18n: languages fall back safely", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
