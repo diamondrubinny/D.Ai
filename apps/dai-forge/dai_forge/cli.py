@@ -19,6 +19,7 @@ from dai_tune.planner import build_plan
 
 from . import __author__, __version__, apps, paths
 from .ai import AIError, author_recipe, generate_app
+from .workshop import TestResult, build
 from .intent import Intent, classify
 from .recipes import (
     MAX_FILE, Library, Recipe, RecipeError, install_requests, load_library, remove_requests, save_user_recipe, validate,
@@ -172,6 +173,17 @@ def _approve_pending(app: apps.App, lang: str) -> apps.App:
     return app
 
 
+def _test_line(test: TestResult, repairs: int, lang: str) -> str:
+    fixed = _l(lang, f" (after {repairs} fix{'es' if repairs > 1 else ''} by the AI)",
+               f" (אחרי {repairs} תיקונים של ה־AI)") if repairs else ""
+    if test.status == "passed":
+        return _color(_l(lang, f"  ✓ Tested in the sandbox: it works{fixed}", f"  ✓ נבדקה בארגז החול: עובדת{fixed}"), "32")
+    if test.status == "failed":
+        last = test.detail.splitlines()[-1][:200] if test.detail else ""
+        return _color(_l(lang, f"  ⚠ Still crashes when started{fixed}: {last}", f"  ⚠ עדיין קורסת בהפעלה{fixed}: {last}"), "33")
+    return _l(lang, f"  · Not tested: {test.detail}", f"  · לא נבדקה: {test.detail}")
+
+
 def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     lang = ctx.lang
     if not _may_build(lang):
@@ -185,11 +197,21 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
         kinds = {"gui": ("desktop app", "אפליקציה"), "cli": ("terminal tool", "כלי טרמינל"), "web": ("web app", "אפליקציית Web")}
         print(_l(lang, f"Building a {kinds[kind][0]} with the local AI (on this computer)…",
                  f"בונה {kinds[kind][1]} עם ה־AI המקומי (במחשב הזה)…"))
+    def status(stage: str, repair: int, test: TestResult) -> None:
+        if stage == "repairing":
+            print(_color(_l(lang, f"\n  ✗ It crashed when started; the AI is fixing it ({repair}/2)…",
+                            f"\n  ✗ קרסה בהפעלה; ה־AI מתקן ({repair}/2)…"), "33"))
+            print("    " + test.detail.splitlines()[-1][:200] if test.detail else "")
+        elif stage == "testing":
+            print(_l(lang, "\n  Testing it in the sandbox…", "\n  בודק אותה בארגז החול…"))
+
     try:
-        result = generate_app(request, kind, existing, progress=_progress(lang))
+        built = build(request, kind, existing, progress=_progress(lang), status=status)
     except AIError as exc:
         print(_color(f"\n✗ {exc}", "31"))
         return 1
+    result, test = built.result, built.test
+    print(_test_line(test, built.repairs, lang))
     if dry_run:
         print("\n" + result["code"])
         print(_l(lang, "(dry run — nothing was saved)", "(הרצת ניסיון — לא נשמר דבר)"))
@@ -199,7 +221,7 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     permissions = {"network": result["network"], "documents": result["documents"]}
     try:
         app, findings = apps.save(name, title, kind, result["code"], permissions, request,
-                                  generator="ai")
+                                  generator="ai", tested=test.status)
     except apps.AppError as exc:
         print(_color(f"\n✗ {_l(lang, 'The AI code was rejected', 'הקוד של ה־AI נדחה')}: {exc}", "31"))
         return 1

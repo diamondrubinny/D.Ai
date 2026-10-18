@@ -60,6 +60,7 @@ class App:
     updated: str = ""
     request: str = ""
     generator: str = "ai"
+    tested: str = ""  # passed | failed | skipped (docs/EVOLVE.md: the Workshop runs it before you do)
 
     @property
     def entry(self) -> str:
@@ -92,6 +93,7 @@ class App:
             "updated": self.updated,
             "request": self.request,
             "generator": self.generator,
+            "tested": self.tested,
         }
 
 
@@ -280,6 +282,7 @@ def load(name: str) -> App:
         updated=str(data.get("updated", "")),
         request=str(data.get("request", ""))[:500],
         generator=str(data.get("generator", "ai"))[:20],
+        tested=data.get("tested") if data.get("tested") in ("passed", "failed", "skipped") else "",
     )
 
 
@@ -331,6 +334,7 @@ def save(
     permissions: dict[str, bool],
     request: str = "",
     generator: str = "ai",
+    tested: str = "",
 ) -> tuple[App, list[Finding]]:
     """Create a new app or a new version of an existing one.
 
@@ -355,6 +359,7 @@ def save(
     app.permissions = wanted
     app.updated = _now()
     app.request = request[:500]
+    app.tested = tested
     if kind == "web":
         code = apply_csp(code, network=app.approved.get("network", False))
     _write(app.code_path, code)
