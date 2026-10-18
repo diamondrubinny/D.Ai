@@ -180,6 +180,12 @@ build_apps() {
   install -m 0644 "$heal/data/dai-heal-autostart.desktop" "$root/etc/xdg/autostart/dai-heal.desktop"
   install -m 0644 "$heal/data/50-dai-coredump.conf" "$root/usr/lib/systemd/coredump.conf.d/50-dai.conf"
 
+  # D.Ai Evolve (docs/EVOLVE.md §3): notices what is missing, suggests it in D.Ai Command.
+  local evolve="$REPO_ROOT/apps/dai-evolve"
+  copy_package "$evolve/dai_evolve" "$root"
+  install -m 0755 "$evolve/data/dai-evolve" "$root/usr/bin/dai-evolve"
+  install -m 0644 "$evolve/data/dai-evolve.service" "$evolve/data/dai-evolve.timer" "$root/usr/lib/systemd/user/"
+
   # D.Ai OEM (docs/OEM.md): prepare a computer for its new owner; first-boot wizard.
   local oem="$REPO_ROOT/apps/dai-oem"
   copy_package "$oem/dai_oem" "$root"
@@ -229,6 +235,9 @@ if [ "$1" = configure ]; then
   install -d /etc/systemd/system/multi-user.target.wants /etc/systemd/system/paths.target.wants
   ln -sf /usr/lib/systemd/system/dai-policy.service /etc/systemd/system/multi-user.target.wants/dai-policy.service
   ln -sf /usr/lib/systemd/system/dai-policy.path /etc/systemd/system/paths.target.wants/dai-policy.path
+  # D.Ai Evolve's daily scan, for every user (each can stop it: dai-evolve off).
+  install -d /etc/systemd/user/timers.target.wants
+  ln -sf /usr/lib/systemd/user/dai-evolve.timer /etc/systemd/user/timers.target.wants/dai-evolve.timer
   # D.Ai OEM: does nothing unless a first-boot setup was just finished.
   ln -sf /usr/lib/systemd/system/dai-oem-cleanup.service /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
 fi
@@ -244,6 +253,7 @@ if [ "$1" = remove ]; then
   rm -f /etc/systemd/user/sockets.target.wants/dai-daid.socket
   rm -f /etc/systemd/system/multi-user.target.wants/dai-policy.service /etc/systemd/system/paths.target.wants/dai-policy.path
   rm -f /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
+  rm -f /etc/systemd/user/timers.target.wants/dai-evolve.timer
 fi
 exit 0
 EOF

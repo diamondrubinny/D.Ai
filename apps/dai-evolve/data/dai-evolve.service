@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai Evolve: notice what is missing (local signals only)
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/EVOLVE.md
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/dai-evolve scan --notify
+# The notification waits up to an hour for a click.
+TimeoutStartSec=65min
+Nice=15
+IOSchedulingClass=idle
+NoNewPrivileges=yes
+PrivateTmp=yes

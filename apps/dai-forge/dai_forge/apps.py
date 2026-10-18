@@ -576,3 +576,12 @@ def record_crash(app: App, stderr_tail: str) -> Path:
               "count": count, "extra": {"title": app.title, "version": app.version, "app_kind": app.kind}}
     _write(path, json.dumps(report, ensure_ascii=False), mode=0o600)
     return path
+
+
+def record_wish(text: str, reason: str) -> None:
+    """A request Forge could not fulfil: D.Ai Evolve offers it again later (e.g. once a model is installed)."""
+    try:
+        from dai_evolve.store import record_wish as record
+    except ImportError:
+        return
+    record(text, source="forge", reason=reason)

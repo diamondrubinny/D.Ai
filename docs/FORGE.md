@@ -75,6 +75,10 @@ D.Ai Forge מטפל בשלושה סוגי בקשות. כולן מגיעות מא
 | `scanner` | סריקה: ‏SANE, ‏AirScan/eSCL ותוכנת סריקה | packages |
 | `openvpn` | ‏VPN של העבודה (ייבוא ‎.ovpn בתפריט הרשת) | packages |
 | `cisco-vpn` | ‏OpenConnect: ‏Cisco AnyConnect, ‏GlobalProtect, ‏Fortinet | packages |
+| `ebook-reader` | ‏Foliate: ספרי EPUB, ‏MOBI, ‏FB2 וקומיקס | packages |
+| `video-player` | ‏VLC: כמעט כל פורמט וידאו ושמע | packages |
+| `image-editor` | ‏GIMP: עריכת תמונות, פותח XCF ו־PSD | packages |
+| `archives` | ‏RAR ו־7z בתוכנת הקבצים הדחוסים (unar, ‏7zip) | packages |
 
 > המתכונים מ־Flathub רצים בארגז חול. אף מתכון לא מוסיף ארכיטקטורת i386 או מאגרי non-free ל־Debian.
 

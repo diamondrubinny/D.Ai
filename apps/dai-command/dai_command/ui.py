@@ -298,11 +298,11 @@ class CommandWindow(QWidget):
 
     def activate_current(self) -> None:
         item = self.results.currentItem()
+        # Like bash HISTCONTROL=ignorespace: a leading space keeps it private.
+        private = self.query.text().startswith(" ")
         if item is None:
             return
         action: Action = item.data(ACTION_ROLE)
-        # Like bash HISTCONTROL=ignorespace: a leading space keeps it private.
-        private = self.query.text().startswith(" ")
         if action.kind == "history":
             self.query.setText(str(action.payload))
             return
@@ -360,6 +360,15 @@ class CommandWindow(QWidget):
         elif action.kind == "privacy":
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-privacy log; echo; read -r -p "Enter ↵" _'])
             remembered = self.query.text().strip()
+        elif action.kind == "evolve":
+            # The suggestion opens Forge, Tune or Heal, where it is reviewed before anything changes.
+            try:
+                from dai_evolve.cli import open_suggestion
+
+                open_suggestion(action.payload, spawn=self._spawn)
+            except ImportError:
+                return
+            remembered = ""
         elif action.kind == "ai":
             self.ask_ai(str(action.payload))
             return
@@ -367,7 +376,30 @@ class CommandWindow(QWidget):
             return
         if remembered and not private:
             self.history.add(remembered)
+            if remembered.startswith((">", "$")):
+                self._count(remembered)
         self.hide()
+
+    @staticmethod
+    def _count(entry: str) -> None:
+        try:
+            from dai_evolve.store import count_command
+        except ImportError:
+            return
+        count_command(entry)
+
+    def dismiss_current(self) -> bool:
+        item = self.results.currentItem()
+        action = item.data(ACTION_ROLE) if item is not None else None
+        if action is None or action.kind != "evolve":
+            return False
+        try:
+            from dai_evolve.scan import dismiss
+        except ImportError:
+            return False
+        dismiss(action.payload.key)
+        self.results.takeItem(self.results.row(item))
+        return True
 
     def _voice_text(self, text: str) -> None:
         self.query.setText(text)
@@ -464,6 +496,8 @@ class CommandWindow(QWidget):
                 return True
             if key in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
                 self.activate_current()
+                return True
+            if key == Qt.Key.Key_Delete and not self.query.text() and self.dismiss_current():
                 return True
             if key == Qt.Key.Key_Down:
                 self.move_selection(1)

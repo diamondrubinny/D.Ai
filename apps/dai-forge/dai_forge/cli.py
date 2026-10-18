@@ -108,6 +108,7 @@ def apply_recipe(recipe: Recipe, ctx: Context, removing: bool, dry_run: bool, as
 def handle_unknown(text: str, ctx: Context, library: Library, dry_run: bool, assume_yes: bool) -> int:
     lang = ctx.lang
     if not model_installed():
+        apps.record_wish(text, "no-model")
         print(_l(lang, "No recipe matches this request.", "אין מתכון שמתאים לבקשה."))
         print(_l(lang, "Install the local AI so it can write one: dai-models install qwen2.5-0.5b",
                  "התקינו את ה־AI המקומי כדי שיכתוב מתכון: dai-models install qwen2.5-0.5b"))
@@ -119,6 +120,7 @@ def handle_unknown(text: str, ctx: Context, library: Library, dry_run: bool, ass
     try:
         recipe = author_recipe(text)
     except AIError as exc:
+        apps.record_wish(text, "ai-failed")
         print(_color(f"✗ {exc}", "31"))
         return 1
     status = apply_recipe(recipe, ctx, removing=False, dry_run=dry_run, assume_yes=assume_yes)
@@ -221,6 +223,8 @@ def build_app(intent: Intent, ctx: Context, dry_run: bool) -> int:
     try:
         built = build(request, "automation" if automation else kind, existing, progress=_progress(lang), status=status)
     except AIError as exc:
+        if current is None:
+            apps.record_wish(intent.text, "ai-failed" if model_installed() else "no-model")
         print(_color(f"\n✗ {exc}", "31"))
         return 1
     result, test = built.result, built.test
