@@ -268,6 +268,29 @@ class WindowTests(unittest.TestCase):
             window.delete()
             self.assertEqual(window.store.listing([localmail.LOCAL], folder="Imported/old"), [])
 
+    def test_import_a_picked_file_mbox_or_outlook(self):
+        from unittest import mock
+        from dai_j import accounts, gui
+
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            window = gui.MainWindow("en", directory, accounts.Keyring(which=lambda name: None), gui.Runner(inline=True),
+                                    ask_password=lambda a: None, sync_on_start=False)
+            self.addCleanup(window.close)
+            notes = directory / "notes.txt"
+            notes.write_text("not mail")
+            window.import_file(notes)
+            self.assertIn("not a mail file", window.statusBar().currentMessage())
+            pst = directory / "old.pst"
+            pst.write_bytes(b"!BDN" + b"\0" * 8)
+            with mock.patch.object(localmail, "import_pst", return_value=[localmail.Result(3, 0, ["Outlook/old"])]) as fake:
+                window.import_file(pst)
+            fake.assert_called_once()
+            self.assertIn("3 messages", window.statusBar().currentMessage())
+            with mock.patch.object(localmail, "import_pst", side_effect=localmail.PstError("no_readpst")):
+                window.import_file(pst)
+            self.assertIn("!install pst-utils", window.statusBar().currentMessage())
+
 
 if __name__ == "__main__":
     unittest.main()

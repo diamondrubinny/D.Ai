@@ -660,7 +660,8 @@ class MainWindow(QMainWindow):
                                        ("snooze", "", lambda: self.snooze_menu()),
                                        ("summarize", "Ctrl+Shift+S", lambda: self.summarize()),
                                        ("diamond_reply", "Ctrl+Shift+D", lambda: self.diamond_reply()),
-                                       ("import_mail", "", lambda: self.import_mail())):
+                                       ("import_mail", "", lambda: self.import_mail()),
+                                       ("import_file", "", lambda: self.import_file())):
             action = QAction(t(key, self.lang), self)
             if shortcut:
                 action.setShortcut(QKeySequence(shortcut))
@@ -773,7 +774,7 @@ class MainWindow(QMainWindow):
     def refresh_views(self) -> None:
         self.stack.setCurrentIndex(1 if self.accounts or self.store.folders(localmail.LOCAL) else 0)
         for key, action in self.actions_by_key.items():
-            action.setEnabled(bool(self.accounts) or key in ("add_account", "import", "import_mail"))
+            action.setEnabled(bool(self.accounts) or key in ("add_account", "import", "import_mail", "import_file"))
         selected = self._folder_key()
         self.folders.clear()
         ids = [a.id for a in self.accounts]
@@ -944,6 +945,44 @@ class MainWindow(QMainWindow):
             store = Store(self.db)
             try:
                 return [localmail.import_source(store, source) for source in found]
+            finally:
+                store.close()
+
+        def done(results) -> None:
+            added = sum(r.added for r in results)
+            self.statusBar().showMessage(t("import_mail_done", self.lang, added=added, folders=len(results)), 10000)
+            self.refresh_views()
+
+        self.runner.start(work, done, lambda e: self.statusBar().showMessage(error(e, self.lang)))
+
+    def import_file(self, path: Path | None = None) -> None:
+        """One file or folder the person picks: an mbox, a Maildir, or an Outlook .pst/.ost (docs/MAIL.md §11)."""
+        if path is None:
+            from PyQt6.QtWidgets import QFileDialog
+
+            chosen, _ = QFileDialog.getOpenFileName(self, t("import_file", self.lang), str(Path.home()),
+                                                    t("import_file_filter", self.lang) + " (*.pst *.ost *.mbox *.mbx *)")
+            if not chosen:
+                return
+            path = Path(chosen)
+        pst = localmail.is_pst(path)
+        source = None if pst else localmail.source_for_path(path)
+        if not pst and source is None:
+            self.statusBar().showMessage(t("import_file_unknown", self.lang), 8000)
+            return
+        self.statusBar().showMessage(t("import_mail_running", self.lang, count=1))
+
+        def work():
+            from .store import Store
+
+            store = Store(self.db)
+            try:
+                if pst:
+                    try:
+                        return localmail.import_pst(store, path)
+                    except localmail.PstError as exc:
+                        raise mail.MailError(str(exc)) from None
+                return [localmail.import_source(store, source)]
             finally:
                 store.close()
 

@@ -3656,3 +3656,23 @@ msgstr "تشفير"
 #: apps/dai-j/dai_j/text.py
 msgid "Only the recipients can read it, subject included, with their keys. The addresses stay visible."
 msgstr "وحدهم المستلمون يستطيعون قراءتها، بما في ذلك الموضوع، بمفاتيحهم. تبقى العناوين ظاهرة."
+
+#: apps/dai-j/dai_j/gui.py
+msgid "Import a mail file…"
+msgstr "استيراد ملف بريد…"
+
+#: apps/dai-j/dai_j/gui.py
+msgid "Mail files"
+msgstr "ملفات البريد"
+
+#: apps/dai-j/dai_j/gui.py
+msgid "This is not a mail file J knows: mbox, a Maildir folder, or Outlook (.pst, .ost)."
+msgstr "هذا ليس ملف بريد يعرفه J: ‏mbox أو مجلد Maildir أو Outlook ‏(.pst و.ost)."
+
+#: apps/dai-j/dai_j/gui.py
+msgid "Outlook files need readpst. Install it from D.Ai Command: !install pst-utils"
+msgstr "تحتاج ملفات Outlook إلى readpst. ثبّته من D.Ai Command: ‏!install pst-utils"
+
+#: apps/dai-j/dai_j/gui.py
+msgid "This Outlook file could not be read. It may be damaged or protected with a password."
+msgstr "تعذّرت قراءة ملف Outlook هذا. ربما هو تالف أو محمي بكلمة مرور."
