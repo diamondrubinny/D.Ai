@@ -32,6 +32,7 @@ from PyQt6.QtWidgets import (QAbstractButton, QAbstractItemView, QAbstractSlider
 
 AA_TEXT = 4.5
 AA_LARGE = 3.0
+LETTER = 1.25  # closer than this to the text color: a letter's pixel, not the background
 
 INTERACTIVE = (QAbstractButton, QLineEdit, QComboBox, QAbstractSpinBox, QAbstractSlider, QTextEdit, QPlainTextEdit,
                QAbstractItemView, QTabBar)
@@ -174,8 +175,15 @@ def _ring(image: QImage, rect: QRect, inset: int) -> list[QColor]:
 
 
 def _weak_background(fg: QColor, ring: list[QColor]) -> tuple[QColor, float]:
-    """The background at the 20th percentile of contrast: a gradient's weak side counts, a stray letter does not."""
+    """The background at the 20th percentile of contrast: a gradient's weak side counts, a stray letter does not.
+
+    Pixels almost the text's own color are letters that reach the edge (a narrow field) and are left out,
+    unless most of the ring is that color: then it is the background, and the text cannot be read.
+    """
     scored = sorted((contrast(fg, color), color.name()) for color in ring)
+    background = [item for item in scored if item[0] >= LETTER]
+    if len(background) >= len(scored) // 2:
+        scored = background
     ratio, name = scored[len(scored) // 5]
     return QColor(name), ratio
 

@@ -120,6 +120,15 @@ class AuditTests(unittest.TestCase):
         button.setStyleSheet(button.styleSheet().replace("#4C8DF0", "#2F6BD0"))
         self.assertEqual(self.a11y.audit(self.window(button)), [])
 
+    def test_letters_at_the_edge_of_a_narrow_field_are_not_its_background(self):
+        count = QSpinBox()
+        count.setMaximum(99999)
+        count.setValue(88888)
+        count.setFixedWidth(40)  # the digits fill the field to its edges
+        count.setAccessibleName("Copies")
+        root = self.window(count, sheet="QWidget { background: #0B1020; color: #E6E9F5; font-size: 14pt; }")
+        self.assertEqual(self.a11y.audit(root), [])
+
     def test_large_text_and_symbols_need_three_to_one(self):
         big = QLabel("D.Ai")
         big.setStyleSheet("color: #7C5CFF; font-size: 30pt;")  # 4.4:1 on the window: fine for large text
