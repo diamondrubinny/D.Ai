@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Help & repair
+Name[he]=עזרה ותיקון
+GenericName=D.Ai Heal
+Comment=Something is not working? Explains it and fixes it with your OK · Super+F1
+Comment[he]=משהו לא עובד? מסביר ומתקן באישורכם · Super+F1
+Exec=dai-heal
+TryExec=dai-heal
+Icon=help-browser
+Terminal=false
+Categories=System;Utility;
+Keywords=help;repair;fix;crash;broken;עזרה;תיקון;תקלה;קריסה;לא עובד;

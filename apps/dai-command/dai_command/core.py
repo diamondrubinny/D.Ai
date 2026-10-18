@@ -406,6 +406,9 @@ _STRINGS = {
     "move_title": ("Bring files and bookmarks from Windows", "העברת קבצים וסימניות מ־Windows"),
     "move_hint": ("D.Ai Move · shows what will be copied first · nothing is overwritten · Enter",
                   "D.Ai Move · מראה קודם מה יועתק · שום דבר לא נדרס · Enter"),
+    "heal_title": ("Help & repair: what is not working?", "עזרה ותיקון: מה לא עובד?"),
+    "heal_hint": ("D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter",
+                  "D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter"),
     "clip_title": ("Clipboard history", "היסטוריית העתקות"),
     "clip_hint": ("D.Ai Clip · Super+V · in memory only, never passwords · Enter",
                   "D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter"),
@@ -444,7 +447,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | heal
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -482,6 +485,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         command = text[1:].strip()
         return [Action("run", command, tr("background"), "system-run", command)] if command else []
 
+    if HEAL_WORDS.search(text) and shutil.which("dai-heal"):
+        return [Action("heal", tr("heal_title"), tr("heal_hint"), "help-browser", "")]
     if (found := find_actions(text)) is not None:
         return found
     if (answers := doctor_actions(text)) is not None:
@@ -615,6 +620,10 @@ def privacy_actions(text: str) -> list[Action] | None:
 MOVE_WORDS = re.compile(r"(?:(?:import|move|copy|bring|transfer)\b.*\bfrom (?:my )?(?:old )?windows|from windows to|"
                         r"(?:העבר|תעביר|להעביר|ייבוא|לייבא|תייבא|העתק|תעתיק|להעתיק|העתיק)\S*.*(?:מ|מה)(?:ווינדוס|windows|מחשב הישן))",
                         re.IGNORECASE)
+# Something broke, in general words (a specific "the printer doesn't work" goes to D.Ai Doctor).
+HEAL_WORDS = re.compile(r"^(?:משהו|something)\b.*(?:לא עובד|נתקע|השתבש|broke|broken|not working|wrong)|"
+                        r"\bcrash(?:ed|es)?\b|קרס|קריסה|תקלה|help me fix|fix my (?:computer|pc)|עזרה ותיקון|"
+                        r"(?:תתקן|תקן) את המחשב", re.IGNORECASE)
 CLIP_WORDS = re.compile(r"\bclipboard\b|what (?:did i copy|i copied)|copy history|paste history|"
                         r"(?:היסטוריי?ת|יומן) (?:ה)?(?:העתקות|לוח|הדבקות)|מה העתקתי|לוח (?:ה)?(?:העתקות|גזירים)", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)

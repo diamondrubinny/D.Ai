@@ -122,6 +122,13 @@ print("DISABLED", not s.enabled(ctx, cfg))
 """
 SNAPSHOT_PROBE_B64 = base64.b64encode(SNAPSHOT_PROBE.encode()).decode()
 
+# A user service that fails the first time and works the second (D.Ai Heal restarts it).
+HEAL_UNIT = (
+    "[Unit]\nDescription=D.Ai Heal test\n[Service]\n"
+    "ExecStart=/bin/sh -c 'test -e /tmp/heal-ok || { touch /tmp/heal-ok; exit 1; }; exec sleep 600'\n"
+)
+HEAL_UNIT_B64 = base64.b64encode(HEAL_UNIT.encode()).decode()
+
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
 
@@ -376,6 +383,25 @@ def main() -> int:
          lambda o: "FS btrfs" in o and "ENABLED True" in o and re.search(r"UNDONE \(\d+, \d+\) before update", o) is not None
          and "REDONE after update" in o and "DISABLED True" in o
          and ("Undo the last software update" in o or "ביטול העדכון האחרון" in o), 180),
+        # D.Ai Heal: a failed service is noticed, explained and fixed (docs/EVOLVE.md §4).
+        ("heal: failed service fixed", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-heal --version; "
+         "pgrep -f 'dai_heal.cli import main.* watch' >/dev/null && echo WATCHING; "
+         "test -f /usr/lib/systemd/coredump.conf.d/50-dai.conf && echo NO_DUMPS_KEPT; "
+         f"mkdir -p ~/.config/systemd/user && echo {HEAL_UNIT_B64} | base64 -d > ~/.config/systemd/user/dai-heal-test.service; "
+         "rm -f /tmp/heal-ok; systemctl --user daemon-reload; systemctl --user start dai-heal-test.service; sleep 1; "
+         "dai-heal status | grep -A1 dai-heal-test; "
+         "KEY=$(dai-heal status --json | python3 -c 'import json,sys; print(next(p[\"key\"] for p in json.load(sys.stdin) "
+         "if p[\"name\"] == \"dai-heal-test.service\"))'); dai-heal fix \"$KEY\" --yes; "
+         "echo STATE=$(systemctl --user is-active dai-heal-test.service); systemctl --user stop dai-heal-test.service; "
+         "rm -f ~/.config/systemd/user/dai-heal-test.service /tmp/heal-ok; systemctl --user daemon-reload", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "WATCHING" in o and "NO_DUMPS_KEPT" in o
+         and "Your background service dai-heal-test.service failed" in o and "Fixed" in o and "STATE=active" in o, 60),
+        ("heal: forge app crash", "printf 'raise ValueError(\"heal test\")\\n' > /tmp/crashy.py && "
+         "dai-forge app add crashy /tmp/crashy.py --kind cli </dev/null >/dev/null; dai-forge app run crashy >/dev/null 2>&1; "
+         "dai-heal status; echo y | dai-forge app remove crashy >/dev/null 2>&1", True,
+         lambda o: "crashy" in o and "crashed" in o and "ValueError: heal test" in o, 60),
+        ("heal: program crash recorded", "sleep 60 & P=$!; sleep 0.5; kill -SEGV $P; sleep 4; dai-heal status", False,
+         lambda o: "sleep crashed" in o, 40),
         # D.Ai OEM, the whole cycle in the live session (last: it resets the machine ID and journal).
         # LUKS is not part of it here (no installed disk); unit tests run it against a fake and real cryptsetup.
         ("oem: prepare, finish, cleanup", "dai-oem --version; sudo useradd -m -G sudo,audio,lpadmin oemtest; "

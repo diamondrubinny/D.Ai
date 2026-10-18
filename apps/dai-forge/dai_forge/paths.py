@@ -32,3 +32,9 @@ def app_data_dir(name: str) -> Path:
 
 def desktop_dir() -> Path:
     return _data_home() / "applications"
+
+
+def heal_dir() -> Path:
+    """Where crashes of these apps are recorded for D.Ai Heal (docs/EVOLVE.md §4)."""
+    base = os.environ.get("XDG_STATE_HOME") or str(Path.home() / ".local/state")
+    return Path(base) / "dai" / "heal"

@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -498,6 +499,30 @@ class WorkshopTests(ForgeTestCase):
         self.assertEqual(workshop.smoke_test(probe, "cli").status, "passed", workshop.smoke_test(probe, "cli").detail)
 
 
+class CrashRecordTests(ForgeTestCase):
+    """A crash of a Forge app is kept for D.Ai Heal, with the error and nothing else."""
+
+    def test_watched_run_records_a_traceback(self):
+        from dai_forge import cli
+        app, _ = apps.save("prices", "Prices", "cli", "print(1)\n", {})
+        argv = [sys.executable, "-c", "import sys; sys.stderr.write('Traceback (most recent call last):\\nValueError: boom\\n'); sys.exit(1)"]
+        with mock.patch("sys.stderr", new=open(os.devnull, "w")):
+            self.assertEqual(cli.run_watched(app, argv), 1)
+        report = json.loads((paths.heal_dir() / "forge-prices.json").read_text())
+        self.assertEqual((report["kind"], report["name"], report["count"]), ("forge-app", "prices", 1))
+        self.assertIn("ValueError: boom", report["detail"])
+        self.assertEqual(oct((paths.heal_dir() / "forge-prices.json").stat().st_mode & 0o777), "0o600")
+        with mock.patch("sys.stderr", new=open(os.devnull, "w")):
+            cli.run_watched(app, argv)
+        self.assertEqual(json.loads((paths.heal_dir() / "forge-prices.json").read_text())["count"], 2)
+
+    def test_clean_exit_records_nothing(self):
+        from dai_forge import cli
+        app, _ = apps.save("ok-app", "OK", "cli", "print(1)\n", {})
+        self.assertEqual(cli.run_watched(app, [sys.executable, "-c", "print('fine')"]), 0)
+        self.assertFalse((paths.heal_dir() / "forge-ok-app.json").exists())
+
+
 class WindowTests(ForgeTestCase):
     @classmethod
     def setUpClass(cls):
@@ -600,7 +625,8 @@ class WindowTests(ForgeTestCase):
         self.assertIn("the AI fixed 1 problem", self.texts())
         self.assertEqual(apps.load("shopping").tested, "passed")
         self.assertEqual(list(self.window.permission_boxes), ["network"])
-        with mock.patch.object(gui.subprocess, "Popen") as popen, mock.patch.object(gui.shutil, "which", return_value="/usr/bin/bwrap"):
+        with mock.patch.object(gui.subprocess, "Popen") as popen, mock.patch.object(gui.shutil, "which",
+                                                                       side_effect=lambda n: "/usr/bin/bwrap" if n == "bwrap" else None):
             self.window.run_current()  # network left unchecked -> request withdrawn, app runs offline
         argv = popen.call_args[0][0]
         self.assertEqual(argv[0], "bwrap")

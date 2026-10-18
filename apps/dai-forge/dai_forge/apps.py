@@ -527,3 +527,26 @@ def run_argv(app: App, env: dict[str, str] | None = None) -> list[str]:
         (Path.home() / "Documents").mkdir(exist_ok=True)
     paths.app_data_dir(app.name).mkdir(parents=True, exist_ok=True, mode=0o700)
     return sandbox_argv(app, env)
+
+
+# --------------------------------------------------------------------------
+# Crash reports for D.Ai Heal
+# --------------------------------------------------------------------------
+
+MAX_CRASH = 4000
+
+
+def record_crash(app: App, stderr_tail: str) -> Path:
+    """What D.Ai Heal needs to offer a repair: the app, its version and the error (stays on this computer)."""
+    directory = paths.heal_dir()
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    path = directory / f"forge-{app.name}.json"
+    count = 1
+    try:
+        count = int(json.loads(path.read_text(encoding="utf-8")).get("count", 0)) + 1
+    except (OSError, ValueError, AttributeError):
+        pass
+    report = {"kind": "forge-app", "name": app.name, "when": time.time(), "detail": stderr_tail[-MAX_CRASH:],
+              "count": count, "extra": {"title": app.title, "version": app.version, "app_kind": app.kind}}
+    _write(path, json.dumps(report, ensure_ascii=False), mode=0o600)
+    return path

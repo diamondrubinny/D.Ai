@@ -37,6 +37,7 @@ apps/dai-privacy/            D.Ai Privacy: microphone/camera indicator and local
 apps/dai-backup/             D.Ai Backup: encrypted automatic backups (restic) + unit tests
 apps/dai-move/               D.Ai Move: bring files and bookmarks from Windows + unit tests
 apps/dai-clip/               D.Ai Clip: clipboard history that never keeps passwords + unit tests
+apps/dai-heal/               D.Ai Heal: crash/failure → help & repair chat → fix with your OK + unit tests
 apps/dai-oem/                D.Ai OEM: prepare a computer for its new owner (first-boot wizard) + unit tests
 apps/dai-welcome/            D.Ai Welcome: first-run setup (security level, local models, privacy) + unit tests
 tests/boot/                  Headless QEMU boot test
@@ -171,6 +172,13 @@ D.Ai Forge (rendered from the real window code; in-VM screenshots are published 
   Copies from password managers (`x-kde-passwordManagerHint`), private keys, API tokens, card and ID numbers never
   enter the history, and the clipboard itself is emptied 90 seconds after a token or key is copied. The history lives
   in memory only (`$XDG_RUNTIME_DIR`) and is gone at logout.
+- **A system that develops and repairs itself** ([docs/EVOLVE.md](docs/EVOLVE.md)):
+  - **The Workshop:** every app the local AI builds is started in a stricter sandbox before you see it; if it
+    crashes, the AI fixes it from the error and tests again (at most twice).
+  - **D.Ai Heal:** when a program crashes or a service fails, a notification offers help; the chat (`Super+F1`, or
+    "משהו לא עובד") says what happened in plain words and offers fixes from a closed list (restart, put settings aside,
+    repair a Forge app with the AI, Tune plans), applies one only when you click it, and checks the result. Core dumps
+    are recorded as metadata only, never the memory.
 - **D.Ai OEM** ([docs/OEM.md](docs/OEM.md)): for refurbishers and charities. After installing, `sudo dai-oem
   prepare` hands the computer over: at first boot the new owner chooses their name, user, password, computer name
   and a new disk encryption password in a full-screen wizard, and the temporary user is deleted before anyone logs

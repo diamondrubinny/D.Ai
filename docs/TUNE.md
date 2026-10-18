@@ -85,6 +85,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `system.timezone` | "אזור זמן ירושלים" | מערכת | ניטרלי |
 | `system.hostname` | "שנה שם מחשב ל־office-pc" | מערכת | ניטרלי |
 | `session.lock` | "נעל מסך אחרי 5 דקות" (לא יותר ממה שמדיניות ארגונית מתירה) | משתמש | מחזק / מחליש |
+| `service.restart` | "הפעל מחדש את השירות cups" (מוצע ע"י D.Ai Heal; לא שירותים שסוגרים את הסשן) | מערכת | ניטרלי |
 | `snapshots.enable` | "הפעל צילום מצב לפני כל עדכון" (רק על Btrfs, [SNAPSHOTS.md](SNAPSHOTS.md)) | מערכת | ניטרלי |
 | `snapshots.undo_update` | "בטל את העדכון האחרון" (שומר קודם תמונת מצב של עכשיו) | מערכת | ניטרלי, סיכון גבוה |
 | `session.lock_max` | רק ממדיניות ארגונית: "lock the screen after 5 minutes" לכל המשתמשים ([EDU.md](EDU.md) §2.1) | מערכת | מחזק / ניטרלי |

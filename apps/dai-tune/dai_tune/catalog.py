@@ -782,6 +782,42 @@ def _unit_summary(params: Params, lang: str, user: bool) -> str:
     return _t(lang, f"Stop and disable {params['unit']}", f"כיבוי השירות {params['unit']}") + where
 
 
+# Restarting these would end the desktop session or the system bus: never offered.
+NO_RESTART = re.compile(r"^(?:sddm|display-manager|dbus.*|systemd-logind|user@.*|getty@.*|serial-getty@.*|"
+                        r"systemd-journald|polkit)\.service$")
+
+
+def _restart_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"unit"})
+    unit = params.get("unit")
+    if isinstance(unit, str) and "." not in unit:
+        unit += ".service"
+    if not isinstance(unit, str) or not UNIT_RE.match(unit) or not unit.endswith(".service"):
+        raise ValidationError(f"invalid service name: {unit!r}")
+    if NO_RESTART.match(unit):
+        raise ValidationError(f"restarting {unit} would end the session; restart the computer instead")
+    return {"unit": unit}
+
+
+def _restart_apply(params: Params, ctx: Context) -> None:
+    if not _unit_installed(ctx, params["unit"], SYSTEM_UNIT_DIRS):
+        raise ActionError(f"{params['unit']} is not installed")
+    ctx.run(["systemctl", "reset-failed", params["unit"]], check=False)
+    ctx.run(["systemctl", "restart", params["unit"]])
+
+
+# D.Ai Heal offers this for a failed service (docs/EVOLVE.md §4). Nothing to undo.
+register(ActionSpec(
+    id="service.restart",
+    scope="system",
+    validate=_restart_validate,
+    apply=_restart_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, f"Restart the service {p['unit']}", f"הפעלה מחדש של השירות {p['unit']}"),
+))
+
+
 register(ActionSpec(
     id="service.unit",
     scope="system",

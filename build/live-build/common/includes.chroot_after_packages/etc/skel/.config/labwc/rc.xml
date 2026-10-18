@@ -36,6 +36,8 @@
     <keybind key="W-A-l"><action name="Execute" command="dai-fixlayout" /></keybind>
     <!-- D.Ai Clip: clipboard history, never passwords (docs/CLIP.md) -->
     <keybind key="W-v"><action name="Execute" command="dai-clip" /></keybind>
+    <!-- D.Ai Heal: something is not working → help & repair chat (docs/EVOLVE.md §4) -->
+    <keybind key="W-F1"><action name="Execute" command="dai-heal" /></keybind>
     <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
     <keybind key="W-e"><action name="Execute" command="pcmanfm-qt" /></keybind>
     <keybind key="W-l"><action name="Execute" command="swaylock -f" /></keybind>
@@ -49,6 +51,7 @@
   <windowRules>
     <!-- D.Ai Command draws its own frame and behaves like a popup -->
     <windowRule identifier="dai-command" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes" />
+    <windowRule identifier="dai-heal" serverDecoration="yes" />
     <windowRule identifier="dai-clip" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes" />
   </windowRules>
 </labwc_config>

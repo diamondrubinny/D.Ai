@@ -148,6 +148,15 @@ build_apps() {
   install -d "$root/etc/xdg/autostart"
   install -m 0644 "$clip/data/dai-clip-autostart.desktop" "$root/etc/xdg/autostart/dai-clip.desktop"
 
+  # D.Ai Heal (docs/EVOLVE.md §4): help & repair chat, crash watcher, metadata-only core dumps.
+  local heal="$REPO_ROOT/apps/dai-heal"
+  copy_package "$heal/dai_heal" "$root"
+  install -m 0755 "$heal/data/dai-heal" "$root/usr/bin/dai-heal"
+  install -m 0644 "$heal/data/dai-heal.desktop" "$root/usr/share/applications/"
+  install -d "$root/etc/xdg/autostart" "$root/usr/lib/systemd/coredump.conf.d"
+  install -m 0644 "$heal/data/dai-heal-autostart.desktop" "$root/etc/xdg/autostart/dai-heal.desktop"
+  install -m 0644 "$heal/data/50-dai-coredump.conf" "$root/usr/lib/systemd/coredump.conf.d/50-dai.conf"
+
   # D.Ai OEM (docs/OEM.md): prepare a computer for its new owner; first-boot wizard.
   local oem="$REPO_ROOT/apps/dai-oem"
   copy_package "$oem/dai_oem" "$root"

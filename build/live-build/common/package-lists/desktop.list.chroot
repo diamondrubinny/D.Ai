@@ -61,6 +61,9 @@ restic
 # Power: battery saver / balanced / performance (D.Ai Tune "power.profile", D.Ai Doctor)
 power-profiles-daemon
 
+# D.Ai Heal: notice crashes (metadata only, see /usr/lib/systemd/coredump.conf.d/50-dai.conf)
+systemd-coredump
+
 # Audio
 pipewire
 # pw-record for D.Ai Voice
