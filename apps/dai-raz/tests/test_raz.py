@@ -119,6 +119,14 @@ class CheckTests(unittest.TestCase):
         self.assertEqual([r.status for r in results], ["failed", "ok"])
 
 
+    def test_a_language_may_put_the_number_anywhere(self):
+        # Russian puts it last ("Новых: 3"); only an unfilled placeholder is a problem.
+        with mock.patch("dai_i18n.text", return_value="Новых: 3"):
+            self.assertEqual(checks.languages(self.fake.system()).status, "ok")
+        with mock.patch("dai_i18n.text", return_value="Новых: {n}"):
+            self.assertEqual(checks.languages(self.fake.system()).status, "failed")
+
+
 class GuardTests(unittest.TestCase):
     """The update guard: the same checks before and after apt (docs/RAZ.md §3)."""
 

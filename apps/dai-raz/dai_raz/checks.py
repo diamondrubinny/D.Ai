@@ -185,7 +185,8 @@ def languages(sys: System) -> Result:
         problems.append("text direction")
     for lang in ("he", "en", "ar", "ru", "es", "fr", "de", "pt"):
         try:
-            if not dai_i18n.text(lang, "{n} new", "{n} חדשים", n=3).startswith("3"):
+            filled = dai_i18n.text(lang, "{n} new", "{n} חדשים", n=3)
+            if "3" not in filled or "{" in filled:  # filled in, wherever the language puts the number
                 problems.append(f"{lang}: placeholders")
         except Exception as exc:  # noqa: BLE001
             problems.append(f"{lang}: {type(exc).__name__}")

@@ -500,10 +500,13 @@ def main() -> int:
          lambda o: '"dana@example.org"' in o and "PASSWORDS=0" in o and "THUNDERBIRD_UNTOUCHED" in o, 60),
         # MOM stage 2 (docs/MOM.md): the user's services and the system's, and a login app turned off and on again
         # with the user's own file (the system's file is never touched).
-        ("mom: background and login apps", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom services | head -n 40; "
+        ("mom: background and login apps", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
          "S=$(md5sum /etc/xdg/autostart/dai-clip.desktop); dai-mom startup off dai-clip.desktop | grep dai-clip; "
          "dai-mom startup on dai-clip.desktop | grep dai-clip; test -e ~/.config/autostart/dai-clip.desktop || "
-         "echo USER_FILE_GONE; [ \"$S\" = \"$(md5sum /etc/xdg/autostart/dai-clip.desktop)\" ] && echo SYSTEM_UNTOUCHED",
+         "echo USER_FILE_GONE; [ \"$S\" = \"$(md5sum /etc/xdg/autostart/dai-clip.desktop)\" ] && echo SYSTEM_UNTOUCHED; "
+         # Only the lines that matter: the full list is long, and the report keeps the first 30 lines.
+         "dai-mom services > /tmp/mom-services.txt; wc -l < /tmp/mom-services.txt; "
+         "grep -E '^(user +active +dai-daid[.]socket|system +active +nftables[.]service)' /tmp/mom-services.txt",
          True, lambda o: re.search(r"^user\s+active\s+dai-daid\.socket", o, re.M) is not None
          and re.search(r"^system\s+active\s+nftables\.service", o, re.M) is not None
          and "off dai-clip.desktop" in o and "on  dai-clip.desktop" in o and "USER_FILE_GONE" in o
