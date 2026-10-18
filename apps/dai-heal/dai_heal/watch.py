@@ -70,6 +70,15 @@ def notify(problem: P.Problem, language: str) -> None:
     threading.Thread(target=wait_for_click, daemon=True).start()
 
 
+def _mirror(section: str, value: object) -> None:
+    """Show it on the Start diamond (docs/TASKBAR.md §2.1); optional, never fatal."""
+    try:
+        from dai_status import update
+    except ImportError:
+        return
+    update(section, value)
+
+
 class Watcher:
     def __init__(self, collect: Callable[..., list[P.Problem]] = P.collect, announce: Callable[[P.Problem, str], None] = notify,
                  clock: Callable[[], float] = time.time, directory: Path | None = None) -> None:
@@ -87,9 +96,9 @@ class Watcher:
         seen = seen if isinstance(seen, dict) else {}
         skip = ignored(self.directory)
         announced = []
-        for problem in self.collect(since=self.started - 300):
-            if problem.key in skip:
-                continue
+        current = [p for p in self.collect(since=self.started - 300) if p.key not in skip]
+        _mirror("heal", len(current))
+        for problem in current:
             if problem.kind in ("crash", "forge-app") and problem.when and problem.when < self.started - 300:
                 continue  # from before this session: shown in the chat, not announced
             last = seen.get(problem.key, {}) if isinstance(seen.get(problem.key), dict) else {}

@@ -104,6 +104,8 @@ build_apps() {
 
   # Languages (docs/I18N.md): shared by every app; catalogs for languages other than he/en.
   copy_package "$REPO_ROOT/apps/dai-i18n/dai_i18n" "$root"
+  # The Living Diamond's state file (docs/TASKBAR.md §2.1), written by Heal, Privacy and Evolve.
+  copy_package "$REPO_ROOT/apps/dai-status/dai_status" "$root"
   if compgen -G "$REPO_ROOT/i18n/po/*.po" >/dev/null; then
     PYTHONPATH="$REPO_ROOT/apps/dai-i18n" python3 -m dai_i18n.tool compile "$root/usr/share/locale"
   fi
@@ -292,9 +294,9 @@ build_panel_plugin() {
   fi
   local root="$WORK/dai-panel-plugin"
   install -d "$root/usr/lib/x86_64-linux-gnu/lxqt-panel" "$root/usr/share/lxqt/lxqt-panel"
-  install -m 0644 "$dist/libdaicommand.so" "$root/usr/lib/x86_64-linux-gnu/lxqt-panel/"
-  install -m 0644 "$dist/daicommand.desktop" "$root/usr/share/lxqt/lxqt-panel/"
-  finish "$root" dai-panel-plugin amd64 "lxqt-panel, dai-apps" "D.Ai command field for the LXQt panel"
+  install -m 0644 "$dist/libdaicommand.so" "$dist/libdaistatus.so" "$root/usr/lib/x86_64-linux-gnu/lxqt-panel/"
+  install -m 0644 "$dist/daicommand.desktop" "$dist/daistatus.desktop" "$root/usr/share/lxqt/lxqt-panel/"
+  finish "$root" dai-panel-plugin amd64 "lxqt-panel, dai-apps" "D.Ai command field and Living Diamond for the LXQt panel"
 }
 
 main() {

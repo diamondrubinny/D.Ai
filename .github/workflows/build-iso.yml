@@ -73,6 +73,11 @@ jobs:
           python3 -m dai_i18n.tool extract --check
           python3 -m dai_i18n.tool check
 
+      - name: Unit tests (dai-status, the Living Diamond's state, with D.Ai Heal and Evolve)
+        env:
+          PYTHONPATH: apps/dai-status:apps/dai-i18n:apps/dai-heal:apps/dai-evolve:apps/dai-forge:apps/dai-tune:apps/dai-ai:apps/dai-doctor:apps/dai-command
+        run: python3 -m unittest discover -s apps/dai-status/tests -t apps/dai-status -v
+
       - name: Unit tests (dai-tune)
         env:
           PYTHONPATH: apps/dai-i18n:apps/dai-ai

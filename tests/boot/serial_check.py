@@ -226,6 +226,13 @@ def main() -> int:
         ("panel: lxqt-panel version", "dpkg-query -W -f='${Version}' lxqt-panel", False, lambda o: o.strip().startswith("2.1.4")),
         ("panel: command field loaded", "grep -c libdaicommand.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps", True,
          lambda o: o.strip().splitlines()[-1:] != ["0"] and o.strip().splitlines()[-1:] != []),
+        # The Living Diamond (docs/TASKBAR.md §2.1): the plugin is in the panel and the state file is private.
+        ("taskbar: living diamond", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
+         "echo LOADED=$(grep -c libdaistatus.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps); "
+         "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_status; "
+         "dai_status.update(\"ideas\", 1); print(\"STATUS\", sorted(dai_status.read().items()))'; "
+         "stat -c 'MODE=%a' $XDG_RUNTIME_DIR/dai/status.json $XDG_RUNTIME_DIR/dai", True,
+         lambda o: re.search(r"LOADED=[1-9]", o) is not None and "('ideas', 1)" in o and "MODE=600" in o and "MODE=700" in o),
         # Local AI end to end: download with SHA-256 check, then inference.
         ("ai: install model (verified)", "dai-models install qwen2.5-0.5b 2>&1 | tail -n 2", True,
          lambda o: "installed and verified" in o, 600),

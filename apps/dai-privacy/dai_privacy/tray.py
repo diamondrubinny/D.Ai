@@ -36,6 +36,15 @@ def dot_icon() -> QIcon:
     return QIcon(pixmap)
 
 
+def _mirror(apps: list[str]) -> None:
+    """The red dot on the Start diamond too (docs/TASKBAR.md §2.1); optional, never fatal."""
+    try:
+        from dai_status import update
+    except ImportError:
+        return
+    update("privacy", apps)
+
+
 class Indicator:
     def __init__(self, app: QApplication, sense=current, notify=None) -> None:
         self.app = app
@@ -68,6 +77,7 @@ class Indicator:
             if kind == "start":
                 self.notify(describe(use, self.language))
         self.uses = now
+        _mirror(sorted({use.app for use in now}))
         tooltip = "\n".join(describe(u, self.language) for u in sorted(now)) or t("nothing", self.language)
         self.tray.setToolTip(tooltip)
         self.tray.setVisible(bool(now))  # nothing in use → nothing in the panel

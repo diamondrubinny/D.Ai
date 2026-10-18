@@ -231,6 +231,7 @@ def scan(home: Path | None = None, now: float | None = None, run=_run, doctor=No
     dismissed = set(store.read_json("dismissed.json", []) or [])
     result = [s for s in found if s.key not in dismissed]
     store.write_json("suggestions.json", [asdict(s) for s in result])
+    mirror(len(result))
     return result
 
 
@@ -275,8 +276,19 @@ def done(suggestion: Suggestion) -> None:
         dismiss(suggestion.key)
     rows = [s for s in saved() if s.key != suggestion.key]
     store.write_json("suggestions.json", [asdict(s) for s in rows])
+    mirror(len(rows))
 
 
 def dismiss(key: str) -> None:
     keys = set(store.read_json("dismissed.json", []) or []) | {key}
     store.write_json("dismissed.json", sorted(keys))
+    mirror(len(saved()))
+
+
+def mirror(ideas: int) -> None:
+    """A small diamond on the Start button when there is an idea (docs/TASKBAR.md §2.1)."""
+    try:
+        from dai_status import update
+    except ImportError:
+        return
+    update("ideas", ideas)

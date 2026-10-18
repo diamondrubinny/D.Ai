@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Service
+ServiceTypes=LXQtPanel/Plugin
+Name=D.Ai Living Diamond
+Name[he]=היהלום החי של D.Ai
+Comment=Shows on the Start button when an app records, D.Ai Heal found a problem or D.Ai has an idea
+Comment[he]=מראה על כפתור התחל כשאפליקציה מקליטה, כש־D.Ai Heal מצא תקלה או כשיש ל־D.Ai רעיון
+Icon=dai-logo
