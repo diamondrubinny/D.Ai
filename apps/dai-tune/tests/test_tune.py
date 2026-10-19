@@ -76,6 +76,10 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(actions, ["session.lock", "keyboard.layouts"])
 
     def test_several_devices_in_one_clause(self):
+        # The protocol may come before the number: "פורט udp 5353" as well as "udp port 5353" (Diamond Chat's mDNS).
+        for text in ("פתח פורט 7714 ופתח פורט udp 5353", "open port 7714 and open udp port 5353"):
+            got = [(r.action, r.params["port"], r.params["proto"]) for r in parser.parse(text).requests]
+            self.assertEqual(got, [("firewall.open_port", 7714, "tcp"), ("firewall.open_port", 5353, "udp")], text)
         result = parser.parse("חסום מצלמה ובלוטות'")
         self.assertEqual([r.params["kind"] for r in result.requests], ["camera", "bluetooth"])
 

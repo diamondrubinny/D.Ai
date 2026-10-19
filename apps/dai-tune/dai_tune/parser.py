@@ -49,7 +49,7 @@ UNBLOCK = r"(?:\bremove the block\b|(?:בטל|תבטל|לבטל|הסר|תסיר|
 
 OPEN_PORT = r"(?:\b(?:open|allow|expose)\b|פתח|תפתח|לפתוח|פתיחת|אפשר)"
 CLOSE_PORT = r"(?:\b(?:close|block|deny)\b|סגור|תסגור|לסגור|סגירת|חסום|תחסום)"
-PORT = r"(?:port|פורט|פורטים|יציאה)\s*(\d{1,5})"
+PORT = r"(?:port|פורט|פורטים|יציאה)\s*(?:(?:tcp|udp)\s*)?(\d{1,5})"
 ANYWHERE = r"(?:anywhere|any network|internet|everyone|world|public|מכל מקום|מכל רשת|לאינטרנט|מהאינטרנט|לכולם|לכל העולם|ציבורי)"
 
 UPDATES = r"(?:auto(?:matic)?[- ]?updates?|security updates|unattended|עדכונים אוטומטיים|עדכון אוטומטי|עדכוני אבטחה)"
