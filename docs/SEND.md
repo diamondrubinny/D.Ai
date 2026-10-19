@@ -69,6 +69,7 @@
   - Pictures only to verified contacts, re-drawn before they are queued.
   - Passes Raz's accessibility audit in Hebrew and English, in all three themes.
   - Pictures show as a thumbnail (with "[a picture]" for screen readers); Enter or a double click opens them.
+- **The local network (`dai-chat lan on|off`):** through D.Ai Tune, "open port 7714 and open udp port 5353" (Chat, and mDNS so contacts find each other), to the local network only. Tune shows a plan and asks for confirmation (it weakens the firewall), with undo. If the firewall was not changed, Chat stays on Tor only.
 - **From the command field (D.Ai Command):** "send Dana: see you at six" / "שלח לדנה: מגיעה בשש" offers sending to a contact. The message is queued inside the command bar's own process, never on another program's command line (visible in `ps`), and is not kept in the bar's history.
 - **Found and fixed on the way:**
   - updating a contact deleted their history (INSERT OR REPLACE with a cascade);
@@ -76,7 +77,10 @@
   - a locked keyring could crash Chat instead of falling back to the file.
 - **The tests (65):** 25 core tests, plus transport, pairing, pictures in the real sandbox, Tor, mDNS, the service and the command line, over real sockets. In the VM: a code, a valid user unit, Tor running as the person and gone when Chat stops, and a picture re-drawn in the sandbox without its hidden location.
 - **Next:**
-  - opening the local-network port through D.Ai Tune, with undo.
+  - a test between two VMs: pairing and a message over the local network, then over Tor;
+  - "seen" receipts when the window shows a message, and a notification that opens the conversation;
+  - Diamond Chat in the privacy policy (nothing passes through us; Tor; what stays on the computer), as a draft for legal review;
+  - **before release:** an external security review of the protocol and of the picture sandbox, and a trademark check of the name "Diamond Chat".
 
 ## 1. What I understood
 

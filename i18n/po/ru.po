@@ -3825,9 +3825,6 @@ msgstr "В очереди. Включите Diamond Chat, чтобы отпра�
 msgid "Queued; it goes out when {name} is online."
 msgstr "В очереди; уйдёт, когда компьютер {name} будет в сети."
 
-#: apps/dai-chat/dai_chat/cli.py
-msgid "Saved. It takes effect when Chat starts again."
-msgstr "Сохранено. Вступит в силу при следующем запуске Chat."
 
 #: apps/dai-chat/dai_chat/cli.py
 #, python-brace-format
@@ -4042,3 +4039,15 @@ msgstr "Diamond Chat · сквозное шифрование · ждёт на �
 #: apps/dai-chat/dai_chat/gui.py
 msgid "Enter or double-click to open"
 msgstr "Enter или двойной щелчок, чтобы открыть"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "The firewall was not changed, so Chat stays on Tor only."
+msgstr "Брандмауэр не изменён, поэтому Chat остаётся только в Tor."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Contacts on this network can now reach you directly."
+msgstr "Сохранено. Контакты в этой сети теперь могут связаться с вами напрямую."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Chat uses Tor only."
+msgstr "Сохранено. Chat использует только Tor."

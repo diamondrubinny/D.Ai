@@ -3825,9 +3825,6 @@ msgstr "في قائمة الانتظار. شغّل Diamond Chat لإرسالها
 msgid "Queued; it goes out when {name} is online."
 msgstr "في قائمة الانتظار؛ تُرسل عندما يكون حاسوب {name} متصلاً."
 
-#: apps/dai-chat/dai_chat/cli.py
-msgid "Saved. It takes effect when Chat starts again."
-msgstr "تم الحفظ. يسري عند تشغيل Chat من جديد."
 
 #: apps/dai-chat/dai_chat/cli.py
 #, python-brace-format
@@ -4042,3 +4039,15 @@ msgstr "Diamond Chat · مشفّرة من طرف إلى طرف · تنتظر ع�
 #: apps/dai-chat/dai_chat/gui.py
 msgid "Enter or double-click to open"
 msgstr "Enter أو نقر مزدوج للفتح"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "The firewall was not changed, so Chat stays on Tor only."
+msgstr "لم يتغيّر الجدار الناري، لذا يبقى Chat عبر Tor فقط."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Contacts on this network can now reach you directly."
+msgstr "تم الحفظ. يمكن لجهات الاتصال على هذه الشبكة الوصول إليك مباشرة الآن."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Chat uses Tor only."
+msgstr "تم الحفظ. يستخدم Chat شبكة Tor فقط."

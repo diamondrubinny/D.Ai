@@ -8,6 +8,7 @@ import importlib.util
 import io
 import os
 import stat
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -165,6 +166,29 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn("without its location", said)
         self.assertIn("[a picture]", self.run_cli("read", "Dana")[1])
         self.assertEqual(self.run_cli("send-picture", "Dana", str(picture) + ".missing")[0], 2)
+
+    def test_the_local_network_goes_through_tune(self):
+        calls = []
+
+        def run(argv, **kwargs):
+            calls.append(argv)
+            return subprocess.CompletedProcess(argv, 1 if "refuse" in os.environ.get("TUNE", "") else 0, b"", b"")
+
+        with mock.patch("dai_chat.cli.subprocess.run", side_effect=run):
+            self.assertEqual(self.run_cli("lan", "on")[0], 0)
+            self.assertEqual(calls[0], ["dai-tune", "open port 7714 and open udp port 5353"])
+            self.assertTrue(service.Settings.load(service.settings_path()).lan)
+            self.assertIn("try-restart", calls[1])
+            with mock.patch.dict(os.environ, {"TUNE": "refuse"}):
+                calls.clear()
+                self.run_cli("lan", "off")  # closing is saved even if Tune was cancelled: Chat stops listening
+            self.assertEqual(calls[0], ["dai-tune", "close port 7714 and close udp port 5353"])
+            self.assertFalse(service.Settings.load(service.settings_path()).lan)
+            with mock.patch.dict(os.environ, {"TUNE": "refuse"}):
+                code, said = self.run_cli("lan", "on")
+            self.assertEqual(code, 1)
+            self.assertIn("Tor only", said)
+            self.assertFalse(service.Settings.load(service.settings_path()).lan)
 
     def test_unknown_contact_and_help(self):
         self.assertEqual(self.run_cli("send", "Nobody", "hi")[0], 2)

@@ -120,12 +120,28 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
                          name=name))
             return 0
         if command == "lan" and rest and rest[0] in ("on", "off"):
+            # The firewall goes through D.Ai Tune: a plan, a confirmation (it opens the computer to the local
+            # network), and undo. Chat's port, and mDNS so contacts can find each other; local network only.
+            port = service.transport.PORT
+            wanted = (f"open port {port} and open udp port 5353" if rest[0] == "on" else
+                      f"close port {port} and close udp port 5353")
+            try:
+                tuned = subprocess.run(["dai-tune", wanted], timeout=600).returncode
+            except (OSError, subprocess.TimeoutExpired):
+                tuned = 1
+            if tuned != 0 and rest[0] == "on":
+                show(say(lang, "The firewall was not changed, so Chat stays on Tor only.",
+                         "חומת האש לא שונתה, ולכן Chat נשאר ב־Tor בלבד."))
+                return 1
             path = service.settings_path()
             settings = service.Settings.load(path)
             settings.lan = rest[0] == "on"
             settings.save(path)
-            show(say(lang, "Saved. It takes effect when Chat starts again.",
-                     "נשמר. ייכנס לתוקף כש־Chat יופעל מחדש."))
+            subprocess.run(["systemctl", "--user", "try-restart", "dai-chat.service"], capture_output=True,
+                           timeout=60)
+            show(say(lang, "Saved. Contacts on this network can now reach you directly.",
+                     "נשמר. אנשי קשר ברשת הזו יכולים עכשיו להגיע אליכם ישירות.") if settings.lan else
+                 say(lang, "Saved. Chat uses Tor only.", "נשמר. Chat משתמש ב־Tor בלבד."))
             return 0
         if command in ("on", "off") and not rest:
             verb = ["enable", "--now"] if command == "on" else ["disable", "--now"]

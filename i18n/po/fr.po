@@ -3825,9 +3825,6 @@ msgstr "En attente. Activez Diamond Chat pour l'envoyer."
 msgid "Queued; it goes out when {name} is online."
 msgstr "En attente ; il partira quand l'ordinateur de {name} sera connecté."
 
-#: apps/dai-chat/dai_chat/cli.py
-msgid "Saved. It takes effect when Chat starts again."
-msgstr "Enregistré. Pris en compte au prochain démarrage de Chat."
 
 #: apps/dai-chat/dai_chat/cli.py
 #, python-brace-format
@@ -4042,3 +4039,15 @@ msgstr "Diamond Chat · chiffré de bout en bout · attend sur cet ordinateur qu
 #: apps/dai-chat/dai_chat/gui.py
 msgid "Enter or double-click to open"
 msgstr "Entrée ou double-clic pour ouvrir"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "The firewall was not changed, so Chat stays on Tor only."
+msgstr "Le pare-feu n'a pas été modifié : Chat reste sur Tor uniquement."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Contacts on this network can now reach you directly."
+msgstr "Enregistré. Les contacts de ce réseau peuvent maintenant vous joindre directement."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Chat uses Tor only."
+msgstr "Enregistré. Chat utilise uniquement Tor."

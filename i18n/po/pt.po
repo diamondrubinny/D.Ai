@@ -3825,9 +3825,6 @@ msgstr "Em fila. Ligue o Diamond Chat para a enviar."
 msgid "Queued; it goes out when {name} is online."
 msgstr "Em fila; segue quando o computador de {name} estiver ligado."
 
-#: apps/dai-chat/dai_chat/cli.py
-msgid "Saved. It takes effect when Chat starts again."
-msgstr "Guardado. Entra em vigor quando o Chat voltar a iniciar."
 
 #: apps/dai-chat/dai_chat/cli.py
 #, python-brace-format
@@ -4042,3 +4039,15 @@ msgstr "Diamond Chat · cifrado ponto a ponto · espera neste computador até {n
 #: apps/dai-chat/dai_chat/gui.py
 msgid "Enter or double-click to open"
 msgstr "Enter ou duplo clique para abrir"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "The firewall was not changed, so Chat stays on Tor only."
+msgstr "A firewall não foi alterada, por isso o Chat fica só no Tor."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Contacts on this network can now reach you directly."
+msgstr "Guardado. Os contactos desta rede podem agora chegar até si diretamente."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. Chat uses Tor only."
+msgstr "Guardado. O Chat usa apenas o Tor."
