@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 from typing import Awaitable, Callable
 
 from . import message as msg
-from . import pairing
+from . import pairing, pictures
 from .invite import FPR_SIZE, Invite
 from .keys import Identity, fingerprint
 from .session import HELLO_SIZE, MAX_MESSAGE, REPLY_SIZE, HandshakeError, Initiator, Responder, Session, SessionError
@@ -91,10 +91,13 @@ class Node:
 
     def __init__(self, me: Identity, store: Store, on_message: Callable[[bytes, msg.Message], None] | None = None,
                  idle_timeout: float = IDLE_TIMEOUT, service: bytes = b"",
-                 on_paired: Callable[[Contact], None] | None = None) -> None:
-        """`service` is the public key of our onion service, the one in our invitation code."""
+                 on_paired: Callable[[Contact], None] | None = None,
+                 clean: Callable[[bytes], tuple[bytes, str]] | None = None) -> None:
+        """`service` is the public key of our onion service, the one in our invitation code; `clean` re-draws
+        a received picture in the sandbox (pictures.py)."""
         self.me, self.store, self.on_message = me, store, on_message
         self.service, self.on_paired = service, on_paired
+        self.clean = clean or (lambda data: pictures.clean(data, scan_first=True))
         self.idle_timeout = idle_timeout
         self.limit = RateLimit()
 
@@ -218,7 +221,7 @@ class Node:
                         self.store.set_state(peer, incoming.id, incoming.state)
                         (result.refused if incoming.state == "refused" else result.sent).append(incoming.id)
                 else:
-                    state = self._receive(peer, incoming, result)
+                    state = await self._receive(peer, incoming, result)
                     outbox.put_nowait(msg.Message.receipt(incoming.id, state))
         except SessionError as exc:
             raise TransportError("a message failed its check") from exc
@@ -229,11 +232,18 @@ class Node:
                 sender.cancel()
             session.close()
 
-    def _receive(self, peer: bytes, incoming: msg.Message, result: Result) -> str:
+    async def _receive(self, peer: bytes, incoming: msg.Message, result: Result) -> str:
         contact = self.store.contact(peer)
-        if incoming.kind == msg.PICTURE and not (contact and contact.verified):
-            result.refused.append(incoming.id)
-            return "refused"
+        if incoming.kind == msg.PICTURE and not self.store.has_message(peer, incoming.id):
+            if not (contact and contact.verified):
+                result.refused.append(incoming.id)
+                return "refused"
+            try:  # in a thread: the sandbox takes a moment, and the connection keeps going meanwhile
+                body, mime = await asyncio.to_thread(self.clean, incoming.body)
+            except pictures.PictureError:
+                result.refused.append(incoming.id)
+                return "refused"
+            incoming = msg.Message(msg.PICTURE, body, incoming.id, incoming.time, mime=mime)
         if not self.store.has_message(peer, incoming.id):
             self.store.add_message(peer, incoming, outgoing=False, state="delivered")
             result.received.append(incoming)

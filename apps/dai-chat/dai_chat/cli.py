@@ -8,6 +8,7 @@
   dai-chat symbols NAME         the six symbols to compare with NAME, by phone or face to face
   dai-chat verify NAME          after the symbols matched: NAME may now send you pictures
   dai-chat send NAME TEXT...    a message (it waits on this computer until NAME is online)
+  dai-chat send-picture NAME FILE   a picture, re-drawn first: its location and camera details are removed
   dai-chat read NAME            the conversation
   dai-chat delete NAME          delete the conversation here (NAME keeps their copy)
   dai-chat block NAME | unblock NAME
@@ -29,8 +30,8 @@ from typing import Callable
 
 from dai_i18n import pick, ui_lang
 
-from . import invite, keys, sas
-from .message import Message
+from . import invite, keys, pictures, sas
+from .message import MAX_PICTURE, Message
 from .store import Contact, Store, default_dir
 
 
@@ -164,7 +165,7 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
             return 0
 
         # the rest are about one contact
-        if command in ("symbols", "verify", "send", "read", "delete", "block", "unblock") and rest:
+        if command in ("symbols", "verify", "send", "send-picture", "read", "delete", "block", "unblock") and rest:
             contact = find(store, rest[0])
             if contact is None:
                 show(say(lang, "No contact called {name}.", "אין איש קשר בשם {name}.", name=rest[0]))
@@ -195,6 +196,27 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
                          name=contact.name) if sent else
                      say(lang, "Queued. Turn Diamond Chat on to send it.", "בתור. הפעילו את Diamond Chat כדי לשלוח.",
                          name=contact.name))
+                return 0
+            if command == "send-picture" and len(rest) == 2:
+                if not contact.verified:
+                    show(say(lang, "Compare the six symbols with {name} first (dai-chat symbols {name}): pictures "
+                             "are only accepted from verified contacts.",
+                             "השוו קודם את ששת הסמלים עם {name} (dai-chat symbols {name}): תמונות מתקבלות רק "
+                             "מאנשי קשר מאומתים.", name=contact.name))
+                    return 2
+                try:
+                    path = Path(rest[1])
+                    if path.stat().st_size > MAX_PICTURE:
+                        raise pictures.PictureError("too large")
+                    body, mime = pictures.clean(path.read_bytes())
+                except (OSError, pictures.PictureError):
+                    show(say(lang, "That file is not a PNG, JPEG or WebP picture up to 25 MB.",
+                             "הקובץ אינו תמונת PNG, JPEG או WebP של עד 25MB."))
+                    return 2
+                store.add_message(contact.public, Message.picture(body, mime), outgoing=True, state="queued")
+                service.poke(control_path())
+                show(say(lang, "Queued, without its location and camera details.",
+                         "בתור, בלי המיקום ופרטי המצלמה."))
                 return 0
             if command == "read":
                 for item in store.conversation(contact.public):

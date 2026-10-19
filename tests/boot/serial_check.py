@@ -153,6 +153,25 @@ OCR_PICTURE = (
 )
 OCR_PICTURE_B64 = base64.b64encode(OCR_PICTURE.encode()).decode()
 
+# A small PNG re-drawn as a JPEG, then that JPEG with a made-up location in its EXIF re-drawn again (docs/SEND.md).
+CHAT_PICTURE = r"""
+import struct, sys, zlib
+sys.path.insert(0, "/usr/lib/dai")
+from dai_chat import pictures
+
+def chunk(kind, data):
+    return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+png = (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 64, 64, 8, 2, 0, 0, 0))
+       + chunk(b"IDAT", zlib.compress((b"\x00" + b"\x80" * 192) * 64)) + chunk(b"IEND", b""))
+jpeg, _ = pictures.clean(png)
+secret = b"Exif\x00\x00GPS SECRET" + b"PLACE"
+photo = jpeg[:2] + b"\xff\xe1" + struct.pack(">H", len(secret) + 2) + secret + jpeg[2:]
+out, mime = pictures.clean(photo)
+print(mime, "GONE" if b"SECRETPLACE" not in out else "KEPT")
+"""
+CHAT_PICTURE_B64 = base64.b64encode(CHAT_PICTURE.encode()).decode()
+
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
 
@@ -691,6 +710,9 @@ def main() -> int:
          "pgrep -x tor >/dev/null && echo TOR_''LEFT || echo TOR_''GONE; tail -n 5 /tmp/chat-run.log",
          True, lambda o: re.search(r"^1$", o, re.M) is not None and "UNIT_RC=0" in o and "Tor:" in o
          and "TOR_AS_USER" in o and re.search(r"^700$", o, re.M) is not None and "TOR_GONE" in o, 90),
+        # Diamond Chat pictures (docs/SEND.md): Debian's Qt decodes them inside bubblewrap, and a hidden location goes.
+        ("chat: pictures are re-drawn in the sandbox", f"echo {CHAT_PICTURE_B64} | base64 -d > /tmp/chat-picture.py && "
+         "python3 -I /tmp/chat-picture.py", True, lambda o: "image/jpeg GONE" in o, 60),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

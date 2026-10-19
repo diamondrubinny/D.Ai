@@ -55,13 +55,18 @@
   - `pairing`: each person types the other's code; the computers swap full keys with signatures, and each checks them against the code it typed (as Briar does). Contacts stay "not verified" until the six symbols are compared.
   - `service` and `cli`: the user service `dai-chat.service` is off until `dai-chat on`. It tries every half minute (sooner when poked), the local network first and then Tor, waiting up to 15 minutes after failures. A notification names the sender, never the message.
   - Commands: `dai-chat code | add | contacts | symbols | verify | send | read | delete | block | lan | on | off | status`.
+- **Pictures (`pictures`):** built. Every picture, sent or received, is decoded and encoded again as new pixels.
+  - Decoding runs in bubblewrap: no network, no home folder, read-only /usr, with limits on memory and time.
+  - The reader is the one for the type the first bytes say (PNG, JPEG, WebP), never SVG or PDF.
+  - Location, camera, date and thumbnail are removed. Anything hidden after the picture is dropped.
+  - Long side at most 4096 pixels. A decompression bomb is refused.
+  - When the ClamAV daemon is installed, it scans first. `dai-chat send-picture NAME FILE` only to verified contacts.
 - **Found and fixed on the way:**
   - updating a contact deleted their history (INSERT OR REPLACE with a cascade);
   - two big pictures crossing could block both sides;
   - a locked keyring could crash Chat instead of falling back to the file.
-- **The tests (56):** 25 core tests, plus transport, pairing, Tor, mDNS, the service and the command line, over real sockets. In the VM: a code, a valid user unit, Tor running as the person, and Tor gone when Chat stops.
+- **The tests (65):** 25 core tests, plus transport, pairing, pictures in the real sandbox, Tor, mDNS, the service and the command line, over real sockets. In the VM: a code, a valid user unit, Tor running as the person and gone when Chat stops, and a picture re-drawn in the sandbox without its hidden location.
 - **Next:**
-  - pictures: removing location and camera data, decoding in a sandbox, a size limit, ClamAV;
   - the window (RTL, accessible, three themes), and "send Dana: …" in the command field;
   - opening the local-network port through D.Ai Tune, with undo.
 

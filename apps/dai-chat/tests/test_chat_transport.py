@@ -16,7 +16,7 @@ from pathlib import Path
 if importlib.util.find_spec("nacl") is None:  # python3-nacl, in Debian
     raise unittest.SkipTest("PyNaCl is missing")
 
-from dai_chat import keys, message, store, transport
+from dai_chat import keys, message, pictures, store, transport
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 64
 
@@ -26,8 +26,15 @@ class Person:
         self.name, self.identity = name, keys.Identity.generate()
         self.store = store.Store(folder / name)
         self.arrived = []
+        self.cleaned = []
         self.node = transport.Node(self.identity, self.store, lambda peer, m: self.arrived.append(m),
-                                   idle_timeout=5)
+                                   idle_timeout=5, clean=self.clean)
+
+    def clean(self, data: bytes):  # stands in for the sandbox (pictures.py has its own tests)
+        self.cleaned.append(len(data))
+        if b"EVIL" in data:
+            raise pictures.PictureError("could not be read")
+        return data, "image/png"
 
     def knows(self, other: "Person", verified: bool = True) -> None:
         self.store.add_contact(store.Contact(other.identity.public, other.name, verified=verified))
@@ -93,6 +100,13 @@ class DeliveryTests(Base):
         again = self.alice.write(self.bob, message.Message.picture(PNG, "image/png"))
         self.assertEqual((await self.send()).sent, [again.id])
         self.assertEqual(len(list(self.bob.store.pictures.iterdir())), 1)
+
+    async def test_a_picture_the_sandbox_refuses_is_not_kept(self):
+        evil = self.alice.write(self.bob, message.Message.picture(PNG + b"EVIL", "image/png"))
+        result = await self.send()
+        self.assertEqual(result.refused, [evil.id])
+        self.assertEqual(self.bob.store.conversation(self.alice.identity.public), [])
+        self.assertEqual(self.bob.cleaned, [len(PNG) + 4])  # it went through the cleaner, on Bob's side
 
     async def test_two_big_pictures_cross_without_waiting_on_each_other(self):
         big = b"\x89PNG\r\n\x1a\n" + os.urandom(6 * 1024 * 1024)

@@ -152,6 +152,19 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn("Turn Diamond Chat on", said)  # the service is not running here: it waits
         self.assertIn("me: see you at six", self.run_cli("read", "Dana")[1])
         self.assertIn("Deleted 1 messages", self.run_cli("delete", "Dana")[1])
+        picture = Path(self.tmp.name) / "photo.png"
+        picture.write_bytes(b"\x89PNG\r\n\x1a\n" + bytes(64))
+        db = store.Store(Path(self.tmp.name) / "data" / "dai" / "chat")
+        db.set_verified(dana.public, False)
+        db.close()
+        self.assertEqual(self.run_cli("send-picture", "Dana", str(picture))[0], 2)  # symbols not compared yet
+        self.run_cli("verify", "Dana")
+        with mock.patch("dai_chat.pictures.clean", return_value=(b"\x89PNG\r\n\x1a\nCLEAN", "image/png")) as clean:
+            code, said = self.run_cli("send-picture", "Dana", str(picture))
+        self.assertEqual((code, clean.call_count), (0, 1))  # re-drawn before it is queued
+        self.assertIn("without its location", said)
+        self.assertIn("[a picture]", self.run_cli("read", "Dana")[1])
+        self.assertEqual(self.run_cli("send-picture", "Dana", str(picture) + ".missing")[0], 2)
 
     def test_unknown_contact_and_help(self):
         self.assertEqual(self.run_cli("send", "Nobody", "hi")[0], 2)

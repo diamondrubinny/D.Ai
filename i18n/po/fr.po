@@ -3895,3 +3895,16 @@ msgstr "Diamond Chat est activé. Votre code : {code}"
 #: apps/dai-chat/dai_chat/cli.py
 msgid "Diamond Chat is off; messages you write wait here."
 msgstr "Diamond Chat est désactivé ; les messages que vous écrivez attendent ici."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Compare the six symbols with {name} first (dai-chat symbols {name}): pictures are only accepted from verified contacts."
+msgstr "Comparez d'abord les six symboles avec {name} (dai-chat symbols {name}) : les images ne sont acceptées que des contacts vérifiés."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Queued, without its location and camera details."
+msgstr "En attente, sans sa position ni les détails de l'appareil photo."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "That file is not a PNG, JPEG or WebP picture up to 25 MB."
+msgstr "Ce fichier n'est pas une image PNG, JPEG ou WebP de 25 Mo maximum."
