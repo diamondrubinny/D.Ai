@@ -627,9 +627,10 @@ def main() -> int:
         # (where the disk passphrase is asked), the USB menu got D.Ai's look, and the login theme loads.
         ("boot: D.Ai loading screen (Plymouth)", "/usr/sbin/plymouth-set-default-theme; "
          "lsinitramfs $(ls /run/live/medium/live/initrd.img* | head -n 1) 2>/dev/null | grep -c 'plymouth/themes/dai/'; "
-         "grep -c 'Start D.Ai OS' /run/live/medium/isolinux/live.cfg /run/live/medium/boot/grub/grub.cfg 2>/dev/null",
+         "grep -c 'Start D.Ai OS' /run/live/medium/isolinux/live.cfg /run/live/medium/boot/grub/grub.cfg 2>/dev/null; "
+         "grep -c 'menu title D.Ai OS' /run/live/medium/isolinux/menu.cfg",
          True, lambda o: re.search(r"^dai$", o, re.M) is not None and re.search(r"^[1-9]\d*$", o, re.M) is not None
-         and "live.cfg:0" not in o, 90),
+         and "live.cfg:0" not in o and re.search(r"^0$", o, re.M) is None, 90),
         ("login: D.Ai login screen loads (SDDM)", "cd /tmp && QT_QPA_PLATFORM=offscreen timeout 12 sddm-greeter-qt6 "
          "--test-mode --theme /usr/share/sddm/themes/dai >/tmp/greeter.log 2>&1; echo GREETER_RC=$?; "
          "grep -E 'themes/dai/.*(Error|error|TypeError|ReferenceError|not installed|is not a type)' /tmp/greeter.log "

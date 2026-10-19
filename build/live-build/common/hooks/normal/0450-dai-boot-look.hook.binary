@@ -49,7 +49,8 @@ GRUB_COLORS = {  # live-build's colors -> D.Ai's
 def rename(text: str) -> str:
     """"Live system (amd64)" -> "Start D.Ai OS"; the fail-safe entry keeps saying what it is; the menu's
     title (in whichever syslinux file live-build put it) becomes "D.Ai OS"."""
-    text = re.sub(r"(?m)^(\s*menu title)\s+Boot menu\s*$", rf"\1 {TITLE}", text)
+    # live-build ends the title with a BEL (^G): the beep tells blind users the menu is ready. It stays.
+    text = re.sub(r"(?m)^([ \t]*menu title)[ \t]+Boot menu(\x07?)[ \t]*$", rf"\1 {TITLE}\2", text)
     text = re.sub(r"Live system \([a-z0-9_]+ fail-safe mode\)", "Start D.Ai OS (safe graphics)", text)
     return re.sub(r"Live system \([a-z0-9_]+\)", "Start D.Ai OS", text)
 
