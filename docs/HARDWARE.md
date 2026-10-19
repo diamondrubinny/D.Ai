@@ -42,6 +42,19 @@
   - The other option is to tell the owners of these computers clearly that D.Ai needs a 64-bit processor (almost every computer since about 2007).
   - **This is a decision for you** (§5).
 
+### Stage 1 results (CI, run 39272473637, user edition, one run each)
+
+| Profile | Memory | CPUs | Login | Desktop (LXQt panel) | Memory in use, 60 s idle | Load 1 min after |
+|---|---|---|---|---|---|---|
+| weak | 2 GB | 1 | 132 s | 162 s | 525 MB of 1973 MB | 5.27 |
+| standard | 4 GB | 2 | 113 s | 127 s | 641 MB of 3921 MB | 2.48 |
+
+**How to read these:**
+- **Acceleration: TCG for both**, which is software emulation of the CPU. The CI runner has no KVM, so **the times say nothing about a real computer**. A real CPU is many times faster.
+- **Memory in use** does not depend much on emulation, so it is the most useful number here. It is still one idle minute of one run.
+- **Only one run per profile.** The spread is unknown until the job has run several times.
+- **The guesses in §2** (25 s, 900 MB, and so on) were written before any measurement. The memory guesses are in the same range as these results, but that proves nothing yet.
+
 ## 2. Smooth on every computer: measured, not assumed
 
 1. **A performance budget in CI, per edition.** Every build boots in QEMU with a weak setup and measures:
