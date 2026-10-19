@@ -726,6 +726,26 @@ class LanguageTests(TuneTestCase):
                              [("appearance.theme", {"theme": theme})], sentence)
         self.assertNotIn("appearance.theme", [r.action for r in parser.parse("night light").requests])
 
+    def test_sound_sentences(self):
+        cases = {"turn off system sounds": "off", "mute sounds": "off", "השתק צלילי מערכת": "off", "בלי צלילים": "off",
+                 "quiet sounds": "quiet", "צלילים שקטים": "quiet", "turn on sounds": "on", "הפעל צלילים": "on"}
+        for sentence, level in cases.items():
+            result = parser.parse(sentence)
+            self.assertEqual([(r.action, r.params) for r in result.requests],
+                             [("system.sounds", {"mode": level})], sentence)
+        for other in ("mute the microphone", "turn off bluetooth", "light theme"):
+            self.assertNotIn("system.sounds", [r.action for r in parser.parse(other).requests], other)
+
+    def test_sounds_are_written_and_undone(self):
+        path = self.home / ".config/dai/sounds"
+        plan = self.plan("quiet sounds")
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        journal = executor.Journal.for_user(self.ctx)
+        entry = executor.apply_steps(plan.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertEqual(path.read_text(), "quiet\n")
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertFalse(path.exists())
+
     def test_theme_is_written_and_undone(self):
         theme = self.home / ".config/dai/theme"
         theme.parent.mkdir(parents=True)
@@ -768,6 +788,8 @@ class KeywordPackTests(unittest.TestCase):
      ("bloquear pendrive", "device.block"), ("abrir porta 8080", "firewall.open_port"), ("ativar atualizações automáticas", "updates.auto"),
      ("bloquear a tela após 5 minutos", "session.lock"), ("liberar espaço em disco", "system.clean"), ("desfazer a última atualização", "snapshots.undo_update"),
      ("block usb", "device.block"), ("חסום דיסק און קי", "device.block"), ("נעל מסך אחרי 5 דקות", "session.lock"),
+     ("отключи звуки", "system.sounds"), ("أوقف الأصوات", "system.sounds"), ("sonidos suaves", "system.sounds"),
+     ("couper les sons", "system.sounds"), ("Töne einschalten", "system.sounds"), ("ativar os sons", "system.sounds"),
     ]
 
     def test_each_language_reaches_the_same_actions(self):

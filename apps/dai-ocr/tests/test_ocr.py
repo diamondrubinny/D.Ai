@@ -59,8 +59,9 @@ class OcrTests(unittest.TestCase):
         self.assertEqual(cli.preview("x " * 200)[-1], "…")
 
     def test_area_to_clipboard(self):
-        fake = Fake()
-        self.assertEqual(cli.main(["dai-ocr"], run=fake), 0)
+        fake, chimes = Fake(), []
+        self.assertEqual(cli.main(["dai-ocr"], run=fake, chime=chimes.append), 0)
+        self.assertEqual(chimes, ["complete"])  # the crystal "done" of docs/SOUNDS.md
         self.assertEqual(fake.copied, ["שלום עולם\nHello\n\nD.Ai"])
         self.assertEqual(fake.argv("grim")[0], ["grim", "-g", "10,20 300x80", "-"])  # to memory, not a file
         tesseract = [argv for argv in fake.argv("tesseract") if argv[1] != "--list-langs"][0]

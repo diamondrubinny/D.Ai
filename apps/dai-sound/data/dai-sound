@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai sounds (docs/SOUNDS.md): play one, or watch for USB devices and the charger. Installed as /usr/bin/dai-sound.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_sound.cli import main; sys.exit(main(["dai-sound", *sys.argv[1:]]))' "$@"

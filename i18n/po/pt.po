@@ -3783,3 +3783,12 @@ msgstr "Texto copiado ({count} caracteres)"
 #: apps/dai-ocr/dai_ocr/cli.py
 msgid "Try a larger area, or one with clearer text."
 msgstr "Tente uma área maior ou com um texto mais nítido."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "D.Ai's system sounds: {mode}"
+msgstr "Sons do sistema do D.Ai: {mode}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "quiet"
+msgstr "suaves"

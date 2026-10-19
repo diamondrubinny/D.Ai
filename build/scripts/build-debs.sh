@@ -187,6 +187,11 @@ build_apps() {
   install -d "$root/etc/xdg/autostart"
   install -m 0644 "$clip/data/dai-clip-autostart.desktop" "$root/etc/xdg/autostart/dai-clip.desktop"
 
+  # D.Ai sounds (docs/SOUNDS.md): the player and the USB/charger watcher; the theme itself is on the image.
+  local sound="$REPO_ROOT/apps/dai-sound"
+  copy_package "$sound/dai_sound" "$root"
+  install -m 0755 "$sound/data/dai-sound" "$root/usr/bin/dai-sound"
+
   # D.Ai OCR (docs/V2.md F1): copy the text in an area of the screen, Super+Shift+T.
   local ocr="$REPO_ROOT/apps/dai-ocr"
   copy_package "$ocr/dai_ocr" "$root"

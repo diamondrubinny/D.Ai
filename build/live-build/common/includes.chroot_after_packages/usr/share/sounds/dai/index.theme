@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The D.Ai sound theme, "the diamond family" (docs/SOUNDS.md). Sounds drawn by build/scripts/make-sounds.py.
+[Sound Theme]
+Name=D.Ai
+Name[he]=D.Ai
+Comment=Crystal sounds from one family: soft, short, never alarming
+Comment[he]=צלילי קריסטל ממשפחה אחת: רכים, קצרים, אף פעם לא מבהילים
+Directories=stereo
+Inherits=freedesktop
+
+[stereo]
+OutputProfile=stereo

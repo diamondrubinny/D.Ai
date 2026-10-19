@@ -667,6 +667,14 @@ def main() -> int:
          "dai-ocr --file /tmp/ocr.png --print --lang he,en > /tmp/ocr.txt; echo OCR_RC=$?; cat /tmp/ocr.txt | head -n 4; "
          f"grep -c \"$(printf '{_hex('שלום')}')\" /tmp/ocr.txt; tesseract --list-langs 2>/dev/null | tr '\\n' ' '",
          True, lambda o: "OCR_RC=0" in o and "Hello" in o and "2026" in o, 90),
+        # D.Ai sounds (docs/SOUNDS.md): the theme is installed, one sound really plays through PipeWire, quiet and off
+        # are respected, and the USB/charger watcher started with the session.
+        ("sound: the diamond family plays", WAYLAND_ENV + "ls /usr/share/sounds/dai/stereo/ | grep -c '\\.oga$'; "
+         "dai-sound complete; echo PLAY_RC=$?; sleep 1; dai-sound off; dai-sound complete; echo OFF_RC=$?; "
+         "dai-sound on; sleep 1; pgrep -u $(id -u) -f 'dai-sound watch' >/dev/null && echo WATCHING; "
+         "timeout 5 pw-play --volume 0.1 /usr/share/sounds/dai/stereo/bell.oga; echo PW_RC=$?",
+         True, lambda o: re.search(r"^1[5-9]$", o, re.M) is not None and "PLAY_RC=0" in o and "OFF_RC=1" in o
+         and "WATCHING" in o, 40),  # PW_RC is information: a VM may have no sound card
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

@@ -110,7 +110,15 @@ def notify(title: str, body: str, run: Run = subprocess.run) -> None:
         pass
 
 
-def main(argv: list[str] | None = None, run: Run = subprocess.run) -> int:
+def sound(name: str) -> None:
+    """A D.Ai sound (docs/SOUNDS.md), without waiting for it; silence when dai-sound is not there."""
+    try:
+        subprocess.Popen(["dai-sound", name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError:
+        pass
+
+
+def main(argv: list[str] | None = None, run: Run = subprocess.run, chime: Callable[[str], None] = sound) -> int:
     args = list(sys.argv if argv is None else argv)[1:]
     lang = ui_lang()
     if "--help" in args or "-h" in args:
@@ -159,6 +167,7 @@ def main(argv: list[str] | None = None, run: Run = subprocess.run) -> int:
     if not copy(text, run):
         print(text)
         return 1
+    chime("complete")
     notify(say(lang, "Text copied ({count} characters)", "הטקסט הועתק ({count} תווים)", count=len(text)),
            preview(text), run)
     return 0

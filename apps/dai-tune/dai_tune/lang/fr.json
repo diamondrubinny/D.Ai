@@ -46,6 +46,10 @@
   "mode clair": "light theme",
   "thème sombre": "dark theme",
   "mode sombre": "dark mode",
-  "contraste élevé": "high contrast"
+  "contraste élevé": "high contrast",
+  "désactiver les sons": "turn off sounds",
+  "couper les sons": "turn off sounds",
+  "sons doux": "quiet sounds",
+  "activer les sons": "turn on sounds"
  }
 }

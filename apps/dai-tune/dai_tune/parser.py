@@ -77,6 +77,17 @@ LOCK = r"(?:\block\b|\block screen\b|\bscreen ?lock\b|נעל|תנעל|לנעול
 MINUTES = r"(\d{1,3})\s*(?:minutes?|mins?|min|דקות|דקה|ד')"
 NEVER = r"(?:never|off|disable|אף פעם|לעולם לא|בלי נעילה|כבה|תכבה|בטל)"
 
+# D.Ai's system sounds (docs/SOUNDS.md): off, quiet or on. Checked in this order, so "quiet" wins over "on".
+SOUNDS = [
+    ("off", r"(?:\b(?:mute|silence|turn off|switch off|disable|no) (?:the |all )?(?:system |d\.ai )?sounds?\b|"
+            r"\bsounds? off\b|השתק(?:ת|ו)? (?:את )?(?:כל )?(?:ה)?צלילי(?:ם|ם של המערכת| המערכת)?|"
+            r"(?:כבה|כיבוי|תכבה) (?:את )?(?:ה)?צלילי(?:ם|ם של המערכת| המערכת)?|בלי צלילים|ללא צלילים)"),
+    ("quiet", r"(?:\b(?:quiet|quieter|soft|softer|lower) (?:system )?sounds?\b|צלילים (?:שקטים|חלשים|רכים)|"
+              r"(?:הנמך|הנמכת) (?:את )?(?:ה)?צלילים)"),
+    ("on", r"(?:\b(?:turn on|switch on|enable|unmute) (?:the |all )?(?:system |d\.ai )?sounds?\b|\bsounds? on\b|"
+           r"(?:הפעל|הפעלת|תפעיל|החזר) (?:את )?(?:ה)?צלילי(?:ם|ם של המערכת| המערכת)?)"),
+]
+
 # The D.Ai theme (docs/V2.md D1b). Not "night light" (that is wlsunset, Super+Alt+N).
 THEMES = [
     ("contrast", r"(?:\bhigh[ -]contrast\b|ניגודיות גבוהה)"),
@@ -238,6 +249,11 @@ def parse_clause(clause: str) -> list[Request]:
             return [Request("session.lock", {"minutes": int(m.group(1))}, clause)]
         if _has(NEVER, c):
             return [Request("session.lock", {"minutes": 0}, clause)]
+
+    # D.Ai's system sounds.
+    for level, pattern in SOUNDS:
+        if re.search(pattern, c, re.IGNORECASE):
+            return [Request("system.sounds", {"mode": level}, clause)]
 
     # The D.Ai theme.
     for theme, pattern in THEMES:

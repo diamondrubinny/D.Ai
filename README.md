@@ -67,6 +67,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **MOM** | The task manager: apps instead of processes, explained by Diamond, and a guard against runaway programs (Ctrl+Shift+Esc) | `docs/MOM.md` |
 | **Raz** | Checks the system before and after every update; every D.Ai window passes an accessibility check in three themes before release | `docs/RAZ.md` |
 | **D.Ai Rescue** | From the USB stick: when the installed system no longer starts after an update, go back to before it | `docs/BASICS.md` |
+| **D.Ai sounds** | "The diamond family": crystal sounds from one musical family, soft and short, for login, notifications, USB devices, the charger, screenshots and copied text; "quiet sounds" or "turn off sounds" in one sentence | `docs/SOUNDS.md` |
+| **D.Ai OCR** | Super+Shift+T: choose an area of the screen and its text is copied, read on this computer in eight languages | `docs/V2.md` |
 | **The basics** | Screenshots (Print), night light, on-screen keyboard, magnifier, drives that mount by themselves, printers with no driver, firmware updates | `docs/BASICS.md` |
 | **D.Ai Welcome** | First-run setup wizard | `docs/WELCOME.md` |
 | **D.Ai OEM** | Prepare a computer for its new owner (refurbishers, charities) | `docs/OEM.md` |

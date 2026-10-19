@@ -16,6 +16,9 @@ fi
 if command -v wl-copy >/dev/null 2>&1; then
 	wl-copy --type image/png <"$file" || true
 fi
+if command -v dai-sound >/dev/null 2>&1; then
+	dai-sound screen-capture >/dev/null 2>&1 || true
+fi
 if command -v notify-send >/dev/null 2>&1; then
 	notify-send -a "D.Ai" -i "$file" "Screenshot" "$file" || true
 fi

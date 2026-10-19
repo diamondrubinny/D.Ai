@@ -49,6 +49,11 @@
   "الوضع الداكن": "dark theme",
   "السمة الداكنة": "dark theme",
   "تباين عال": "high contrast",
-  "تباين عالي": "high contrast"
+  "تباين عالي": "high contrast",
+  "أوقف الأصوات": "turn off sounds",
+  "كتم الأصوات": "turn off sounds",
+  "أصوات هادئة": "quiet sounds",
+  "شغّل الأصوات": "turn on sounds",
+  "شغل الأصوات": "turn on sounds"
  }
 }

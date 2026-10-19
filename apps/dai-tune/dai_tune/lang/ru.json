@@ -64,6 +64,11 @@
   "темная тема": "dark theme",
   "темную тему": "dark theme",
   "высокий контраст": "high contrast",
-  "высокая контрастность": "high contrast"
+  "высокая контрастность": "high contrast",
+  "отключи звуки": "turn off sounds",
+  "выключи звуки": "turn off sounds",
+  "без звуков": "turn off sounds",
+  "тихие звуки": "quiet sounds",
+  "включи звуки": "turn on sounds"
  }
 }

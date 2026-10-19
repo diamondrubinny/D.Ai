@@ -137,7 +137,7 @@ class QuickWindow(QWidget):
             self.slider.valueChanged.connect(self._volume_later)
             row.addWidget(self.slider, 1)
             self._volume_timer = QTimer(self, singleShot=True, interval=120)
-            self._volume_timer.timeout.connect(lambda: self.controls.set_volume(self.slider.value()))
+            self._volume_timer.timeout.connect(self._apply_volume)
 
         score = self.controls.security(self.lang)
         row = self._row(layout)
@@ -198,6 +198,11 @@ class QuickWindow(QWidget):
         self._label_tile(key)
         if key == "dnd":
             self.dnd_note.setVisible(bool(actual))
+
+    def _apply_volume(self) -> None:
+        """Set it, then a small crystal tick at the new level (docs/SOUNDS.md), as a phone does."""
+        if self.controls.set_volume(self.slider.value()):
+            self.spawn(["dai-sound", "audio-volume-change"])
 
     def _volume_later(self, _value: int) -> None:
         self._volume_timer.start()  # one wpctl call when the slider settles

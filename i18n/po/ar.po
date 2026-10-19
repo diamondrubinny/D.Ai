@@ -3783,3 +3783,12 @@ msgstr "نُسخ النص ({count} حرفًا)"
 #: apps/dai-ocr/dai_ocr/cli.py
 msgid "Try a larger area, or one with clearer text."
 msgstr "جرّب منطقة أكبر، أو منطقة نصها أوضح."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "D.Ai's system sounds: {mode}"
+msgstr "أصوات نظام D.Ai: {mode}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "quiet"
+msgstr "هادئة"

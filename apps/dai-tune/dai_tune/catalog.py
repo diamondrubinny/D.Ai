@@ -757,6 +757,32 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# D.Ai's system sounds (docs/SOUNDS.md), read by dai-sound
+# --------------------------------------------------------------------------
+
+SOUNDS_FILE = ".config/dai/sounds"
+SOUND_NAMES = {"on": ("on", "פועלים"), "quiet": ("quiet", "שקטים"), "off": ("off", "כבויים")}
+
+
+def _sounds_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"mode"})
+    return {"mode": _choice(params.get("mode"), tuple(SOUND_NAMES), "mode")}
+
+
+register(ActionSpec(
+    id="system.sounds",
+    scope="user",
+    validate=_sounds_validate,
+    apply=lambda p, c: write_file(c.user_path(SOUNDS_FILE), p["mode"] + "\n", mode=0o600),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "D.Ai's system sounds: {mode}", "צלילי המערכת של D.Ai: {mode}",
+                               mode=pick(lang, *SOUND_NAMES[p["mode"]])),
+    files=lambda p, c: [c.user_path(SOUNDS_FILE)],
+))
+
+
+# --------------------------------------------------------------------------
 # Language of the system and of the session (docs/I18N.md §9)
 # --------------------------------------------------------------------------
 
