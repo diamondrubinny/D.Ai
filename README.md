@@ -69,6 +69,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **D.Ai Rescue** | From the USB stick: when the installed system no longer starts after an update, go back to before it | `docs/BASICS.md` |
 | **D.Ai sounds** | "The diamond family": crystal sounds from one musical family, soft and short, for login, notifications, USB devices, the charger, screenshots and copied text; "quiet sounds" or "turn off sounds" in one sentence | `docs/SOUNDS.md` |
 | **D.Ai OCR** | Super+Shift+T: choose an area of the screen and its text is copied, read on this computer in eight languages | `docs/V2.md` |
+| **Diamond Chat** | Encrypted messages and pictures between D.Ai computers, with no server and no account: directly on the local network, or through Tor onion services on the internet. Pairing by swapping codes and comparing six symbols; pictures are re-drawn in a sandbox without their location. Off until you turn it on. **Needs an external security review before release** | `docs/SEND.md` |
 | **The basics** | Screenshots (Print), night light, on-screen keyboard, magnifier, drives that mount by themselves, printers with no driver, firmware updates | `docs/BASICS.md` |
 | **D.Ai Welcome** | First-run setup wizard | `docs/WELCOME.md` |
 | **D.Ai OEM** | Prepare a computer for its new owner (refurbishers, charities) | `docs/OEM.md` |
