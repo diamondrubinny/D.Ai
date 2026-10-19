@@ -312,7 +312,39 @@ def qss_issues(sheet: str) -> list[Issue]:
     return issues
 
 
+def _in_theme(window: QWidget, theme: str):
+    """Show the window in another D.Ai theme (docs/V2.md D1); returns how to put it back."""
+    from dai_style import themed
+
+    app = QApplication.instance()
+    saved: list[tuple] = [(app.setStyleSheet, app.styleSheet())]
+    for widget in [window, *window.findChildren(QWidget)]:
+        if widget.styleSheet():
+            saved.append((widget.setStyleSheet, widget.styleSheet()))
+        if isinstance(widget, QLabel) and "#" in widget.text() and "<" in widget.text():  # rich text colours
+            saved.append((widget.setText, widget.text()))
+    for setter, value in saved:
+        setter(themed(value, theme))
+    QApplication.processEvents()
+
+    def restore() -> None:
+        for setter, value in saved:
+            setter(value)
+        QApplication.processEvents()
+    return restore
+
+
 def assert_accessible(case, window: QWidget) -> None:
-    """For the apps' own tests: fail with every problem listed, in one message."""
-    issues = audit(window)
-    case.assertEqual([str(issue) for issue in issues], [], f"{type(window).__name__} has accessibility problems")
+    """For the apps' own tests: fail with every problem listed, in one message, in every D.Ai theme."""
+    issues = [str(issue) for issue in audit(window)]
+    try:
+        import dai_style
+    except ImportError:  # an app without the design system on its path: Night only
+        dai_style = None
+    for theme in (dai_style.THEMES[1:] if dai_style else ()):
+        restore = _in_theme(window, theme)
+        try:
+            issues += [f"[{theme}] {issue}" for issue in audit(window)]
+        finally:
+            restore()
+    case.assertEqual(issues, [], f"{type(window).__name__} has accessibility problems")

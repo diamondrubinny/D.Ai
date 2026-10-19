@@ -41,6 +41,11 @@
   "caméra": "camera",
   "webcam": "camera",
   "après": "after",
-  "et": "and"
+  "et": "and",
+  "thème clair": "light theme",
+  "mode clair": "light theme",
+  "thème sombre": "dark theme",
+  "mode sombre": "dark mode",
+  "contraste élevé": "high contrast"
  }
 }

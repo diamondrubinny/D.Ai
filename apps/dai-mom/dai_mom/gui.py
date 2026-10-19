@@ -22,6 +22,7 @@ from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QLineEdit, QMain
                              QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, qt_direction, ui_lang
+from dai_style import themed
 
 from . import __author__, __version__
 from . import actions, apps as apps_mod, procs
@@ -30,7 +31,7 @@ from .text import describe, notes, size, t
 KEY = Qt.ItemDataRole.UserRole
 OTHER = "__other__"
 
-STYLE = """
+STYLE = themed("""
 QMainWindow, QWidget#Page { background: #0B1020; }
 QWidget { color: #E6E9F5; font-size: 10.5pt; }
 QTabWidget::pane { border: 0; }
@@ -45,12 +46,12 @@ QTreeWidget::item:selected, QListWidget::item:selected { background: #5B3FD6; co
 QHeaderView::section { background: #141B33; color: #B8A6FF; border: 0; padding: 6px; font-weight: 600; }
 QPushButton { background: #1C2547; border: 1px solid #2A3563; border-radius: 10px; padding: 6px 14px; }
 QPushButton:hover { border: 1px solid #7C5CFF; }
-QPushButton#Danger { color: #FFB4B4; }
+QPushButton#Danger { color: #F87171; }
 QPushButton:disabled { color: #5A6390; }
 QLabel#Muted { color: #9AA3C7; font-size: 9.5pt; }
 QProgressBar { background: #141B33; border: 1px solid #2A3563; border-radius: 8px; text-align: center; min-height: 22px; }
 QProgressBar::chunk { border-radius: 7px; background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7C5CFF, stop:1 #22D3EE); }
-"""
+""")
 
 
 @dataclass
@@ -471,12 +472,12 @@ class MomWindow(QMainWindow):
             self.close()
 
 
-DIALOG_STYLE = """
+DIALOG_STYLE = themed("""
 QDialog { background: #0B1020; }
 QLabel#Big { font-size: 13pt; font-weight: 600; }
 QPlainTextEdit { background: #141B33; border: 1px solid #2A3563; border-radius: 10px; font-family: monospace; }
 QLabel:focus { border: 1px dashed #22D3EE; }
-"""
+""")
 
 
 def main(server=None) -> int:

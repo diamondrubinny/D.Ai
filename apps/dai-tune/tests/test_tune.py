@@ -716,6 +716,30 @@ class LanguageTests(TuneTestCase):
         with self.assertRaises(catalog.ValidationError):
             spec.validate({"lang": "ru", "extra": 1}, self.ctx)
 
+    def test_theme_sentences(self):
+        cases = {"light theme": "day", "ערכת נושא בהירה": "day", "dark mode": "night", "עיצוב כהה": "night",
+                 "high contrast": "contrast", "ניגודיות גבוהה": "contrast", "тёмная тема": "night",
+                 "modo claro": "day", "contraste élevé": "contrast", "dunkles Design": "night"}
+        for sentence, theme in cases.items():
+            result = parser.parse(sentence)
+            self.assertEqual([(r.action, r.params) for r in result.requests],
+                             [("appearance.theme", {"theme": theme})], sentence)
+        self.assertNotIn("appearance.theme", [r.action for r in parser.parse("night light").requests])
+
+    def test_theme_is_written_and_undone(self):
+        theme = self.home / ".config/dai/theme"
+        theme.parent.mkdir(parents=True)
+        theme.write_text("contrast\n")
+        plan = self.plan("light theme")
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        journal = executor.Journal.for_user(self.ctx)
+        entry = executor.apply_steps(plan.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertEqual(theme.read_text(), "day\n")
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertEqual(theme.read_text(), "contrast\n")
+        with self.assertRaises(catalog.ValidationError):
+            catalog.CATALOG["appearance.theme"].validate({"theme": "neon"}, self.ctx)
+
     def test_arabic_keyboard_is_the_real_xkb_name(self):
         result = parser.parse("keyboard english arabic portuguese")
         self.assertEqual(result.requests[0].params, {"layouts": ["us", "ara", "pt"]})

@@ -728,6 +728,35 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# Appearance: the D.Ai theme (docs/V2.md D1b), read by dai_style in every D.Ai window
+# --------------------------------------------------------------------------
+
+THEME_FILE = ".config/dai/theme"
+THEME_NAMES = {"night": ("dark (D.Ai Night)", "כהה (D.Ai Night)"), "day": ("light (D.Ai Day)", "בהירה (D.Ai Day)"),
+               "contrast": ("high contrast", "ניגודיות גבוהה")}
+
+
+def _theme_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"theme"})
+    return {"theme": _choice(params.get("theme"), tuple(THEME_NAMES), "theme")}
+
+
+register(ActionSpec(
+    id="appearance.theme",
+    scope="user",
+    validate=_theme_validate,
+    apply=lambda p, c: write_file(c.user_path(THEME_FILE), p["theme"] + "\n", mode=0o600),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "D.Ai theme: {name}", "ערכת הנושא של D.Ai: {name}",
+                               name=pick(lang, *THEME_NAMES[p["theme"]])),
+    files=lambda p, c: [c.user_path(THEME_FILE)],
+    note=lambda p, lang: _t(lang, "Each D.Ai window takes it the next time it opens.",
+                            "כל חלון של D.Ai יקבל אותה בפעם הבאה שייפתח."),
+))
+
+
+# --------------------------------------------------------------------------
 # Language of the system and of the session (docs/I18N.md §9)
 # --------------------------------------------------------------------------
 

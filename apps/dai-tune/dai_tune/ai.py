@@ -62,7 +62,7 @@ def system_prompt() -> str:
         "source: lan|any (lan unless the user explicitly wants the internet)}; firewall.close_port {port, proto}; "
         "updates.auto {enabled}; service.ssh {enabled}; packages.install/remove {names: [debian package names]}; "
         "system.timezone {timezone: Area/City}; system.hostname {hostname}; session.lock {minutes, 0 = never}; "
-        "keyboard.layouts {layouts: us|il|ru|ar|fr|de|es|it|ua}; "
+        "keyboard.layouts {layouts: us|il|ru|ar|fr|de|es|it|ua}; appearance.theme {theme: night|day|contrast}; "
         "service.unit / service.user_unit {unit: name.service, enabled}; flatpak.remote {name: flathub}; "
         "flatpak.install/remove {apps: [reverse-DNS Flathub ids]}; antivirus.schedule {enabled, frequency: daily|weekly}; "
         "presets take {}.\n"

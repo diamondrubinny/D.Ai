@@ -16,12 +16,14 @@ from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QAction, QColor, QIcon, QPainter, QPixmap
 from PyQt6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
+from dai_style import color
+
 from .log import append, changes, log_path
 from .sensors import current
 from .text import describe, lang, t
 
 INTERVAL_MS = 2000
-DANGER = "#F87171"
+DANGER = color("danger")
 
 
 def dot_icon() -> QIcon:

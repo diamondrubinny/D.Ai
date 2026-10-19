@@ -43,6 +43,12 @@
   "بلوتوث": "bluetooth",
   "بعد": "after",
   "دقائق": "minutes",
-  "دقيقة": "minutes"
+  "دقيقة": "minutes",
+  "الوضع الفاتح": "light theme",
+  "السمة الفاتحة": "light theme",
+  "الوضع الداكن": "dark theme",
+  "السمة الداكنة": "dark theme",
+  "تباين عال": "high contrast",
+  "تباين عالي": "high contrast"
  }
 }

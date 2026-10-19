@@ -30,6 +30,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from dai_style import color
+
 from . import __author__, __version__
 from .core import Action, History, build_actions, load_apps, tr
 
@@ -39,14 +41,15 @@ ACTION_ROLE = Qt.ItemDataRole.UserRole + 1
 MAX_ROWS = 8
 
 # Design tokens (docs/DESIGN.md §2)
-BG = "#0B1020"
-SURFACE = "#1C2547"
-BORDER = "#2A3563"
-TEXT = "#E6E9F5"
-MUTED = "#9AA3C7"
-ACCENT = "#7C5CFF"
-ACCENT_STRONG = "#5B3FD6"
-ACCENT_2 = "#22D3EE"
+BG = color("bg_900")  # in the person's theme (docs/V2.md D1)
+SURFACE = color("surface")
+BORDER = color("border")
+TEXT = color("text")
+MUTED = color("muted")
+ACCENT = color("accent")
+ACCENT_STRONG = color("accent_strong")
+ACCENT_2 = color("accent_2")
+DANGER = color("danger")
 
 STYLE = f"""
 #Card {{
@@ -93,7 +96,7 @@ STYLE = f"""
 #Mic:disabled {{ background: {SURFACE}; }}
 #Mic:hover {{ border: 1px solid {ACCENT}; }}
 #Mic:focus {{ border: 2px solid {ACCENT_2}; }}
-#Mic[recording="true"] {{ background: #B4233A; border: 2px solid #F87171; }}
+#Mic[recording="true"] {{ background: #B4233A; border: 2px solid {DANGER}; }}
 QToolTip {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; }}
 """
 

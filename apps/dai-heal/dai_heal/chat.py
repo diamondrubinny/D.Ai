@@ -19,10 +19,11 @@ from PyQt6.QtWidgets import (
     QApplication, QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QVBoxLayout, QWidget,
 )
 
-from dai_forge.gui import ACCENT, BORDER, MUTED, OK_GREEN, STYLE as FORGE_STYLE
+from dai_forge.gui import ACCENT, ACCENT_2, BG_900, BORDER, MUTED, OK_GREEN, STYLE as FORGE_STYLE
 from dai_forge.gui import Bridge, Worker
 
 from dai_i18n import embed, english_name, qt_direction
+from dai_style import rgba
 
 from . import __author__, __version__
 from . import fixes as F
@@ -32,11 +33,11 @@ from .watch import ignore
 
 APP_ID = "dai-heal"
 STYLE = FORGE_STYLE.replace("QWidget#Forge", "QWidget#Heal") + f"""
-QFrame#Bot {{ background: rgba(28, 37, 71, 0.95); border: 1px solid {BORDER}; border-radius: 14px; }}
-QFrame#Me {{ background: rgba(124, 92, 255, 0.28); border: 1px solid {ACCENT}; border-radius: 14px; }}
+QFrame#Bot {{ background: {rgba('surface', 0.95)}; border: 1px solid {BORDER}; border-radius: 14px; }}
+QFrame#Me {{ background: {rgba('accent', 0.28)}; border: 1px solid {ACCENT}; border-radius: 14px; }}
 QLabel#Log {{ font-family: monospace; font-size: 9pt; color: {MUTED}; }}
-QLineEdit#Say {{ background: #0B1020; border: 1px solid {BORDER}; border-radius: 10px; padding: 9px 12px; font-size: 12pt; }}
-QLineEdit#Say:focus {{ border: 2px solid #22D3EE; }}
+QLineEdit#Say {{ background: {BG_900}; border: 1px solid {BORDER}; border-radius: 10px; padding: 9px 12px; font-size: 12pt; }}
+QLineEdit#Say:focus {{ border: 2px solid {ACCENT_2}; }}
 """
 
 

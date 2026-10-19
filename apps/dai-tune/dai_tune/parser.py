@@ -77,6 +77,13 @@ LOCK = r"(?:\block\b|\block screen\b|\bscreen ?lock\b|נעל|תנעל|לנעול
 MINUTES = r"(\d{1,3})\s*(?:minutes?|mins?|min|דקות|דקה|ד')"
 NEVER = r"(?:never|off|disable|אף פעם|לעולם לא|בלי נעילה|כבה|תכבה|בטל)"
 
+# The D.Ai theme (docs/V2.md D1b). Not "night light" (that is wlsunset, Super+Alt+N).
+THEMES = [
+    ("contrast", r"(?:\bhigh[ -]contrast\b|ניגודיות גבוהה)"),
+    ("day", r"(?:\b(?:light|day|bright) (?:theme|mode|design)\b|ערכת נושא בהירה|ערכת צבעים בהירה|מצב בהיר|עיצוב בהיר)"),
+    ("night", r"(?:\b(?:dark|night) (?:theme|design)\b|\bdark mode\b|ערכת נושא כהה|ערכת צבעים כהה|מצב כהה|עיצוב כהה)"),
+]
+
 KEYBOARD = r"(?:keyboard|layouts?|מקלדת|שפות מקלדת|שפות הקלדה)"
 LANGUAGES = [
     ("il", r"(?:hebrew|עברית)"), ("us", r"(?:english|אנגלית)"), ("ru", r"(?:russian|רוסית)"),
@@ -231,6 +238,11 @@ def parse_clause(clause: str) -> list[Request]:
             return [Request("session.lock", {"minutes": int(m.group(1))}, clause)]
         if _has(NEVER, c):
             return [Request("session.lock", {"minutes": 0}, clause)]
+
+    # The D.Ai theme.
+    for theme, pattern in THEMES:
+        if re.search(pattern, c, re.IGNORECASE):
+            return [Request("appearance.theme", {"theme": theme}, clause)]
 
     # Keyboard layouts (in the order they were mentioned).
     if _has(KEYBOARD, c):

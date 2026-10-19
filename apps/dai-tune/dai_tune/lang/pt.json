@@ -44,6 +44,11 @@
   "após": "after",
   "depois de": "after",
   "minutos": "minutes",
-  "e": "and"
+  "e": "and",
+  "tema claro": "light theme",
+  "modo claro": "light theme",
+  "tema escuro": "dark theme",
+  "modo escuro": "dark mode",
+  "alto contraste": "high contrast"
  }
 }

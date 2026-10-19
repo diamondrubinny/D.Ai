@@ -15,6 +15,8 @@ import html
 import re
 from html.parser import HTMLParser
 
+from dai_style import color
+
 ALLOWED = {"p", "br", "div", "span", "b", "strong", "i", "em", "u", "s", "a", "ul", "ol", "li", "blockquote", "pre",
            "code", "h1", "h2", "h3", "h4", "h5", "h6", "table", "thead", "tbody", "tr", "td", "th", "hr", "sub", "sup",
            "small", "big", "font", "center"}
@@ -109,7 +111,7 @@ def text_to_html(text: str) -> str:
         escaped = re.sub(r"(https?://[^\s<>\"']+)", lambda m: f'<a href="{m.group(1)}" title="{m.group(1)}">'
                          f"{m.group(1)}</a>", escaped)
         quoted = paragraph.startswith(">")
-        style = ' style="color:#9AA3C7"' if quoted else ""
+        style = f' style="color:{color("muted")}"' if quoted else ""
         out.append(f'<p dir="auto"{style}>{escaped or "&nbsp;"}</p>')
     return "".join(out)
 

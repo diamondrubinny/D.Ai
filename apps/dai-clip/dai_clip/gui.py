@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
 )
 
 from dai_i18n import qt_direction
+from dai_style import color
 
 from . import __author__, __version__
 from .store import History, Item
@@ -29,8 +30,8 @@ META_ROLE = Qt.ItemDataRole.UserRole + 2
 PASTE_DELAY_MS = 180  # let the compositor give focus back to the previous window
 
 # Design tokens (docs/DESIGN.md §2), as in D.Ai Command.
-BG, SURFACE, BORDER, TEXT, MUTED = "#0B1020", "#1C2547", "#2A3563", "#E6E9F5", "#9AA3C7"
-ACCENT, ACCENT_STRONG, ACCENT_2 = "#7C5CFF", "#5B3FD6", "#22D3EE"
+BG, SURFACE, BORDER, TEXT, MUTED = (color(role) for role in ("bg_900", "surface", "border", "text", "muted"))
+ACCENT, ACCENT_STRONG, ACCENT_2 = color("accent"), color("accent_strong"), color("accent_2")
 STYLE = f"""
 #Card {{ background: {BG}; border: 1px solid {BORDER}; border-top: 2px solid {ACCENT}; border-radius: 14px; }}
 #Title {{ color: {TEXT}; font-size: 13pt; font-weight: 700; }}

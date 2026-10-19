@@ -43,6 +43,12 @@
   "webcam": "camera",
   "nach": "after",
   "minuten": "minutes",
-  "und": "and"
+  "und": "and",
+  "helles design": "light theme",
+  "heller modus": "light theme",
+  "dunkles design": "dark theme",
+  "dunkler modus": "dark mode",
+  "hoher kontrast": "high contrast",
+  "hohen kontrast": "high contrast"
  }
 }

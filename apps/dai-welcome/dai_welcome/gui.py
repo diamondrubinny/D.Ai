@@ -22,13 +22,14 @@ from PyQt6.QtWidgets import (
 )
 
 from dai_forge.cli import is_admin
-from dai_forge.gui import ACCENT, ACCENT_2, ACCENT_SOFT, BORDER, DANGER, LOGO, MUTED, OK_GREEN, STYLE as FORGE_STYLE
+from dai_forge.gui import ACCENT, ACCENT_2, ACCENT_SOFT, BG_900, BORDER, DANGER, LOGO, MUTED, OK_GREEN, STYLE as FORGE_STYLE
 from dai_forge.gui import Bridge, Worker
 from dai_tune import posture
 from dai_tune.cli import describe
 from dai_tune.context import Context, detect_lang
 
 from dai_i18n import NATIVE_NAMES, SUPPORTED, is_rtl, pick, qt_direction
+from dai_style import color
 
 from . import __author__, __version__, core
 
@@ -36,15 +37,15 @@ APP_ID = "dai-welcome"
 STEPS = ("welcome", "security", "ai", "privacy", "summary")
 
 STYLE = FORGE_STYLE.replace("QWidget#Forge", "QWidget#Welcome") + f"""
-QLabel#Dot {{ color: #66709A; font-size: 12pt; }}  /* a step still to come: 3.8:1 (WCAG 1.4.11) */
+QLabel#Dot {{ color: {color('dot')}; font-size: 12pt; }}  /* a step still to come: 3.8:1 (WCAG 1.4.11) */
 QLabel#DotOn {{ color: {ACCENT_2}; font-size: 12pt; }}
 QLabel#Hero {{ font-size: 24pt; font-weight: 700; }}
 QRadioButton {{ spacing: 10px; font-weight: 600; }}
-QRadioButton::indicator {{ width: 16px; height: 16px; border-radius: 10px; border: 2px solid {BORDER}; background: #0B1020; }}
+QRadioButton::indicator {{ width: 16px; height: 16px; border-radius: 10px; border: 2px solid {BORDER}; background: {BG_900}; }}
 QRadioButton::indicator:checked {{ border: 2px solid {ACCENT};
-    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 {ACCENT}, stop:0.5 {ACCENT}, stop:0.56 #0B1020); }}
+    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 {ACCENT}, stop:0.5 {ACCENT}, stop:0.56 {BG_900}); }}
 QRadioButton:focus, QCheckBox:focus {{ color: {ACCENT_2}; }}
-QProgressBar {{ background: #0B1020; border: 1px solid {BORDER}; border-radius: 6px; height: 12px; text-align: center; }}
+QProgressBar {{ background: {BG_900}; border: 1px solid {BORDER}; border-radius: 6px; height: 12px; text-align: center; }}
 QProgressBar::chunk {{ border-radius: 5px; background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {ACCENT_2}); }}
 """
 

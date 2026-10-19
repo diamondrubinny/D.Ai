@@ -105,6 +105,7 @@ build_apps() {
 
   # Languages (docs/I18N.md): shared by every app; catalogs for languages other than he/en.
   copy_package "$REPO_ROOT/apps/dai-i18n/dai_i18n" "$root"
+  copy_package "$REPO_ROOT/apps/dai-i18n/dai_style" "$root"
   # The Living Diamond's state file (docs/TASKBAR.md §2.1), written by Heal, Privacy and Evolve.
   copy_package "$REPO_ROOT/apps/dai-status/dai_status" "$root"
   if compgen -G "$REPO_ROOT/i18n/po/*.po" >/dev/null; then

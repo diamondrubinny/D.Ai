@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFormL
                              QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, qt_direction, ui_lang
+from dai_style import themed
 
 from . import __author__, __version__, accounts as acc, compose, discover, engine, localmail, mail, sanitize
 from .text import error, t
@@ -32,7 +33,7 @@ ROLE = Qt.ItemDataRole.UserRole
 LRI, PDI = "\u2066", "\u2069"   # isolates: addresses keep their order inside Hebrew text
 SYNC_EVERY = 3 * 60 * 1000
 
-STYLE = """
+STYLE = themed("""
 QMainWindow, QDialog, QWidget#Page { background: #0B1020; }
 QWidget { color: #E6E9F5; font-size: 10.5pt; }
 QToolBar { background: #0B1020; border: 0; spacing: 6px; padding: 6px; }
@@ -48,14 +49,14 @@ QHeaderView::section { background: #141B33; color: #B8A6FF; border: 0; padding: 
 QPushButton { background: #1C2547; border: 1px solid #2A3563; border-radius: 10px; padding: 6px 16px; }
 QPushButton#Primary { background: #5B3FD6; border: 1px solid #7C5CFF; color: #FFFFFF; font-weight: 600; }
 QPushButton:hover { border: 1px solid #7C5CFF; }
-QLabel#Muted { color: #AEB6D9; }
-QLabel#Notice { color: #FFD580; }
-QLabel#Error { color: #FFB4B4; }
+QLabel#Muted { color: #9AA3C7; }
+QLabel#Notice { color: #FBBF24; }
+QLabel#Error { color: #F87171; }
 QLabel#Big { font-size: 16pt; font-weight: 700; }
 QGroupBox { border: 1px solid #2A3563; border-radius: 10px; margin-top: 14px; padding: 10px; }
 QGroupBox::title { subcontrol-origin: margin; padding: 0 6px; color: #B8A6FF; }
 QSplitter::handle { background: #141B33; }
-"""
+""")
 
 
 # Background work

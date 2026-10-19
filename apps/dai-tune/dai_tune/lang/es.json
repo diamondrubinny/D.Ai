@@ -43,6 +43,11 @@
   "la cámara": "camera",
   "después de": "after",
   "minutos": "minutes",
-  "y": "and"
+  "y": "and",
+  "tema claro": "light theme",
+  "modo claro": "light theme",
+  "tema oscuro": "dark theme",
+  "modo oscuro": "dark mode",
+  "alto contraste": "high contrast"
  }
 }

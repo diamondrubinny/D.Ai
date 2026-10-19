@@ -35,6 +35,7 @@ from dai_tune.context import Context, detect_lang
 from dai_tune.planner import Plan, build_plan
 
 from dai_i18n import pick, qt_direction
+from dai_style import color, rgba
 
 from . import __author__, __version__, apps
 from .ai import author_recipe, generate_app, partial_code
@@ -47,37 +48,40 @@ APP_ID = "dai-forge"
 LOGO = Path(os.environ.get("DAI_BRANDING_DIR", "/usr/share/dai/branding")) / "dai-logo.svg"
 
 # D.Ai Night tokens (docs/DESIGN.md §2).
-BG_900, BG_800, SURFACE, BORDER = "#0B1020", "#141B33", "#1C2547", "#2A3563"
-TEXT, MUTED, ACCENT, ACCENT_STRONG, ACCENT_2, ACCENT_SOFT = "#E6E9F5", "#9AA3C7", "#7C5CFF", "#5B3FD6", "#22D3EE", "#B8A6FF"
-OK_GREEN, WARN_AMBER, DANGER = "#34D399", "#FBBF24", "#F87171"
+# Design tokens in the person's theme (docs/V2.md D1): every color below comes from dai_style.
+BG_900, BG_800, SURFACE, BORDER = color("bg_900"), color("bg_800"), color("surface"), color("border")
+TEXT, MUTED, ACCENT, ACCENT_STRONG = color("text"), color("muted"), color("accent"), color("accent_strong")
+ACCENT_2, ACCENT_SOFT, DEEP, PANEL = color("accent_2"), color("accent_soft"), color("deep"), color("panel")
+OK_GREEN, WARN_AMBER, DANGER, DISABLED = color("ok"), color("warn"), color("danger"), color("disabled")
+CODE_BG, CODE_TEXT = color("code_bg"), color("code_text")
 
 STYLE = f"""
-QWidget#Forge {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 {BG_900}, stop:1 #10173A); }}
+QWidget#Forge {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 {BG_900}, stop:1 {DEEP}); }}
 QWidget {{ color: {TEXT}; font-size: 11pt; }}
 QLabel#Title {{ font-size: 20pt; font-weight: 700; }}
 QLabel#Subtitle, QLabel#Muted {{ color: {MUTED}; }}
 QLabel#Section {{ color: {ACCENT_SOFT}; font-weight: 700; font-size: 10pt; letter-spacing: 1px; }}
-QLabel#Badge {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 9px; padding: 2px 10px; color: {ACCENT_SOFT}; }}
-QLabel#BadgeAI {{ background: rgba(124, 92, 255, 0.25); border: 1px solid {ACCENT}; border-radius: 9px; padding: 2px 10px; color: #FFFFFF; }}
+QLabel#Badge {{ background: {SURFACE}; border-radius: 9px; padding: 3px 11px; color: {ACCENT_SOFT}; }}
+QLabel#BadgeAI {{ background: {rgba('accent', 0.25)}; border: 1px solid {ACCENT}; border-radius: 9px; padding: 2px 10px; color: #FFFFFF; }}
 QFrame#Prompt {{ background: {BG_800}; border: 1px solid {BORDER}; border-radius: 16px; }}
 QFrame#Prompt[focused="true"] {{ border: 2px solid {ACCENT_2}; }}
 QLineEdit#Ask {{ background: transparent; border: none; font-size: 14pt; padding: 10px 6px; selection-background-color: {ACCENT_STRONG}; }}
 QPushButton {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 10px; padding: 8px 16px; }}
-QPushButton:hover {{ border: 1px solid {ACCENT}; background: rgba(124, 92, 255, 0.18); }}
+QPushButton:hover {{ border: 1px solid {ACCENT}; background: {rgba('accent', 0.18)}; }}
 QPushButton:focus {{ border: 2px solid {ACCENT_2}; }}
-QPushButton:disabled {{ color: #5D668C; border: 1px solid {BORDER}; background: {BG_800}; }}
+QPushButton:disabled {{ color: {DISABLED}; border: 1px solid {BORDER}; background: {BG_800}; }}
 QPushButton#Primary {{ color: #FFFFFF; font-weight: 700; border: none;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT_STRONG}, stop:1 #2F6BD0); }}  /* white text: 5:1 at the blue end (AA) */
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT_STRONG}, stop:1 {PANEL}); }}  /* white text: 5:1 at the blue end (AA) */
 QPushButton#Primary:hover {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {ACCENT_2}); }}
-QPushButton#Primary:disabled {{ background: {SURFACE}; color: #5D668C; }}
-QPushButton#Chip {{ border-radius: 15px; padding: 6px 14px; background: rgba(28, 37, 71, 0.85); }}
-QFrame#Card {{ background: rgba(20, 27, 51, 0.92); border: 1px solid {BORDER}; border-radius: 14px; }}
+QPushButton#Primary:disabled {{ background: {SURFACE}; color: {DISABLED}; }}
+QPushButton#Chip {{ border-radius: 15px; padding: 6px 14px; background: {rgba('surface', 0.85)}; }}
+QFrame#Card {{ background: {rgba('bg_800', 0.92)}; border: 1px solid {BORDER}; border-radius: 14px; }}
 QFrame#Step {{ background: {BG_800}; border: 1px solid {BORDER}; border-radius: 12px; }}
-QFrame#Warn {{ background: rgba(251, 191, 36, 0.10); border: 1px solid {WARN_AMBER}; border-radius: 12px; }}
+QFrame#Warn {{ background: {rgba('warn', 0.10)}; border: 1px solid {WARN_AMBER}; border-radius: 12px; }}
 QLineEdit#Confirm {{ background: {BG_900}; border: 1px solid {BORDER}; border-radius: 8px; padding: 6px 10px; }}
 QLineEdit#Confirm:focus {{ border: 2px solid {ACCENT_2}; }}
-QPlainTextEdit#Code {{ background: #070B17; border: 1px solid {BORDER}; border-radius: 12px; padding: 8px;
-    font-family: "Noto Sans Mono", monospace; font-size: 10pt; color: #CFE8FF; }}
+QPlainTextEdit#Code {{ background: {CODE_BG}; border: 1px solid {BORDER}; border-radius: 12px; padding: 8px;
+    font-family: "Noto Sans Mono", monospace; font-size: 10pt; color: {CODE_TEXT}; }}
 QToolButton#Mic {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 10px; padding: 7px; }}
 QToolButton#Mic:hover {{ border: 1px solid {ACCENT}; }}
 QToolButton#Mic:focus {{ border: 2px solid {ACCENT_2}; }}

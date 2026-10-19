@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import (
     QApplication, QCheckBox, QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QStackedWidget, QVBoxLayout, QWidget,
 )
 
-from dai_forge.gui import ACCENT_2, BORDER, DANGER, STYLE as FORGE_STYLE, Bridge, Worker
+from dai_forge.gui import ACCENT_2, BG_900, BORDER, DANGER, STYLE as FORGE_STYLE, Bridge, Worker
 
 from dai_i18n import pick
 
@@ -34,7 +34,7 @@ HELPER = "/usr/lib/dai/dai-oem-helper"
 STYLE = FORGE_STYLE.replace("QWidget#Forge", "QWidget#Oem") + f"""
 QLabel#Hero {{ font-size: 26pt; font-weight: 700; }}
 QLabel#Error {{ color: {DANGER}; }}
-QLineEdit {{ background: #0B1020; border: 1px solid {BORDER}; border-radius: 8px; padding: 8px 10px; font-size: 12pt; }}
+QLineEdit {{ background: {BG_900}; border: 1px solid {BORDER}; border-radius: 8px; padding: 8px 10px; font-size: 12pt; }}
 QLineEdit:focus {{ border: 2px solid {ACCENT_2}; }}
 QLineEdit[invalid="true"] {{ border: 2px solid {DANGER}; }}
 """

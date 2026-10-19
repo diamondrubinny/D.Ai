@@ -56,6 +56,14 @@
   "минут": "minutes",
   "минуты": "minutes",
   "минуту": "minutes",
-  "и": "and"
+  "и": "and",
+  "светлая тема": "light theme",
+  "светлую тему": "light theme",
+  "тёмная тема": "dark theme",
+  "тёмную тему": "dark theme",
+  "темная тема": "dark theme",
+  "темную тему": "dark theme",
+  "высокий контраст": "high contrast",
+  "высокая контрастность": "high contrast"
  }
 }

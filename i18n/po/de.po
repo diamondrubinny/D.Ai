@@ -3731,3 +3731,24 @@ msgstr "{path} ist kein installiertes D.Ai-System."
 #, python-brace-format
 msgid "✓ The system is back to how it was before that update. Restart without the USB. The system as it was is kept on the disk as {kept}."
 msgstr "✓ Das System ist wieder wie vor diesem Update. Ohne USB neu starten. Das System, wie es war, bleibt auf dem Datenträger als {kept}."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "D.Ai theme: {name}"
+msgstr "D.Ai-Design: {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "dark (D.Ai Night)"
+msgstr "dunkel (D.Ai Night)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "light (D.Ai Day)"
+msgstr "hell (D.Ai Day)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "high contrast"
+msgstr "hoher Kontrast"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Each D.Ai window takes it the next time it opens."
+msgstr "Jedes D.Ai-Fenster übernimmt es beim nächsten Öffnen."

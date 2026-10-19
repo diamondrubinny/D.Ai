@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout, QLa
                              QToolButton, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, is_rtl, pick, qt_direction, text, ui_lang
+from dai_style import themed
 
 from . import __author__, __version__
 from .controls import TOGGLES, Controls
@@ -43,15 +44,15 @@ STRINGS = {
                  "ההתראות מוסתרות; הקלטה ותקלות עדיין מוצגות על היהלום."),
 }
 
-STYLE = """
-QWidget#Quick { background: rgba(20, 27, 51, 250); border: 1px solid rgba(124, 92, 255, 115); border-radius: 18px; }
+STYLE = themed("""
+QFrame#Quick { background: rgba(20, 27, 51, 250); border: 1px solid rgba(124, 92, 255, 115); border-radius: 18px; }
 QWidget { color: #E6E9F5; font-size: 10.5pt; }
 QLabel#Title { color: #B8A6FF; font-weight: 700; letter-spacing: 1px; font-size: 10pt; }
 QLabel#Muted { color: #9AA3C7; font-size: 9.5pt; }
 QToolButton#Tile { background: #1C2547; border: 1px solid #2A3563; border-radius: 12px; padding: 8px 6px;
                    min-width: 108px; min-height: 52px; }
 QToolButton#Tile:hover { border: 1px solid #7C5CFF; }
-QToolButton#Tile:checked { background: #5B3FD6; border: 1px solid #7C5CFF; color: #FFFFFF; }
+QToolButton#Tile:checked { background: rgba(91, 63, 214, 90); border: 2px solid #7C5CFF; }  /* the same text colour in every theme */
 QToolButton#Tile:focus, QPushButton:focus, QSlider:focus { border: 2px solid #22D3EE; }
 QFrame#Row { background: rgba(11, 16, 32, 160); border-radius: 10px; }
 QPushButton { background: transparent; border: 1px solid transparent; border-radius: 8px; color: #22D3EE; padding: 3px 8px; }
@@ -59,7 +60,7 @@ QPushButton:hover { border: 1px solid #22D3EE; }
 QSlider::groove:horizontal { height: 6px; border-radius: 3px; background: #2A3563; }
 QSlider::sub-page:horizontal { border-radius: 3px; background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #7C5CFF, stop:1 #22D3EE); }
 QSlider::handle:horizontal { background: #FFFFFF; width: 14px; margin: -5px 0; border-radius: 7px; }
-"""
+""")
 
 
 def _spawn(argv: list[str]) -> None:
@@ -74,7 +75,7 @@ def _terminal(*command: str) -> list[str]:
 class QuickWindow(QWidget):
     def __init__(self, controls: Controls | None = None, lang: str | None = None, spawn=_spawn,
                  close_on_blur: bool = True) -> None:
-        super().__init__(objectName="Quick")
+        super().__init__(objectName="QuickWindow")
         self.controls = controls or Controls()
         self.lang = lang or ui_lang()
         self.spawn = spawn
@@ -83,12 +84,15 @@ class QuickWindow(QWidget):
         self.setWindowTitle("D.Ai Quick")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
         self.setLayoutDirection(qt_direction(self.lang))
         self.setStyleSheet(STYLE)
         self.setFixedWidth(420)
 
-        layout = QVBoxLayout(self)
+        card = QFrame(self, objectName="Quick")  # a child paints its rounded background; a translucent window does not
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.addWidget(card)
+        layout = QVBoxLayout(card)
         layout.setContentsMargins(16, 14, 16, 14)
         layout.setSpacing(10)
         layout.addWidget(QLabel(self.t("title").upper(), objectName="Title"))
