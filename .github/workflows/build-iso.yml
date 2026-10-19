@@ -66,7 +66,9 @@ jobs:
 
       - name: D.Ai Server edition configuration (desktop removed, key-only SSH, default-deny firewall, audit, AIDE)
         run: |
-          sudo apt-get install -y -qq --no-install-recommends nftables >/dev/null
+          sudo apt-get install -y -qq --no-install-recommends nftables openssh-server openssh-client aide >/dev/null
+          sudo mkdir -p /run/sshd
+          aide --config=build/live-build/editions/server/includes.chroot_after_packages/etc/aide/dai-server.conf --config-check
           python3 -m unittest tests/server/test_server_edition.py -v
 
       - name: Copyright notices, license, trademark policy and terms

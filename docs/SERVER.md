@@ -281,8 +281,8 @@ posture score runs, so a person can see the state and the fix.
    build. SSH failures are covered by fail2ban for now.
 4. **The live user `dai` has a known password in the live image.** That is acceptable only for a test image; it
    must be removed before any release.
-5. **The AIDE configuration was written from the documented syntax, not run.** It must be run once on the
-   Debian 13 package before it is trusted.
+5. **The AIDE configuration passes `aide --config-check` (AIDE 0.18.6, checked on 19 October 2026). It has not
+   yet run a baseline and a check on a built system,** which is part of the boot test.
 6. **The time source is not chosen** (chrony has no server line), and the retention period needs legal review.
 
 ## 10. Risks and open decisions

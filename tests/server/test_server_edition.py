@@ -46,6 +46,13 @@ def package_names(path: Path) -> set[str]:
     return names
 
 
+def nft_usable() -> bool:
+    """nft -c needs netlink access to the kernel; a sandboxed runner has none, and says so in its error."""
+    probe = subprocess.run(["nft", "-c", "-f", "-"], input="table inet dai_probe {}\n",
+                           capture_output=True, text=True)
+    return probe.returncode == 0
+
+
 class Pruning(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -146,12 +153,20 @@ class ServerFiles(unittest.TestCase):
         for weak in ("cbc", "sha1", "3des", "arcfour", "-md5"):
             self.assertNotIn(weak, values, weak)  # comments may name them; the settings may not
 
-    @unittest.skipUnless(shutil.which("sshd"), "sshd is not installed here (openssh-server)")
+    @unittest.skipUnless(shutil.which("sshd") and shutil.which("ssh-keygen"),
+                         "sshd or ssh-keygen is not installed here (openssh-server)")
     def test_sshd_accepts_the_configuration(self):
+        if not Path("/run/sshd").is_dir():
+            self.skipTest("/run/sshd is missing: sshd cannot check anything without its privilege-separation "
+                          "directory (created by the package on a real system, and by the CI step)")
         with tempfile.TemporaryDirectory() as tmp:
+            # sshd refuses to check a configuration without a host key, so a throw-away one is made for the test
+            key = Path(tmp) / "hostkey"
+            subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(key)], check=True)
             conf = Path(tmp) / "sshd_config"
-            conf.write_text("Include " + str(INCLUDES / "etc" / "ssh" / "sshd_config.d" / "10-dai-server.conf") + "\n")
-            subprocess.run(["sshd", "-t", "-f", str(conf)], check=True)
+            conf.write_text(f"HostKey {key}\nInclude {INCLUDES / 'etc' / 'ssh' / 'sshd_config.d' / '10-dai-server.conf'}\n")
+            result = subprocess.run(["sshd", "-t", "-f", str(conf)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_the_admin_hosts_file_is_comments_only(self):
         lines = (INCLUDES / "etc" / "dai" / "admin-hosts.nft").read_text(encoding="utf-8").splitlines()
@@ -160,6 +175,9 @@ class ServerFiles(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("nft"), "nft is not installed here")
     def test_the_firewall_parses(self):
+        if not nft_usable():
+            self.skipTest("nft cannot talk to the kernel here (no CAP_NET_ADMIN, as on a CI runner): the syntax "
+                          "is checked where it can run, not passed silently")
         with tempfile.TemporaryDirectory() as tmp:
             etc_dai = Path(tmp) / "dai"
             etc_dai.mkdir()
