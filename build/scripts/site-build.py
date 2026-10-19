@@ -275,6 +275,7 @@ def landing(s: dict, folder: str) -> str:
 
 def legal(s: dict, lang: str, page: str) -> str:
     body = (SRC / "legal" / lang / f"{page}.html").read_text(encoding="utf-8")
+    body = re.sub(r"\A(?:<!-- (?:SPDX-License-Identifier|Copyright).*? -->\n)+", "", body)  # the source's own notice
     match = re.match(r"<!-- title: (.+?) -->\n<!-- description: (.+?) -->\n", body)
     if not match:
         raise SystemExit(f"{lang}/{page}.html: the first two lines must be the title and description comments")
@@ -305,6 +306,8 @@ def outputs() -> dict[Path, str]:
     urls = [f"{DOMAIN}/"] + [f"{DOMAIN}/{folder}/" for _, folder, _ in languages.LANGS if folder]
     urls += [f"{DOMAIN}/{page}.html" for page in LEGAL_PAGES] + [f"{DOMAIN}/en/{page}.html" for page in LEGAL_PAGES]
     pages[SITE / "sitemap.xml"] = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+                                   '<!-- SPDX-License-Identifier: Apache-2.0 -->\n'
+                                   '<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->\n'
                                    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
                                    + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
     return pages
