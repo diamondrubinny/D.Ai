@@ -453,6 +453,9 @@ _STRINGS = {
     "heal_title": ("Help & repair: what is not working?", "עזרה ותיקון: מה לא עובד?"),
     "heal_hint": ("D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter",
                   "D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter"),
+    "ocr_title": ("Copy text from the screen", "העתקת טקסט מהמסך"),
+    "ocr_hint": ("D.Ai OCR · choose an area, its text is copied · read on this computer · Super+Shift+T",
+                 "D.Ai OCR · בוחרים אזור והטקסט שבו מועתק · נקרא על המחשב הזה · Super+Shift+T"),
     "clip_title": ("Clipboard history", "היסטוריית העתקות"),
     "clip_hint": ("D.Ai Clip · Super+V · in memory only, never passwords · Enter",
                   "D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter"),
@@ -486,7 +489,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | heal | evolve
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | ocr | heal | evolve
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -538,6 +541,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("move", tr("move_title"), tr("move_hint"), "document-import", "")]
     if CLIP_WORDS.search(text) and shutil.which("dai-clip"):
         return [Action("clip", tr("clip_title"), tr("clip_hint"), "edit-paste", "")]
+    if OCR_WORDS.search(text) and shutil.which("dai-ocr"):
+        return [Action("ocr", tr("ocr_title"), tr("ocr_hint"), "edit-copy", "")]
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -692,6 +697,9 @@ def _heal_english(text: str) -> str:
 
 CLIP_WORDS = re.compile(r"\bclipboard\b|what (?:did i copy|i copied)|copy history|paste history|"
                         r"(?:היסטוריי?ת|יומן) (?:ה)?(?:העתקות|לוח|הדבקות)|מה העתקתי|לוח (?:ה)?(?:העתקות|גזירים)", re.IGNORECASE)
+# Only about the screen or a picture: "read the text file" stays with D.Ai Find.
+OCR_WORDS = re.compile(r"\bocr\b|\btext (?:from|on|in) (?:the |my |this )?(?:screen|image|picture|photo)\b|"
+                       r"טקסט (?:מ|ב|על )(?:ה)?(?:מסך|תמונה)|זיהוי טקסט", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
 
 

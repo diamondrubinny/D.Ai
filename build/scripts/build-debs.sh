@@ -187,6 +187,12 @@ build_apps() {
   install -d "$root/etc/xdg/autostart"
   install -m 0644 "$clip/data/dai-clip-autostart.desktop" "$root/etc/xdg/autostart/dai-clip.desktop"
 
+  # D.Ai OCR (docs/V2.md F1): copy the text in an area of the screen, Super+Shift+T.
+  local ocr="$REPO_ROOT/apps/dai-ocr"
+  copy_package "$ocr/dai_ocr" "$root"
+  install -m 0755 "$ocr/data/dai-ocr" "$root/usr/bin/dai-ocr"
+  install -m 0644 "$ocr/data/dai-ocr.desktop" "$root/usr/share/applications/"
+
   # D.Ai Heal (docs/EVOLVE.md §4): help & repair chat, crash watcher, metadata-only core dumps.
   local heal="$REPO_ROOT/apps/dai-heal"
   copy_package "$heal/dai_heal" "$root"

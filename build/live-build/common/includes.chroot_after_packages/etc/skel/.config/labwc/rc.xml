@@ -47,6 +47,8 @@
     <!-- Screenshots on Wayland (grim): the whole screen, or Shift+Print for an area (slurp) -->
     <keybind key="Print"><action name="Execute" command="dai-screenshot" /></keybind>
     <keybind key="S-Print"><action name="Execute" command="dai-screenshot --area" /></keybind>
+    <!-- Copy the text in an area of the screen, read on this computer (D.Ai OCR, docs/V2.md F1) -->
+    <keybind key="W-S-t"><action name="Execute" command="dai-ocr" /></keybind>
     <keybind key="XF86PowerOff"><action name="Execute" command="lxqt-leave" /></keybind>
     <!-- Toggle the Orca screen reader -->
     <keybind key="W-A-s"><action name="Execute" command="orca --replace" /></keybind>

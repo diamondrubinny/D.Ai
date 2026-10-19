@@ -429,7 +429,7 @@ msgid "Back"
 msgstr ""
 
 #. he: גיבוי עכשיו
-#: apps/dai-command/dai_command/core.py:461
+#: apps/dai-command/dai_command/core.py:464
 msgid "Back up now"
 msgstr ""
 
@@ -449,7 +449,7 @@ msgid "Background services are on"
 msgstr ""
 
 #. he: דיסק הגיבוי מחובר · Enter
-#: apps/dai-command/dai_command/core.py:462
+#: apps/dai-command/dai_command/core.py:465
 msgid "Backup drive connected · Enter"
 msgstr ""
 
@@ -663,7 +663,7 @@ msgstr ""
 
 #. he: היסטוריית העתקות
 #: apps/dai-clip/dai_clip/text.py:11
-#: apps/dai-command/dai_command/core.py:456
+#: apps/dai-command/dai_command/core.py:459
 msgid "Clipboard history"
 msgstr ""
 
@@ -732,12 +732,12 @@ msgid "Connect an external drive and run: dai-backup setup /media/$USER/<drive>"
 msgstr ""
 
 #. he: חברו דיסק חיצוני · Enter
-#: apps/dai-command/dai_command/core.py:460
+#: apps/dai-command/dai_command/core.py:463
 msgid "Connect an external drive · Enter"
 msgstr ""
 
 #. he: חברו קודם את דיסק הגיבוי
-#: apps/dai-command/dai_command/core.py:463
+#: apps/dai-command/dai_command/core.py:466
 msgid "Connect the backup drive first"
 msgstr ""
 
@@ -772,6 +772,12 @@ msgstr ""
 msgid "Copy now? [y/N] "
 msgstr ""
 
+#. he: העתקת טקסט מהמסך
+#: apps/dai-command/dai_command/core.py:456
+#: apps/dai-ocr/dai_ocr/cli.py:150
+msgid "Copy text from the screen"
+msgstr ""
+
 #. he: מעתיקים {count} תיקיות. הקבצים של התוכנה האחרת רק נקראים…
 #: apps/dai-j/dai_j/text.py:127
 #, python-brace-format
@@ -781,6 +787,12 @@ msgstr ""
 #. he: לא הצלחנו לפענח: המפתח לא במחשב הזה, או שהסיסמה לא הוזנה.
 #: apps/dai-j/dai_j/text.py:143
 msgid "Could not decrypt: the key is not on this computer, or the password was not given."
+msgstr ""
+
+#. he: לא הצלחתי לקרוא את הטקסט: {error}
+#: apps/dai-ocr/dai_ocr/cli.py:147
+#, python-brace-format
+msgid "Could not read the text: {error}"
 msgstr ""
 
 #. he: צור ✦
@@ -804,17 +816,17 @@ msgid "D.Ai Clip needs a Wayland session with wl-clipboard."
 msgstr ""
 
 #. he: D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter
-#: apps/dai-command/dai_command/core.py:457
+#: apps/dai-command/dai_command/core.py:460
 msgid "D.Ai Clip · Super+V · in memory only, never passwords · Enter"
 msgstr ""
 
 #. he: שורת הפקודות של D.Ai
-#: apps/dai-command/dai_command/core.py:467
+#: apps/dai-command/dai_command/core.py:470
 msgid "D.Ai Command input"
 msgstr ""
 
 #. he: D.Ai Doctor · Enter לפרטים ולתיקון
-#: apps/dai-command/dai_command/core.py:466
+#: apps/dai-command/dai_command/core.py:469
 msgid "D.Ai Doctor · Enter for details and fixes"
 msgstr ""
 
@@ -857,6 +869,11 @@ msgstr ""
 #. he: D.Ai Move · מראה קודם מה יועתק · שום דבר לא נדרס · Enter
 #: apps/dai-command/dai_command/core.py:447
 msgid "D.Ai Move · shows what will be copied first · nothing is overwritten · Enter"
+msgstr ""
+
+#. he: D.Ai OCR · בוחרים אזור והטקסט שבו מועתק · נקרא על המחשב הזה · Super+Shift+T
+#: apps/dai-command/dai_command/core.py:457
+msgid "D.Ai OCR · choose an area, its text is copied · read on this computer · Super+Shift+T"
 msgstr ""
 
 #. he: D.Ai פרטיות
@@ -1188,7 +1205,7 @@ msgid "Enough free space on {mount}"
 msgstr ""
 
 #. he: Enter לפרטים
-#: apps/dai-command/dai_command/core.py:465
+#: apps/dai-command/dai_command/core.py:468
 msgid "Enter for details"
 msgstr ""
 
@@ -1659,7 +1676,7 @@ msgid "Language"
 msgstr ""
 
 #. he: גיבוי אחרון:
-#: apps/dai-command/dai_command/core.py:464
+#: apps/dai-command/dai_command/core.py:467
 msgid "Last backup:"
 msgstr ""
 
@@ -1976,6 +1993,12 @@ msgstr ""
 msgid "No speech was recognized"
 msgstr ""
 
+#. he: אין תמונה כזו: {path}
+#: apps/dai-ocr/dai_ocr/cli.py:137
+#, python-brace-format
+msgid "No such picture: {path}"
+msgstr ""
+
 #. he: אין הצעה כזו (הריצו: dai-evolve suggest).
 #: apps/dai-evolve/dai_evolve/cli.py:38
 msgid "No such suggestion (run: dai-evolve suggest)."
@@ -1984,6 +2007,11 @@ msgstr ""
 #. he: אין טלמטריה, אין פרסומות ואין חשבון. D.Ai OS לא מדווח עליכם כלום.
 #: apps/dai-welcome/dai_welcome/gui.py:99
 msgid "No telemetry, no ads, no account. D.Ai OS does not report anything about you."
+msgstr ""
+
+#. he: לא נמצא טקסט
+#: apps/dai-ocr/dai_ocr/cli.py:156
+msgid "No text found"
 msgstr ""
 
 #. he: אין שינויים שלא נשמרו לסקירה.
@@ -2574,7 +2602,7 @@ msgid "Restart when convenient"
 msgstr ""
 
 #. he: תוצאות
-#: apps/dai-command/dai_command/core.py:468
+#: apps/dai-command/dai_command/core.py:471
 msgid "Results"
 msgstr ""
 
@@ -2818,7 +2846,7 @@ msgid "Set up"
 msgstr ""
 
 #. he: הגדרת גיבוי מוצפן אוטומטי
-#: apps/dai-command/dai_command/core.py:459
+#: apps/dai-command/dai_command/core.py:462
 msgid "Set up automatic encrypted backup"
 msgstr ""
 
@@ -2922,7 +2950,7 @@ msgstr ""
 
 #. he: משהו השתבש
 #: apps/dai-forge/dai_forge/gui.py:151
-#: apps/dai-welcome/dai_welcome/gui.py:136
+#: apps/dai-welcome/dai_welcome/gui.py:137
 msgid "Something went wrong"
 msgstr ""
 
@@ -2976,7 +3004,7 @@ msgid "Start it again"
 msgstr ""
 
 #. he: מתחילים להשתמש
-#: apps/dai-welcome/dai_welcome/gui.py:134
+#: apps/dai-welcome/dai_welcome/gui.py:135
 msgid "Start using D.Ai"
 msgstr ""
 
@@ -3105,6 +3133,12 @@ msgstr ""
 #. he: בודק אותה בארגז החול…
 #: apps/dai-forge/dai_forge/gui.py:113
 msgid "Testing it in the sandbox…"
+msgstr ""
+
+#. he: הטקסט הועתק ({count} תווים)
+#: apps/dai-ocr/dai_ocr/cli.py:162
+#, python-brace-format
+msgid "Text copied ({count} characters)"
 msgstr ""
 
 #. he: זה לא נראה כמו כתובת מייל.
@@ -3355,9 +3389,14 @@ msgstr ""
 msgid "Trash {trash}, previews {previews}."
 msgstr ""
 
+#. he: נסו אזור גדול יותר, או טקסט ברור יותר.
+#: apps/dai-ocr/dai_ocr/cli.py:157
+msgid "Try a larger area, or one with clearer text."
+msgstr ""
+
 #. he: לנסות שוב
 #: apps/dai-forge/dai_forge/gui.py:152
-#: apps/dai-welcome/dai_welcome/gui.py:135
+#: apps/dai-welcome/dai_welcome/gui.py:136
 msgid "Try again"
 msgstr ""
 
@@ -3805,7 +3844,7 @@ msgid "friday|fri\\b"
 msgstr ""
 
 #. he: מחזק אבטחה
-#: apps/dai-command/dai_command/core.py:733
+#: apps/dai-command/dai_command/core.py:741
 #: apps/dai-forge/dai_forge/gui.py:183
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "hardens security"
@@ -3891,7 +3930,7 @@ msgid "monday|mon\\b"
 msgstr ""
 
 #. he: ניטרלי
-#: apps/dai-command/dai_command/core.py:735
+#: apps/dai-command/dai_command/core.py:743
 #: apps/dai-forge/dai_forge/gui.py:184
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "neutral"
@@ -4075,7 +4114,7 @@ msgid "uses the network"
 msgstr ""
 
 #. he: מחליש אבטחה
-#: apps/dai-command/dai_command/core.py:734
+#: apps/dai-command/dai_command/core.py:742
 #: apps/dai-forge/dai_forge/gui.py:183
 msgid "weakens security"
 msgstr ""

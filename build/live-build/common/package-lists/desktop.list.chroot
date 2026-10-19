@@ -44,6 +44,16 @@ gvfs
 gvfs-backends
 grim
 slurp
+# D.Ai OCR (docs/V2.md F1): text from the screen, read locally, in D.Ai's eight languages
+tesseract-ocr
+tesseract-ocr-eng
+tesseract-ocr-heb
+tesseract-ocr-ara
+tesseract-ocr-rus
+tesseract-ocr-spa
+tesseract-ocr-fra
+tesseract-ocr-deu
+tesseract-ocr-por
 wlr-randr
 pavucontrol-qt
 nm-tray

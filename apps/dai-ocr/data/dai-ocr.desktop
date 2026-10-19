@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Copy text from the screen
+Name[he]=העתקת טקסט מהמסך
+GenericName=D.Ai OCR
+Comment=Choose an area; its text goes to the clipboard, read on this computer · Super+Shift+T
+Comment[he]=בוחרים אזור, והטקסט שבו מועתק, נקרא על המחשב הזה · Super+Shift+T
+Exec=dai-ocr
+TryExec=dai-ocr
+Icon=edit-copy
+Terminal=false
+Categories=Utility;
+Keywords=ocr;text;screen;copy;scan;טקסט;מסך;העתקה;סריקה;

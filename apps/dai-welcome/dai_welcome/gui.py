@@ -128,6 +128,7 @@ STRINGS = {
         ("Super+B", "D.Ai Forge: “install antivirus”, “build an app for…”",
          "„תתקין אנטי וירוס”, „תבנה אפליקציה ל…” ‏(D.Ai Forge)"),
         ("Super+H", "Voice typing into any app", "הקלדה קולית לכל אפליקציה"),
+        ("Super+Shift+T", "Copy the text in any part of the screen", "העתקת הטקסט מכל חלק במסך"),
         ("Super+L", "Lock the screen", "נעילת מסך"),
         ("Alt+Shift", "Switch Hebrew / English", "מעבר עברית / אנגלית"),
     ],

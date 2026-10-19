@@ -3752,3 +3752,34 @@ msgstr "hoher Kontrast"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Each D.Ai window takes it the next time it opens."
 msgstr "Jedes D.Ai-Fenster übernimmt es beim nächsten Öffnen."
+
+#: apps/dai-ocr/dai_ocr/cli.py
+msgid "Copy text from the screen"
+msgstr "Text vom Bildschirm kopieren"
+
+#: apps/dai-ocr/dai_ocr/cli.py
+#, python-brace-format
+msgid "Could not read the text: {error}"
+msgstr "Der Text konnte nicht gelesen werden: {error}"
+
+#: apps/dai-ocr/dai_ocr/cli.py
+msgid "D.Ai OCR · choose an area, its text is copied · read on this computer · Super+Shift+T"
+msgstr "D.Ai OCR · Bereich wählen, sein Text wird kopiert · auf diesem Computer gelesen · Super+Shift+T"
+
+#: apps/dai-ocr/dai_ocr/cli.py
+#, python-brace-format
+msgid "No such picture: {path}"
+msgstr "Kein solches Bild: {path}"
+
+#: apps/dai-ocr/dai_ocr/cli.py
+msgid "No text found"
+msgstr "Kein Text gefunden"
+
+#: apps/dai-ocr/dai_ocr/cli.py
+#, python-brace-format
+msgid "Text copied ({count} characters)"
+msgstr "Text kopiert ({count} Zeichen)"
+
+#: apps/dai-ocr/dai_ocr/cli.py
+msgid "Try a larger area, or one with clearer text."
+msgstr "Versuchen Sie einen größeren Bereich oder einen mit deutlicherem Text."

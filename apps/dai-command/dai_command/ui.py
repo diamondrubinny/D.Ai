@@ -360,6 +360,10 @@ class CommandWindow(QWidget):
         elif action.kind == "clip":
             self._spawn(["dai-clip"])
             remembered = self.query.text().strip()
+        elif action.kind == "ocr":
+            # A moment for this window to close, so the area chooser covers the screen and not us.
+            self._spawn(["sh", "-c", "sleep 0.4; exec dai-ocr"])
+            remembered = self.query.text().strip()
         elif action.kind == "privacy":
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-privacy log; echo; read -r -p "Enter ↵" _'])
             remembered = self.query.text().strip()

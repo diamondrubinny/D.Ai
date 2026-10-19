@@ -129,6 +129,30 @@ HEAL_UNIT = (
 )
 HEAL_UNIT_B64 = base64.b64encode(HEAL_UNIT.encode()).decode()
 
+# D.Ai OCR (docs/V2.md F1): a picture with English and Hebrew text, drawn by Qt on the VM itself.
+OCR_PICTURE = (
+    "import sys\n"
+    "from PyQt6.QtCore import Qt\n"
+    "from PyQt6.QtGui import QColor, QFont, QGuiApplication, QImage, QPainter\n"
+    "app = QGuiApplication(sys.argv)\n"
+    "image = QImage(1000, 280, QImage.Format.Format_RGB32)\n"
+    "image.fill(QColor('white'))\n"
+    "painter = QPainter(image)\n"
+    "painter.setPen(QColor('black'))\n"
+    "font = QFont('Noto Sans')\n"
+    "font.setPixelSize(60)\n"
+    "painter.setFont(font)\n"
+    "painter.drawText(40, 100, 'Hello from 2026')\n"
+    "font = QFont('Noto Sans Hebrew')\n"
+    "font.setPixelSize(60)\n"
+    "painter.setFont(font)\n"
+    "painter.drawText(image.rect().adjusted(0, 150, -40, 0), Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop, "
+    "'\u05e9\u05dc\u05d5\u05dd \u05e2\u05d5\u05dc\u05dd')\n"
+    "painter.end()\n"
+    "image.save(sys.argv[1])\n"
+)
+OCR_PICTURE_B64 = base64.b64encode(OCR_PICTURE.encode()).decode()
+
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
 
@@ -636,6 +660,13 @@ def main() -> int:
          "grep -E 'themes/dai/.*(Error|error|TypeError|ReferenceError|not installed|is not a type)' /tmp/greeter.log "
          "| head -n 5 | sed 's/^/QML_''ERROR: /'; grep 'themes/dai/' /tmp/greeter.log | head -n 3", True,
          lambda o: "GREETER_RC=124" in o and "QML_ERROR:" not in o, 40),
+        # D.Ai OCR (docs/V2.md F1): the text of a picture, read on the VM in English and Hebrew (the Hebrew word is
+        # checked as \xNN so only ASCII crosses the serial line).
+        ("ocr: text from a picture (English and Hebrew)", f"echo {OCR_PICTURE_B64} | base64 -d > /tmp/ocr-picture.py && "
+         "QT_QPA_PLATFORM=offscreen python3 /tmp/ocr-picture.py /tmp/ocr.png && "
+         "dai-ocr --file /tmp/ocr.png --print --lang he,en > /tmp/ocr.txt; echo OCR_RC=$?; cat /tmp/ocr.txt | head -n 4; "
+         f"grep -c \"$(printf '{_hex('שלום')}')\" /tmp/ocr.txt; tesseract --list-langs 2>/dev/null | tr '\\n' ' '",
+         True, lambda o: "OCR_RC=0" in o and "Hello" in o and "2026" in o, 90),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

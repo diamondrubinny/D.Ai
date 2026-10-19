@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai OCR: copy the text in an area of the screen (Super+Shift+T). Installed as /usr/bin/dai-ocr.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_ocr.cli import main; sys.exit(main(["dai-ocr", *sys.argv[1:]]))' "$@"
