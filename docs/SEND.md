@@ -79,7 +79,7 @@
 - **Next:**
   - a test between two VMs: pairing and a message over the local network, then over Tor;
   - "seen" receipts when the window shows a message, and a notification that opens the conversation;
-  - Diamond Chat in the privacy policy (nothing passes through us; Tor; what stays on the computer), as a draft for legal review;
+  - the privacy policy (1.1) describes Diamond Chat; like the rest of it, it needs a legal review;
   - **before release:** an external security review of the protocol and of the picture sandbox, and a trademark check of the name "Diamond Chat".
 
 ## 1. What I understood
