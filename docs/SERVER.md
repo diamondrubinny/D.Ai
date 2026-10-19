@@ -71,36 +71,66 @@ organisation's own information security policy are not summarised here. They mus
 official text (for banks: the Bank of Israel's directives on information security) before this edition is
 sold or installed for any bank.
 
-## 1c. Decisions for the air-gapped variant (made on 19 October 2026 at the owner's request; changeable)
+## 1c. Decisions for the air-gapped variant (decided on 19 October 2026 at the owner's request, on the research below; changeable)
 
-The owner asked the assistant to decide the two open questions. These are the decisions, with the reason for
-each. Any of them can be changed, and each change is recorded here with its date.
+**Basis, from the research (19 October 2026):**
+- **Signing keys (TUF specification):** root keys must be kept very secure and offline; trust is threshold-based,
+  and keys are revoked if fewer than the threshold are compromised.
+  ([TUF spec](https://github.com/theupdateframework/specification/blob/master/tuf-spec.md))
+- **Practice:** 3 to 5 offline keys with a threshold of 2, a yearly rotation, and different people and machines for
+  different keys (Foundries.io; a few years old, so its timing advice is dated).
+  ([offline keys](http://docs.foundries.io/97/reference-manual/security/offline-keys.html),
+  [key rotation](https://www.foundries.io/insights/blog/key-rotation/)). Sigstore uses five keyholders and a separate
+  conductor for its root ceremony ([root-signing-practice](https://github.com/sigstore/root-signing-practice)).
+  The threshold is fixed at the ceremony ([RSTUF](https://repository-service-tuf.readthedocs.io/en/latest/guide/general/keys.html)).
+- **Split knowledge (NIST SP 800-57 Part 1 Rev. 5):** a key may be split into n shares, and any k of them rebuild it.
+  That text does not cover threshold signatures, so this plan uses separate keys with a threshold, never a key that
+  is rebuilt in one place ([NIST](https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-57pt1r5.pdf)).
+- **Dual control (NIST SP 800-53, AC-5 and AC-3(2)):** separation of duties, and two authorised people for an
+  action, rotated to limit collusion ([AC-5](https://csf.tools/reference/nist-sp-800-53/r4/ac/ac-5/)).
+- **Crossing the air gap (vendor guides, not an authority):** scan media on a separate machine, use dedicated
+  write-once media with a chain-of-custody record, verify signatures, test an update on a separate system first, and
+  use one-way diodes where possible ([SentinelOne](https://www.sentinelone.com/cybersecurity-101/cybersecurity/what-is-an-air-gap/),
+  [Eirenicon](https://eirenicon.org/air-gapping-a-comprehensive-guide/),
+  [Imperva](https://www.imperva.com/learn/data-security/air-gapping/)).
+
+**Limits of this research:** the sources are the TUF and NIST texts and vendor guides. No official key-ceremony
+checklist was found, and the operating rules of SP 800-57 on dual control were not retrieved (the full PDF must be
+read). The banking supervisor's rules were not researched at all (see §7).
 
 **Decision 1: media may cross the air gap, but only through a controlled media station, never directly.**
 - No USB storage device is ever connected to the air-gapped computer. Its USB ports accept only the approved
   keyboard and mouse (§1b, rule 2).
-- Every file (an update bundle, or a file needed for work) arrives on **single-use, write-once media** from the
-  media station, which is a separate computer with no connection to the air-gapped one.
-- At the media station the file is scanned with ClamAV, its signature is checked, and its hash is written on
-  paper and in the station's log. The station is run by a person who is not the one who approves the update.
+- Every file (an update bundle, or a file needed for work) arrives on **single-use, write-once media**, prepared
+  on the media station: a separate computer with no connection to the air-gapped one.
+- At the media station the media is scanned with ClamAV, the bundle's signature and hashes are checked, and the
+  hashes are written on paper and in the station's log. Chain of custody is recorded for each medium.
+- **The update is first installed on a separate test computer** (same image, no production data), and only then
+  taken to the air-gapped computer (vendor guidance above).
 - On the air-gapped computer the bundle is checked again (signature and hashes) before anything is applied.
-- Every crossing is recorded in a log kept on the air-gapped computer and printed. Nothing leaves that way.
-- **Why not a one-way data diode now:** it is the strongest option, but it is expensive, needs specialist
-  hardware and a separate security review, and a badly built one is itself a new risk. It is a candidate for
-  a later stage, after the owner sees the cost.
+- Every crossing is logged on the air-gapped computer and printed. Nothing leaves that way.
+- **One-way data diode:** the strongest option, and the research supports it, but it is expensive and needs its own
+  security review. It is a candidate for a later stage.
 
-**Decision 2: two people for signing and two people for applying.**
-- **Signing:** the update-signing key is held by **three holders, and any two of them are needed to sign** (2 of 3).
-  The key is never on the air-gapped computer, and never on a computer that is connected to a network.
-  It is kept on an offline device (an offline computer or a hardware token, to be chosen).
-- **Applying:** an update is applied on the air-gapped computer by one administrator, and it is **confirmed by a
-  second person** in the log (four eyes). The software refuses a bundle that lacks the second confirmation.
-- **Verification:** the air-gapped computer holds only the **public** key. A lost or leaked key is handled by a
-  written procedure: revoke the key, build and sign a new one, and deliver the new public key by the same media
-  procedure.
-- **Why 2 of 3:** one person cannot sign alone, and losing one holder does not lock the organisation out.
-- **Requires legal review and the organisation's own procedure:** who the three holders are, how they are
-  chosen and replaced, and the written key-ceremony steps. The plan defines the rule; a person must own it.
+**Decision 2: a 2-of-3 threshold for signing; a second person confirms every application.**
+- **Signing:** three holders, each with **a separate key**; any **two** signatures make a bundle valid. No key is ever
+  rebuilt from parts, so no single place holds the whole key. This is the threshold-signature model of TUF, not a
+  secret split. The threshold is the lowest in common practice; a fourth or fifth holder adds tolerance for a loss,
+  and the owner can choose that.
+- **No person holds two keys.** The three holders are different people, named by the organisation.
+- **Where signing happens:** a dedicated offline signing machine, used only during a signing ceremony, and never the
+  air-gapped computer nor any computer connected to a network.
+- **Ceremony:** each holder checks the bundle's hash aloud or on paper before signing. The steps are written down,
+  and the record is kept.
+- **Verification on the air-gapped computer:** only the **public** keys are there.
+- **Applying:** one administrator applies the update, and a second person confirms it in the log (four eyes). The
+  software refuses a bundle without that confirmation.
+- **Rotation:** once a year, and after any suspected loss. A new key is endorsed by a threshold of the current holders
+  and delivered by the media procedure above.
+- **Drill:** the procedure is rehearsed at least once a year, so the people who need it still know it.
+
+**What the research does not decide:** the identity of the holders, how they are chosen and replaced, the written
+ceremony itself, and the banking rules. These need an owner and a legal check (§7 and §10).
 
 ## 2. Editions
 
