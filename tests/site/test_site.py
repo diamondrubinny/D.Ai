@@ -9,10 +9,11 @@ from pathlib import Path
 
 SITE = Path(__file__).resolve().parents[2] / "site"
 LANGS = ("en", "ar", "ru", "es", "fr", "de", "pt")
-PAGES = sorted([*SITE.glob("*.html"), *(SITE / lang / "index.html" for lang in LANGS)])
+LEGAL = ("privacy.html", "terms.html", "accessibility.html")
+PAGES = sorted([*SITE.glob("*.html"), *(SITE / lang / "index.html" for lang in LANGS), *(SITE / "en" / p for p in LEGAL)])
 RTL = {"he", "ar"}
-SECTION_IDS = {"main", "hero-title", "why", "why-title", "see-title", "windows", "windows-title", "honest",
-               "honest-title", "download", "download-title", "faq-title"}
+SECTION_IDS = {"main", "hero-title", "tour", "tour-title", "inside", "inside-title", "compare", "compare-title",
+               "windows", "windows-title", "honest", "honest-title", "download", "download-title", "faq", "faq-title"}
 
 
 class Page(HTMLParser):
@@ -52,6 +53,10 @@ class SiteTests(unittest.TestCase):
                                                                 "terms.html"})
         for lang in LANGS:
             self.assertTrue((SITE / lang / "index.html").is_file(), lang)
+        self.assertEqual({p.name for p in (SITE / "en").glob("*.html")}, {"index.html", *LEGAL})
+        for extra in ("CNAME", "robots.txt", "sitemap.xml", "img/og.jpg"):
+            self.assertTrue((SITE / extra).is_file(), extra)
+        self.assertEqual((SITE / "CNAME").read_text().strip(), "rubinny.com")
 
     def test_every_language_has_the_same_page(self):
         for lang in LANGS:
@@ -59,7 +64,31 @@ class SiteTests(unittest.TestCase):
                 page = parse(SITE / lang / "index.html")
                 ids = {a.get("id") for _, a in page.tags if a.get("id")}
                 self.assertTrue(SECTION_IDS <= ids, SECTION_IDS - ids)
-                self.assertIn("draft", (SITE / lang / "index.html").read_text(encoding="utf-8"))  # until reviewed
+                links = {a.get("href") for t, a in page.tags if t == "a"}
+                for legal in LEGAL:  # every language reaches the privacy policy, terms and accessibility statement
+                    self.assertTrue(legal in links or f"../en/{legal}" in links, legal)
+
+    def test_the_pages_are_built_from_the_source(self):
+        import subprocess
+        import sys
+        script = SITE.parent / "build/scripts/site-build.py"
+        result = subprocess.run([sys.executable, str(script), "--check"], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_the_legal_pages_are_complete(self):
+        for path in [SITE / p for p in LEGAL] + [SITE / "en" / p for p in LEGAL]:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(page=str(path.relative_to(SITE))):
+                self.assertNotRegex(text, r"(?i)\bdraft\b|טיוטה|_{4,}|TODO|CHANGE_ME")
+                self.assertRegex(text, r"mailto:(privacy|accessibility)@rubinny\.com")
+                self.assertRegex(text, r"2026")  # the date it takes effect
+
+    def test_statuses_are_not_colour_alone(self):
+        for path in [SITE / "index.html", *(SITE / lang / "index.html" for lang in LANGS)]:
+            text = path.read_text(encoding="utf-8")
+            marks = re.findall(r'<span class="st (ok|part|no)"><span aria-hidden="true">(.)</span> \S', text)
+            self.assertGreaterEqual(len(marks), 50, path)
+            self.assertTrue(all({"ok": "✓", "part": "≈", "no": "✗"}[kind] == mark for kind, mark in marks))
 
     def test_the_switcher_is_generated(self):
         import subprocess

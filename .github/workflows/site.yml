@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+#
+# Publishes site/ to GitHub Pages at rubinny.com (docs/SITE.md) when it changes on main.
+# Needs, once, by the repository owner: Settings → Pages → Source: "GitHub Actions", and the domain's DNS.
+name: Website
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", "build/scripts/site-*.py", ".github/workflows/site.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: The pages match their source, and pass the site checks
+        run: |
+          python3 build/scripts/site-build.py --check
+          python3 -m unittest tests/site/test_site.py
+      - name: Only what visitors need (not the sources)
+        run: |
+          mkdir -p "$RUNNER_TEMP/public"
+          rsync -a --exclude src/ --exclude README.md --exclude _headers site/ "$RUNNER_TEMP/public/"
+          touch "$RUNNER_TEMP/public/.nojekyll"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
