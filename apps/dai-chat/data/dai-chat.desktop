@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Diamond Chat
+GenericName=Encrypted messages
+GenericName[he]=הודעות מוצפנות
+Comment=Encrypted messages and pictures between D.Ai computers, with no server and no account
+Comment[he]=הודעות ותמונות מוצפנות בין מחשבי D.Ai, בלי שרת ובלי חשבון
+Exec=dai-chat window
+TryExec=dai-chat
+Icon=internet-chat
+Terminal=false
+Categories=Network;InstantMessaging;
+Keywords=chat;message;encrypted;tor;picture;צ'אט;הודעה;מוצפן;תמונה;

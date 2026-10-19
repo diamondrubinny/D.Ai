@@ -3908,3 +3908,123 @@ msgstr "في قائمة الانتظار، بلا الموقع وتفاصيل ا
 #: apps/dai-chat/dai_chat/cli.py
 msgid "That file is not a PNG, JPEG or WebP picture up to 25 MB."
 msgstr "هذا الملف ليس صورة PNG أو JPEG أو WebP بحجم حتى 25 ميغابايت."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Add"
+msgstr "إضافة"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Add a contact"
+msgstr "إضافة جهة اتصال"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Call {name} or meet. You should both see these six, in this order:"
+msgstr "اتصل بـ{name} أو التقيا. يجب أن تريا هذه الستة، بهذا الترتيب:"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Chat is off. Messages you write wait on this computer."
+msgstr "Chat متوقف. الرسائل التي تكتبها تنتظر على هذا الحاسوب."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Choose a contact, or add one."
+msgstr "اختر جهة اتصال، أو أضف واحدة."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Compare symbols"
+msgstr "مقارنة الرموز"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Compare the symbols with {name} first: pictures are only accepted from verified contacts."
+msgstr "قارن الرموز مع {name} أولاً: لا تُقبل الصور إلا من جهات اتصال موثّقة."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Compare with {name}"
+msgstr "المقارنة مع {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Contacts"
+msgstr "جهات الاتصال"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Conversation"
+msgstr "المحادثة"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Copy my code"
+msgstr "نسخ رمزي"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Give them your code too:"
+msgstr "أعطه رمزك أيضاً:"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "If they are different, someone may be in the middle: do not verify."
+msgstr "إذا كانت مختلفة، فقد يكون هناك من في المنتصف: لا توثّق."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Me"
+msgstr "أنا"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "On: messages go out as soon as your contacts are online."
+msgstr "يعمل: تُرسل الرسائل فور اتصال جهات اتصالك."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Picture…"
+msgstr "صورة…"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Send a picture"
+msgstr "إرسال صورة"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "That code has a typo. Check it with them and try again."
+msgstr "في هذا الرمز خطأ في الكتابة. تحقّق منه معه وحاول مجدداً."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "The code they gave you"
+msgstr "الرمز الذي أعطاك إياه"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Their name"
+msgstr "اسمه"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "They are different"
+msgstr "إنها مختلفة"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "They match"
+msgstr "إنها متطابقة"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Turn Chat on"
+msgstr "تشغيل Chat"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Write a message…"
+msgstr "اكتب رسالة…"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Write their name."
+msgstr "اكتب اسمه."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Your code"
+msgstr "رمزك"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "refused"
+msgstr "مرفوضة"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "⌛  {name} (waiting for them)"
+msgstr "⌛  {name} (بانتظاره)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "＋ Add a contact"
+msgstr "＋ إضافة جهة اتصال"

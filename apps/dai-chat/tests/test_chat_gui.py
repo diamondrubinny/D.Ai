@@ -1,0 +1,185 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""The Diamond Chat window (dai_chat/gui.py): writing and sending, a message that arrives while it is open,
+adding someone by their code, comparing symbols, pictures only to verified contacts, a blocked contact, the
+off state, and Raz's accessibility audit in Hebrew and English in all three themes."""
+import importlib
+import importlib.util
+import os
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+if importlib.util.find_spec("nacl") is None or importlib.util.find_spec("PyQt6") is None:
+    raise unittest.SkipTest("PyNaCl or PyQt6 is missing")
+
+os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
+from PyQt6.QtWidgets import QApplication, QDialog, QLabel, QPushButton  # noqa: E402
+
+from dai_chat import invite, keys, message, store  # noqa: E402
+
+RAZ = Path(__file__).resolve().parents[2] / "dai-raz"
+if str(RAZ) not in sys.path:
+    sys.path.insert(0, str(RAZ))
+
+
+def load_gui(theme: str = "night"):
+    os.environ["DAI_THEME"] = theme
+    from dai_chat import gui
+    return importlib.reload(gui)  # the colors are read when the module loads, as in the other windows
+
+
+class WindowTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.store = store.Store(Path(self.tmp.name) / "chat")
+        self.addCleanup(self.store.close)
+        self.me = keys.Identity.generate()
+        self.dana = keys.Identity.generate().public
+        self.store.add_contact(store.Contact(self.dana, "Dana"))
+        self.pokes = []
+        self.code = invite.make(keys.Identity.generate().public, self.me.public)
+
+    def window(self, lang="en", running=True, clean=None):
+        gui = load_gui()
+        win = gui.ChatWindow(self.store, self.me.public, self.code, poke=lambda: self.pokes.append(1),
+                             running=lambda: running, lang=lang,
+                             clean=clean or (lambda data: (b"\x89PNG\r\n\x1a\nCLEAN", "image/png")))
+        self.addCleanup(win.close)
+        win.show()
+        self.app.processEvents()
+        return win
+
+    def choose(self, win, name="Dana"):
+        for row in range(win.contacts.count()):
+            if win.contacts.item(row).text().endswith(name):
+                win.contacts.setCurrentRow(row)
+        self.app.processEvents()
+
+    def texts(self, win):
+        return " ".join(w.text() for w in win.findChildren(QLabel) if w.isVisible())
+
+    def test_write_and_send(self):
+        empty = store.Store(Path(self.tmp.name) / "empty")
+        self.addCleanup(empty.close)
+        nobody = load_gui().ChatWindow(empty, self.me.public, self.code, lang="en")
+        self.addCleanup(nobody.close)
+        self.assertFalse(nobody.field.isEnabled())  # no contact yet: nothing to write to
+        self.assertIn("Choose a contact", nobody.who.text())
+        win = self.window()
+        self.choose(win)
+        self.assertTrue(win.field.isEnabled())
+        win.field.setText("  see you at six  ")
+        win.field.returnPressed.emit()
+        self.assertEqual(self.store.conversation(self.dana)[0]["text"], "see you at six")
+        self.assertEqual(self.store.queued(self.dana), [self.store.conversation(self.dana)[0]["id"]])
+        self.assertEqual((win.field.text(), len(self.pokes)), ("", 1))
+        self.assertIn("see you at six", win.messages.item(0).text())
+        self.assertIn("⌛", win.messages.item(0).text())  # queued
+
+    def test_a_message_that_arrives_while_open(self):
+        win = self.window()
+        self.choose(win)
+        self.store.add_message(self.dana, message.Message.text("שלום!"), outgoing=False, state="delivered")
+        win.refresh()
+        self.assertIn("שלום!", win.messages.item(0).text())
+        self.assertTrue(win.messages.item(0).text().startswith("Dana"))
+
+    def test_add_someone_by_their_code(self):
+        win = self.window()
+        noa = keys.Identity.generate()
+        code = invite.make(keys.Identity.generate().public, noa.public)
+        dialog = load_gui().AddDialog(win, "en", self.code)
+        dialog.name.setText("Noa")
+        dialog.code.setText(code[:-1] + ("a" if code[-1] != "a" else "b"))
+        dialog.check()
+        self.assertIn("typo", dialog.error.text())
+        dialog.code.setText(self.code)
+        dialog.check()
+        self.assertIn("your own code", dialog.error.text())
+        dialog.code.setText(code)
+        dialog.check()
+        self.assertEqual(dialog.result(), QDialog.DialogCode.Accepted)
+        self.assertTrue(dialog.parsed.matches(noa.public))
+
+    def test_compare_symbols_then_pictures(self):
+        win = self.window()
+        self.choose(win)
+        self.assertTrue(win.compare.isVisible())
+        self.assertIn("not verified", self.texts(win))
+        picture = Path(self.tmp.name) / "photo.png"
+        picture.write_bytes(b"\x89PNG\r\n\x1a\n" + bytes(64))
+        win.send_picture(str(picture))
+        self.assertEqual(self.store.queued(self.dana), [])  # not before the symbols were compared
+        self.assertIn("Compare the symbols", win.status.text())
+        dialog = load_gui().SymbolsDialog(win, "he", "Dana", [0, 1, 2, 3, 4, 5])
+        self.assertIn("יהלום", " ".join(w.text() for w in dialog.findChildren(QLabel)))
+        self.store.set_verified(self.dana)
+        win.refresh()
+        self.assertFalse(win.compare.isVisible())
+        win.send_picture(str(picture))
+        self.assertEqual(len(self.store.queued(self.dana)), 1)
+        self.assertIn("without its location", win.status.text())
+
+    def test_a_picture_the_sandbox_refuses(self):
+        from dai_chat import pictures
+
+        def refuse(data):
+            raise pictures.PictureError("no")
+
+        self.store.set_verified(self.dana)
+        win = self.window(clean=refuse)
+        self.choose(win)
+        picture = Path(self.tmp.name) / "fake.png"
+        picture.write_bytes(b"<svg/>")
+        win.send_picture(str(picture))
+        self.assertEqual(self.store.queued(self.dana), [])
+        self.assertIn("not a PNG", win.status.text())
+
+    def test_blocked_and_off(self):
+        self.store.set_blocked(self.dana)
+        win = self.window(running=False)
+        self.choose(win)
+        self.assertFalse(win.field.isEnabled())
+        self.assertTrue(win.on_button.isVisible())
+        self.assertIn("Chat is off", win.status.text())
+
+    def test_each_message_in_its_own_direction(self):
+        gui = load_gui()
+        self.assertEqual(gui.in_its_direction("שלום!"), "\u202bשלום!\u202c")
+        self.assertEqual(gui.in_its_direction("123 hello"), "\u202a123 hello\u202c")  # digits are not letters
+        self.assertEqual(gui.in_its_direction("مرحبا"), "\u202bمرحبا\u202c")
+        self.assertEqual(gui.in_its_direction("😊 !"), "😊 !")
+
+    def test_hebrew_is_right_to_left(self):
+        from PyQt6.QtCore import Qt
+        win = self.window(lang="he")
+        self.assertEqual(win.layoutDirection(), Qt.LayoutDirection.RightToLeft)
+        self.assertIn("אנשי קשר", win.contacts.accessibleName())
+        for button in win.findChildren(QPushButton):
+            if button.isVisible():
+                self.assertTrue(button.accessibleName())
+
+    def test_accessible_in_every_theme(self):
+        from dai_raz.a11y import assert_accessible  # checks Night, then Day and Contrast itself
+        for lang in ("he", "en"):
+            win = self.window(lang=lang)
+            self.choose(win)
+            assert_accessible(self, win)
+            gui = load_gui()
+            for dialog in (gui.SymbolsDialog(win, lang, "Dana", [0, 1, 2, 3, 4, 5]), gui.AddDialog(win, lang, self.code)):
+                dialog.show()
+                self.app.processEvents()
+                assert_accessible(self, dialog)
+                dialog.close()
+
+
+if __name__ == "__main__":
+    unittest.main()

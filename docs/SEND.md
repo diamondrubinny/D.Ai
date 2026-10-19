@@ -61,13 +61,20 @@
   - Location, camera, date and thumbnail are removed. Anything hidden after the picture is dropped.
   - Long side at most 4096 pixels. A decompression bomb is refused.
   - When the ClamAV daemon is installed, it scans first. `dai-chat send-picture NAME FILE` only to verified contacts.
+- **The window (`gui`, `dai-chat window`, "Diamond Chat" in the menu):** built.
+  - Contacts and codes still waiting on one side, the conversation on the other, the message field at the bottom.
+  - Each message is laid out in its own direction: Hebrew right to left even in an English window, and the reverse.
+  - Theirs at the start of the line, mine at the end, with ⌛ / ✓ / ✓✓.
+  - Adding a contact shows your code too. The symbols are shown large, with "They match" / "They are different".
+  - Pictures only to verified contacts, re-drawn before they are queued.
+  - Passes Raz's accessibility audit in Hebrew and English, in all three themes.
 - **Found and fixed on the way:**
   - updating a contact deleted their history (INSERT OR REPLACE with a cascade);
   - two big pictures crossing could block both sides;
   - a locked keyring could crash Chat instead of falling back to the file.
 - **The tests (65):** 25 core tests, plus transport, pairing, pictures in the real sandbox, Tor, mDNS, the service and the command line, over real sockets. In the VM: a code, a valid user unit, Tor running as the person and gone when Chat stops, and a picture re-drawn in the sandbox without its hidden location.
 - **Next:**
-  - the window (RTL, accessible, three themes), and "send Dana: …" in the command field;
+  - "send Dana: …" in the command field, and showing pictures in the window;
   - opening the local-network port through D.Ai Tune, with undo.
 
 ## 1. What I understood

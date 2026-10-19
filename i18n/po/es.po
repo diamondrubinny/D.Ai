@@ -3908,3 +3908,123 @@ msgstr "En cola, sin su ubicación ni los datos de la cámara."
 #: apps/dai-chat/dai_chat/cli.py
 msgid "That file is not a PNG, JPEG or WebP picture up to 25 MB."
 msgstr "Ese archivo no es una imagen PNG, JPEG o WebP de hasta 25 MB."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Add"
+msgstr "Añadir"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Add a contact"
+msgstr "Añadir un contacto"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Call {name} or meet. You should both see these six, in this order:"
+msgstr "Llama a {name} o quedad. Los dos deberíais ver estos seis, en este orden:"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Chat is off. Messages you write wait on this computer."
+msgstr "Chat está desactivado. Los mensajes que escribas esperan en este ordenador."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Choose a contact, or add one."
+msgstr "Elige un contacto o añade uno."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Compare symbols"
+msgstr "Comparar símbolos"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Compare the symbols with {name} first: pictures are only accepted from verified contacts."
+msgstr "Primero compara los símbolos con {name}: las imágenes solo se aceptan de contactos verificados."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Compare with {name}"
+msgstr "Comparar con {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Contacts"
+msgstr "Contactos"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Conversation"
+msgstr "Conversación"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Copy my code"
+msgstr "Copiar mi código"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Give them your code too:"
+msgstr "Dale también tu código:"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "If they are different, someone may be in the middle: do not verify."
+msgstr "Si son distintos, puede haber alguien en medio: no verifiques."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Me"
+msgstr "Yo"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "On: messages go out as soon as your contacts are online."
+msgstr "Activado: los mensajes salen en cuanto tus contactos están conectados."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Picture…"
+msgstr "Imagen…"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Send a picture"
+msgstr "Enviar una imagen"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "That code has a typo. Check it with them and try again."
+msgstr "Ese código tiene una errata. Compruébalo con esa persona y vuelve a intentarlo."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "The code they gave you"
+msgstr "El código que te dio"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Their name"
+msgstr "Su nombre"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "They are different"
+msgstr "Son distintos"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "They match"
+msgstr "Coinciden"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Turn Chat on"
+msgstr "Activar Chat"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Write a message…"
+msgstr "Escribe un mensaje…"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Write their name."
+msgstr "Escribe su nombre."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Your code"
+msgstr "Tu código"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "refused"
+msgstr "rechazado"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "⌛  {name} (waiting for them)"
+msgstr "⌛  {name} (esperando)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "＋ Add a contact"
+msgstr "＋ Añadir un contacto"

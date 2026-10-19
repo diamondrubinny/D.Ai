@@ -188,9 +188,10 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-clip/tests -t apps/dai-clip -v
 
-      - name: Unit tests (Diamond Chat - core, transport, pairing, a real Tor and real mDNS)
+      - name: Unit tests (Diamond Chat - core, transport, pairing, pictures, window, a real Tor and real mDNS)
         env:
-          PYTHONPATH: apps/dai-chat:apps/dai-i18n
+          PYTHONPATH: apps/dai-chat:apps/dai-i18n:apps/dai-raz
+          QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq --no-install-recommends python3-nacl python3-zeroconf tor >/dev/null
           sudo systemctl stop tor.service tor@default.service 2>/dev/null || true  # the tests start their own Tor

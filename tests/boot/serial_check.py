@@ -687,10 +687,12 @@ def main() -> int:
          f"grep -c \"$(printf '{_hex('שלום')}')\" /tmp/ocr.txt; tesseract --list-langs 2>/dev/null | tr '\\n' ' '",
          True, lambda o: "OCR_RC=0" in o and "Hello" in o and "2026" in o, 90),
         # D.Ai sounds (docs/SOUNDS.md): the theme is installed, one sound really plays through PipeWire, quiet and off
-        # are respected, and the USB/charger watcher started with the session.
+        # are respected, and the USB/charger watcher started with the session (its command line is the launcher's
+        # "python3 -I -c '<code>' watch", so it is found by "dai_sound ... watch", not by "dai-sound watch").
         ("sound: the diamond family plays", WAYLAND_ENV + "ls /usr/share/sounds/dai/stereo/ | grep -c '\\.oga$'; "
          "dai-sound complete; echo PLAY_RC=$?; sleep 1; dai-sound off; dai-sound complete; echo OFF_RC=$?; "
-         "dai-sound on; sleep 1; pgrep -u $(id -u) -f 'dai-sound watch' >/dev/null && echo WATCHING; "
+         "dai-sound on; sleep 1; pgrep -u $(id -u) -f 'dai_sound.* watch$' >/dev/null && echo WATCH''ING; "
+         "pgrep -u $(id -u) -af dai_''sound | cut -c1-60; "
          "timeout 5 pw-play --volume 0.1 /usr/share/sounds/dai/stereo/bell.oga; echo PW_RC=$?",
          True, lambda o: re.search(r"^1[5-9]$", o, re.M) is not None and "PLAY_RC=0" in o and "OFF_RC=1" in o
          and "WATCHING" in o, 40),  # PW_RC is information: a VM may have no sound card

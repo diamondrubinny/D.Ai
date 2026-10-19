@@ -197,6 +197,7 @@ build_apps() {
   copy_package "$chat/dai_chat" "$root"
   install -m 0755 "$chat/data/dai-chat" "$root/usr/bin/dai-chat"
   install -m 0644 "$chat/data/dai-chat.service" "$root/usr/lib/systemd/user/"
+  install -m 0644 "$chat/data/dai-chat.desktop" "$root/usr/share/applications/"
 
   # D.Ai OCR (docs/V2.md F1): copy the text in an area of the screen, Super+Shift+T.
   local ocr="$REPO_ROOT/apps/dai-ocr"

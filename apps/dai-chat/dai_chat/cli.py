@@ -2,6 +2,7 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """dai-chat: Diamond Chat from the command line (the window comes next; docs/SEND.md).
 
+  dai-chat window               the Diamond Chat window
   dai-chat code                 your invitation code, to give someone by phone or in person
   dai-chat add NAME CODE        the code someone gave you (they add yours too)
   dai-chat contacts             your contacts, and the codes still waiting
@@ -77,6 +78,10 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
         show(__doc__.strip())
         return 0
     command, rest = argv[0], argv[1:]
+    if command == "window":
+        from .gui import main as window
+
+        return window(["dai-chat"])
     store = Store(folder)
     try:
         identity_stores, onion_stores = stores(folder)
