@@ -24,12 +24,53 @@
 
 ## 1. Questions (answer them, or I take the stated default)
 
-1. **Standalone:** does "standalone" mean (a) offline, updated by USB bundle (**default**), or (b) a single
-   server that is not part of a group of servers?
+1. ~~**Standalone:**~~ **Answered:** air-gapped, with no network hardware at all (§1b). Still open for this
+   variant: (a) may a USB drive be used to bring updates in through a controlled media station (§1b, rule 4),
+   or must every transfer happen another way (for example, a printed hash check and a one-way transfer
+   device)? (b) who holds the signing key?
 2. **Which role first:** a general server (**default**: SSH, a firewall, backups, logs), file storage, or an
    internal web application?
 3. **Administration:** only from a fixed list of computers on the internal network (**default**), or from
    anywhere through a VPN (requires a separate design)?
+
+## 1b. Air-gapped variant for banks and highly sensitive data (decision, 19 October 2026)
+
+The standalone edition is for computers with **no network connection at all**: no network cable, no wireless
+devices, no phones, and no internet, ever. The rules below apply on top of §4, and they are stricter than the
+defaults above:
+
+1. **No network hardware in use.** The image has no driver or firmware for any network interface, Wi-Fi or
+   Bluetooth. The kernel loads none of them (blacklisted, and the modules are removed from the image).
+   Wi-Fi and Bluetooth are switched off in the firmware (BIOS/UEFI) and, where the hardware allows, disabled
+   in hardware. The boot checks confirm that no network interface exists.
+2. **No ports that can carry data out, by default.** USB ports are blocked for all devices, including
+   keyboards and mice, except devices approved by serial number (USBGuard, **requires a check** on the
+   hardware, since a keyboard that is blocked locks the person out). Thunderbolt, PCIe slots and similar
+   ports are disabled in firmware when the hardware allows it.
+3. **No phones, no external wireless devices:** the rules are part of the procedure for the room as well
+   (a physical rule, not a software control; the software only detects and logs what it sees).
+4. **Crossing the air gap is a procedure, not a convenience.** An update or a file comes in through one
+   controlled media station, outside the air-gapped computer: the media is scanned, the signature and the
+   hashes of the bundle are checked there, and only then is it moved in, on media approved for this purpose.
+   The air-gapped computer checks the bundle again before it applies anything (§6 of this plan).
+5. **Nothing leaves by design.** Logs and audit records stay on the computer. Exporting them is the same
+   procedure as importing, in the other direction, with the same checks and a written record.
+6. **Local console only:** no SSH, no remote administration. Administration happens at the machine, by two
+   people where the policy requires it (**requires a decision**: the number of people and the roles).
+7. **Physical and boot protection:** full-disk encryption with a passphrase only (no automatic unlock by a
+   chip in the machine, so theft of the disk alone is not enough); a boot password; Secure Boot where
+   possible; measured boot (TPM) for detecting changes, if the organisation wants it (**requires a check**).
+8. **Keys are kept outside the computer.** The signing key of the update bundles is never on the computer
+   that receives them. Who holds it, how it is rotated, and what happens if it is lost is a decision the
+   organisation must make before stage 4 (§10).
+
+**What this means for the design:** the update path in §6 is the most sensitive part. It is a transfer with
+a human procedure, not an automatic one, and it has to be tested on paper and on the machine.
+
+**Requires legal review and verification:** the requirements of the banking supervisor and of the
+organisation's own information security policy are not summarised here. They must be checked against the
+official text (for banks: the Bank of Israel's directives on information security) before this edition is
+sold or installed for any bank.
 
 ## 2. Editions
 
