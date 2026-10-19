@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server (docs/SERVER.md §2, §4): no desktop, no graphical apps, no local AI, no voice, no browser.
+# Administration is over SSH with keys only; everything else is a service the organisation adds on purpose.
+
+# Remote administration, key-only (openssh-server; the hardened settings are in includes.chroot_after_packages)
+openssh-server
+# Repeated failed SSH logins are banned for a time
+fail2ban
+# Audit trail of logins, privilege use and changes to configuration (rules in includes.chroot_after_packages)
+auditd
+# File-integrity baseline, checked daily (rules in includes.chroot_after_packages)
+aide
+# Time, from the organisation's own source (none is chosen by the image)
+chrony
+# Password quality rules
+libpam-pwquality
+# Encrypted backups (the D.Ai Backup tooling comes in a later stage)
+restic

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server (docs/SERVER.md §4, rule 3): every use of sudo is written to its own log.
+Defaults logfile="/var/log/sudo.log"
+Defaults use_pty
+Defaults passwd_tries=3
+Defaults timestamp_timeout=5

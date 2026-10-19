@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server: compare the files with the baseline; differences are in the journal (docs/SERVER.md §4, rule 8).
+[Unit]
+Description=Check files against the integrity baseline
+ConditionPathExists=/var/lib/aide/aide.db
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/aide --config=/etc/aide/dai-server.conf --check
+Nice=10
+IOSchedulingClass=idle

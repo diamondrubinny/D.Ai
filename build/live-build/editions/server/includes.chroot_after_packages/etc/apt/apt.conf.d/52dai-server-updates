@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 Diamond Rubinny (d.Ai)
+// D.Ai Server (docs/SERVER.md §4, rule 2): security updates install by themselves; a reboot is never automatic.
+Unattended-Upgrade::Origins-Pattern {
+	"origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+};
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";

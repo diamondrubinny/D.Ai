@@ -254,6 +254,37 @@ posture score runs, so a person can see the state and the fix.
 6. **External review** of the configuration, and the documentation for administrators (the security guide
    and the recovery steps).
 
+## 9b. Status of stage 2 (the server edition, 19 October 2026)
+
+**Built (configuration, checked without an image):**
+- `build/live-build/editions/server/`: the package list (no desktop, no radios, no pkexec), the server's first-boot
+  hook, the hardened SSH configuration (`10-dai-server.conf`), the default-deny firewall with SSH only from
+  `/etc/dai/admin-hosts.nft` (empty, so closed until the install fills it), audit rules (`-e 1`, enabled and not
+  locked), AIDE rules and its first-boot baseline with a daily check, fail2ban for SSH, journal retention
+  (90 days, a placeholder), security-only updates that never reboot, sudo logging, and host keys made on each
+  server's first boot instead of shipped in the image.
+- `build/scripts/server-prune.py`: removes the desktop from the shared layer when `build-iso.sh server` runs, with a
+  test that the removal is complete and that running it twice changes nothing.
+- `tests/server/test_server_edition.py` (23 tests, in the lint job): the pruning, the package lists, the hook, the
+  units and their sections, the SSH settings (and `sshd -t` where OpenSSH is installed), the firewall (`nft -c`),
+  the audit rules, the AIDE paths, fail2ban, retention, updates and sudo.
+
+**Not yet done, and why each one matters:**
+1. **No image has been built.** The build takes an hour on CI, and the boot test for the server (no desktop, the
+   checks over the serial console, a password login refused, the firewall closed, auditd running) is not written
+   yet. This is the next step, and it is what makes stage 2 complete.
+2. **The install path for a headless server is missing.** The installer of the other editions is a graphical
+   Calamares. The server needs a text installer or a scripted one, and the admin group and the admin hosts are set
+   there. Until then the image is a test image.
+3. **Account lockout after failed console logins (PAM `pam_faillock`) is not wired.** Inserting its lines into
+   `common-auth` changes the `success=` counts of the existing lines, and that cannot be checked without a
+   build. SSH failures are covered by fail2ban for now.
+4. **The live user `dai` has a known password in the live image.** That is acceptable only for a test image; it
+   must be removed before any release.
+5. **The AIDE configuration was written from the documented syntax, not run.** It must be run once on the
+   Debian 13 package before it is trusted.
+6. **The time source is not chosen** (chrony has no server line), and the retention period needs legal review.
+
 ## 10. Risks and open decisions
 
 - **Key management** for signed bundles and for Secure Boot: a decision with real consequences if a key is lost

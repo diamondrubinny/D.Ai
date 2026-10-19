@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server audit rules (docs/SERVER.md §4, rule 7): what an incident review needs.
+-D
+-b 8192
+-f 1
+
+# Accounts, access and the SSH and sudo settings
+-w /etc/passwd -p wa -k identity
+-w /etc/group -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+-w /etc/sudoers -p wa -k sudo
+-w /etc/sudoers.d/ -p wa -k sudo
+-w /etc/ssh/sshd_config -p wa -k sshd
+-w /etc/ssh/sshd_config.d/ -p wa -k sshd
+-w /var/log/faillog -p wa -k logins
+-w /var/log/lastlog -p wa -k logins
+
+# Firewall, D.Ai configuration and boot
+-w /etc/nftables.conf -p wa -k firewall
+-w /etc/dai/ -p wa -k firewall
+-w /etc/default/grub -p wa -k boot
+-w /boot/ -p wa -k boot
+
+# Kernel modules, clock changes, and commands run as root by ordinary users
+-a always,exit -F arch=b64 -S init_module -S finit_module -S delete_module -k modules
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -S clock_settime -k time
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -k rootexec
+
+# Enabled. Locking the rules until the next reboot (-e 2) is a decision for the organisation, not a default.
+-e 1

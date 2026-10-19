@@ -64,6 +64,11 @@ jobs:
       - name: Language packs exist in Debian 13 (every package and locale the language recipes use)
         run: docker run --rm -v "$PWD:/src:ro" -w /src debian:trixie bash tests/apt/language-packages.sh
 
+      - name: D.Ai Server edition configuration (desktop removed, key-only SSH, default-deny firewall, audit, AIDE)
+        run: |
+          sudo apt-get install -y -qq --no-install-recommends nftables >/dev/null
+          python3 -m unittest tests/server/test_server_edition.py -v
+
       - name: Copyright notices, license, trademark policy and terms
         run: python3 -m unittest tests/legal/test_legal.py -v
 

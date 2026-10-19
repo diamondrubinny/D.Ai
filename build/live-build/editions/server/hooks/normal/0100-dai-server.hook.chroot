@@ -1,0 +1,19 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server (docs/SERVER.md §2, §4): the security services on, the console at boot, an administrators' group,
+# and no SSH host keys shipped in the image. Replaces the shared 0100 hook, which boots the desktop.
+set -eu
+
+systemctl enable nftables.service apparmor.service auditd.service fail2ban.service chrony.service
+systemctl enable dai-ssh-hostkeys.service dai-aide-init.service dai-aide-check.timer
+systemctl set-default multi-user.target
+
+# Administrators sign in with their keys and become root through sudo, never by logging in as root.
+getent group dai-admin >/dev/null || groupadd --system dai-admin
+passwd -l root
+chmod 0440 /etc/sudoers.d/10-dai-server
+
+# Host keys are made on the first boot of each installed server (dai-ssh-hostkeys), never shipped in the image:
+# a shared host key would let anyone who has the image impersonate every server built from it.
+rm -f /etc/ssh/ssh_host_*

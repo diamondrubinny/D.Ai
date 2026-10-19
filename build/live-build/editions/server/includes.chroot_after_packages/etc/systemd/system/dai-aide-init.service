@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server: the file-integrity baseline, made once on the first boot of this server (docs/SERVER.md §4, rule 8).
+[Unit]
+Description=Record the file-integrity baseline (once)
+After=local-fs.target
+ConditionPathExists=!/var/lib/aide/aide.db
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/aide --config=/etc/aide/dai-server.conf --init
+ExecStartPost=/bin/mv -f /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+RemainAfterExit=yes
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

@@ -31,8 +31,8 @@ log() { printf '[build-iso] %s\n' "$*" >&2; }
 die() { log "error: $*"; exit 1; }
 
 case "$EDITION" in
-  user | dev | edu) ;;
-  *) die "usage: $(basename "$0") <user|dev|edu> [output-dir]" ;;
+  user | dev | edu | server) ;;
+  *) die "usage: $(basename "$0") <user|dev|edu|server> [output-dir]" ;;
 esac
 
 [[ $EUID -eq 0 ]] || die "must run as root inside a disposable container or VM"
@@ -97,6 +97,10 @@ configure() {
 
   # Layer the shared config first, then the edition-specific overrides.
   cp -a "$LB_SRC/common/." config/
+  # The server edition has no desktop: remove what the shared layer adds for it (docs/SERVER.md §2).
+  if [[ "$EDITION" == server ]]; then
+    python3 -I "$REPO_ROOT/build/scripts/server-prune.py" config
+  fi
   cp -a "$LB_SRC/editions/$EDITION/." config/
   chmod 0755 config/hooks/normal/*.hook.chroot config/hooks/normal/*.hook.binary
   # Qt draws SVG files (the D.Ai diamond on Start, in D.Ai Command and Forge)

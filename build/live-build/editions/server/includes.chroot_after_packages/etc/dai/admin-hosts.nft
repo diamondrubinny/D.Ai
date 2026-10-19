@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Server: the computers allowed to reach SSH (docs/SERVER.md §3). The install writes this file.
+# Until it lists someone, SSH is unreachable on purpose: nobody gets in by default.
+# One line per computer or network, for example:
+#   add element inet dai_filter admin_ssh { 192.168.10.5, 192.168.20.0/24 }
