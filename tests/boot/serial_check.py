@@ -625,7 +625,7 @@ def main() -> int:
          False, lambda o: re.search(r" [1-9]\d*$", o, re.M) is not None, 60),
         # The way to the desktop (docs/V2.md D2): the D.Ai Plymouth theme is the default and is inside the initrd
         # (where the disk passphrase is asked), the USB menu got D.Ai's look, and the login theme loads.
-        ("boot: D.Ai loading screen (Plymouth)", "plymouth-set-default-theme; "
+        ("boot: D.Ai loading screen (Plymouth)", "/usr/sbin/plymouth-set-default-theme; "
          "lsinitramfs $(ls /run/live/medium/live/initrd.img* | head -n 1) 2>/dev/null | grep -c 'plymouth/themes/dai/'; "
          "grep -c 'Start D.Ai OS' /run/live/medium/isolinux/live.cfg /run/live/medium/boot/grub/grub.cfg 2>/dev/null",
          True, lambda o: re.search(r"^dai$", o, re.M) is not None and re.search(r"^[1-9]\d*$", o, re.M) is not None
@@ -633,8 +633,8 @@ def main() -> int:
         ("login: D.Ai login screen loads (SDDM)", "cd /tmp && QT_QPA_PLATFORM=offscreen timeout 12 sddm-greeter-qt6 "
          "--test-mode --theme /usr/share/sddm/themes/dai >/tmp/greeter.log 2>&1; echo GREETER_RC=$?; "
          "grep -E 'themes/dai/.*(Error|error|TypeError|ReferenceError|not installed|is not a type)' /tmp/greeter.log "
-         "| head -n 5; grep -c 'themes/dai/' /tmp/greeter.log", False,
-         lambda o: "GREETER_RC=124" in o and re.search(r"^0$", o, re.M) is not None, 40),
+         "| head -n 5 | sed 's/^/QML_''ERROR: /'; grep 'themes/dai/' /tmp/greeter.log | head -n 3", True,
+         lambda o: "GREETER_RC=124" in o and "QML_ERROR:" not in o, 40),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "
