@@ -456,6 +456,9 @@ _STRINGS = {
     "ocr_title": ("Copy text from the screen", "העתקת טקסט מהמסך"),
     "ocr_hint": ("D.Ai OCR · choose an area, its text is copied · read on this computer · Super+Shift+T",
                  "D.Ai OCR · בוחרים אזור והטקסט שבו מועתק · נקרא על המחשב הזה · Super+Shift+T"),
+    "chat_title": ("Send to {name}: {text}", "שליחה אל {name}: {text}"),
+    "chat_hint": ("Diamond Chat · encrypted end to end · waits on this computer until {name} is online · Enter",
+                  "Diamond Chat · מוצפן מקצה לקצה · ממתין במחשב הזה עד שהמחשב של {name} יתחבר · Enter"),
     "clip_title": ("Clipboard history", "היסטוריית העתקות"),
     "clip_hint": ("D.Ai Clip · Super+V · in memory only, never passwords · Enter",
                   "D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter"),
@@ -489,7 +492,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | ocr | heal | evolve
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | ocr | chat | heal | evolve
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -529,6 +532,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
 
     if (HEAL_WORDS.search(text) or HEAL_WORDS.search(_heal_english(text))) and shutil.which("dai-heal"):
         return [Action("heal", tr("heal_title"), tr("heal_hint"), "help-browser", "")]
+    if (chat := chat_actions(text)) is not None:
+        return chat
     if (found := find_actions(text)) is not None:
         return found
     if (answers := doctor_actions(text)) is not None:
@@ -587,6 +592,28 @@ FILE_ICONS = {
     "spreadsheet": "x-office-spreadsheet", "presentation": "x-office-presentation", "archive": "package-x-generic",
     "document": "x-office-document", "file": "text-x-generic",
 }
+
+
+def chat_actions(text: str, folder: Path | None = None) -> list[Action] | None:
+    """Diamond Chat: "send Dana: see you at six", "שלח לדנה: מגיעה בשש" (only to someone already a contact)."""
+    try:  # installed next to dai_command in /usr/lib/dai
+        from dai_chat.quick import find_contact, parse
+    except ImportError:
+        return None
+    asked = parse(text)
+    if asked is None:
+        return None
+    names, words = asked
+    try:
+        contact = find_contact(names, folder)
+    except Exception:  # noqa: BLE001 - a broken chat store must not break the command bar
+        return None
+    if contact is None:
+        return None
+    lang = ui_language()
+    short = words if len(words) <= 60 else words[:59] + "…"
+    return [Action("chat", tr("chat_title", lang).format(name=contact.name, text=short),
+                   tr("chat_hint", lang).format(name=contact.name), "internet-chat", (contact.public, words))]
 
 
 def find_actions(text: str, home: Path | None = None) -> list[Action] | None:

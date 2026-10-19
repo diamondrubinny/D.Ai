@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Callable
 
 from PyQt6.QtCore import QSize, Qt, QTimer
-from PyQt6.QtGui import QGuiApplication, QKeySequence, QShortcut
+from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QPixmap, QShortcut
 from PyQt6.QtWidgets import (QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
                              QLineEdit, QListWidget, QListWidgetItem, QPushButton, QSplitter, QVBoxLayout, QWidget)
 
@@ -30,6 +30,8 @@ from .store import Contact, Store
 
 APP_ID = "dai-chat"
 PUBLIC_ROLE = Qt.ItemDataRole.UserRole + 1
+PICTURE_ROLE = Qt.ItemDataRole.UserRole + 2
+THUMBNAIL = 180
 REFRESH_MS = 2000
 
 BG, BG2, SURFACE, BORDER, TEXT, MUTED = (color(r) for r in ("bg_900", "bg_800", "surface", "border", "text", "muted"))
@@ -194,9 +196,12 @@ class SymbolsDialog(QDialog):
 class ChatWindow(QWidget):
     def __init__(self, store: Store, me: bytes, my_code: str, poke: Callable[[], object] = lambda: None,
                  running: Callable[[], bool] = lambda: True, clean: Callable = pictures.clean,
-                 lang: str | None = None, clock: Callable[[], float] = time.time) -> None:
+                 lang: str | None = None, clock: Callable[[], float] = time.time,
+                 viewer: Callable[[Path], None] | None = None) -> None:
         super().__init__()
         self.store, self.me, self.my_code = store, me, my_code
+        self.viewer = viewer or (lambda path: subprocess.Popen(["xdg-open", str(path)], stdout=subprocess.DEVNULL,
+                                                                stderr=subprocess.DEVNULL))
         self.poke, self.running, self.clean, self.clock = poke, running, clean, clock
         self.lang = lang or ui_lang()
         self.current: bytes | None = None
@@ -243,6 +248,8 @@ class ChatWindow(QWidget):
         self.messages.setAccessibleName(say(self.lang, "Conversation", "שיחה"))
         self.messages.setWordWrap(True)
         self.messages.setSpacing(2)
+        self.messages.setIconSize(QSize(THUMBNAIL, THUMBNAIL))
+        self.messages.itemActivated.connect(self.open_picture)  # Enter or a double click on a picture
         talk_layout.addWidget(self.messages, 1)
         bottom = QHBoxLayout()
         self.field = QLineEdit()
@@ -355,11 +362,25 @@ class ChatWindow(QWidget):
             # theirs at the start of the line, mine at the end (the right and the left in Hebrew, as in other apps)
             side = Qt.AlignmentFlag.AlignTrailing if row["outgoing"] else Qt.AlignmentFlag.AlignLeading
             item.setTextAlignment(int(side | Qt.AlignmentFlag.AlignVCenter))
+            if row["picture"]:
+                # Already re-drawn in the sandbox when it arrived (or before it was sent): only fresh pixels here.
+                path = self.store.pictures / row["picture"]
+                thumbnail = QPixmap(str(path))
+                if not thumbnail.isNull():
+                    item.setIcon(QIcon(thumbnail.scaled(THUMBNAIL, THUMBNAIL, Qt.AspectRatioMode.KeepAspectRatio,
+                                                        Qt.TransformationMode.SmoothTransformation)))
+                    item.setData(PICTURE_ROLE, str(path))
+                    item.setToolTip(say(self.lang, "Enter or double-click to open", "Enter או לחיצה כפולה לפתיחה"))
 
             self.messages.addItem(item)
         self.messages.scrollToBottom()
 
     # actions
+    def open_picture(self, item: QListWidgetItem) -> None:
+        path = item.data(PICTURE_ROLE)
+        if path:
+            self.viewer(Path(path))
+
     def send(self) -> None:
         words = self.field.text().strip()
         if not words or self.current is None:

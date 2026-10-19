@@ -234,13 +234,13 @@ msgid "Active: {when}"
 msgstr ""
 
 #. he: הוספה
-#: apps/dai-chat/dai_chat/gui.py:124
+#: apps/dai-chat/dai_chat/gui.py:126
 msgid "Add"
 msgstr ""
 
 #. he: הוספת איש קשר
-#: apps/dai-chat/dai_chat/gui.py:92
-#: apps/dai-chat/dai_chat/gui.py:222
+#: apps/dai-chat/dai_chat/gui.py:94
+#: apps/dai-chat/dai_chat/gui.py:227
 msgid "Add a contact"
 msgstr ""
 
@@ -446,7 +446,7 @@ msgid "Back"
 msgstr ""
 
 #. he: גיבוי עכשיו
-#: apps/dai-command/dai_command/core.py:464
+#: apps/dai-command/dai_command/core.py:467
 msgid "Back up now"
 msgstr ""
 
@@ -466,7 +466,7 @@ msgid "Background services are on"
 msgstr ""
 
 #. he: דיסק הגיבוי מחובר · Enter
-#: apps/dai-command/dai_command/core.py:465
+#: apps/dai-command/dai_command/core.py:468
 msgid "Backup drive connected · Enter"
 msgstr ""
 
@@ -581,7 +581,7 @@ msgid "CPU"
 msgstr ""
 
 #. he: התקשרו ל־{name} או היפגשו. שניכם אמורים לראות את ששת אלה, בסדר הזה:
-#: apps/dai-chat/dai_chat/gui.py:166
+#: apps/dai-chat/dai_chat/gui.py:168
 #, python-brace-format
 msgid "Call {name} or meet. You should both see these six, in this order:"
 msgstr ""
@@ -592,7 +592,7 @@ msgid "Camera"
 msgstr ""
 
 #. he: ביטול
-#: apps/dai-chat/dai_chat/gui.py:129
+#: apps/dai-chat/dai_chat/gui.py:131
 #: apps/dai-j/dai_j/text.py:80
 #: apps/dai-mom/dai_mom/text.py:86
 msgid "Cancel"
@@ -640,7 +640,7 @@ msgid "Change it…"
 msgstr ""
 
 #. he: Chat כבוי. הודעות שתכתבו ימתינו במחשב הזה.
-#: apps/dai-chat/dai_chat/gui.py:312
+#: apps/dai-chat/dai_chat/gui.py:319
 msgid "Chat is off. Messages you write wait on this computer."
 msgstr ""
 
@@ -681,7 +681,7 @@ msgid "Checking this computer…"
 msgstr ""
 
 #. he: בחרו איש קשר, או הוסיפו אחד.
-#: apps/dai-chat/dai_chat/gui.py:231
+#: apps/dai-chat/dai_chat/gui.py:236
 msgid "Choose a contact, or add one."
 msgstr ""
 
@@ -697,7 +697,7 @@ msgstr ""
 
 #. he: היסטוריית העתקות
 #: apps/dai-clip/dai_clip/text.py:11
-#: apps/dai-command/dai_command/core.py:459
+#: apps/dai-command/dai_command/core.py:462
 msgid "Clipboard history"
 msgstr ""
 
@@ -751,7 +751,7 @@ msgid "Coding — explains and edits code (D.Ai Code, D.Ai Forge)"
 msgstr ""
 
 #. he: השוואת סמלים
-#: apps/dai-chat/dai_chat/gui.py:237
+#: apps/dai-chat/dai_chat/gui.py:242
 msgid "Compare symbols"
 msgstr ""
 
@@ -762,13 +762,13 @@ msgid "Compare the six symbols with {name} first (dai-chat symbols {name}): pict
 msgstr ""
 
 #. he: השוו קודם את הסמלים עם {name}: תמונות מתקבלות רק מאנשי קשר מאומתים.
-#: apps/dai-chat/dai_chat/gui.py:377
+#: apps/dai-chat/dai_chat/gui.py:398
 #, python-brace-format
 msgid "Compare the symbols with {name} first: pictures are only accepted from verified contacts."
 msgstr ""
 
 #. he: השוואה עם {name}
-#: apps/dai-chat/dai_chat/gui.py:163
+#: apps/dai-chat/dai_chat/gui.py:165
 #, python-brace-format
 msgid "Compare with {name}"
 msgstr ""
@@ -789,12 +789,12 @@ msgid "Connect an external drive and run: dai-backup setup /media/$USER/<drive>"
 msgstr ""
 
 #. he: חברו דיסק חיצוני · Enter
-#: apps/dai-command/dai_command/core.py:463
+#: apps/dai-command/dai_command/core.py:466
 msgid "Connect an external drive · Enter"
 msgstr ""
 
 #. he: חברו קודם את דיסק הגיבוי
-#: apps/dai-command/dai_command/core.py:466
+#: apps/dai-command/dai_command/core.py:469
 msgid "Connect the backup drive first"
 msgstr ""
 
@@ -815,7 +815,7 @@ msgid "Consider replacing the battery"
 msgstr ""
 
 #. he: אנשי קשר
-#: apps/dai-chat/dai_chat/gui.py:218
+#: apps/dai-chat/dai_chat/gui.py:223
 msgid "Contacts"
 msgstr ""
 
@@ -825,7 +825,7 @@ msgid "Continue? [y/N] "
 msgstr ""
 
 #. he: שיחה
-#: apps/dai-chat/dai_chat/gui.py:243
+#: apps/dai-chat/dai_chat/gui.py:248
 msgid "Conversation"
 msgstr ""
 
@@ -835,7 +835,7 @@ msgid "Copies: "
 msgstr ""
 
 #. he: העתקת הקוד שלי
-#: apps/dai-chat/dai_chat/gui.py:121
+#: apps/dai-chat/dai_chat/gui.py:123
 msgid "Copy my code"
 msgstr ""
 
@@ -898,17 +898,17 @@ msgid "D.Ai Clip needs a Wayland session with wl-clipboard."
 msgstr ""
 
 #. he: D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter
-#: apps/dai-command/dai_command/core.py:460
+#: apps/dai-command/dai_command/core.py:463
 msgid "D.Ai Clip · Super+V · in memory only, never passwords · Enter"
 msgstr ""
 
 #. he: שורת הפקודות של D.Ai
-#: apps/dai-command/dai_command/core.py:470
+#: apps/dai-command/dai_command/core.py:473
 msgid "D.Ai Command input"
 msgstr ""
 
 #. he: D.Ai Doctor · Enter לפרטים ולתיקון
-#: apps/dai-command/dai_command/core.py:469
+#: apps/dai-command/dai_command/core.py:472
 msgid "D.Ai Doctor · Enter for details and fixes"
 msgstr ""
 
@@ -1082,6 +1082,12 @@ msgstr ""
 #: apps/dai-chat/dai_chat/cli.py:137
 #, python-brace-format
 msgid "Diamond Chat is on. Your code: {code}"
+msgstr ""
+
+#. he: Diamond Chat · מוצפן מקצה לקצה · ממתין במחשב הזה עד שהמחשב של {name} יתחבר · Enter
+#: apps/dai-command/dai_command/core.py:460
+#, python-brace-format
+msgid "Diamond Chat · encrypted end to end · waits on this computer until {name} is online · Enter"
 msgstr ""
 
 #. he: ‏Diamond על {name}
@@ -1315,13 +1321,18 @@ msgid "Enough free space on {mount}"
 msgstr ""
 
 #. he: Enter לפרטים
-#: apps/dai-command/dai_command/core.py:468
+#: apps/dai-command/dai_command/core.py:471
 msgid "Enter for details"
 msgstr ""
 
 #. he: הפעלה Enter  ·  ניווט ↑↓  ·  סגירה Esc  ·  שפה Alt+Shift
 #: apps/dai-command/dai_command/core.py:423
 msgid "Enter open  ·  ↑↓ move  ·  Esc close  ·  Alt+Shift language"
+msgstr ""
+
+#. he: Enter או לחיצה כפולה לפתיחה
+#: apps/dai-chat/dai_chat/gui.py:373
+msgid "Enter or double-click to open"
 msgstr ""
 
 #. he: Enter הדבקה · Shift+Enter העתקה בלבד · Delete מחיקה · Esc סגירה
@@ -1545,7 +1556,7 @@ msgid "Get help"
 msgstr ""
 
 #. he: תנו להם גם את הקוד שלכם:
-#: apps/dai-chat/dai_chat/gui.py:108
+#: apps/dai-chat/dai_chat/gui.py:110
 msgid "Give them your code too:"
 msgstr ""
 
@@ -1640,7 +1651,7 @@ msgid "If it keeps happening, report it (nothing is sent without you): https://g
 msgstr ""
 
 #. he: אם הם שונים, ייתכן שמישהו באמצע: אל תאמתו.
-#: apps/dai-chat/dai_chat/gui.py:187
+#: apps/dai-chat/dai_chat/gui.py:189
 msgid "If they are different, someone may be in the middle: do not verify."
 msgstr ""
 
@@ -1796,7 +1807,7 @@ msgid "Language"
 msgstr ""
 
 #. he: גיבוי אחרון:
-#: apps/dai-command/dai_command/core.py:467
+#: apps/dai-command/dai_command/core.py:470
 msgid "Last backup:"
 msgstr ""
 
@@ -1897,7 +1908,7 @@ msgid "Mark unread"
 msgstr ""
 
 #. he: אני
-#: apps/dai-chat/dai_chat/gui.py:350
+#: apps/dai-chat/dai_chat/gui.py:357
 msgid "Me"
 msgstr ""
 
@@ -1918,7 +1929,7 @@ msgid "Memory: {used} of {total} in use"
 msgstr ""
 
 #. he: הודעה
-#: apps/dai-chat/dai_chat/gui.py:250
+#: apps/dai-chat/dai_chat/gui.py:257
 #: apps/dai-j/dai_j/text.py:21
 #: apps/dai-j/dai_j/text.py:184
 msgid "Message"
@@ -2366,7 +2377,7 @@ msgid "On. Suggestions appear in D.Ai Command (Super+Space)."
 msgstr ""
 
 #. he: פועל: הודעות יוצאות ברגע שאנשי הקשר מחוברים.
-#: apps/dai-chat/dai_chat/gui.py:310
+#: apps/dai-chat/dai_chat/gui.py:317
 msgid "On: messages go out as soon as your contacts are online."
 msgstr ""
 
@@ -2501,7 +2512,7 @@ msgid "Pictures"
 msgstr ""
 
 #. he: תמונה…
-#: apps/dai-chat/dai_chat/gui.py:254
+#: apps/dai-chat/dai_chat/gui.py:261
 msgid "Picture…"
 msgstr ""
 
@@ -2580,7 +2591,7 @@ msgstr ""
 
 #. he: בתור, בלי המיקום ופרטי המצלמה.
 #: apps/dai-chat/dai_chat/cli.py:223
-#: apps/dai-chat/dai_chat/gui.py:396
+#: apps/dai-chat/dai_chat/gui.py:417
 msgid "Queued, without its location and camera details."
 msgstr ""
 
@@ -2761,7 +2772,7 @@ msgid "Restart when convenient"
 msgstr ""
 
 #. he: תוצאות
-#: apps/dai-command/dai_command/core.py:471
+#: apps/dai-command/dai_command/core.py:474
 msgid "Results"
 msgstr ""
 
@@ -2961,16 +2972,22 @@ msgid "Selection is too long"
 msgstr ""
 
 #. he: שליחה
-#: apps/dai-chat/dai_chat/gui.py:258
+#: apps/dai-chat/dai_chat/gui.py:265
 #: apps/dai-heal/dai_heal/text.py:21
 #: apps/dai-j/dai_j/text.py:185
 msgid "Send"
 msgstr ""
 
 #. he: שליחת תמונה
-#: apps/dai-chat/dai_chat/gui.py:255
-#: apps/dai-chat/dai_chat/gui.py:382
+#: apps/dai-chat/dai_chat/gui.py:262
+#: apps/dai-chat/dai_chat/gui.py:403
 msgid "Send a picture"
+msgstr ""
+
+#. he: שליחה אל {name}: {text}
+#: apps/dai-command/dai_command/core.py:459
+#, python-brace-format
+msgid "Send to {name}: {text}"
 msgstr ""
 
 #. he: נשלח בעוד {seconds} שנ' · ביטול (Esc)
@@ -3017,7 +3034,7 @@ msgid "Set up"
 msgstr ""
 
 #. he: הגדרת גיבוי מוצפן אוטומטי
-#: apps/dai-command/dai_command/core.py:462
+#: apps/dai-command/dai_command/core.py:465
 msgid "Set up automatic encrypted backup"
 msgstr ""
 
@@ -3313,7 +3330,7 @@ msgid "Text copied ({count} characters)"
 msgstr ""
 
 #. he: בקוד יש שגיאת הקלדה. בדקו אותו מולם ונסו שוב.
-#: apps/dai-chat/dai_chat/gui.py:143
+#: apps/dai-chat/dai_chat/gui.py:145
 msgid "That code has a typo. Check it with them and try again."
 msgstr ""
 
@@ -3330,13 +3347,13 @@ msgstr ""
 
 #. he: הקובץ אינו תמונת PNG, JPEG או WebP של עד 25MB.
 #: apps/dai-chat/dai_chat/cli.py:218
-#: apps/dai-chat/dai_chat/gui.py:391
+#: apps/dai-chat/dai_chat/gui.py:412
 msgid "That file is not a PNG, JPEG or WebP picture up to 25 MB."
 msgstr ""
 
 #. he: זה הקוד שלכם.
 #: apps/dai-chat/dai_chat/cli.py:104
-#: apps/dai-chat/dai_chat/gui.py:152
+#: apps/dai-chat/dai_chat/gui.py:154
 msgid "That is your own code."
 msgstr ""
 
@@ -3356,8 +3373,8 @@ msgid "The code from Diamond was rejected"
 msgstr ""
 
 #. he: הקוד שקיבלתם מהם
-#: apps/dai-chat/dai_chat/gui.py:99
-#: apps/dai-chat/dai_chat/gui.py:102
+#: apps/dai-chat/dai_chat/gui.py:101
+#: apps/dai-chat/dai_chat/gui.py:104
 msgid "The code they gave you"
 msgstr ""
 
@@ -3460,8 +3477,8 @@ msgid "The two passwords are not the same."
 msgstr ""
 
 #. he: השם שלהם
-#: apps/dai-chat/dai_chat/gui.py:97
-#: apps/dai-chat/dai_chat/gui.py:101
+#: apps/dai-chat/dai_chat/gui.py:99
+#: apps/dai-chat/dai_chat/gui.py:103
 msgid "Their name"
 msgstr ""
 
@@ -3471,12 +3488,12 @@ msgid "There is no ready recipe for this, and Diamond (the local AI) is not inst
 msgstr ""
 
 #. he: הם שונים
-#: apps/dai-chat/dai_chat/gui.py:176
+#: apps/dai-chat/dai_chat/gui.py:178
 msgid "They are different"
 msgstr ""
 
 #. he: הם זהים
-#: apps/dai-chat/dai_chat/gui.py:179
+#: apps/dai-chat/dai_chat/gui.py:181
 msgid "They match"
 msgstr ""
 
@@ -3634,7 +3651,7 @@ msgid "Tue"
 msgstr ""
 
 #. he: הפעלת Chat
-#: apps/dai-chat/dai_chat/gui.py:278
+#: apps/dai-chat/dai_chat/gui.py:285
 msgid "Turn Chat on"
 msgstr ""
 
@@ -3873,12 +3890,12 @@ msgid "Worth knowing about the code:"
 msgstr ""
 
 #. he: כתבו הודעה…
-#: apps/dai-chat/dai_chat/gui.py:251
+#: apps/dai-chat/dai_chat/gui.py:258
 msgid "Write a message…"
 msgstr ""
 
 #. he: כתבו את השם שלהם.
-#: apps/dai-chat/dai_chat/gui.py:148
+#: apps/dai-chat/dai_chat/gui.py:150
 msgid "Write their name."
 msgstr ""
 
@@ -3915,7 +3932,7 @@ msgid "Your background service {name} failed."
 msgstr ""
 
 #. he: הקוד שלכם
-#: apps/dai-chat/dai_chat/gui.py:114
+#: apps/dai-chat/dai_chat/gui.py:116
 msgid "Your code"
 msgstr ""
 
@@ -3951,7 +3968,7 @@ msgstr ""
 
 #. he: [תמונה]
 #: apps/dai-chat/dai_chat/cli.py:230
-#: apps/dai-chat/dai_chat/gui.py:351
+#: apps/dai-chat/dai_chat/gui.py:358
 msgid "[a picture]"
 msgstr ""
 
@@ -3999,7 +4016,7 @@ msgstr ""
 
 #. he: חסום
 #: apps/dai-chat/dai_chat/cli.py:114
-#: apps/dai-chat/dai_chat/gui.py:319
+#: apps/dai-chat/dai_chat/gui.py:326
 msgid "blocked"
 msgstr ""
 
@@ -4104,7 +4121,7 @@ msgid "friday|fri\\b"
 msgstr ""
 
 #. he: מחזק אבטחה
-#: apps/dai-command/dai_command/core.py:741
+#: apps/dai-command/dai_command/core.py:768
 #: apps/dai-forge/dai_forge/gui.py:183
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "hardens security"
@@ -4195,7 +4212,7 @@ msgid "monday|mon\\b"
 msgstr ""
 
 #. he: ניטרלי
-#: apps/dai-command/dai_command/core.py:743
+#: apps/dai-command/dai_command/core.py:770
 #: apps/dai-forge/dai_forge/gui.py:184
 #: apps/dai-tune/dai_tune/cli.py:29
 msgid "neutral"
@@ -4228,7 +4245,7 @@ msgstr ""
 
 #. he: לא מאומת: השוו את הסמלים
 #: apps/dai-chat/dai_chat/cli.py:116
-#: apps/dai-chat/dai_chat/gui.py:322
+#: apps/dai-chat/dai_chat/gui.py:329
 msgid "not verified: compare the symbols"
 msgstr ""
 
@@ -4265,7 +4282,7 @@ msgid "quiet"
 msgstr ""
 
 #. he: נדחתה
-#: apps/dai-chat/dai_chat/gui.py:353
+#: apps/dai-chat/dai_chat/gui.py:360
 msgid "refused"
 msgstr ""
 
@@ -4398,12 +4415,12 @@ msgstr ""
 
 #. he: מאומת
 #: apps/dai-chat/dai_chat/cli.py:115
-#: apps/dai-chat/dai_chat/gui.py:321
+#: apps/dai-chat/dai_chat/gui.py:328
 msgid "verified"
 msgstr ""
 
 #. he: מחליש אבטחה
-#: apps/dai-command/dai_command/core.py:742
+#: apps/dai-command/dai_command/core.py:769
 #: apps/dai-forge/dai_forge/gui.py:183
 msgid "weakens security"
 msgstr ""
@@ -4736,7 +4753,7 @@ msgid "• Failed {failures} times: {title}. {how}"
 msgstr ""
 
 #. he: ⌛  {name} (ממתינים להם)
-#: apps/dai-chat/dai_chat/gui.py:304
+#: apps/dai-chat/dai_chat/gui.py:311
 #, python-brace-format
 msgid "⌛  {name} (waiting for them)"
 msgstr ""
@@ -4952,7 +4969,7 @@ msgid "✗ bubblewrap is missing; apps never run outside the sandbox."
 msgstr ""
 
 #. he: ＋ הוספת איש קשר
-#: apps/dai-chat/dai_chat/gui.py:221
+#: apps/dai-chat/dai_chat/gui.py:226
 msgid "＋ Add a contact"
 msgstr ""
 

@@ -128,6 +128,29 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(len(self.store.queued(self.dana)), 1)
         self.assertIn("without its location", win.status.text())
 
+    def test_pictures_show_and_open(self):
+        from PyQt6.QtCore import QBuffer, QIODevice
+        from PyQt6.QtGui import QColor, QImage
+        image = QImage(400, 300, QImage.Format.Format_RGB32)
+        image.fill(QColor("teal"))
+        buffer = QBuffer()
+        buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+        image.save(buffer, "PNG")
+        self.store.add_message(self.dana, message.Message.picture(bytes(buffer.data()), "image/png"),
+                               outgoing=False, state="delivered")
+        opened = []
+        gui = load_gui()
+        win = gui.ChatWindow(self.store, self.me.public, self.code, lang="en", viewer=opened.append)
+        self.addCleanup(win.close)
+        win.show()
+        self.choose(win)
+        item = win.messages.item(0)
+        self.assertFalse(item.icon().isNull())  # a thumbnail
+        self.assertIn("[a picture]", item.text())  # and words for a screen reader
+        win.open_picture(item)
+        self.assertEqual(len(opened), 1)
+        self.assertTrue(opened[0].name.endswith(".png") and opened[0].parent == self.store.pictures)
+
     def test_a_picture_the_sandbox_refuses(self):
         from dai_chat import pictures
 

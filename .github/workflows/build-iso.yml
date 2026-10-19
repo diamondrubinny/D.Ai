@@ -190,7 +190,7 @@ jobs:
 
       - name: Unit tests (Diamond Chat - core, transport, pairing, pictures, window, a real Tor and real mDNS)
         env:
-          PYTHONPATH: apps/dai-chat:apps/dai-i18n:apps/dai-raz
+          PYTHONPATH: apps/dai-chat:apps/dai-i18n:apps/dai-raz:apps/dai-tune
           QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq --no-install-recommends python3-nacl python3-zeroconf tor >/dev/null

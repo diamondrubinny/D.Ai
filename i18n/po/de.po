@@ -4028,3 +4028,17 @@ msgstr "⌛  {name} (wartet)"
 #: apps/dai-chat/dai_chat/gui.py
 msgid "＋ Add a contact"
 msgstr "＋ Kontakt hinzufügen"
+
+#: apps/dai-command/dai_command/core.py
+#, python-brace-format
+msgid "Send to {name}: {text}"
+msgstr "An {name} senden: {text}"
+
+#: apps/dai-command/dai_command/core.py
+#, python-brace-format
+msgid "Diamond Chat · encrypted end to end · waits on this computer until {name} is online · Enter"
+msgstr "Diamond Chat · Ende-zu-Ende verschlüsselt · wartet auf diesem Computer, bis {name} online ist · Enter"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Enter or double-click to open"
+msgstr "Enter oder Doppelklick zum Öffnen"

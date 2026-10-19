@@ -364,6 +364,16 @@ class CommandWindow(QWidget):
             # A moment for this window to close, so the area chooser covers the screen and not us.
             self._spawn(["sh", "-c", "sleep 0.4; exec dai-ocr"])
             remembered = self.query.text().strip()
+        elif action.kind == "chat":
+            # In this process: the message never goes on another program's command line (visible in `ps`).
+            try:
+                from dai_chat.quick import send_text
+
+                public, words = action.payload
+                send_text(public, words)
+            except (ImportError, OSError, ValueError):
+                return
+            remembered = ""  # a sent message is not kept in the bar's history
         elif action.kind == "privacy":
             self._spawn(["x-terminal-emulator", "-e", "bash", "-c", 'dai-privacy log; echo; read -r -p "Enter ↵" _'])
             remembered = self.query.text().strip()
