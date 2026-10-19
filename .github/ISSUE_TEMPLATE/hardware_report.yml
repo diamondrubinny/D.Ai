@@ -1,0 +1,69 @@
+name: Hardware report
+description: Tell us whether D.Ai OS starts and works on your computer (old or new).
+labels: ["hardware", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reports from real computers decide what D.Ai OS supports. Only general details, please.
+        **Do not include serial numbers, MAC addresses, or anything that identifies you or your device.**
+  - type: input
+    id: model
+    attributes:
+      label: Computer model
+      description: For example "Lenovo ThinkPad T420" or "self-built desktop". Leave out serial numbers.
+    validations:
+      required: true
+  - type: input
+    id: cpu
+    attributes:
+      label: Processor
+      description: From `lscpu` or the system information screen.
+    validations:
+      required: true
+  - type: input
+    id: memory
+    attributes:
+      label: Memory and storage
+      placeholder: 4 GB RAM, 256 GB SSD (HDD / SSD / NVMe)
+    validations:
+      required: true
+  - type: dropdown
+    id: firmware
+    attributes:
+      label: Firmware
+      options:
+        - UEFI
+        - Legacy BIOS
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: D.Ai OS version and edition
+      placeholder: v0.1.0-alpha, user edition
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: What happened?
+      options:
+        - Starts and reaches the desktop
+        - Starts, but the desktop has problems
+        - Does not start (black screen, reboot loop, or hang)
+        - Starts, but wifi, sound, graphics, or another device does not work
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What works, what does not, and anything unusual. Attach a photo of the screen if it helps.
+  - type: textarea
+    id: lscpu
+    attributes:
+      label: Output of `lscpu` and `lspci` (optional)
+      description: Remove serial numbers and MAC addresses first.
+      render: shell

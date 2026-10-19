@@ -8,7 +8,7 @@
 
 Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 
-![The D.Ai OS desktop: a floating taskbar with the diamond button and a command field](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+![The D.Ai OS desktop: a floating taskbar with the diamond button and a command field](docs/screenshots/desktop.png)
 
 > **Status:** early development. The first working version builds and boots in CI; the installer works but a full end-to-end install is not yet automated. Not recommended as your only operating system.
 
@@ -31,13 +31,13 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 
 | | | |
 |---|---|---|
-| ![Diamond answers a question in the command bar]({B}ai-answer.png?raw=true) | ![+install antivirus: the plan before anything changes]({B}forge-preview.png?raw=true) | ![D.Ai Quick: Wi-Fi, do not disturb, volume, security score]({B}quick.png?raw=true) |
+| ![Diamond answers a question in the command bar](docs/screenshots/ai-answer.png) | ![+install antivirus: the plan before anything changes](docs/screenshots/forge-preview.png) | ![D.Ai Quick: Wi-Fi, do not disturb, volume, security score](docs/screenshots/quick.png) |
 | **Diamond**: `?` and a question, answered on this computer | **D.Ai Forge**: `+install antivirus` shows the plan first | **D.Ai Quick**: everything quick, with the security score |
-| ![J, the mail client]({B}j.png?raw=true) | ![D.Ai Find: find photos from today]({B}find.png?raw=true) | ![D.Ai Heal: help and repair chat]({B}heal.png?raw=true) |
+| ![J, the mail client](docs/screenshots/j.png) | ![D.Ai Find: find photos from today](docs/screenshots/find.png) | ![D.Ai Heal: help and repair chat](docs/screenshots/heal.png) |
 | **J**: mail, signed and encrypted, imports from Outlook | **D.Ai Find**: files by meaning and date | **D.Ai Heal**: explains a crash and offers a fix |
-| ![MOM, the task manager]({B}mom.png?raw=true) | ![D.Ai Clip: clipboard history]({B}clip.png?raw=true) | ![D.Ai Welcome in Arabic, right to left]({B}welcome-ar.png?raw=true) |
+| ![MOM, the task manager](docs/screenshots/mom.png) | ![D.Ai Clip: clipboard history](docs/screenshots/clip.png) | ![D.Ai Welcome in Arabic, right to left](docs/screenshots/welcome-ar.png) |
 | **MOM**: apps, not processes, explained in plain words | **D.Ai Clip**: never keeps passwords | **Welcome** in Arabic, right to left |
-| ![The USB boot menu]({B}boot-menu.png?raw=true) | ![The loading screen]({B}boot-splash.png?raw=true) | ![The login screen]({B}login.png?raw=true) |
+| ![The USB boot menu](docs/screenshots/boot-menu.png) | ![The loading screen](docs/screenshots/boot-splash.png) | ![The login screen](docs/screenshots/login.png) |
 | **Boot menu**: "Start D.Ai OS", eight languages | **Loading**: the diamond (and the disk passphrase) | **Login**: clock, keyboard language, Caps Lock warning |
 
 ## What's included
@@ -84,9 +84,9 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 
 ## D.Ai Forge
 
-![Forge: ask](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/forge-home.png?raw=true)
-![Forge: review the plan](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/forge-plan.png?raw=true)
-![Forge: the local AI writes the app](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/forge-building.png?raw=true)
+![Forge: ask](docs/screenshots/forge-home.png)
+![Forge: review the plan](docs/screenshots/forge-plan.png)
+![Forge: the local AI writes the app](docs/screenshots/forge-building.png)
 
 Press `Super+B`, or type `+` in the command field, and say what the computer should be able to do:
 
@@ -112,7 +112,7 @@ Details and threat models are in `docs/TUNE.md` and `docs/FORGE.md`. To report a
 
 ## Try it
 
-1. Download an ISO from the [Releases](../../releases) page, once a release is published.
+1. Download an ISO from the [Releases](https://github.com/diamondrubinny/D.Ai/releases) page, once a release is published.
 2. Write it to a USB stick.
 3. Boot it and try it live. In the live session, `dai-doctor hardware` or "will my wifi work?" in the command field checks your hardware.
 4. Install with **Install D.Ai OS** and keep **Encrypt system** ticked.

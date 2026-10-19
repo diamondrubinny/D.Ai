@@ -6,7 +6,7 @@
 
 🌐 **Website:** [rubinny.com](https://rubinny.com) · ⬇️ **Download:** [neueste Version](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
-![Der D.Ai-OS-Desktop: eine schwebende Taskleiste mit dem Diamant-Knopf und einem Befehlsfeld](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+![Der D.Ai-OS-Desktop: eine schwebende Taskleiste mit dem Diamant-Knopf und einem Befehlsfeld](../screenshots/desktop.png)
 
 D.Ai OS ist ein freies Open-Source-Betriebssystem auf Basis von Debian 13, entwickelt von Diamond Rubinny (d.Ai). Die KI läuft nur auf deinem eigenen Computer, und die Sicherheit ist ab dem ersten Start eingeschaltet.
 
@@ -26,9 +26,9 @@ D.Ai OS ist ein freies Open-Source-Betriebssystem auf Basis von Debian 13, entwi
 
 | | | |
 |---|---|---|
-| ![Diamond beantwortet eine Frage in der Befehlsleiste](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/ai-answer.png?raw=true) | ![D.Ai Quick: WLAN, Nicht stören, Lautstärke und Sicherheitswert](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/quick.png?raw=true) | ![J, das Mailprogramm](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/j.png?raw=true) |
+| ![Diamond beantwortet eine Frage in der Befehlsleiste](../screenshots/ai-answer.png) | ![D.Ai Quick: WLAN, Nicht stören, Lautstärke und Sicherheitswert](../screenshots/quick.png) | ![J, das Mailprogramm](../screenshots/j.png) |
 | **Diamond**: antwortet auf diesem Computer | **D.Ai Quick**: alles Schnelle an einem Ort | **J**: Mail, signiert und verschlüsselt |
-| ![Das Startmenü vom USB-Stick](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/boot-menu.png?raw=true) | ![Der Anmeldebildschirm](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/login.png?raw=true) | ![D.Ai Welcome auf Arabisch, von rechts nach links](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/welcome-ar.png?raw=true) |
+| ![Das Startmenü vom USB-Stick](../screenshots/boot-menu.png) | ![Der Anmeldebildschirm](../screenshots/login.png) | ![D.Ai Welcome auf Arabisch, von rechts nach links](../screenshots/welcome-ar.png) |
 | **Startmenü**: „Start D.Ai OS“ | **Anmeldung**: der D.Ai-Anmeldebildschirm | **Welcome** auf Arabisch, von rechts nach links |
 
 ## ⚠️ Status

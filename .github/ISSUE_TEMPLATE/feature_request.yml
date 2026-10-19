@@ -1,0 +1,37 @@
+name: Feature request
+description: Propose a change to D.Ai OS. Large changes are best discussed first.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Large changes (new components, new dependencies, architecture) are discussed before code is written.
+        See CONTRIBUTING.md.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Who needs it, and what do they do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: Checks
+      options:
+        - label: The proposal works for Hebrew and right-to-left text, or says why it does not apply
+          required: true
+        - label: The proposal keeps keyboard use and screen-reader labels in mind
+          required: true
+        - label: The proposal does not store or send personal data without saying so
+          required: true

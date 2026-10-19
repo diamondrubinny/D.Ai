@@ -6,7 +6,7 @@
 
 🌐 **Сайт:** [rubinny.com](https://rubinny.com) · ⬇️ **Скачать:** [последняя версия](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
-![Рабочий стол D.Ai OS: плавающая панель задач с кнопкой-бриллиантом и строкой команд](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+![Рабочий стол D.Ai OS: плавающая панель задач с кнопкой-бриллиантом и строкой команд](../screenshots/desktop.png)
 
 D.Ai OS: бесплатная операционная система с открытым кодом на базе Debian 13 от Diamond Rubinny (d.Ai). Искусственный интеллект работает только на вашем компьютере, а защита включена с первой загрузки.
 
@@ -26,9 +26,9 @@ D.Ai OS: бесплатная операционная система с отк�
 
 | | | |
 |---|---|---|
-| ![Diamond отвечает на вопрос в строке команд](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/ai-answer.png?raw=true) | ![D.Ai Quick: Wi-Fi, «Не беспокоить», громкость и оценка безопасности](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/quick.png?raw=true) | ![J, почтовый клиент](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/j.png?raw=true) |
+| ![Diamond отвечает на вопрос в строке команд](../screenshots/ai-answer.png) | ![D.Ai Quick: Wi-Fi, «Не беспокоить», громкость и оценка безопасности](../screenshots/quick.png) | ![J, почтовый клиент](../screenshots/j.png) |
 | **Diamond**: отвечает прямо на этом компьютере | **D.Ai Quick**: всё самое нужное под рукой | **J**: почта с подписью и шифрованием |
-| ![Меню загрузки с USB](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/boot-menu.png?raw=true) | ![Экран входа](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/login.png?raw=true) | ![D.Ai Welcome на арабском, справа налево](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/welcome-ar.png?raw=true) |
+| ![Меню загрузки с USB](../screenshots/boot-menu.png) | ![Экран входа](../screenshots/login.png) | ![D.Ai Welcome на арабском, справа налево](../screenshots/welcome-ar.png) |
 | **Меню загрузки**: «Start D.Ai OS» | **Вход**: экран входа D.Ai | **Welcome** на арабском, справа налево |
 
 ## ⚠️ Статус

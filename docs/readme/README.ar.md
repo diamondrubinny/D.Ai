@@ -8,7 +8,7 @@
 
 🌐 **الموقع:** [rubinny.com](https://rubinny.com) · ⬇️ **التنزيل:** [أحدث إصدار](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
-![سطح مكتب D.Ai OS: شريط مهام عائم مع زر الماسة وحقل للأوامر](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+![سطح مكتب D.Ai OS: شريط مهام عائم مع زر الماسة وحقل للأوامر](../screenshots/desktop.png)
 
 ‏D.Ai OS نظام تشغيل مجاني ومفتوح المصدر مبني على Debian 13، من تطوير Diamond Rubinny (d.Ai)، مع ذكاء اصطناعي يعمل على حاسوبك فقط، وأمان مفعّل منذ الإقلاع الأول.
 
@@ -28,9 +28,9 @@
 
 | | | |
 |---|---|---|
-| ![Diamond يجيب عن سؤال في شريط الأوامر](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/ai-answer.png?raw=true) | ![D.Ai Quick: الواي فاي، عدم الإزعاج، الصوت، ودرجة الأمان](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/quick.png?raw=true) | ![J، برنامج البريد](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/j.png?raw=true) |
+| ![Diamond يجيب عن سؤال في شريط الأوامر](../screenshots/ai-answer.png) | ![D.Ai Quick: الواي فاي، عدم الإزعاج، الصوت، ودرجة الأمان](../screenshots/quick.png) | ![J، برنامج البريد](../screenshots/j.png) |
 | **Diamond**: يجيب على هذا الحاسوب | **D.Ai Quick**: كل الإعدادات السريعة | **J**: بريد موقّع ومشفّر |
-| ![قائمة الإقلاع من USB](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/boot-menu.png?raw=true) | ![شاشة الدخول](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/login.png?raw=true) | ![D.Ai Welcome بالعربية، من اليمين إلى اليسار](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/welcome-ar.png?raw=true) |
+| ![قائمة الإقلاع من USB](../screenshots/boot-menu.png) | ![شاشة الدخول](../screenshots/login.png) | ![D.Ai Welcome بالعربية، من اليمين إلى اليسار](../screenshots/welcome-ar.png) |
 | **قائمة الإقلاع**: «Start D.Ai OS» | **شاشة الدخول**: شاشة D.Ai | **Welcome** بالعربية، من اليمين إلى اليسار |
 
 ## ⚠️ الحالة

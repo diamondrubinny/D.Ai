@@ -1,0 +1,65 @@
+name: Bug report
+description: Something in D.Ai OS does not work as described.
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the report. **Do not paste passwords, tokens, keys, or personal files here.**
+        For a security problem, use the private link on the issue chooser instead.
+  - type: input
+    id: version
+    attributes:
+      label: D.Ai OS version or commit
+      description: The release tag (for example v0.1.0-alpha) or the commit hash, from the About text or the git log.
+      placeholder: v0.1.0-alpha
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edition
+      options:
+        - user
+        - dev
+        - edu
+        - server
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what did you expect?
+      description: Describe the problem in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, starting from a fresh login if possible.
+      placeholder: |
+        1. Open D.Ai Command with Super
+        2. Type ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: language
+    attributes:
+      label: Interface language and layout
+      placeholder: Hebrew, Israeli keyboard layout
+  - type: checkboxes
+    id: accessibility
+    attributes:
+      label: Accessibility
+      options:
+        - label: The problem affects a screen reader, the keyboard only, zoom, or contrast (describe it above)
+          required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional)
+      description: Output of the relevant command or journal lines. Remove anything personal first.
+      render: shell

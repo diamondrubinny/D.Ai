@@ -6,7 +6,7 @@
 
 🌐 **Site:** [rubinny.com](https://rubinny.com) · ⬇️ **Download:** [versão mais recente](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
-![A área de trabalho do D.Ai OS: uma barra de tarefas flutuante com o botão de diamante e um campo de comandos](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+![A área de trabalho do D.Ai OS: uma barra de tarefas flutuante com o botão de diamante e um campo de comandos](../screenshots/desktop.png)
 
 D.Ai OS é um sistema operacional gratuito e de código aberto baseado no Debian 13, criado por Diamond Rubinny (d.Ai). A inteligência artificial roda só no seu computador, e a segurança vem ligada desde a primeira inicialização.
 
@@ -26,9 +26,9 @@ D.Ai OS é um sistema operacional gratuito e de código aberto baseado no Debian
 
 | | | |
 |---|---|---|
-| ![Diamond responde a uma pergunta na barra de comandos](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/ai-answer.png?raw=true) | ![D.Ai Quick: Wi-Fi, não perturbe, volume e nota de segurança](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/quick.png?raw=true) | ![J, o cliente de e-mail](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/j.png?raw=true) |
+| ![Diamond responde a uma pergunta na barra de comandos](../screenshots/ai-answer.png) | ![D.Ai Quick: Wi-Fi, não perturbe, volume e nota de segurança](../screenshots/quick.png) | ![J, o cliente de e-mail](../screenshots/j.png) |
 | **Diamond**: responde neste computador | **D.Ai Quick**: tudo o que é rápido, à mão | **J**: e-mail assinado e criptografado |
-| ![O menu de inicialização pelo pendrive](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/boot-menu.png?raw=true) | ![A tela de login](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/login.png?raw=true) | ![D.Ai Welcome em árabe, da direita para a esquerda](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/welcome-ar.png?raw=true) |
+| ![O menu de inicialização pelo pendrive](../screenshots/boot-menu.png) | ![A tela de login](../screenshots/login.png) | ![D.Ai Welcome em árabe, da direita para a esquerda](../screenshots/welcome-ar.png) |
 | **Menu de inicialização**: "Start D.Ai OS" | **Login**: a tela do D.Ai | **Welcome** em árabe, da direita para a esquerda |
 
 ## ⚠️ Status
