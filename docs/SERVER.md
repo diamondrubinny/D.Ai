@@ -24,10 +24,9 @@
 
 ## 1. Questions (answer them, or I take the stated default)
 
-1. ~~**Standalone:**~~ **Answered:** air-gapped, with no network hardware at all (§1b). Still open for this
-   variant: (a) may a USB drive be used to bring updates in through a controlled media station (§1b, rule 4),
-   or must every transfer happen another way (for example, a printed hash check and a one-way transfer
-   device)? (b) who holds the signing key?
+1. ~~**Standalone:**~~ **Answered:** air-gapped, with no network hardware at all (§1b).
+   The two open questions of this variant are **decided in §1c** (media through a controlled station; signing
+   by 2 of 3 holders, applying with a second confirmation).
 2. **Which role first:** a general server (**default**: SSH, a firewall, backups, logs), file storage, or an
    internal web application?
 3. **Administration:** only from a fixed list of computers on the internal network (**default**), or from
@@ -71,6 +70,37 @@ a human procedure, not an automatic one, and it has to be tested on paper and on
 organisation's own information security policy are not summarised here. They must be checked against the
 official text (for banks: the Bank of Israel's directives on information security) before this edition is
 sold or installed for any bank.
+
+## 1c. Decisions for the air-gapped variant (made on 19 October 2026 at the owner's request; changeable)
+
+The owner asked the assistant to decide the two open questions. These are the decisions, with the reason for
+each. Any of them can be changed, and each change is recorded here with its date.
+
+**Decision 1: media may cross the air gap, but only through a controlled media station, never directly.**
+- No USB storage device is ever connected to the air-gapped computer. Its USB ports accept only the approved
+  keyboard and mouse (§1b, rule 2).
+- Every file (an update bundle, or a file needed for work) arrives on **single-use, write-once media** from the
+  media station, which is a separate computer with no connection to the air-gapped one.
+- At the media station the file is scanned with ClamAV, its signature is checked, and its hash is written on
+  paper and in the station's log. The station is run by a person who is not the one who approves the update.
+- On the air-gapped computer the bundle is checked again (signature and hashes) before anything is applied.
+- Every crossing is recorded in a log kept on the air-gapped computer and printed. Nothing leaves that way.
+- **Why not a one-way data diode now:** it is the strongest option, but it is expensive, needs specialist
+  hardware and a separate security review, and a badly built one is itself a new risk. It is a candidate for
+  a later stage, after the owner sees the cost.
+
+**Decision 2: two people for signing and two people for applying.**
+- **Signing:** the update-signing key is held by **three holders, and any two of them are needed to sign** (2 of 3).
+  The key is never on the air-gapped computer, and never on a computer that is connected to a network.
+  It is kept on an offline device (an offline computer or a hardware token, to be chosen).
+- **Applying:** an update is applied on the air-gapped computer by one administrator, and it is **confirmed by a
+  second person** in the log (four eyes). The software refuses a bundle that lacks the second confirmation.
+- **Verification:** the air-gapped computer holds only the **public** key. A lost or leaked key is handled by a
+  written procedure: revoke the key, build and sign a new one, and deliver the new public key by the same media
+  procedure.
+- **Why 2 of 3:** one person cannot sign alone, and losing one holder does not lock the organisation out.
+- **Requires legal review and the organisation's own procedure:** who the three holders are, how they are
+  chosen and replaced, and the written key-ceremony steps. The plan defines the rule; a person must own it.
 
 ## 2. Editions
 
