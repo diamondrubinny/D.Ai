@@ -1,0 +1,49 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai malware check (docs/SERVER.md §3, §4): scans files or folders with ClamAV.
+#
+#   dai-scan PATH...              scan the given paths
+#   dai-scan --list FILE          scan the paths listed in FILE, one per line (the daily timer does this)
+#
+# An infected file is MOVED to the quarantine folder, never deleted, so it can be examined. The result goes to
+# the system journal. Exit codes: 0 clean, 1 something found and quarantined, 2 the scan could not run.
+#
+# Environment (for tests and special setups):
+#   DAI_SCAN_DB      the signature database folder (default /var/lib/clamav)
+#   DAI_QUARANTINE   where infected files go (default /var/lib/dai/quarantine)
+set -eu
+
+DB="${DAI_SCAN_DB:-/var/lib/clamav}"
+QUARANTINE="${DAI_QUARANTINE:-/var/lib/dai/quarantine}"
+
+say() { # say <priority> <message>: the journal, and the terminal when there is one
+	if command -v logger >/dev/null 2>&1; then logger -p "auth.$1" -t dai-scan -- "$2" || true; fi
+	echo "dai-scan: $2" >&2
+}
+
+if [ "${1:-}" = "--list" ]; then
+	list="${2:-}"
+	[ $# -eq 2 ] && [ -r "$list" ] || { echo "usage: dai-scan --list FILE" >&2; exit 2; }
+	set --
+	while IFS= read -r line; do
+		case "$line" in ''|\#*) continue ;; esac
+		set -- "$@" "$line"
+	done <"$list"
+fi
+[ $# -ge 1 ] || { echo "usage: dai-scan PATH... | dai-scan --list FILE" >&2; exit 2; }
+
+mkdir -p "$QUARANTINE"
+chmod 0700 "$QUARANTINE"
+
+set +e
+clamscan --database="$DB" --recursive --infected --no-summary --move="$QUARANTINE" -- "$@"
+rc=$?
+set -e
+
+case $rc in
+	0) say info "clean: $*" ;;
+	1) say warning "infected file(s) moved to $QUARANTINE: $*" ;;
+	*) say err "the scan did not complete (exit $rc): $*" ;;
+esac
+exit "$rc"

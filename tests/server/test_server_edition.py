@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import configparser
 import importlib.util
+import os
 import re
 import shutil
 import subprocess
@@ -233,6 +234,68 @@ class ServerFiles(unittest.TestCase):
     def test_sudo_is_logged(self):
         text = (INCLUDES / "etc" / "sudoers.d" / "10-dai-server").read_text(encoding="utf-8")
         self.assertIn('Defaults logfile="/var/log/sudo.log"', text)
+
+
+class MalwareCheck(unittest.TestCase):
+    """dai-scan (docs/SERVER.md §3): the scan really finds a file it has a signature for, moves it to quarantine
+    (not delete), and reports clean folders as clean. The signature here is a local one for a test file, because
+    the official database is downloaded from the internet and cannot be used in a sandbox."""
+
+    SCANNER = INCLUDES / "usr" / "bin" / "dai-scan"
+
+    def test_the_scanner_is_valid_sh(self):
+        subprocess.run(["sh", "-n", str(self.SCANNER)], check=True)
+
+    def test_the_timer_and_the_scanner_are_wired(self):
+        hook = (SERVER / "hooks" / "normal" / "0100-dai-server.hook.chroot").read_text(encoding="utf-8")
+        self.assertIn("dai-malware-scan.timer", hook)
+        self.assertIn("clamav-freshclam.service", hook)
+        self.assertIn("chmod 0755 /usr/bin/dai-scan", hook)
+        unit = (INCLUDES / "etc" / "systemd" / "system" / "dai-malware-scan.service").read_text(encoding="utf-8")
+        self.assertIn("/usr/bin/dai-scan --list /etc/dai/malware-scan-paths", unit)
+        packages = package_names(SERVER / "package-lists" / "server.list.chroot")
+        self.assertTrue({"clamav", "clamav-freshclam"} <= packages)
+
+    @unittest.skipUnless(shutil.which("clamscan"), "clamscan is not installed here (clamav)")
+    def test_a_known_file_is_found_and_quarantined(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            db, work, quarantine = root / "db", root / "work", root / "quarantine"
+            db.mkdir()
+            work.mkdir()
+            canary = b"D.Ai test canary, not malware: " + os.urandom(16)
+            import hashlib
+            (work / "canary.bin").write_bytes(canary)
+            (work / "clean.txt").write_text("nothing to see\n", encoding="utf-8")
+            # a local signature: "md5:size:name", the format ClamAV reads for hash signatures
+            (db / "dai-test.hdb").write_text(
+                f"{hashlib.md5(canary).hexdigest()}:{len(canary)}:Dai.Test.Canary\n", encoding="ascii")
+            env = {**os.environ, "DAI_SCAN_DB": str(db), "DAI_QUARANTINE": str(quarantine)}
+            found = subprocess.run(["sh", str(self.SCANNER), str(work)], env=env, capture_output=True, text=True)
+            self.assertEqual(found.returncode, 1, found.stdout + found.stderr)
+            self.assertFalse((work / "canary.bin").exists(), "an infected file must leave the folder")
+            self.assertTrue((quarantine / "canary.bin").exists(), "and be kept in quarantine, not deleted")
+            self.assertTrue((work / "clean.txt").exists())
+            self.assertEqual(oct(quarantine.stat().st_mode & 0o777), "0o700")
+            again = subprocess.run(["sh", str(self.SCANNER), str(work)], env=env, capture_output=True, text=True)
+            self.assertEqual(again.returncode, 0, again.stdout + again.stderr)
+
+    @unittest.skipUnless(shutil.which("clamscan"), "clamscan is not installed here (clamav)")
+    def test_a_scan_that_cannot_run_says_so(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env = {**os.environ, "DAI_SCAN_DB": str(Path(tmp) / "no-such-db"),
+                   "DAI_QUARANTINE": str(Path(tmp) / "q")}
+            result = subprocess.run(["sh", str(self.SCANNER), tmp], env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)  # 2, not 0: never "clean" by error
+
+    def test_no_arguments_is_an_error(self):
+        result = subprocess.run(["sh", str(self.SCANNER)], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2)
+
+    def test_the_default_folders_are_listed(self):
+        text = (INCLUDES / "etc" / "dai" / "malware-scan-paths").read_text(encoding="utf-8")
+        listed = [line for line in text.splitlines() if line.startswith("/")]
+        self.assertEqual(listed, ["/srv", "/home", "/var/tmp", "/tmp"])
 
 
 if __name__ == "__main__":

@@ -269,6 +269,12 @@ posture score runs, so a person can see the state and the fix.
   units and their sections, the SSH settings (and `sshd -t` where OpenSSH is installed), the firewall (`nft -c`),
   the audit rules, the AIDE paths, fail2ban, retention, updates and sudo.
 
+- **Malware check (`dai-scan`, `docs/SERVER.md` §3):** ClamAV scans `/srv`, `/home`, `/var/tmp` and `/tmp` every night
+  (the timer is `dai-malware-scan.timer`). An infected file is **moved to quarantine, never deleted**, the result goes
+  to the journal, and the timer's unit is marked failed so it shows in `systemctl --failed`. Tested with a local
+  signature for a test file: the file is found, moved, the folder is then clean, and a scan that cannot run exits 2,
+  never "clean". The official signatures come from `clamav-freshclam` while the server is online.
+
 **Not yet done, and why each one matters:**
 1. **No image has been built.** The build takes an hour on CI, and the boot test for the server (no desktop, the
    checks over the serial console, a password login refused, the firewall closed, auditd running) is not written
@@ -283,7 +289,10 @@ posture score runs, so a person can see the state and the fix.
    must be removed before any release.
 5. **The AIDE configuration passes `aide --config-check` (AIDE 0.18.6, checked on 19 October 2026). It has not
    yet run a baseline and a check on a built system,** which is part of the boot test.
-6. **The time source is not chosen** (chrony has no server line), and the retention period needs legal review.
+6. **Signatures on an air-gapped server** come only from the media procedure of §1c; freshclam cannot reach the
+   internet there. **On-access scanning** (scanning each file as it is opened) is not included: the nightly scan and
+   the media station are the controls for now.
+7. **The time source is not chosen** (chrony has no server line), and the retention period needs legal review.
 
 ## 10. Risks and open decisions
 

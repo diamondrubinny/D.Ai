@@ -13,6 +13,9 @@ auditd
 aide
 # Time, from the organisation's own source (none is chosen by the image)
 chrony
+# Malware check of the server's folders, and signature updates while online (dai-scan, docs/SERVER.md §3)
+clamav
+clamav-freshclam
 # Password quality rules
 libpam-pwquality
 # Encrypted backups (the D.Ai Backup tooling comes in a later stage)

@@ -7,6 +7,10 @@ set -eu
 
 systemctl enable nftables.service apparmor.service auditd.service fail2ban.service chrony.service
 systemctl enable dai-ssh-hostkeys.service dai-aide-init.service dai-aide-check.timer
+# Malware check: ClamAV's signatures update daily while the server is online, and the folders are scanned nightly
+# (air-gapped servers get signatures from the media procedure instead, docs/SERVER.md §1c).
+systemctl enable clamav-freshclam.service dai-malware-scan.timer
+chmod 0755 /usr/bin/dai-scan
 systemctl set-default multi-user.target
 
 # Administrators sign in with their keys and become root through sudo, never by logging in as root.
