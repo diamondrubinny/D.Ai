@@ -4,6 +4,10 @@
 
 **Diga do que você precisa. Ele constrói, testa, corrige e pergunta antes de mudar qualquer coisa.**
 
+🌐 **Site:** [rubinny.com](https://rubinny.com) · ⬇️ **Download:** [versão mais recente](https://github.com/diamondrubinny/D.Ai/releases/latest)
+
+![A área de trabalho do D.Ai OS: uma barra de tarefas flutuante com o botão de diamante e um campo de comandos](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+
 D.Ai OS é um sistema operacional gratuito e de código aberto baseado no Debian 13, criado por Diamond Rubinny (d.Ai). A inteligência artificial roda só no seu computador, e a segurança vem ligada desde a primeira inicialização.
 
 ## ✨ O que o torna diferente
@@ -14,10 +18,22 @@ D.Ai OS é um sistema operacional gratuito e de código aberto baseado no Debian
 - **🩺 Conserta a si mesmo:** quando um programa trava, abre-se um chat que explica em palavras simples o que aconteceu e corrige com um clique, só com a sua aprovação.
 - **🗣 Configuração com palavras:** "bloqueie pendrives e bloqueie a tela após 5 minutos" vira um plano que você pode revisar e desfazer.
 - **🔒 Privacidade em primeiro lugar:** a IA roda localmente, e o serviço dela não tem acesso à rede. Sem telemetria, sem anúncios, sem nuvem.
+- **🌍 Oito idiomas:** hebraico, inglês, árabe, russo, espanhol, francês, alemão e português: a interface, as frases que o D.Ai entende, o menu de inicialização e o site.
+- **🎨 Bonito desde o primeiro segundo:** menu de inicialização do D.Ai, uma tela de carregamento em que o disco criptografado pede a frase-senha, uma tela de login do D.Ai e três temas (Noite, Dia e alto contraste).
+- **📦 Apps próprios para o dia a dia:** J (e-mail assinado e criptografado, importa do Outlook), Ruby (navegador com proteção contra rastreamento e uBlock Origin), MOM (gerenciador de tarefas que mostra apps, não processos), D.Ai Quick e D.Ai Rescue (recupera o sistema pelo pendrive depois de uma atualização ruim).
+
+## 📸 Capturas de tela
+
+| | | |
+|---|---|---|
+| ![Diamond responde a uma pergunta na barra de comandos](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/ai-answer.png?raw=true) | ![D.Ai Quick: Wi-Fi, não perturbe, volume e nota de segurança](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/quick.png?raw=true) | ![J, o cliente de e-mail](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/j.png?raw=true) |
+| **Diamond**: responde neste computador | **D.Ai Quick**: tudo o que é rápido, à mão | **J**: e-mail assinado e criptografado |
+| ![O menu de inicialização pelo pendrive](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/boot-menu.png?raw=true) | ![A tela de login](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/login.png?raw=true) | ![D.Ai Welcome em árabe, da direita para a esquerda](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/welcome-ar.png?raw=true) |
+| **Menu de inicialização**: "Start D.Ai OS" | **Login**: a tela do D.Ai | **Welcome** em árabe, da direita para a esquerda |
 
 ## ⚠️ Status
 
-Versão alfa inicial. Experimente pelo pendrive antes de instalar. Por enquanto a interface está em hebraico e inglês, e o português está planejado (`docs/I18N.md`).
+Versão alfa inicial. Experimente pelo pendrive antes de instalar. A interface, as frases que o D.Ai entende e o site estão disponíveis em português (e em mais sete idiomas).
 
 **Licença:** Apache-2.0. "D.Ai", "D.Ai OS" e o logotipo de diamante são marcas registradas (`TRADEMARKS.md`).
 

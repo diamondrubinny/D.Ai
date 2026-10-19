@@ -24,6 +24,12 @@
    {"img": "forge-antivirus", "w": 1280, "h": 800, "kicker": "D.Ai Forge", "title": "\"Instale um antivírus\": primeiro um plano, depois um clique",
     "text": "Escreva <code>+</code> e o que você precisa. O D.Ai mostra exatamente o que vai acontecer antes de mudar qualquer coisa: quais pacotes, qual serviço, uma verificação diária. Você aprova, e está feito. Toda mudança no sistema fica registrada e pode ser desfeita.",
     "alt": "D.Ai Command com \"+instalar antivírus\": o plano mostra os pacotes do ClamAV, a ativação do serviço de atualização e uma verificação diária da pasta pessoal."},
+   {"img": "find", "w": 1280, "h": 800, "kicker": "D.Ai Find · D.Ai Doctor", "title": "Pergunte com palavras simples: \"encontre as fotos de hoje\", \"por que o computador está lento?\"",
+    "text": "Escreva o que você procura do jeito que diria, e o arquivo é encontrado pelo significado e pela data. Pergunte por que algo está lento ou cheio, e o D.Ai Doctor verifica o computador e sugere uma correção segura, em hebraico, inglês e mais seis idiomas.",
+    "alt": "D.Ai Command sobre o instalador com \"find photos from today\", e o resultado: beach.jpg em Imagens, de hoje."},
+   {"img": "heal", "w": 1280, "h": 800, "kicker": "D.Ai Heal", "title": "Quando algo quebra, ele explica e sugere uma correção",
+    "text": "Um programa travou ou um serviço falhou? O D.Ai Heal mostra uma notificação e abre um chat que explica em palavras simples o que aconteceu. A correção vem de uma lista fechada, e só é executada quando você clica (Super+F1).",
+    "alt": "A janela \"D.Ai Help & Repair\": \"Diga o que não está funcionando, ou escolha um problema que eu encontrei\", com dois problemas encontrados, um serviço que falhou e um app que travou, e um campo para descrever um problema."},
    {"img": "forge-app", "w": 1280, "h": 800, "kicker": "D.Ai Forge · apps", "title": "Precisa de um app simples? Descreva",
     "text": "\"Crie uma lista de tarefas para mim.\" O Diamond escreve o app, testa e corrige até funcionar, e o executa em uma sandbox: ele não pode ler seus arquivos nem acessar a internet, a menos que você permita.",
     "alt": "Um app de lista de tarefas chamado \"Minhas tarefas\" em hebraico, criado pelo D.Ai Forge, com duas tarefas, um botão de adicionar e um botão marcado para excluir."},
@@ -39,6 +45,9 @@
    {"img": "clip", "w": 1280, "h": 800, "kicker": "D.Ai Clip", "title": "Um histórico da área de transferência que nunca guarda senhas",
     "text": "Super+V mostra o que você copiou, em hebraico e em inglês, com busca. Senhas, tokens e números de cartão são reconhecidos e nunca são salvos.",
     "alt": "A janela do histórico da área de transferência com busca e dois textos copiados, um em hebraico e outro em inglês."},
+   {"img": "way-in", "w": 1280, "h": 800, "kicker": "Desde o primeiro segundo", "title": "O menu de inicialização, a tela de carregamento e o login, tudo com o visual do D.Ai",
+    "text": "Do menu do pendrive (em oito idiomas), passando pela tela de carregamento, onde um disco criptografado pede sua frase-senha, até a tela de login com o relógio, o idioma do teclado e o aviso de Caps Lock, da direita para a esquerda em hebraico e árabe.",
+    "alt": "Quatro imagens: o menu de inicialização do pendrive com o diamante e \"Start D.Ai OS\", seu submenu de idioma, a tela de carregamento com o diamante e a tela de login com o relógio e um campo de senha."},
    {"img": "installer", "w": 1280, "h": 800, "kicker": "Instalação", "title": "Experimente em um pendrive e depois instale com criptografia",
     "text": "O D.Ai OS inicia a partir de um pendrive sem mudar nada, então você pode conferir antes o Wi-Fi, o som e a impressora. O instalador criptografa o disco inteiro, e o assistente de boas-vindas faz algumas perguntas no seu idioma.",
     "alt": "O instalador do D.Ai OS: as etapas na lateral (boas-vindas, local, teclado, partições, usuários, resumo, instalação, conclusão) e o diamante do D.Ai OS."}
@@ -72,7 +81,7 @@
     ["Nada é enviado", "sem telemetria, sem anúncios e sem exigir conta."]]},
    {"icon": "☀", "title": "No dia a dia", "items": [
     ["D.Ai Move", "vindo do Windows: documentos, imagens, favoritos do navegador e e-mails."],
-    ["Temas", "D.Ai Night, D.Ai Day e alto contraste, em todas as janelas do D.Ai."],
+    ["Temas", "D.Ai Night, D.Ai Day e alto contraste, em todas as janelas do D.Ai, escolhidos em uma frase (\"tema claro\")."],
     ["O básico", "capturas de tela (Print), luz noturna, teclado na tela, lupa e a maioria das impressoras sem driver."],
     ["Programas", "os pacotes do Debian e o Flathub, além de receitas para Zoom, Steam, alternativas ao Office e VPNs de trabalho."]]},
    {"icon": "🧩", "title": "Edições", "items": [

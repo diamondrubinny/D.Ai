@@ -102,6 +102,7 @@ class BootMenuLookTests(unittest.TestCase):
         self.assertIn("menu label ^Start D.Ai OS\n", live)
         self.assertIn("menu label Start D.Ai OS (safe graphics)", live)
         self.assertIn("append boot=live components quiet splash", live)  # the command line stays
+        self.assertIn("menu title D.Ai OS", hook.rename("menu title Boot menu\ninclude live.cfg\n"))  # any file
         grub = hook.rename(GRUB)
         self.assertIn('menuentry "Start D.Ai OS" --hotkey=l {', grub)
         self.assertIn('menuentry "Start D.Ai OS (safe graphics)" {', grub)

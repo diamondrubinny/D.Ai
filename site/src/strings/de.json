@@ -24,6 +24,12 @@
    {"img": "forge-antivirus", "w": 1280, "h": 800, "kicker": "D.Ai Forge", "title": "„Installiere einen Virenschutz“: erst ein Plan, dann ein Klick",
     "text": "Schreiben Sie <code>+</code> und was Sie brauchen. D.Ai zeigt genau, was passieren wird, bevor sich irgendetwas ändert: welche Pakete, welcher Dienst, ein täglicher Scan. Sie stimmen zu, und es ist erledigt. Jede Systemänderung wird protokolliert und lässt sich rückgängig machen.",
     "alt": "D.Ai Command mit „+install antivirus“: Der Plan zeigt die ClamAV-Pakete, das Aktivieren des Update-Dienstes und einen täglichen Scan des persönlichen Ordners."},
+   {"img": "find", "w": 1280, "h": 800, "kicker": "D.Ai Find · D.Ai Doctor", "title": "Fragen Sie ganz normal: „Finde die Fotos von heute“, „Warum ist der Computer langsam?“",
+    "text": "Schreiben Sie, was Sie suchen, so wie Sie es sagen würden, und die Datei wird nach Bedeutung und Datum gefunden. Fragen Sie, warum etwas langsam oder voll ist, und D.Ai Doctor prüft den Computer und schlägt eine sichere Lösung vor – auf Hebräisch, Englisch und in sechs weiteren Sprachen.",
+    "alt": "D.Ai Command über dem Installationsprogramm mit „find photos from today“ und dem Ergebnis: beach.jpg im Ordner Bilder, von heute."},
+   {"img": "heal", "w": 1280, "h": 800, "kicker": "D.Ai Heal", "title": "Wenn etwas kaputtgeht, gibt es eine Erklärung und eine Lösung",
+    "text": "Ein Programm ist abgestürzt oder ein Dienst ausgefallen? D.Ai Heal zeigt eine Benachrichtigung und öffnet einen Chat, der in einfachen Worten erklärt, was passiert ist. Die Lösung stammt aus einer festen Liste und wird erst ausgeführt, wenn Sie klicken (Super+F1).",
+    "alt": "Das Fenster „D.Ai Help & Repair“: „Sagen Sie mir, was nicht funktioniert, oder wählen Sie ein Problem, das ich bemerkt habe“, mit zwei gefundenen Problemen, einem ausgefallenen Dienst und einer abgestürzten App, und einem Feld zum Beschreiben eines Problems."},
    {"img": "forge-app", "w": 1280, "h": 800, "kicker": "D.Ai Forge · Apps", "title": "Sie brauchen eine kleine App? Beschreiben Sie sie",
     "text": "„Bau mir eine To-do-Liste.“ Diamond schreibt die App, testet sie und korrigiert sie, bis sie funktioniert, und führt sie in einer Sandbox aus: Sie kann weder Ihre Dateien lesen noch online gehen, sofern Sie es nicht erlauben.",
     "alt": "Eine To-do-Listen-App namens „Meine Aufgaben“ auf Hebräisch, erstellt von D.Ai Forge, mit zwei Aufgaben, einem Hinzufügen-Button und einem Löschen-Button."},
@@ -39,6 +45,9 @@
    {"img": "clip", "w": 1280, "h": 800, "kicker": "D.Ai Clip", "title": "Ein Zwischenablageverlauf, der niemals Passwörter speichert",
     "text": "Super+V zeigt, was Sie kopiert haben, auf Hebräisch und Englisch, mit Suche. Passwörter, Tokens und Kartennummern werden erkannt und nie gespeichert.",
     "alt": "Das Fenster des Zwischenablageverlaufs mit Suche und zwei kopierten Texten, einer auf Hebräisch und einer auf Englisch."},
+   {"img": "way-in", "w": 1280, "h": 800, "kicker": "Von der ersten Sekunde an", "title": "Bootmenü, Ladebildschirm und Anmeldung – alles im Look von D.Ai",
+    "text": "Vom Menü des USB-Sticks (in acht Sprachen) über den Ladebildschirm, auf dem eine verschlüsselte Festplatte nach ihrer Passphrase fragt, bis zum Anmeldebildschirm mit Uhr, Tastatursprache und einer Warnung bei Caps Lock – von rechts nach links auf Hebräisch und Arabisch.",
+    "alt": "Vier Bilder: das Bootmenü des USB-Sticks mit dem Diamanten und „Start D.Ai OS“, sein Untermenü für die Sprache, der Ladebildschirm mit dem Diamanten und der Anmeldebildschirm mit Uhr und Passwortfeld."},
    {"img": "installer", "w": 1280, "h": 800, "kicker": "Installation", "title": "Erst vom USB-Stick ausprobieren, dann verschlüsselt installieren",
     "text": "D.Ai OS startet von einem USB-Stick, ohne etwas zu verändern. So können Sie zuerst WLAN, Ton und Drucker prüfen. Das Installationsprogramm verschlüsselt die gesamte Festplatte, und der Willkommensassistent stellt Ihnen ein paar Fragen in Ihrer Sprache.",
     "alt": "Das D.Ai OS-Installationsprogramm: die Schritte an der Seite (Willkommen, Standort, Tastatur, Partitionen, Benutzer, Zusammenfassung, Installation, Fertig) und der D.Ai OS-Diamant."}
@@ -72,7 +81,7 @@
     ["Nichts wird gesendet", "keine Telemetrie, keine Werbung und kein Konto erforderlich."]]},
    {"icon": "☀", "title": "Für jeden Tag", "items": [
     ["D.Ai Move", "von Windows: Dokumente, Bilder, Browser-Lesezeichen und E-Mails."],
-    ["Designs", "D.Ai Night, D.Ai Day und hoher Kontrast, in jedem D.Ai-Fenster."],
+    ["Designs", "D.Ai Night, D.Ai Day und hoher Kontrast, in jedem D.Ai-Fenster, ausgewählt mit einem Satz („helles Design“)."],
     ["Das Wichtigste", "Screenshots (Druck), Nachtlicht, eine Bildschirmtastatur, eine Lupe und die meisten Drucker ohne Treiber."],
     ["Software", "die Pakete von Debian und Flathub, dazu Anleitungen für Zoom, Steam, Office-Alternativen und Firmen-VPNs."]]},
    {"icon": "🧩", "title": "Editionen", "items": [

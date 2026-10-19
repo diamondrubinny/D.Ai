@@ -2,11 +2,13 @@
 
 🌍 **English** · [עברית](#בעברית) · [العربية](docs/readme/README.ar.md) · [Русский](docs/readme/README.ru.md) · [Español](docs/readme/README.es.md) · [Français](docs/readme/README.fr.md) · [Deutsch](docs/readme/README.de.md) · [Português](docs/readme/README.pt.md)
 
-**A free, secure, open-source Linux desktop with a built-in local AI, a Hebrew-first experience, and a builder that extends the system from plain text.**
+**A free, secure, open-source Linux desktop with a built-in local AI, a Hebrew-first experience in eight languages, and a builder that extends the system from plain text.**
+
+🌐 **Website:** [rubinny.com](https://rubinny.com) · ⬇️ **Download:** [latest release](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
 Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 
-![D.Ai Night desktop](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
+![The D.Ai OS desktop: a floating taskbar with the diamond button and a command field](https://github.com/diamondrubinny/D.Ai/blob/docs/os-plan/docs/screenshots/desktop.png?raw=true)
 
 > **Status:** early development. The first working version builds and boots in CI; the installer works but a full end-to-end install is not yet automated. Not recommended as your only operating system.
 
@@ -20,12 +22,31 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 - **A system that develops and repairs itself.** Every app the AI builds is tested in a sandbox and repaired before you see it; ask for an automation and it runs on a schedule; it notices what you are missing and suggests it; when something crashes, a chat explains it and fixes it with your OK.
 - **Hebrew and RTL done properly.** HE/EN indicator, wrong-layout fixer (`akuo` becomes `שלום`), Hebrew app names and Hebrew voice dictation.
 - **Secure by default.** Default-deny firewall, AppArmor, kernel hardening, locked root, automatic security updates, full-disk encryption in the installer.
+- **Eight languages.** Hebrew, English, Arabic, Russian, Spanish, French, German and Portuguese: the interface, the sentences D.Ai understands, the boot menu and the website.
+- **Beautiful from the first second.** A D.Ai boot menu, a loading screen where the encrypted disk asks for its passphrase, a D.Ai login screen, and three themes (Night, Day, high contrast) that every window follows.
+
+## Screenshots
+
+Every picture is taken automatically in CI, from the ISO booted in a virtual machine.
+
+| | | |
+|---|---|---|
+| ![Diamond answers a question in the command bar]({B}ai-answer.png?raw=true) | ![+install antivirus: the plan before anything changes]({B}forge-preview.png?raw=true) | ![D.Ai Quick: Wi-Fi, do not disturb, volume, security score]({B}quick.png?raw=true) |
+| **Diamond**: `?` and a question, answered on this computer | **D.Ai Forge**: `+install antivirus` shows the plan first | **D.Ai Quick**: everything quick, with the security score |
+| ![J, the mail client]({B}j.png?raw=true) | ![D.Ai Find: find photos from today]({B}find.png?raw=true) | ![D.Ai Heal: help and repair chat]({B}heal.png?raw=true) |
+| **J**: mail, signed and encrypted, imports from Outlook | **D.Ai Find**: files by meaning and date | **D.Ai Heal**: explains a crash and offers a fix |
+| ![MOM, the task manager]({B}mom.png?raw=true) | ![D.Ai Clip: clipboard history]({B}clip.png?raw=true) | ![D.Ai Welcome in Arabic, right to left]({B}welcome-ar.png?raw=true) |
+| **MOM**: apps, not processes, explained in plain words | **D.Ai Clip**: never keeps passwords | **Welcome** in Arabic, right to left |
+| ![The USB boot menu]({B}boot-menu.png?raw=true) | ![The loading screen]({B}boot-splash.png?raw=true) | ![The login screen]({B}login.png?raw=true) |
+| **Boot menu**: "Start D.Ai OS", eight languages | **Loading**: the diamond (and the disk passphrase) | **Login**: clock, keyboard language, Caps Lock warning |
 
 ## What's included
 
 | Component | What it does | Docs |
 |---|---|---|
-| **D.Ai Night desktop** | A faceted diamond Start button, a real command field in the panel, HE/EN indicator, dark theme, lock screen | `docs/DESIGN.md` |
+| **D.Ai Night desktop** | A floating taskbar with the Living Diamond (status at a glance), a real command field, HE/EN indicator, lock screen | `docs/DESIGN.md`, `docs/TASKBAR.md` |
+| **Themes** | D.Ai Night, D.Ai Day and high contrast in every D.Ai window (`dai_style`), chosen in one sentence: "light theme" | `docs/V2.md` |
+| **The way to the desktop** | D.Ai boot menu (BIOS and UEFI), Plymouth loading screen, SDDM login screen, translated and right-to-left | `docs/V2.md` |
 | **D.Ai Command** | Launch apps (also by Hebrew name), commands, safe calculator, layout fixer. `?` asks the local AI, `!` opens Tune, `+` opens Forge | |
 | **D.Ai Tune** | Configure the system in text, through a closed catalog of validated actions, a root helper that re-validates everything, a journal and undo, and a security score | `docs/TUNE.md` |
 | **Local AI** | Pinned llama.cpp, models downloaded on demand with pinned SHA-256, automatic coder model for code | `docs/AI.md` |
@@ -40,6 +61,13 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 | **D.Ai Backup** | Encrypted automatic backups (restic) to an external drive | `docs/BACKUP.md` |
 | **D.Ai Move** | Bring your files and bookmarks over from Windows | `docs/MOVE.md` |
 | **D.Ai Clip** | Clipboard history (Super+V) that never keeps passwords | |
+| **D.Ai Quick** | Wi-Fi, do not disturb, battery saver, volume, security score and who used the camera, next to the clock (Super+N) | `docs/TASKBAR.md` |
+| **J** | Mail in Hebrew: finds the server settings by itself, OpenPGP and S/MIME, no tracking pixels, imports mbox, Maildir and Outlook PST | `docs/MAIL.md` |
+| **Ruby** | The browser: Firefox ESR with strict tracking protection, uBlock Origin and containers | `docs/BROWSER.md` |
+| **MOM** | The task manager: apps instead of processes, explained by Diamond, and a guard against runaway programs (Ctrl+Shift+Esc) | `docs/MOM.md` |
+| **Raz** | Checks the system before and after every update; every D.Ai window passes an accessibility check in three themes before release | `docs/RAZ.md` |
+| **D.Ai Rescue** | From the USB stick: when the installed system no longer starts after an update, go back to before it | `docs/BASICS.md` |
+| **The basics** | Screenshots (Print), night light, on-screen keyboard, magnifier, drives that mount by themselves, printers with no driver, firmware updates | `docs/BASICS.md` |
 | **D.Ai Welcome** | First-run setup wizard | `docs/WELCOME.md` |
 | **D.Ai OEM** | Prepare a computer for its new owner (refurbishers, charities) | `docs/OEM.md` |
 | **Installer** | Calamares with LUKS full-disk encryption, D.Ai branded | `docs/INSTALL.md` |
@@ -108,7 +136,7 @@ CI (`.github/workflows/build-iso.yml`) runs ShellCheck and unit tests, builds ll
 apps/      D.Ai applications (command, tune, ai, forge, voice, code, ...)
 build/     live-build configuration and build scripts
 docs/      design, security model and user guides
-site/      static Hebrew landing page
+site/      the website (rubinny.com), eight languages, built from site/src
 tests/     unit, VM and apt-repository tests
 ```
 
@@ -118,8 +146,9 @@ tests/     unit, VM and apt-repository tests
 - ClamAV scans on a schedule. On-access scanning is not enabled yet.
 - App quality depends on the local model (the 1.5B coder model is recommended).
 - The end-to-end install is not automated in CI yet.
-- Secure Boot signing is not done yet.
-- `grub-btrfs` is not available in Debian 13, and the installer default stays ext4 until Btrfs is approved.
+- Secure Boot: the USB stick boots through Debian's signed shim; this still needs checking on real hardware with Secure Boot on.
+- `grub-btrfs` is not available in Debian 13, so going back to a snapshot from the boot menu is done with D.Ai Rescue from the USB stick instead.
+- The panel, the window borders and Firefox do not follow the light theme yet.
 
 See `docs/PLAN.md` for the roadmap.
 
@@ -131,7 +160,7 @@ Contributions are welcome. Please read `CONTRIBUTING.md` first. The project uses
 
 Copyright (c) 2026 Diamond Rubinny (d.Ai). The code is licensed under Apache-2.0: copies must keep `LICENSE`, `NOTICE` and the copyright notices in the files.
 
-**"D.Ai", "D.Ai OS" and the diamond logo are trademarks.** The license grants no rights to them, so modified versions may not be distributed under the D.Ai name or logo, or presented as official. See `TRADEMARKS.md`. Terms of use for the official releases: `docs/legal/TERMS.md` (draft, pending legal review). Debian packages in the images keep their own licenses.
+**"D.Ai", "D.Ai OS" and the diamond logo are trademarks.** The license grants no rights to them, so modified versions may not be distributed under the D.Ai name or logo, or presented as official. See `TRADEMARKS.md`. Terms of use and privacy policy: [rubinny.com](https://rubinny.com/terms.html) (pending legal review before the site goes live). Debian packages in the images keep their own licenses.
 
 Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.com/claude-code).
 
@@ -147,6 +176,11 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **מערכת שמפתחת ומתקנת את עצמה:** כל אפליקציה שה-AI בונה נבדקת בארגז חול ומתוקנת לפני שאתם רואים אותה; אוטומציות רצות לפי לוח זמנים; וכשמשהו קורס, נפתח צ'אט שמסביר ומתקן באישורכם.
 - **עברית ו-RTL:** מחוון HE/EN, תיקון הקלדה בפריסה שגויה (`akuo` ל-`שלום`), הכתבה בעברית וחיפוש קבצים בעברית.
 - **אבטחה כברירת מחדל:** חומת אש, AppArmor, הצפנת דיסק מלאה בהתקנה, גיבוי מוצפן ועדכוני אבטחה אוטומטיים.
+- **שמונה שפות:** עברית, אנגלית, ערבית, רוסית, ספרדית, צרפתית, גרמנית ופורטוגזית.
+- **יפה מהשנייה הראשונה:** תפריט אתחול, מסך טעינה ומסך כניסה בעיצוב של D.Ai, ושלוש ערכות נושא (כהה, בהירה וניגודיות גבוהה).
+- **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
+
+**אתר:** [rubinny.com](https://rubinny.com) · **הורדה:** [הגרסה האחרונה](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
 **זכויות:** © 2026 Diamond Rubinny (d.Ai). הקוד ברישיון Apache-2.0. השם D.Ai והלוגו הם סימני מסחר: אסור להפיץ גרסה משונה בשמם (`TRADEMARKS.md`).
 

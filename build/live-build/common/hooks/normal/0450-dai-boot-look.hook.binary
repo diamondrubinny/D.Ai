@@ -47,7 +47,9 @@ GRUB_COLORS = {  # live-build's colors -> D.Ai's
 
 
 def rename(text: str) -> str:
-    """"Live system (amd64)" -> "Start D.Ai OS"; the fail-safe entry keeps saying what it is."""
+    """"Live system (amd64)" -> "Start D.Ai OS"; the fail-safe entry keeps saying what it is; the menu's
+    title (in whichever syslinux file live-build put it) becomes "D.Ai OS"."""
+    text = re.sub(r"(?m)^(\s*menu title)\s+Boot menu\s*$", rf"\1 {TITLE}", text)
     text = re.sub(r"Live system \([a-z0-9_]+ fail-safe mode\)", "Start D.Ai OS (safe graphics)", text)
     return re.sub(r"Live system \([a-z0-9_]+\)", "Start D.Ai OS", text)
 
@@ -60,7 +62,7 @@ def patch_stdmenu(text: str) -> str:
 
 
 def patch_menu(text: str) -> str:
-    return rename(re.sub(r"(?m)^(\s*menu title)\s+Boot menu\s*$", rf"\1 {TITLE}", text))
+    return rename(text)
 
 
 def patch_grub_theme(text: str) -> str:
