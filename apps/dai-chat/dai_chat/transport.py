@@ -29,9 +29,11 @@ from dataclasses import dataclass, field
 from typing import Awaitable, Callable
 
 from . import message as msg
-from .keys import Identity
+from . import pairing
+from .invite import FPR_SIZE, Invite
+from .keys import Identity, fingerprint
 from .session import HELLO_SIZE, MAX_MESSAGE, REPLY_SIZE, HandshakeError, Initiator, Responder, Session, SessionError
-from .store import Store
+from .store import Contact, Store
 
 PORT = 7714  # the local-network port (chosen for D.Ai, not registered with IANA)
 HANDSHAKE_TIMEOUT = 30.0  # Tor circuits can take a while
@@ -88,8 +90,11 @@ class Node:
     """One person's Diamond Chat: answers contacts who connect and delivers the queue to them."""
 
     def __init__(self, me: Identity, store: Store, on_message: Callable[[bytes, msg.Message], None] | None = None,
-                 idle_timeout: float = IDLE_TIMEOUT) -> None:
+                 idle_timeout: float = IDLE_TIMEOUT, service: bytes = b"",
+                 on_paired: Callable[[Contact], None] | None = None) -> None:
+        """`service` is the public key of our onion service, the one in our invitation code."""
         self.me, self.store, self.on_message = me, store, on_message
+        self.service, self.on_paired = service, on_paired
         self.idle_timeout = idle_timeout
         self.limit = RateLimit()
 
@@ -100,15 +105,51 @@ class Node:
         try:
             if not self.limit.allow(address):
                 return None
-            hello = await read_frame(reader, HELLO_SIZE, HANDSHAKE_TIMEOUT)
+            hello = await read_frame(reader, max(HELLO_SIZE, pairing.PAIR_SIZE), HANDSHAKE_TIMEOUT)
+            if hello[:1] == pairing.MARK:
+                await self._answer_pairing(hello, writer)
+                return None
             reply, session = Responder(self.me, self.store.may_talk).answer(hello)
             write_frame(writer, reply)
             await writer.drain()
             return await self._exchange(session, reader, writer)
-        except (HandshakeError, TransportError, ConnectionError):
+        except (HandshakeError, pairing.PairingError, TransportError, ConnectionError):
             return None  # a stranger or a broken connection learns nothing more
         finally:
             await _close(writer)
+
+    async def _answer_pairing(self, frame: bytes, writer: asyncio.StreamWriter) -> None:
+        if not self.service:
+            raise pairing.PairingError("pairing is not on")
+        ack, public, _service = pairing.answer(self.me, self.service, frame, self.store.waiting_for)
+        write_frame(writer, ack)
+        await writer.drain()
+        contact = self.store.paired(fingerprint(public)[:FPR_SIZE], public)
+        if contact and self.on_paired:
+            self.on_paired(contact)
+
+    async def pair(self, theirs: Invite, connect: Connect) -> Contact:
+        """We typed their code (store.wait_for); they typed ours. Swap keys and become contacts."""
+        if not self.service:
+            raise TransportError("pairing is not on")
+        try:
+            reader, writer = await asyncio.wait_for(connect(), HANDSHAKE_TIMEOUT)
+        except (OSError, asyncio.TimeoutError) as exc:
+            raise TransportError("the contact is not reachable") from exc
+        try:
+            write_frame(writer, pairing.request(self.me, self.service, theirs))
+            await writer.drain()
+            public = pairing.finish(self.me, theirs, await read_frame(reader, pairing.ACK_SIZE, HANDSHAKE_TIMEOUT))
+        except pairing.PairingError as exc:
+            raise TransportError("the answer does not match their code") from exc
+        finally:
+            await _close(writer)
+        contact = self.store.paired(theirs.fingerprint, public)
+        if contact is None:
+            raise TransportError("this code was cancelled")
+        if self.on_paired:
+            self.on_paired(contact)
+        return contact
 
     # the initiator side: we have something for a contact (or just say hello)
     async def deliver(self, contact: bytes, connect: Connect) -> Result:

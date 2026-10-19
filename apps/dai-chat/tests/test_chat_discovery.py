@@ -31,9 +31,13 @@ class Zc:
         return self.infos.get(name)
 
 
+def someone():
+    return discovery.short(keys.Identity.generate().public)
+
+
 class TagTests(unittest.TestCase):
     def test_tags_change_every_hour_and_differ_per_person(self):
-        dana, noa = keys.Identity.generate().public, keys.Identity.generate().public
+        dana, noa = someone(), someone()
         now = 1_800_000_000
         self.assertEqual(len(discovery.tag(dana, now)), 16)
         self.assertNotEqual(discovery.tag(dana, now), discovery.tag(dana, now + 3600))
@@ -41,7 +45,7 @@ class TagTests(unittest.TestCase):
         self.assertIn(discovery.tag(dana, now - 3600), discovery.tags_now(dana, now))  # a clock a bit behind
 
     def test_only_the_contact_is_found(self):
-        dana, stranger = keys.Identity.generate().public, keys.Identity.generate().public
+        dana, stranger = someone(), someone()
         seen = discovery.Discovery(keys.Identity.generate().public, 7714)
         zc = Zc({"a._dai-chat._tcp.local.": Info({b"t": discovery.tag(dana).encode()}),
                  "b._dai-chat._tcp.local.": Info({b"t": b"not-a-tag"}),
@@ -74,11 +78,11 @@ class RealMdnsTests(unittest.TestCase):
         one.start(address)
         two.start(address)
         for _ in range(40):
-            if one.find(bob.public) and two.find(alice.public):
+            if one.find(discovery.short(bob.public)) and two.find(discovery.short(alice.public)):
                 break
             time.sleep(0.25)
-        self.assertEqual([(s.host, s.port) for s in one.find(bob.public)], [(address, 7715)])
-        self.assertEqual([(s.host, s.port) for s in two.find(alice.public)], [(address, 7714)])
+        self.assertEqual([(s.host, s.port) for s in one.find(discovery.short(bob.public))], [(address, 7715)])
+        self.assertEqual([(s.host, s.port) for s in two.find(discovery.short(alice.public))], [(address, 7714)])
         self.assertNotIn(socket.gethostname(), one.info.name)  # the computer's name is not announced
 
 

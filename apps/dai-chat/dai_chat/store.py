@@ -13,6 +13,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from .invite import Invite
 from .message import MIMES, PICTURE, TEXT, Message
 
 SCHEMA = """
@@ -36,6 +37,12 @@ CREATE TABLE IF NOT EXISTS messages (
     PRIMARY KEY (contact, id)
 );
 CREATE INDEX IF NOT EXISTS by_contact ON messages(contact, time);
+CREATE TABLE IF NOT EXISTS waiting (
+    fpr BLOB PRIMARY KEY CHECK (length(fpr) = 10),
+    service BLOB NOT NULL CHECK (length(service) = 32),
+    name TEXT NOT NULL,
+    added REAL NOT NULL
+);
 """
 EXTENSIONS = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
 
@@ -64,14 +71,18 @@ class Store:
         path = self.folder / "chat.db"
         if not path.exists():
             os.close(os.open(path, os.O_CREAT | os.O_WRONLY, 0o600))
-        self.db = sqlite3.connect(path)
+        self.db = sqlite3.connect(path, timeout=10)
         self.db.execute("PRAGMA foreign_keys = ON")
+        self.db.execute("PRAGMA journal_mode = WAL")  # the window and the background service share it
         self.db.executescript(SCHEMA)
 
     # contacts
     def add_contact(self, contact: Contact) -> None:
         with self.db:
-            self.db.execute("INSERT OR REPLACE INTO contacts VALUES (?, ?, ?, ?, ?, ?)",
+            # an upsert, not INSERT OR REPLACE: a replace deletes the row, and the cascade the history with it
+            self.db.execute("INSERT INTO contacts VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(public) DO UPDATE SET "
+                            "name = excluded.name, onion = excluded.onion, verified = excluded.verified, "
+                            "blocked = excluded.blocked",
                             (contact.public, contact.name.strip()[:80] or "?", contact.onion, int(contact.verified),
                              int(contact.blocked), time.time()))
 
@@ -96,6 +107,36 @@ class Store:
     def set_blocked(self, public: bytes, blocked: bool = True) -> None:
         with self.db:
             self.db.execute("UPDATE contacts SET blocked = ? WHERE public = ?", (int(blocked), public))
+
+    # codes we typed, waiting for the other person to type ours (pairing.py)
+    def wait_for(self, invite: Invite, name: str) -> None:
+        with self.db:
+            self.db.execute("INSERT OR REPLACE INTO waiting VALUES (?, ?, ?, ?)",
+                            (invite.fingerprint, invite.service_key, name.strip()[:80] or "?", time.time()))
+
+    def waiting_for(self, fpr: bytes) -> Invite | None:
+        row = self.db.execute("SELECT service, fpr FROM waiting WHERE fpr = ?", (fpr,)).fetchone()
+        return Invite(row[0], row[1]) if row else None
+
+    def waiting(self) -> list[tuple[Invite, str]]:
+        rows = self.db.execute("SELECT service, fpr, name FROM waiting ORDER BY added").fetchall()
+        return [(Invite(r[0], r[1]), r[2]) for r in rows]
+
+    def cancel_waiting(self, fpr: bytes) -> None:
+        with self.db:
+            self.db.execute("DELETE FROM waiting WHERE fpr = ?", (fpr,))
+
+    def paired(self, fpr: bytes, public: bytes) -> Contact | None:
+        """The other person's key arrived and matched the code: they become an (unverified) contact."""
+        row = self.db.execute("SELECT service, name FROM waiting WHERE fpr = ?", (fpr,)).fetchone()
+        if row is None:
+            return None
+        known = self.contact(public)
+        contact = Contact(public, known.name if known else row[1], Invite(row[0], fpr).onion,
+                          verified=bool(known and known.verified), blocked=bool(known and known.blocked))
+        self.add_contact(contact)
+        self.cancel_waiting(fpr)
+        return contact
 
     # messages
     def add_message(self, contact: bytes, message: Message, outgoing: bool, state: str) -> None:

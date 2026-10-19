@@ -220,6 +220,12 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(self.store.delete_conversation(self.dana), 2)
         self.assertEqual(list((Path(self.tmp.name) / "chat" / "pictures").iterdir()), [])
 
+    def test_changing_a_contact_keeps_the_history(self):
+        self.store.add_message(self.dana, message.Message.text("hi"), outgoing=True, state="queued")
+        self.store.add_contact(store.Contact(self.dana, "Dana R", verified=True))
+        self.assertEqual(len(self.store.conversation(self.dana)), 1)
+        self.assertEqual(self.store.contact(self.dana).name, "Dana R")
+
     def test_only_known_unblocked_contacts(self):
         self.assertTrue(self.store.may_talk(self.dana))
         self.assertFalse(self.store.may_talk(keys.Identity.generate().public))
