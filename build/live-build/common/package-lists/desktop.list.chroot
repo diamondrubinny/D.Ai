@@ -7,6 +7,9 @@ labwc
 lxqt-session
 xwayland
 sddm
+# The diamond while the system loads, and the disk passphrase asked there (docs/V2.md D2)
+plymouth
+plymouth-themes
 xserver-xorg-core
 xserver-xorg-input-libinput
 swaylock

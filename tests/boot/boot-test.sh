@@ -345,6 +345,16 @@ monitor "screendump $ARTIFACT_DIR/magnifier.png -f png" || log "warning: screens
 type_keys meta_l-minus meta_l-minus
 sleep 1
 
+# The login screen of an installed system (docs/V2.md D2): the live session logs in by itself, so the greeter
+# is shown in its test mode, with the D.Ai theme, as a window of this session.
+log "interactive: the D.Ai login screen (SDDM greeter, test mode)"
+command_bar shift-4 spc s d d m minus g r e e t e r minus q t 6 spc minus minus t e s t minus m o d e spc \
+  minus minus t h e m e spc slash u s r slash s h a r e slash s d d m slash t h e m e s slash d a i ret
+sleep 6
+monitor "screendump $ARTIFACT_DIR/login.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
+
 if ((checks_ok == 0)); then
   log "last serial console lines:"
   tail -n 60 "$SERIAL_LOG" | sed 's/^/  | /' >&2
@@ -357,7 +367,7 @@ log "screenshots: the boot menu and its Language submenu"
 kill "$QEMU_PID" 2>/dev/null || true
 wait "$QEMU_PID" 2>/dev/null || true
 MENU_SOCK="$ARTIFACT_DIR/qemu-menu.sock"
-qemu-system-x86_64 "${ACCEL[@]}" -m 1024 -cdrom "$ISO" -boot d -vga std -display none \
+qemu-system-x86_64 "${ACCEL[@]}" -m 2048 -cdrom "$ISO" -boot d -vga std -display none \
   -monitor "unix:$MENU_SOCK,server,nowait" -no-reboot &
 QEMU_PID=$!
 sleep 8
@@ -367,6 +377,13 @@ MON="$MENU_SOCK" monitor "screendump $ARTIFACT_DIR/boot-menu.png -f png" || log 
 MON="$MENU_SOCK" monitor "sendkey down" "sendkey ret" || true
 sleep 2
 MON="$MENU_SOCK" monitor "screendump $ARTIFACT_DIR/boot-languages.png -f png" || log "warning: screenshot failed"
+# Start the first language (English) from the submenu: its command line has "splash", so the D.Ai loading
+# screen (Plymouth) shows while the live system starts. A few pictures, since its timing varies.
+MON="$MENU_SOCK" monitor "sendkey ret" || true
+for shot in 1 2 3; do
+  sleep 6
+  MON="$MENU_SOCK" monitor "screendump $ARTIFACT_DIR/boot-splash-$shot.png -f png" || log "warning: screenshot failed"
+done
 kill "$QEMU_PID" 2>/dev/null || true
 wait "$QEMU_PID" 2>/dev/null || true
 rm -f -- "$MENU_SOCK"

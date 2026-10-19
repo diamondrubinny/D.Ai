@@ -70,10 +70,10 @@ jobs:
       - name: Website (Hebrew RTL, AA contrast, no trackers, links)
         run: python3 -m unittest tests/site/test_site.py -v
 
-      - name: Boot menu languages (GRUB and syslinux)
+      - name: Boot menu languages and the way to the desktop (GRUB, syslinux, Plymouth, SDDM)
         run: |
           sudo apt-get install -y -qq --no-install-recommends grub-common >/dev/null || true
-          python3 -m unittest tests/boot/test_boot_languages.py -v
+          python3 -m unittest tests/boot/test_boot_languages.py tests/boot/test_boot_look.py -v
 
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
@@ -519,7 +519,7 @@ jobs:
           set -euo pipefail
           mkdir -p publish
           for edition in user dev edu; do
-            for file in desktop.png apps.png panel-field.png ai-answer.png start-menu.png forge-preview.png forge-window.png forge-app.png installer.png welcome.png clip.png quick.png mom.png welcome-ar.png mom-ru.png j.png find.png doctor.png heal.png keyboard.png magnifier.png boot-menu.png boot-languages.png system-checks.txt; do
+            for file in desktop.png apps.png panel-field.png ai-answer.png start-menu.png forge-preview.png forge-window.png forge-app.png installer.png welcome.png clip.png quick.png mom.png welcome-ar.png mom-ru.png j.png find.png doctor.png heal.png keyboard.png magnifier.png boot-menu.png boot-languages.png login.png boot-splash-1.png boot-splash-2.png boot-splash-3.png system-checks.txt; do
               src="shots/boot-$edition/$file"
               if [ -f "$src" ]; then cp "$src" "publish/$edition-$file"; fi
             done

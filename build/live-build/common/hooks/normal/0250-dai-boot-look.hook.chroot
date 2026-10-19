@@ -1,0 +1,19 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The way to the desktop (docs/V2.md D2): the D.Ai Plymouth theme becomes the default and goes into the
+# initrd. The password-box pictures are Debian's own, from the "spinner" theme, so they are not vendored.
+set -eu
+
+theme=/usr/share/plymouth/themes/dai
+spinner=/usr/share/plymouth/themes/spinner
+[ -f "$theme/dai.plymouth" ] || { echo "dai-boot-look: $theme/dai.plymouth missing" >&2; exit 1; }
+if [ -d "$spinner" ]; then
+	for picture in entry bullet lock capslock keyboard keymap-render; do
+		[ -f "$spinner/$picture.png" ] && cp "$spinner/$picture.png" "$theme/$picture.png"
+	done
+else
+	echo "dai-boot-look: $spinner not found, the passphrase box will be plain" >&2
+fi
+# -R rebuilds the initrd, which is where Plymouth draws while the disk is still being opened.
+plymouth-set-default-theme -R dai

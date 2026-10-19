@@ -1,0 +1,110 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""The USB boot menu in D.Ai's look (docs/V2.md D2).
+
+live-build writes its menus with Debian's splash during the binary stage; this hook runs after it (and
+after 0400, which adds the Language submenu). It:
+  - replaces the splash pictures with D.Ai's (drawn by build/scripts/make-boot-art.py and shipped in the
+    chroot under /usr/share/dai/branding/boot): isolinux/splash.png (BIOS, 640x480) and boot/grub/splash.png
+    (UEFI, 1920x1080, cropped to the screen rather than stretched);
+  - gives syslinux and GRUB D.Ai's colors;
+  - names the entries "Start D.Ai OS" instead of "Live system (amd64)".
+Kernel command lines, timeouts and the order of the entries stay as live-build wrote them. Anything missing
+is skipped with a note: the look must never break the build.
+"""
+
+from __future__ import annotations
+
+import re
+import shutil
+import sys
+from pathlib import Path
+
+ART = Path("usr/share/dai/branding/boot")
+TITLE = "D.Ai OS"
+# syslinux "menu color" lines: name, ANSI, foreground (#AARRGGBB), background, shadow
+SYSLINUX_COLORS = """menu color screen	* #00000000 #00000000 none
+menu color title	* #ffe6e9f5 #00000000 none
+menu color border	* #00000000 #00000000 none
+menu color unsel	* #ffa9b1d3 #00000000 none
+menu color hotkey	* #ff22d3ee #00000000 none
+menu color sel		* #ffffffff #ff5b3fd6 none
+menu color hotsel	1;7;37;40 #ffffffff #ff5b3fd6 none
+menu color disabled	* #ff5d668c #00000000 none
+menu color tabmsg	* #ffa9b1d3 #00000000 none
+menu color cmdmark	* #ff22d3ee #00000000 none
+menu color cmdline	* #ffe6e9f5 #00000000 none
+menu color timeout_msg	* #ffa9b1d3 #00000000 none
+menu color timeout	* #ff22d3ee #00000000 none
+menu color help		37;40 #ffe6e9f5 #00000000 none
+"""
+GRUB_COLORS = {  # live-build's colors -> D.Ai's
+    "item_color": "#a9b1d3", "selected_item_color": "#ffffff", "title-color": "#e6e9f5",
+    "text_color": "#e6e9f5", "fg_color": "#7c5cff", "bg_color": "#2a3563", "border_color": "#7c5cff",
+    "color": "#a9b1d3",
+}
+
+
+def rename(text: str) -> str:
+    """"Live system (amd64)" -> "Start D.Ai OS"; the fail-safe entry keeps saying what it is."""
+    text = re.sub(r"Live system \([a-z0-9_]+ fail-safe mode\)", "Start D.Ai OS (safe graphics)", text)
+    return re.sub(r"Live system \([a-z0-9_]+\)", "Start D.Ai OS", text)
+
+
+def patch_stdmenu(text: str) -> str:
+    """D.Ai's colors instead of every "menu color" line; the layout lines stay."""
+    kept = [line for line in text.splitlines(keepends=True) if not re.match(r"\s*menu color\s", line)]
+    index = next((i for i, line in enumerate(kept) if re.match(r"\s*menu background\s", line)), -1) + 1
+    return "".join(kept[:index]) + SYSLINUX_COLORS + "".join(kept[index:])
+
+
+def patch_menu(text: str) -> str:
+    return rename(re.sub(r"(?m)^(\s*menu title)\s+Boot menu\s*$", rf"\1 {TITLE}", text))
+
+
+def patch_grub_theme(text: str) -> str:
+    text = re.sub(r'(?m)^title-text:.*$', 'title-text: ""', text)
+    if "desktop-image-scale-method" not in text:
+        text = re.sub(r'(?m)^(desktop-image:.*)$',
+                      r'\1\ndesktop-image-scale-method: "crop"\ndesktop-image-h-align: "center"\n'
+                      r'desktop-image-v-align: "top"', text, count=1)
+    for key, value in GRUB_COLORS.items():
+        text = re.sub(rf'(?m)^(\s*{re.escape(key)}\s*[:=]\s*)"#[0-9A-Fa-f]{{6}}"', rf'\1"{value}"', text)
+    return text
+
+
+def main(binary: Path, chroot: Path) -> int:
+    done, skipped = [], []
+    pictures = {"isolinux/splash.png": "syslinux-splash.png", "boot/grub/splash.png": "grub-splash.png"}
+    for target, name in pictures.items():
+        source, destination = chroot / ART / name, binary / target
+        if source.is_file() and destination.parent.is_dir():
+            shutil.copyfile(source, destination)
+            done.append(target)
+        else:
+            skipped.append(target)
+    edits = [("isolinux/stdmenu.cfg", patch_stdmenu), ("isolinux/menu.cfg", patch_menu),
+             ("boot/grub/live-theme/theme.txt", patch_grub_theme)]
+    edits += [(str(path.relative_to(binary)), rename)
+              for pattern in ("isolinux/*.cfg", "boot/grub/*.cfg") for path in sorted(binary.glob(pattern))]
+    for relative, patch in edits:
+        path = binary / relative
+        if not path.is_file():
+            skipped.append(relative)
+            continue
+        old = path.read_text(encoding="utf-8", errors="surrogateescape")
+        new = patch(old)
+        if new != old:
+            path.write_text(new, encoding="utf-8", errors="surrogateescape")
+            done.append(relative)
+    print(f"D.Ai boot look: {', '.join(dict.fromkeys(done)) or 'nothing changed'}"
+          + (f"; not found: {', '.join(skipped)}" if skipped else ""))
+    return 0
+
+
+if __name__ == "__main__":
+    # live-build runs binary hooks inside the binary tree; also accept the build directory.
+    here = Path.cwd()
+    build = here if (here / "binary" / "live").is_dir() else here.parent
+    sys.exit(main(build / "binary" if (build / "binary").is_dir() else here, build / "chroot"))

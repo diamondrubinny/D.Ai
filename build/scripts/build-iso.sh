@@ -92,7 +92,7 @@ configure() {
     --iso-application "D.Ai OS" \
     --iso-publisher "Diamond Rubinny (d.Ai)" \
     --iso-volume "$volume" \
-    --bootappend-live "boot=live components quiet hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il keyboard-options=grp:alt_shift_toggle timezone=Asia/Jerusalem" \
+    --bootappend-live "boot=live components quiet splash hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il keyboard-options=grp:alt_shift_toggle timezone=Asia/Jerusalem" \
     "${mirror_args[@]}"
 
   # Layer the shared config first, then the edition-specific overrides.
