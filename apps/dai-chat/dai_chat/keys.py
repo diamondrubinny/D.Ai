@@ -81,26 +81,28 @@ class KeyringStore:
 
     where = "keyring"
 
-    def __init__(self, run: Callable = subprocess.run) -> None:
-        self.run = run
+    def __init__(self, run: Callable = subprocess.run, kind: str = "identity") -> None:
+        """`kind` is "identity", or "onion" for the key of the Tor onion service (tor.py)."""
+        self.run, self.kind = run, kind
+        self.attributes = ATTRIBUTES[:3] + [kind]
 
     def available(self) -> bool:
         try:
-            result = self.run(["secret-tool", "search", *ATTRIBUTES], capture_output=True, text=True, timeout=10)
+            result = self.run(["secret-tool", "search", *self.attributes], capture_output=True, text=True, timeout=10)
         except (OSError, subprocess.TimeoutExpired):
             return False
         return result.returncode in (0, 1)  # 1: nothing stored yet, but the keyring answered
 
     def load(self) -> bytes | None:
         try:
-            result = self.run(["secret-tool", "lookup", *ATTRIBUTES], capture_output=True, text=True, timeout=10)
+            result = self.run(["secret-tool", "lookup", *self.attributes], capture_output=True, text=True, timeout=10)
             data = base64.b64decode((result.stdout or "").strip(), validate=True) if result.returncode == 0 else b""
         except (OSError, subprocess.TimeoutExpired, ValueError):
             return None
         return data if len(data) == 32 else None
 
     def save(self, seed: bytes) -> None:
-        result = self.run(["secret-tool", "store", "--label=Diamond Chat identity", *ATTRIBUTES],
+        result = self.run(["secret-tool", "store", f"--label=Diamond Chat {self.kind}", *self.attributes],
                           input=base64.b64encode(seed).decode(), capture_output=True, text=True, timeout=10)
         if result.returncode != 0:
             raise OSError("the keyring refused to store the key")
