@@ -771,9 +771,9 @@ def main() -> int:
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
         ("vm: the stack, the honest check, a definition libvirt accepts",
-         "if ! command -v virsh >/dev/null; then echo VM_NOT_IN_THIS_EDITION; exit 0; fi; "
-         "dai-vm check; echo CHECK_RC=$?; "
-         f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py",
+         # No `exit` here: the checks share one shell over the serial line, and an exit would end it.
+         "if ! command -v virsh >/dev/null; then echo VM_NOT_IN_THIS_EDITION; else dai-vm check; echo CHECK_RC=$?; "
+         f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py; fi",
          True, lambda o: "VM_NOT_IN_THIS_EDITION" in o or all(mark in o for mark in (
              "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "UNDEFINED missing")), 180),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
