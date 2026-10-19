@@ -6,7 +6,8 @@
 
   kind 1 text      header {id, time}            body: the text (UTF-8)
   kind 2 picture   header {id, time, mime}      body: the picture (PNG, JPEG or WebP; checked again on arrival)
-  kind 3 receipt   header {id, time, state}     body: empty ("delivered" or "seen")
+  kind 3 receipt   header {id, time, state}     body: empty ("delivered", "seen" or "refused")
+  kind 4 bye       header {id, time}            body: empty (nothing more to send on this connection)
 
 Everything is checked when it is read, before anything else touches it: sizes, types, the id's shape.
 """
@@ -19,13 +20,13 @@ import time
 import uuid
 from dataclasses import dataclass, field
 
-TEXT, PICTURE, RECEIPT = 1, 2, 3
+TEXT, PICTURE, RECEIPT, BYE = 1, 2, 3, 4
 MAX_HEADER = 4096
 MAX_TEXT = 64 * 1024
 MAX_PICTURE = 25 * 1024 * 1024
 MIMES = {"image/png": b"\x89PNG\r\n\x1a\n", "image/jpeg": b"\xff\xd8\xff", "image/webp": b"RIFF"}
 ID = re.compile(r"^[0-9a-f]{32}$")
-STATES = ("delivered", "seen")
+STATES = ("delivered", "seen", "refused")
 
 
 class MessageError(ValueError):
@@ -53,6 +54,10 @@ class Message:
     def receipt(cls, message_id: str, state: str) -> "Message":
         return cls(RECEIPT, b"", id=message_id, state=state)
 
+    @classmethod
+    def bye(cls) -> "Message":
+        return cls(BYE)
+
     def encode(self) -> bytes:
         header: dict = {"id": self.id, "time": round(self.time, 3)}
         if self.kind == PICTURE:
@@ -76,7 +81,7 @@ def decode(frame: bytes) -> Message:
     if len(frame) < 5:
         raise MessageError("too short")
     kind, size = frame[0], struct.unpack(">I", frame[1:5])[0]
-    if kind not in (TEXT, PICTURE, RECEIPT):
+    if kind not in (TEXT, PICTURE, RECEIPT, BYE):
         raise MessageError("unknown kind")
     if size > MAX_HEADER or 5 + size > len(frame):
         raise MessageError("bad header")
@@ -105,6 +110,10 @@ def decode(frame: bytes) -> Message:
         if mime not in MIMES or sniff(body) != mime:
             raise MessageError("not a PNG, JPEG or WebP picture")
         return Message(PICTURE, body, message_id, float(when), mime=mime)
+    if kind == BYE:
+        if body:
+            raise MessageError("bad bye")
+        return Message(BYE, b"", message_id, float(when))
     state = header.get("state")
     if state not in STATES or body:
         raise MessageError("bad receipt")

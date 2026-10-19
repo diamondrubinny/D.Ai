@@ -13,7 +13,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from .message import MIMES, Message
+from .message import MIMES, PICTURE, TEXT, Message
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS contacts (
@@ -25,14 +25,15 @@ CREATE TABLE IF NOT EXISTS contacts (
     added REAL NOT NULL
 );
 CREATE TABLE IF NOT EXISTS messages (
-    id TEXT PRIMARY KEY,
+    id TEXT NOT NULL,
     contact BLOB NOT NULL REFERENCES contacts(public) ON DELETE CASCADE,
     outgoing INTEGER NOT NULL,
     kind INTEGER NOT NULL,
     text TEXT NOT NULL DEFAULT '',
     picture TEXT NOT NULL DEFAULT '',
     time REAL NOT NULL,
-    state TEXT NOT NULL
+    state TEXT NOT NULL,
+    PRIMARY KEY (contact, id)
 );
 CREATE INDEX IF NOT EXISTS by_contact ON messages(contact, time);
 """
@@ -98,23 +99,43 @@ class Store:
 
     # messages
     def add_message(self, contact: bytes, message: Message, outgoing: bool, state: str) -> None:
+        """Keeps a message; a message id belongs to one contact, so another contact cannot reuse or touch it."""
         picture = ""
-        if self.db.execute("SELECT 1 FROM messages WHERE id = ?", (message.id,)).fetchone():
+        if self.has_message(contact, message.id):
             return  # sent again (a retry after a lost receipt): already here
         if message.mime in MIMES:
-            path = self.pictures / f"{message.id}{EXTENSIONS[message.mime]}"  # the id is 32 hex digits: a safe name
+            # the id is 32 hex digits and the prefix is hex too: a safe name, unique per contact
+            path = self.pictures / f"{contact.hex()[:16]}-{message.id}{EXTENSIONS[message.mime]}"
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "wb") as handle:
                 handle.write(message.body)
             picture = path.name
-        text = message.body.decode("utf-8") if message.kind == 1 else ""
+        text = message.body.decode("utf-8") if message.kind == TEXT else ""
         with self.db:
             self.db.execute("INSERT OR IGNORE INTO messages VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                             (message.id, contact, int(outgoing), message.kind, text, picture, message.time, state))
 
-    def set_state(self, message_id: str, state: str) -> None:
+    def has_message(self, contact: bytes, message_id: str) -> bool:
+        return self.db.execute("SELECT 1 FROM messages WHERE contact = ? AND id = ?",
+                               (contact, message_id)).fetchone() is not None
+
+    def set_state(self, contact: bytes, message_id: str, state: str) -> None:
+        """Only the contact a message was sent to can mark it delivered, seen or refused."""
         with self.db:
-            self.db.execute("UPDATE messages SET state = ? WHERE id = ?", (state, message_id))
+            self.db.execute("UPDATE messages SET state = ? WHERE contact = ? AND id = ? AND outgoing = 1",
+                            (state, contact, message_id))
+
+    def outgoing(self, contact: bytes, message_id: str) -> Message | None:
+        """A queued message as it is sent again: the same id and time, so the other side keeps it once."""
+        row = self.db.execute("SELECT kind, text, picture, time FROM messages WHERE contact = ? AND id = ? "
+                              "AND outgoing = 1", (contact, message_id)).fetchone()
+        if not row:
+            return None
+        kind, text, picture, when = row
+        if kind == PICTURE:
+            mime = next(m for m, ext in EXTENSIONS.items() if picture.endswith(ext))
+            return Message(PICTURE, (self.pictures / picture).read_bytes(), message_id, when, mime=mime)
+        return Message(TEXT, text.encode("utf-8"), message_id, when)
 
     def conversation(self, contact: bytes, limit: int = 500) -> list[dict]:
         rows = self.db.execute("SELECT id, outgoing, kind, text, picture, time, state FROM messages "

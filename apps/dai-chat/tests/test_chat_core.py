@@ -205,7 +205,7 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(stat.S_IMODE((folder / "chat.db").stat().st_mode), 0o600)
         picture = message.Message.picture(PNG, "image/png")
         self.store.add_message(self.dana, picture, outgoing=False, state="delivered")
-        saved = folder / "pictures" / f"{picture.id}.png"
+        saved = folder / "pictures" / f"{self.dana.hex()[:16]}-{picture.id}.png"
         self.assertEqual(stat.S_IMODE(saved.stat().st_mode), 0o600)
 
     def test_history_queue_and_delete(self):
@@ -213,7 +213,7 @@ class StoreTests(unittest.TestCase):
         self.store.add_message(self.dana, hello, outgoing=True, state="queued")
         self.store.add_message(self.dana, hello, outgoing=True, state="queued")  # a retry: kept once
         self.assertEqual(self.store.queued(self.dana), [hello.id])
-        self.store.set_state(hello.id, "delivered")
+        self.store.set_state(self.dana, hello.id, "delivered")
         self.assertEqual(self.store.queued(self.dana), [])
         self.store.add_message(self.dana, message.Message.picture(PNG, "image/png"), outgoing=False, state="seen")
         self.assertEqual(len(self.store.conversation(self.dana)), 2)
