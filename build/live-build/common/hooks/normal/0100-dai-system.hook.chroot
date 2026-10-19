@@ -7,6 +7,12 @@ set -eu
 systemctl enable nftables.service
 systemctl enable apparmor.service
 systemctl set-default graphical.target
+# Diamond Chat (docs/SEND.md): Tor runs per person and only while Chat is on, never as a system service that
+# connects every computer to the Tor network at boot.
+if [ -e /lib/systemd/system/tor.service ] || [ -e /usr/lib/systemd/system/tor.service ]; then
+	systemctl disable tor.service tor@default.service >/dev/null 2>&1 || true
+	systemctl mask tor@default.service >/dev/null 2>&1 || true
+fi
 
 # Lock the root account; administration goes through sudo/polkit.
 passwd -l root

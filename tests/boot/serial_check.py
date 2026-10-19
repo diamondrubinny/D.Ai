@@ -675,6 +675,11 @@ def main() -> int:
          "timeout 5 pw-play --volume 0.1 /usr/share/sounds/dai/stereo/bell.oga; echo PW_RC=$?",
          True, lambda o: re.search(r"^1[5-9]$", o, re.M) is not None and "PLAY_RC=0" in o and "OFF_RC=1" in o
          and "WATCHING" in o, 40),  # PW_RC is information: a VM may have no sound card
+        # Diamond Chat (docs/SEND.md): the encryption library is there, and Tor is NOT running as a system service.
+        ("chat: no system Tor at boot", "python3 -c 'import nacl.bindings, zeroconf; print(\"NACL\" + \"_OK\")'; "
+         "command -v tor >/dev/null && echo TOR_''INSTALLED; systemctl is-active tor.service tor@default.service; "
+         "pgrep -x tor >/dev/null && echo TOR_''RUNNING || echo TOR_''IDLE",
+         True, lambda o: "NACL_OK" in o and "TOR_INSTALLED" in o and "TOR_IDLE" in o and "\nactive" not in "\n" + o, 30),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "
