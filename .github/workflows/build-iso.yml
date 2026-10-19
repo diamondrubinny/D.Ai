@@ -188,6 +188,13 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-clip/tests -t apps/dai-clip -v
 
+      - name: Unit tests (Diamond Chat core - keys, handshake, session, symbols, invitations, messages, storage)
+        env:
+          PYTHONPATH: apps/dai-chat
+        run: |
+          sudo apt-get install -y -qq --no-install-recommends python3-nacl >/dev/null
+          python3 -m unittest discover -s apps/dai-chat/tests -t apps/dai-chat -v
+
       - name: Unit tests (dai-sound, the diamond family)
         env:
           PYTHONPATH: apps/dai-sound

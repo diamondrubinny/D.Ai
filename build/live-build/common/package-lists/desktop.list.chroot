@@ -116,6 +116,10 @@ libsecret-tools
 python3-dnspython
 # D.Ai Forge app sandbox (also used by Flatpak)
 bubblewrap
+# Diamond Chat (docs/SEND.md): libsodium for end-to-end encryption, Tor for reaching contacts over the internet
+python3-nacl
+python3-zeroconf
+tor
 
 # Fonts (Hebrew + emoji)
 fonts-noto-core

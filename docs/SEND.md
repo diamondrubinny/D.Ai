@@ -1,6 +1,47 @@
-# Encrypted messages and pictures between D.Ai computers: plan for approval
+# Diamond Chat: encrypted messages and pictures between D.Ai computers
 
-> Written on 2026-10-19 after "sending encrypted messages and pictures between computers with the operating system". **Plan only: no code until the decisions in §8 are made.** The working name "D.Ai Link" **requires a trademark check.** The protocol **requires an external security review** before release.
+> Written on 2026-10-19 after "sending encrypted messages and pictures between computers with the operating system".
+> **Approved:**
+> - **The name:** Diamond Chat. **It requires a trademark check.**
+> - **Scope:** the internet from day one, through Tor onion services. The local network directly.
+> - **Content:** text and pictures.
+> - **History:** kept until deleted.
+>
+> The protocol **requires an external security review** before release.
+
+## 0. The approved architecture (replaces the options in §2)
+
+- **Two ways to reach a contact, with the same protocol and the same encryption on top:**
+  1. **The same network:** directly over TCP, found with mDNS (python3-zeroconf). Fast.
+  2. **The internet:** through a **Tor onion service**, as Briar, Cwtch and OnionShare do.
+     - Every computer is reachable at a private `.onion` address.
+     - No server, no account, and no IP address shown to anyone.
+     - Tor (`tor`, in Debian) runs as a user service only while Chat is on.
+     - The onion key is kept like the identity key, so the address stays the same.
+- **Order:** the local network is tried first, then Tor. A message to a contact who is not online waits in a queue on the sender's computer and goes out when they come online. Messages are never kept on a third party.
+- **Pairing over the internet:**
+  - An invitation code (base32: the onion address and a fingerprint of the identity key) is given out of band: by phone, in person, or as a QR code.
+  - Then the 6 symbols are compared, by phone or in a video call. Without that comparison the contact is marked "unverified", in orange, and no picture is received from them.
+- **Our own encryption runs above Tor's.** Tor protects the metadata (who talks to whom). Our end-to-end encryption protects the content even on the local network.
+- **The core** (`apps/dai-chat/dai_chat`): `keys` (identity, storage), `session` (signed handshake, keys with HKDF-BLAKE2b, XChaCha20-Poly1305 with counters, no replays), `sas` (the 6 symbols), `store` (SQLite 0600), `pictures` (stripping and sandboxed decoding), then `transport` (TCP/Tor) and `gui`.
+
+## Status
+
+- **Stage 1, the core:** built (`apps/dai-chat/dai_chat`):
+  - `keys`: identity in the keyring, a 0600 file only when there is no keyring;
+  - `session`: signed handshake, XChaCha20-Poly1305 with counters;
+  - `sas`: 6 symbols out of 64;
+  - `invite`: an invitation code with a checksum, canonical only;
+  - `message`: text, picture, receipt, with checks;
+  - `store`: SQLite 0600, a queue for offline contacts, deleting a conversation.
+- **The core's tests (23):**
+  - an impostor in the middle, a HELLO sent to someone else, an old reply;
+  - a weak key (low order);
+  - an altered message, a replayed message, a message out of order, a reflected message;
+  - a typo at any position of the invitation;
+  - a picture that is not what it claims to be, SVG refused, a path in the message id;
+  - the seed never on a command line.
+- **Next:** stage 2, the transport: TCP on the local network with mDNS, and Tor (an onion service per person). Then pairing, the window and the command field.
 
 ## 1. What I understood
 
@@ -114,12 +155,12 @@
 
 Each of these could come later.
 
-## 8. Decisions needed from you
+## 8. Decisions (made)
 
-1. **Scope:** local network first (recommended), or the internet from day one (stage B in parallel)?
-2. **What to send in stage 1:** text and pictures (recommended), or also any file, or also voice messages?
-3. **The name:** "D.Ai Link", "Diamond Chat", or something else? It needs a trademark check.
-4. **Message history:** keep it until deleted (recommended, like a messaging app), or delete automatically after 30 days?
+1. **Scope:** the internet from day one, through Tor onion services (§0), and the local network directly.
+2. **Content:** text and pictures.
+3. **The name:** Diamond Chat. **It requires a trademark check.**
+4. **History:** kept until deleted. You can delete a conversation, or turn on deletion after N days.
 
 ---
 

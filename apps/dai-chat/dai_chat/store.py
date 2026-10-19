@@ -1,0 +1,145 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""Contacts and messages, on this computer only (docs/SEND.md §3, "Storage and privacy").
+
+~/.local/share/dai/chat/: chat.db and pictures/, in a 0700 folder, files 0600, on the encrypted disk.
+History is kept until you delete it (the approved choice); deleting a conversation deletes it here only.
+"""
+from __future__ import annotations
+
+import os
+import sqlite3
+import time
+from dataclasses import dataclass
+from pathlib import Path
+
+from .message import MIMES, Message
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS contacts (
+    public BLOB PRIMARY KEY CHECK (length(public) = 32),
+    name TEXT NOT NULL,
+    onion TEXT NOT NULL DEFAULT '',
+    verified INTEGER NOT NULL DEFAULT 0,
+    blocked INTEGER NOT NULL DEFAULT 0,
+    added REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS messages (
+    id TEXT PRIMARY KEY,
+    contact BLOB NOT NULL REFERENCES contacts(public) ON DELETE CASCADE,
+    outgoing INTEGER NOT NULL,
+    kind INTEGER NOT NULL,
+    text TEXT NOT NULL DEFAULT '',
+    picture TEXT NOT NULL DEFAULT '',
+    time REAL NOT NULL,
+    state TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS by_contact ON messages(contact, time);
+"""
+EXTENSIONS = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
+
+
+@dataclass
+class Contact:
+    public: bytes
+    name: str
+    onion: str = ""
+    verified: bool = False
+    blocked: bool = False
+
+
+def default_dir() -> Path:
+    base = os.environ.get("XDG_DATA_HOME") or str(Path.home() / ".local" / "share")
+    return Path(base) / "dai" / "chat"
+
+
+class Store:
+    def __init__(self, folder: Path | None = None) -> None:
+        self.folder = folder or default_dir()
+        self.pictures = self.folder / "pictures"
+        self.pictures.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(self.folder, 0o700)
+        os.chmod(self.pictures, 0o700)
+        path = self.folder / "chat.db"
+        if not path.exists():
+            os.close(os.open(path, os.O_CREAT | os.O_WRONLY, 0o600))
+        self.db = sqlite3.connect(path)
+        self.db.execute("PRAGMA foreign_keys = ON")
+        self.db.executescript(SCHEMA)
+
+    # contacts
+    def add_contact(self, contact: Contact) -> None:
+        with self.db:
+            self.db.execute("INSERT OR REPLACE INTO contacts VALUES (?, ?, ?, ?, ?, ?)",
+                            (contact.public, contact.name.strip()[:80] or "?", contact.onion, int(contact.verified),
+                             int(contact.blocked), time.time()))
+
+    def contact(self, public: bytes) -> Contact | None:
+        row = self.db.execute("SELECT public, name, onion, verified, blocked FROM contacts WHERE public = ?",
+                              (public,)).fetchone()
+        return Contact(row[0], row[1], row[2], bool(row[3]), bool(row[4])) if row else None
+
+    def contacts(self) -> list[Contact]:
+        rows = self.db.execute("SELECT public, name, onion, verified, blocked FROM contacts ORDER BY name").fetchall()
+        return [Contact(r[0], r[1], r[2], bool(r[3]), bool(r[4])) for r in rows]
+
+    def may_talk(self, public: bytes) -> bool:
+        """Only known, unblocked contacts get through the handshake (session.Responder)."""
+        contact = self.contact(public)
+        return contact is not None and not contact.blocked
+
+    def set_verified(self, public: bytes, verified: bool = True) -> None:
+        with self.db:
+            self.db.execute("UPDATE contacts SET verified = ? WHERE public = ?", (int(verified), public))
+
+    def set_blocked(self, public: bytes, blocked: bool = True) -> None:
+        with self.db:
+            self.db.execute("UPDATE contacts SET blocked = ? WHERE public = ?", (int(blocked), public))
+
+    # messages
+    def add_message(self, contact: bytes, message: Message, outgoing: bool, state: str) -> None:
+        picture = ""
+        if self.db.execute("SELECT 1 FROM messages WHERE id = ?", (message.id,)).fetchone():
+            return  # sent again (a retry after a lost receipt): already here
+        if message.mime in MIMES:
+            path = self.pictures / f"{message.id}{EXTENSIONS[message.mime]}"  # the id is 32 hex digits: a safe name
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(message.body)
+            picture = path.name
+        text = message.body.decode("utf-8") if message.kind == 1 else ""
+        with self.db:
+            self.db.execute("INSERT OR IGNORE INTO messages VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                            (message.id, contact, int(outgoing), message.kind, text, picture, message.time, state))
+
+    def set_state(self, message_id: str, state: str) -> None:
+        with self.db:
+            self.db.execute("UPDATE messages SET state = ? WHERE id = ?", (state, message_id))
+
+    def conversation(self, contact: bytes, limit: int = 500) -> list[dict]:
+        rows = self.db.execute("SELECT id, outgoing, kind, text, picture, time, state FROM messages "
+                               "WHERE contact = ? ORDER BY time DESC LIMIT ?", (contact, limit)).fetchall()
+        keys = ("id", "outgoing", "kind", "text", "picture", "time", "state")
+        return [dict(zip(keys, row)) for row in reversed(rows)]
+
+    def queued(self, contact: bytes) -> list[str]:
+        """Outgoing messages still waiting for the contact to come online, oldest first."""
+        rows = self.db.execute("SELECT id FROM messages WHERE contact = ? AND outgoing = 1 AND state = 'queued' "
+                               "ORDER BY time", (contact,)).fetchall()
+        return [row[0] for row in rows]
+
+    def delete_conversation(self, contact: bytes) -> int:
+        """Deletes it here, pictures included; the other person keeps their copy (the window says so)."""
+        names = [r[0] for r in self.db.execute("SELECT picture FROM messages WHERE contact = ? AND picture != ''",
+                                               (contact,))]
+        with self.db:
+            count = self.db.execute("DELETE FROM messages WHERE contact = ?", (contact,)).rowcount
+        for name in names:
+            try:
+                (self.pictures / name).unlink()
+            except OSError:
+                pass
+        return count
+
+    def close(self) -> None:
+        self.db.close()
