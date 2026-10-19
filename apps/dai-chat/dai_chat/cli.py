@@ -1,8 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
-"""dai-chat: Diamond Chat from the command line (the window comes next; docs/SEND.md).
+"""dai-chat: Diamond Chat from the command line (docs/SEND.md).
 
   dai-chat window               the Diamond Chat window
+  dai-chat name [NAME]          the display name your contacts see (you choose it; never your user name)
+  dai-chat receive on|off       let contacts send you messages (off until you turn it on)
+  dai-chat requests             messages waiting for your decision: from someone new, or held as suspicious
+  dai-chat accept NAME | decline NAME   see NAME's messages, or delete them and block NAME
+  dai-chat show NAME ID | discard NAME ID   one held message: show it anyway, or delete it
   dai-chat code                 your invitation code, to give someone by phone or in person
   dai-chat add NAME CODE        the code someone gave you (they add yours too)
   dai-chat contacts             your contacts, and the codes still waiting
@@ -31,7 +36,8 @@ from typing import Callable
 
 from dai_i18n import pick, ui_lang
 
-from . import invite, keys, pictures, sas
+from . import invite, keys, pictures, sas, scan
+from .pairing import clean_name
 from .message import MAX_PICTURE, Message
 from .store import Contact, Store, default_dir
 
@@ -49,6 +55,14 @@ def default_stores(folder: Path) -> tuple[list, list]:
 def control_path() -> Path:
     run = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
     return Path(run) / "dai-chat" / "app.sock"
+
+
+def restart() -> None:
+    """A running service reads the settings again (nothing happens when Chat is off)."""
+    try:
+        subprocess.run(["systemctl", "--user", "try-restart", "dai-chat.service"], capture_output=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired):
+        pass
 
 
 def find(store: Store, name: str) -> Contact | None:
@@ -89,6 +103,56 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
         onion_identity, _ = keys.load_or_create(onion_stores)
         onion_seed = onion_identity.seed()
 
+        path = service.settings_path()
+        settings = service.Settings.load(path)
+        if command == "name":
+            if rest:
+                chosen = clean_name(" ".join(rest))
+                if not chosen:
+                    show(say(lang, "Write a name with letters in it.", "כתבו שם שיש בו אותיות."))
+                    return 2
+                settings.name = chosen
+                settings.save(path)
+                restart()
+            show(say(lang, "Your contacts see you as: {name}", "אנשי הקשר רואים אתכם בשם: {name}",
+                     name=settings.name) if settings.name else
+                 say(lang, "No display name yet. Choose one: dai-chat name NAME",
+                     "עדיין אין שם תצוגה. בחרו שם: dai-chat name NAME"))
+            return 0
+        if command in ("code", "add", "on", "receive") and not settings.name:
+            show(say(lang, "First choose the name your contacts will see (not your user name): dai-chat name NAME",
+                     "קודם בחרו את השם שאנשי הקשר יראו (לא שם המשתמש שלכם): dai-chat name NAME"))
+            return 2
+        if command == "receive" and rest and rest[0] in ("on", "off"):
+            settings.receive = rest[0] == "on"
+            settings.save(path)
+            restart()
+            show(say(lang, "Receiving is on. New contacts' messages wait for your OK, and every message is checked "
+                     "first.", "קבלת הודעות פועלת. הודעות מאנשי קשר חדשים ממתינות לאישורכם, וכל הודעה נבדקת "
+                     "קודם.") if settings.receive else
+                 say(lang, "Receiving is off: messages to you wait on your contacts' computers.",
+                     "קבלת הודעות כבויה: הודעות אליכם ממתינות במחשבים של אנשי הקשר."))
+            return 0
+        if command == "requests":
+            found = False
+            for contact in store.contacts():
+                for item in store.conversation(contact.public, waiting=True):
+                    found = True
+                    body = item["text"] or say(lang, "[a picture]", "[תמונה]")
+                    if item["state"] == "request":
+                        head = say(lang, "{name}, new: dai-chat accept {name} or decline {name}",
+                                   "{name}, חדש: dai-chat accept {name} או decline {name}", name=contact.name)
+                    else:
+                        head = say(lang, "{name}, held ({why}): dai-chat show {name} {id} or discard {name} {id}",
+                                   "{name}, עוכבה ({why}): dai-chat show {name} {id} או discard {name} {id}",
+                                   name=contact.name, id=item["id"][:8],
+                                   why=scan.describe(item["warning"].split(","), lang))
+                    show(head)
+                    if item["state"] == "request" and not item["warning"]:
+                        show(f"    {body[:200]}")
+            if not found:
+                show(say(lang, "Nothing is waiting for you.", "שום דבר לא ממתין לכם."))
+            return 0
         if command == "code":
             show(service.invite_code(onion_seed, me))
             return 0
@@ -114,7 +178,9 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
                 state = (say(lang, "blocked", "חסום") if contact.blocked else
                          say(lang, "verified", "מאומת") if contact.verified else
                          say(lang, "not verified: compare the symbols", "לא מאומת: השוו את הסמלים"))
-                show(f"{contact.name}  ({state})")
+                shown = f"{contact.name} ({contact.display})" if contact.display and contact.display != contact.name \
+                    else contact.name
+                show(f"{shown}  ({state})")
             for _theirs, name in store.waiting():
                 show(say(lang, "{name}  (waiting for them to add your code)", "{name}  (ממתינים שיוסיפו את הקוד שלכם)",
                          name=name))
@@ -133,12 +199,9 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
                 show(say(lang, "The firewall was not changed, so Chat stays on Tor only.",
                          "חומת האש לא שונתה, ולכן Chat נשאר ב־Tor בלבד."))
                 return 1
-            path = service.settings_path()
-            settings = service.Settings.load(path)
             settings.lan = rest[0] == "on"
             settings.save(path)
-            subprocess.run(["systemctl", "--user", "try-restart", "dai-chat.service"], capture_output=True,
-                           timeout=60)
+            restart()
             show(say(lang, "Saved. Contacts on this network can now reach you directly.",
                      "נשמר. אנשי קשר ברשת הזו יכולים עכשיו להגיע אליכם ישירות.") if settings.lan else
                  say(lang, "Saved. Chat uses Tor only.", "נשמר. Chat משתמש ב־Tor בלבד."))
@@ -186,7 +249,8 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
             return 0
 
         # the rest are about one contact
-        if command in ("symbols", "verify", "send", "send-picture", "read", "delete", "block", "unblock") and rest:
+        if command in ("symbols", "verify", "send", "send-picture", "read", "delete", "block", "unblock", "accept",
+                       "decline", "show", "discard") and rest:
             contact = find(store, rest[0])
             if contact is None:
                 show(say(lang, "No contact called {name}.", "אין איש קשר בשם {name}.", name=rest[0]))
@@ -239,12 +303,37 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
                 show(say(lang, "Queued, without its location and camera details.",
                          "בתור, בלי המיקום ופרטי המצלמה."))
                 return 0
+            if command == "accept":
+                store.accept(contact.public)
+                show(say(lang, "{name}'s messages are shown from now on (suspicious ones still wait for you).",
+                         "ההודעות של {name} מוצגות מעכשיו (הודעות חשודות עדיין ימתינו לכם).", name=contact.name))
+                return 0
+            if command == "decline":
+                count = store.decline(contact.public)
+                show(say(lang, "Deleted {count} waiting messages and blocked {name}.",
+                         "נמחקו {count} הודעות ממתינות ו־{name} נחסמו.", count=count, name=contact.name))
+                return 0
+            if command in ("show", "discard") and len(rest) == 2:
+                held = [m for m in store.conversation(contact.public, waiting=True)
+                        if m["state"] == "held" and m["id"].startswith(rest[1].lower())]
+                if len(held) != 1:
+                    show(say(lang, "No held message with that number.", "אין הודעה מעוכבת עם המספר הזה."))
+                    return 2
+                if command == "show":
+                    store.show(contact.public, held[0]["id"])
+                else:
+                    store.delete_waiting(contact.public, held[0]["id"])
+                return 0
             if command == "read":
                 for item in store.conversation(contact.public):
                     who = say(lang, "me", "אני") if item["outgoing"] else contact.name
                     when = time.strftime("%Y-%m-%d %H:%M", time.localtime(item["time"]))
                     body = item["text"] or say(lang, "[a picture]", "[תמונה]")
                     show(f"{when}  {who}: {body}")
+                waiting = len(store.conversation(contact.public, waiting=True))
+                if waiting:
+                    show(say(lang, "{count} more wait for your decision: dai-chat requests",
+                             "עוד {count} ממתינות להחלטה שלכם: dai-chat requests", count=waiting))
                 return 0
         show(__doc__.strip())
         return 2

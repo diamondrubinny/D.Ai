@@ -18,13 +18,15 @@ from typing import Callable
 
 from PyQt6.QtCore import QSize, Qt, QTimer
 from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QPixmap, QShortcut
-from PyQt6.QtWidgets import (QApplication, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+from PyQt6.QtWidgets import (QApplication, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout, QLabel,
                              QLineEdit, QListWidget, QListWidgetItem, QPushButton, QSplitter, QVBoxLayout, QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
 
-from . import invite, pictures, sas
+from . import invite, pictures, sas, scan
+from .pairing import clean_name
+from .service import Settings, settings_path
 from .message import MAX_PICTURE, MAX_TEXT, Message
 from .store import Contact, Store
 
@@ -43,6 +45,8 @@ QLabel {{ color: {TEXT}; }}
 #Title {{ font-size: 14pt; font-weight: 700; }}
 #AppTitle {{ font-size: 12pt; font-weight: 700; color: {MUTED}; padding-bottom: 4px; }}
 #Muted {{ color: {MUTED}; }}
+#Banner {{ background: {SURFACE}; border: 1px solid {WARN}; border-radius: 10px; }}
+#BannerText {{ color: {TEXT}; }}
 #Unverified {{ color: {WARN}; font-weight: 600; }}
 #Verified {{ color: {OK}; font-weight: 600; }}
 #Symbols {{ font-size: 18pt; color: {TEXT}; }}
@@ -84,6 +88,50 @@ def say(lang: str, en: str, he: str, **kwargs: object) -> str:
 
 def turn_on(run: Callable = subprocess.Popen) -> None:
     run(["dai-chat", "on"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+class NameDialog(QDialog):
+    """The display name contacts see: chosen here, never taken from the computer's user name."""
+
+    def __init__(self, parent: QWidget, lang: str, current: str = "") -> None:
+        super().__init__(parent)
+        self.setWindowTitle(say(lang, "Your display name", "שם התצוגה שלכם"))
+        self.setLayoutDirection(qt_direction(lang))
+        layout = QVBoxLayout(self)
+        intro = QLabel(say(lang, "The name your contacts will see. Choose any name: it is not your user name on "
+                           "this computer, and you can change it later.",
+                           "השם שאנשי הקשר יראו. בחרו כל שם: זה לא שם המשתמש שלכם במחשב, ואפשר לשנות אותו אחר כך."))
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        self.name = QLineEdit(current)
+        self.name.setMaxLength(40)
+        self.name.setAccessibleName(say(lang, "Your display name", "שם התצוגה שלכם"))
+        intro.setBuddy(self.name)
+        layout.addWidget(self.name)
+        self.error = QLabel("")
+        self.error.setObjectName("Unverified")
+        layout.addWidget(self.error)
+        buttons = QHBoxLayout()
+        buttons.addStretch(1)
+        cancel = QPushButton(say(lang, "Cancel", "ביטול"))
+        cancel.setAccessibleName(cancel.text())
+        cancel.clicked.connect(self.reject)
+        self.ok = QPushButton(say(lang, "Save", "שמירה"))
+        self.ok.setObjectName("Primary")
+        self.ok.setAccessibleName(self.ok.text())
+        self.ok.setDefault(True)
+        self.ok.clicked.connect(self.check)
+        buttons.addWidget(cancel)
+        buttons.addWidget(self.ok)
+        layout.addLayout(buttons)
+        self.lang, self.chosen = lang, ""
+
+    def check(self) -> None:
+        self.chosen = clean_name(self.name.text())
+        if not self.chosen:
+            self.error.setText(say(self.lang, "Write a name with letters in it.", "כתבו שם שיש בו אותיות."))
+            return
+        self.accept()
 
 
 class AddDialog(QDialog):
@@ -197,9 +245,14 @@ class ChatWindow(QWidget):
     def __init__(self, store: Store, me: bytes, my_code: str, poke: Callable[[], object] = lambda: None,
                  running: Callable[[], bool] = lambda: True, clean: Callable = pictures.clean,
                  lang: str | None = None, clock: Callable[[], float] = time.time,
-                 viewer: Callable[[Path], None] | None = None) -> None:
+                 viewer: Callable[[Path], None] | None = None, settings_file: Path | None = None,
+                 restart: Callable[[], None] | None = None) -> None:
         super().__init__()
+        from .cli import restart as restart_service
+
         self.store, self.me, self.my_code = store, me, my_code
+        self.settings_file = settings_file or settings_path()
+        self.restart = restart or restart_service
         self.viewer = viewer or (lambda path: subprocess.Popen(["xdg-open", str(path)], stdout=subprocess.DEVNULL,
                                                                 stderr=subprocess.DEVNULL))
         self.poke, self.running, self.clean, self.clock = poke, running, clean, clock
@@ -244,6 +297,33 @@ class ChatWindow(QWidget):
         self.compare.clicked.connect(self.compare_symbols)
         header.addWidget(self.compare)
         talk_layout.addLayout(header)
+        self.display = QLabel("")
+        self.display.setObjectName("Muted")
+        talk_layout.addWidget(self.display)
+        # what waits for a decision: a new contact's messages, or one the checks held
+        self.banner = QFrame()
+        self.banner.setObjectName("Banner")
+        banner_layout = QVBoxLayout(self.banner)
+        self.banner_text = QLabel("")
+        self.banner_text.setObjectName("BannerText")
+        self.banner_text.setWordWrap(True)
+        banner_layout.addWidget(self.banner_text)
+        banner_buttons = QHBoxLayout()
+        banner_buttons.addStretch(1)
+        self.decline_button = QPushButton(say(self.lang, "Decline and block", "דחייה וחסימה"))
+        self.discard_button = QPushButton(say(self.lang, "Delete it", "מחיקה"))
+        self.show_button = QPushButton(say(self.lang, "Show it anyway", "להציג בכל זאת"))
+        self.accept_button = QPushButton(say(self.lang, "Accept", "אישור"))
+        self.accept_button.setObjectName("Primary")
+        for button, action in ((self.decline_button, self.decline), (self.discard_button, self.discard_held),
+                               (self.show_button, self.show_held), (self.accept_button, self.accept_contact)):
+            button.setAccessibleName(button.text())
+            button.clicked.connect(action)
+            banner_buttons.addWidget(button)
+        banner_layout.addLayout(banner_buttons)
+        self.banner.hide()
+        talk_layout.addWidget(self.banner)
+        self.held_id = ""
         self.messages = QListWidget()
         self.messages.setAccessibleName(say(self.lang, "Conversation", "שיחה"))
         self.messages.setWordWrap(True)
@@ -282,6 +362,13 @@ class ChatWindow(QWidget):
         self.status.setObjectName("Muted")
         self.status.setWordWrap(True)
         status.addWidget(self.status, 1)
+        self.name_button = QPushButton("")
+        self.name_button.clicked.connect(self.choose_name)
+        status.addWidget(self.name_button)
+        self.receive_button = QPushButton("")
+        self.receive_button.setCheckable(True)
+        self.receive_button.clicked.connect(self.toggle_receive)
+        status.addWidget(self.receive_button)
         self.on_button = QPushButton(say(self.lang, "Turn Chat on", "הפעלת Chat"))
         self.on_button.setAccessibleName(self.on_button.text())
         self.on_button.clicked.connect(self.turn_on)
@@ -301,7 +388,9 @@ class ChatWindow(QWidget):
         self.contacts.clear()
         for contact in self.store.contacts():
             mark = "🚫" if contact.blocked else ("✓" if contact.verified else "•")
-            item = QListWidgetItem(f"{mark}  {contact.name}")
+            waiting = len(self.store.conversation(contact.public, waiting=True))
+            label = f"{mark}  {contact.name}" + (f"  ({waiting} ✉)" if waiting else "")
+            item = QListWidgetItem(label)
             item.setData(PUBLIC_ROLE, contact.public)
             item.setToolTip(self._state_text(contact))
             self.contacts.addItem(item)
@@ -312,6 +401,14 @@ class ChatWindow(QWidget):
             item.setFlags(Qt.ItemFlag.ItemIsEnabled)
             self.contacts.addItem(item)
         self.contacts.blockSignals(False)
+        settings = self.settings()
+        self.name_button.setText(say(self.lang, "Your name: {name}", "השם שלכם: {name}", name=settings.name)
+                                 if settings.name else say(self.lang, "Choose your name", "בחירת שם"))
+        self.name_button.setAccessibleName(self.name_button.text())
+        self.receive_button.setChecked(settings.receive)
+        self.receive_button.setText(say(self.lang, "Receiving: on", "קבלת הודעות: פועלת") if settings.receive else
+                                    say(self.lang, "Receiving: off", "קבלת הודעות: כבויה"))
+        self.receive_button.setAccessibleName(self.receive_button.text())
         on = self.running()
         self.on_button.setVisible(not on)
         self.status.setText(say(self.lang, "On: messages go out as soon as your contacts are online.",
@@ -343,8 +440,13 @@ class ChatWindow(QWidget):
         if contact is None:
             self.messages.clear()
             self.state.setText("")
+            self.display.setText("")
+            self.banner.hide()
             return
         self.who.setText(contact.name)
+        self.display.setText(say(self.lang, "Calls themselves: {name}", "השם שבחרו לעצמם: {name}",
+                                 name=contact.display) if contact.display and contact.display != contact.name else "")
+        self.show_banner(contact)
         self.state.setText(self._state_text(contact))
         self.state.setObjectName("Verified" if contact.verified else "Unverified")
         self.state.setStyleSheet("")  # re-apply the object-name rule
@@ -374,6 +476,78 @@ class ChatWindow(QWidget):
 
             self.messages.addItem(item)
         self.messages.scrollToBottom()
+
+    # decisions
+    def show_banner(self, contact: Contact) -> None:
+        waiting = self.store.conversation(contact.public, waiting=True)
+        requests = [m for m in waiting if m["state"] == "request"]
+        held = [m for m in waiting if m["state"] == "held"]
+        self.held_id = held[0]["id"] if held and not requests else ""
+        if requests:
+            text = say(self.lang, "{name} sent {count} messages. They are shown only if you accept {name}; every "
+                       "message is checked for phishing and malware first.",
+                       "‏{name} שלחו {count} הודעות. הן יוצגו רק אם תאשרו את {name}; כל הודעה נבדקת קודם לפישינג "
+                       "ולנוזקה.", name=contact.name, count=len(requests))
+        elif held:
+            text = say(self.lang, "A message from {name} was held because {why}. These are warning signs, not proof.",
+                       "הודעה מאת {name} עוכבה כי {why}. אלה סימני אזהרה, לא הוכחה.", name=contact.name,
+                       why=scan.describe(held[0]["warning"].split(","), self.lang))
+        else:
+            self.banner.hide()
+            return
+        self.banner_text.setText(text)
+        self.accept_button.setVisible(bool(requests))
+        self.decline_button.setVisible(bool(requests))
+        self.show_button.setVisible(bool(self.held_id))
+        self.discard_button.setVisible(bool(self.held_id))
+        self.banner.show()
+
+    def accept_contact(self) -> None:
+        if self.current:
+            self.store.accept(self.current)
+            self.refresh()
+            self.show_conversation()
+
+    def decline(self) -> None:
+        if self.current:
+            self.store.decline(self.current)
+            self.refresh()
+            self.show_conversation()
+
+    def show_held(self) -> None:
+        if self.current and self.held_id:
+            self.store.show(self.current, self.held_id)
+            self.show_conversation()
+
+    def discard_held(self) -> None:
+        if self.current and self.held_id:
+            self.store.delete_waiting(self.current, self.held_id)
+            self.show_conversation()
+
+    def settings(self) -> Settings:
+        return Settings.load(self.settings_file)
+
+    def choose_name(self) -> bool:
+        dialog = NameDialog(self, self.lang, self.settings().name)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return False
+        settings = self.settings()
+        settings.name = dialog.chosen
+        settings.save(self.settings_file)
+        self.restart()
+        self.refresh()
+        return True
+
+    def toggle_receive(self) -> None:
+        settings = self.settings()
+        if not settings.name and not self.choose_name():
+            self.refresh()
+            return
+        settings = self.settings()
+        settings.receive = not settings.receive
+        settings.save(self.settings_file)
+        self.restart()
+        self.refresh()
 
     # actions
     def open_picture(self, item: QListWidgetItem) -> None:
@@ -459,6 +633,8 @@ def main(argv: list[str] | None = None) -> int:
                         poke=lambda: poke(control_path()),
                         running=lambda: poke(control_path(), "status") is not None)
     window.show()
+    if not window.settings().name:  # first time: the name contacts will see, chosen, never the user name
+        QTimer.singleShot(300, window.choose_name)
     try:
         return app.exec()
     finally:

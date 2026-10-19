@@ -19,6 +19,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PyQt6.QtWidgets import QApplication, QDialog, QLabel, QPushButton  # noqa: E402
 
 from dai_chat import invite, keys, message, store  # noqa: E402
+from dai_chat.service import Settings  # noqa: E402
 
 RAZ = Path(__file__).resolve().parents[2] / "dai-raz"
 if str(RAZ) not in sys.path:
@@ -29,6 +30,11 @@ def load_gui(theme: str = "night"):
     os.environ["DAI_THEME"] = theme
     from dai_chat import gui
     return importlib.reload(gui)  # the colors are read when the module loads, as in the other windows
+
+
+def scan_reason(key):
+    from dai_chat import scan
+    return scan.REASONS[key][0]
 
 
 class WindowTests(unittest.TestCase):
@@ -44,14 +50,17 @@ class WindowTests(unittest.TestCase):
         self.me = keys.Identity.generate()
         self.dana = keys.Identity.generate().public
         self.store.add_contact(store.Contact(self.dana, "Dana"))
-        self.pokes = []
+        self.pokes, self.restarts = [], []
+        self.settings_file = Path(self.tmp.name) / "chat.json"
+        Settings(name="Me").save(self.settings_file)
         self.code = invite.make(keys.Identity.generate().public, self.me.public)
 
     def window(self, lang="en", running=True, clean=None):
         gui = load_gui()
         win = gui.ChatWindow(self.store, self.me.public, self.code, poke=lambda: self.pokes.append(1),
                              running=lambda: running, lang=lang,
-                             clean=clean or (lambda data: (b"\x89PNG\r\n\x1a\nCLEAN", "image/png")))
+                             clean=clean or (lambda data: (b"\x89PNG\r\n\x1a\nCLEAN", "image/png")),
+                             settings_file=self.settings_file, restart=lambda: self.restarts.append(1))
         self.addCleanup(win.close)
         win.show()
         self.app.processEvents()
@@ -69,7 +78,8 @@ class WindowTests(unittest.TestCase):
     def test_write_and_send(self):
         empty = store.Store(Path(self.tmp.name) / "empty")
         self.addCleanup(empty.close)
-        nobody = load_gui().ChatWindow(empty, self.me.public, self.code, lang="en")
+        nobody = load_gui().ChatWindow(empty, self.me.public, self.code, lang="en", settings_file=self.settings_file,
+                                       restart=lambda: None)
         self.addCleanup(nobody.close)
         self.assertFalse(nobody.field.isEnabled())  # no contact yet: nothing to write to
         self.assertIn("Choose a contact", nobody.who.text())
@@ -140,7 +150,8 @@ class WindowTests(unittest.TestCase):
                                outgoing=False, state="delivered")
         opened = []
         gui = load_gui()
-        win = gui.ChatWindow(self.store, self.me.public, self.code, lang="en", viewer=opened.append)
+        win = gui.ChatWindow(self.store, self.me.public, self.code, lang="en", viewer=opened.append,
+                             settings_file=self.settings_file, restart=lambda: None)
         self.addCleanup(win.close)
         win.show()
         self.choose(win)
@@ -150,6 +161,51 @@ class WindowTests(unittest.TestCase):
         win.open_picture(item)
         self.assertEqual(len(opened), 1)
         self.assertTrue(opened[0].name.endswith(".png") and opened[0].parent == self.store.pictures)
+
+    def test_a_new_contact_waits_for_a_yes(self):
+        self.store.add_message(self.dana, message.Message.text("hi from Dana"), outgoing=False, state="request")
+        trick = message.Message.text("urgent: your password")
+        self.store.add_message(self.dana, trick, outgoing=False, state="request", warning="asks")
+        win = self.window()
+        self.choose(win)
+        self.assertEqual(win.messages.count(), 0)  # nothing shown before a decision
+        self.assertTrue(win.banner.isVisible() and win.accept_button.isVisible())
+        self.assertIn("checked for phishing", win.banner_text.text())
+        self.assertIn("(2 ✉)", win.contacts.currentItem().text())
+        win.accept_button.click()
+        self.assertEqual(win.messages.count(), 1)
+        self.assertIn("hi from Dana", win.messages.item(0).text())
+        self.assertTrue(win.show_button.isVisible())  # the suspicious one is still held
+        self.assertIn("password", win.banner_text.text().lower() + scan_reason("asks"))
+        win.discard_button.click()
+        self.assertFalse(win.banner.isVisible())
+        self.assertEqual(self.store.conversation(self.dana, waiting=True), [])
+
+    def test_decline_blocks(self):
+        self.store.add_message(self.dana, message.Message.text("buy now"), outgoing=False, state="request")
+        win = self.window()
+        self.choose(win)
+        win.decline_button.click()
+        self.assertTrue(self.store.contact(self.dana).blocked)
+        self.assertEqual(self.store.conversation(self.dana, waiting=True), [])
+
+    def test_their_chosen_name_and_receiving(self):
+        self.store.add_contact(store.Contact(self.dana, "Dana", display="Dana L", accepted=True))
+        win = self.window()
+        self.choose(win)
+        self.assertIn("Dana L", win.display.text())
+        self.assertIn("Receiving: off", win.receive_button.text())  # off until turned on
+        win.receive_button.click()
+        self.assertTrue(Settings.load(self.settings_file).receive)
+        self.assertIn("Receiving: on", win.receive_button.text())
+        self.assertEqual(len(self.restarts), 1)
+        dialog = load_gui().NameDialog(win, "en", "")
+        dialog.name.setText("\u202e\u200f ")
+        dialog.check()
+        self.assertIn("letters", dialog.error.text())
+        dialog.name.setText("  Noa  K ")
+        dialog.check()
+        self.assertEqual(dialog.chosen, "Noa K")
 
     def test_a_picture_the_sandbox_refuses(self):
         from dai_chat import pictures
@@ -192,12 +248,14 @@ class WindowTests(unittest.TestCase):
 
     def test_accessible_in_every_theme(self):
         from dai_raz.a11y import assert_accessible  # checks Night, then Day and Contrast itself
+        self.store.add_message(self.dana, message.Message.text("hi"), outgoing=False, state="request")  # the banner
         for lang in ("he", "en"):
             win = self.window(lang=lang)
             self.choose(win)
             assert_accessible(self, win)
             gui = load_gui()
-            for dialog in (gui.SymbolsDialog(win, lang, "Dana", [0, 1, 2, 3, 4, 5]), gui.AddDialog(win, lang, self.code)):
+            for dialog in (gui.SymbolsDialog(win, lang, "Dana", [0, 1, 2, 3, 4, 5]), gui.AddDialog(win, lang, self.code),
+                           gui.NameDialog(win, lang, "Me")):
                 dialog.show()
                 self.app.processEvents()
                 assert_accessible(self, dialog)

@@ -7,6 +7,12 @@
 > - **Content:** text and pictures.
 > - **History:** kept until deleted.
 >
+> - **Added (19 October 2026):**
+>   - each person is shown by a **display name** they choose, never by the computer's user name;
+>   - **receiving is off by default**: until the person turns it on, nobody can reach them (their messages wait on the senders' computers);
+>   - **the person must choose**: messages from a new contact wait as a request until accepted or declined;
+>   - **every received message is checked first** for phishing and malware, and a suspicious one is held even from an accepted contact.
+>
 > The protocol **requires an external security review** before release.
 
 ## 0. The approved architecture (replaces the options in §2)
@@ -71,6 +77,11 @@
   - Pictures show as a thumbnail (with "[a picture]" for screen readers); Enter or a double click opens them.
 - **The local network (`dai-chat lan on|off`):** through D.Ai Tune, "open port 7714 and open udp port 5353" (Chat, and mDNS so contacts find each other), to the local network only. Tune shows a plan and asks for confirmation (it weakens the firewall), with undo. If the firewall was not changed, Chat stays on Tor only.
 - **From the command field (D.Ai Command):** "send Dana: see you at six" / "שלח לדנה: מגיעה בשש" offers sending to a contact. The message is queued inside the command bar's own process, never on another program's command line (visible in `ps`), and is not kept in the bar's history.
+- **Display name, receiving, requests and checks (the 19 October decisions):** built.
+  - `dai-chat name NAME` / in the window on first use: the name contacts see, sent signed when pairing, cleaned of control and direction characters (no spoofing), at most 40 characters. A code cannot be given out before a name is chosen. The contact appears under the name you gave them, with "calls themselves: …".
+  - `dai-chat receive on|off` / the "Receiving" switch, **off by default**. While off: no listening port, no onion service published, no announcement on the local network; senders get "deferred" and keep the message queued, retrying later.
+  - **Requests:** messages from a contact you have not accepted are not shown; the window shows "Dana sent 2 messages" with **Accept** / **Decline and block**; declining deletes them.
+  - **Checks (`scan`), on this computer only:** links that pretend to be a known site (including Israeli banks, with look-alike letters decoded), shortened links, bare IP addresses, unencrypted links, requests for passwords, codes, card details or urgent action (Hebrew and English), program files (.exe, .apk …), hidden direction characters; ClamAV for text and pictures when installed; pictures are also re-drawn in the sandbox. A suspicious message is held with the reasons, and **Show it anyway** / **Delete it**. These are warning signs, not proof, and the window says so.
 - **Found and fixed on the way:**
   - updating a contact deleted their history (INSERT OR REPLACE with a cascade);
   - two big pictures crossing could block both sides;

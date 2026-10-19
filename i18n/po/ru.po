@@ -4051,3 +4051,167 @@ msgstr "Сохранено. Контакты в этой сети теперь �
 #: apps/dai-chat/dai_chat/cli.py
 msgid "Saved. Chat uses Tor only."
 msgstr "Сохранено. Chat использует только Tor."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "A message from {name} was held because {why}. These are warning signs, not proof."
+msgstr "Сообщение от {name} задержано: {why}. Это тревожные признаки, а не доказательство."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "A message from {name} was held: it looks suspicious."
+msgstr "Сообщение от {name} задержано: оно выглядит подозрительно."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Accept"
+msgstr "Принять"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Calls themselves: {name}"
+msgstr "Называет себя: {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Choose your name"
+msgstr "Выберите имя"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "ClamAV recognised malware or a known phishing message"
+msgstr "ClamAV распознал вредоносную программу или известное фишинговое сообщение"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Decline and block"
+msgstr "Отклонить и заблокировать"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Delete it"
+msgstr "Удалить"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Deleted {count} waiting messages and blocked {name}."
+msgstr "Удалено ожидающих сообщений: {count}; {name} заблокирован."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "First choose the name your contacts will see (not your user name): dai-chat name NAME"
+msgstr "Сначала выберите имя, которое увидят контакты (не имя пользователя): dai-chat name NAME"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "No display name yet. Choose one: dai-chat name NAME"
+msgstr "Отображаемого имени пока нет. Выберите: dai-chat name NAME"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "No held message with that number."
+msgstr "Нет задержанного сообщения с таким номером."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Nothing is waiting for you."
+msgstr "Ничего не ждёт вашего решения."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving is off: messages to you wait on your contacts' computers."
+msgstr "Приём выключен: сообщения вам ждут на компьютерах ваших контактов."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving is on. New contacts' messages wait for your OK, and every message is checked first."
+msgstr "Приём включён. Сообщения новых контактов ждут вашего согласия, и каждое сообщение сначала проверяется."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving: off"
+msgstr "Приём: выкл."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving: on"
+msgstr "Приём: вкл."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Save"
+msgstr "Сохранить"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Show it anyway"
+msgstr "Всё равно показать"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "The name your contacts will see. Choose any name: it is not your user name on this computer, and you can change it later."
+msgstr "Имя, которое увидят ваши контакты. Выберите любое: это не имя пользователя на этом компьютере, и его можно изменить позже."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Write a name with letters in it."
+msgstr "Напишите имя с буквами."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Your contacts see you as: {name}"
+msgstr "Контакты видят вас как: {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Your display name"
+msgstr "Ваше отображаемое имя"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Your name: {name}"
+msgstr "Ваше имя: {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link goes to a bare IP address"
+msgstr "ссылка ведёт на голый IP-адрес"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link is not encrypted (http)"
+msgstr "ссылка не зашифрована (http)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link pretends to be a well-known site"
+msgstr "ссылка выдаёт себя за известный сайт"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link uses look-alike letters (xn--)"
+msgstr "в ссылке похожие буквы из других алфавитов (xn--)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a shortened link hides where it goes"
+msgstr "короткая ссылка скрывает, куда ведёт"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "it asks for a password, a code, card details or urgent action"
+msgstr "просят пароль, код, данные карты или срочных действий"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "it hides the real order of its letters (direction controls)"
+msgstr "скрывает настоящий порядок букв (управляющие символы направления)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "it mentions a program file to open (.exe, .apk …)"
+msgstr "упоминается файл программы для запуска (.exe, .apk …)"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{count} more wait for your decision: dai-chat requests"
+msgstr "Ещё {count} ждут вашего решения: dai-chat requests"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name} sent a message. Open Diamond Chat to accept or decline."
+msgstr "{name} прислал сообщение. Откройте Diamond Chat, чтобы принять или отклонить."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name} sent {count} messages. They are shown only if you accept {name}; every message is checked for phishing and malware first."
+msgstr "{name} прислал сообщений: {count}. Они появятся, только если вы примете {name}; каждое сначала проверяется на фишинг и вредоносные программы."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name}'s messages are shown from now on (suspicious ones still wait for you)."
+msgstr "Сообщения {name} теперь показываются (подозрительные по-прежнему ждут вас)."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name}, held ({why}): dai-chat show {name} {id} or discard {name} {id}"
+msgstr "{name}, задержано ({why}): dai-chat show {name} {id} или discard {name} {id}"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name}, new: dai-chat accept {name} or decline {name}"
+msgstr "{name}, новое: dai-chat accept {name} или decline {name}"

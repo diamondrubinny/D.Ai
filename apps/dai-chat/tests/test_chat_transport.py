@@ -27,8 +27,9 @@ class Person:
         self.store = store.Store(folder / name)
         self.arrived = []
         self.cleaned = []
-        self.node = transport.Node(self.identity, self.store, lambda peer, m: self.arrived.append(m),
-                                   idle_timeout=5, clean=self.clean)
+        self.receiving = True
+        self.node = transport.Node(self.identity, self.store, lambda peer, m, state: self.arrived.append(m),
+                                   idle_timeout=5, clean=self.clean, accepting=lambda: self.receiving)
 
     def clean(self, data: bytes):  # stands in for the sandbox (pictures.py has its own tests)
         self.cleaned.append(len(data))
@@ -36,8 +37,8 @@ class Person:
             raise pictures.PictureError("could not be read")
         return data, "image/png"
 
-    def knows(self, other: "Person", verified: bool = True) -> None:
-        self.store.add_contact(store.Contact(other.identity.public, other.name, verified=verified))
+    def knows(self, other: "Person", verified: bool = True, accepted: bool = True) -> None:
+        self.store.add_contact(store.Contact(other.identity.public, other.name, verified=verified, accepted=accepted))
 
     def write(self, other: "Person", item: message.Message) -> message.Message:
         self.store.add_message(other.identity.public, item, outgoing=True, state="queued")
@@ -107,6 +108,41 @@ class DeliveryTests(Base):
         self.assertEqual(result.refused, [evil.id])
         self.assertEqual(self.bob.store.conversation(self.alice.identity.public), [])
         self.assertEqual(self.bob.cleaned, [len(PNG) + 4])  # it went through the cleaner, on Bob's side
+
+    async def test_receiving_off_keeps_messages_with_the_sender(self):
+        self.bob.receiving = False
+        hello = self.alice.write(self.bob, message.Message.text("are you there?"))
+        result = await self.send()
+        self.assertEqual((result.sent, result.deferred), ([], [hello.id]))
+        self.assertEqual(self.alice.store.queued(self.bob.identity.public), [hello.id])  # still waiting here
+        self.assertEqual(self.bob.store.conversation(self.alice.identity.public, waiting=True), [])
+        self.bob.receiving = True
+        self.assertEqual((await self.send()).sent, [hello.id])
+
+    async def test_new_contacts_wait_for_a_yes_and_tricks_are_held(self):
+        self.bob.knows(self.alice, accepted=False)
+        first = self.alice.write(self.bob, message.Message.text("hi, it's Alice"))
+        trick = self.alice.write(self.bob, message.Message.text("Your account will be suspended, log in at "
+                                                                 "http://paypal-secure.example.com/login"))
+        await self.send()
+        await asyncio.sleep(0.05)
+        alice = self.alice.identity.public
+        self.assertEqual(self.bob.store.conversation(alice), [])  # nothing shown before Bob decides
+        self.assertEqual({m["state"] for m in self.bob.store.conversation(alice, waiting=True)}, {"request"})
+        self.bob.store.accept(alice)
+        shown = {m["id"]: m for m in self.bob.store.conversation(alice)}
+        held = {m["id"]: m for m in self.bob.store.conversation(alice, waiting=True)}
+        self.assertEqual((list(shown), list(held)), ([first.id], [trick.id]))
+        self.assertIn("lookalike", held[trick.id]["warning"])
+        self.bob.store.delete_waiting(alice, trick.id)
+        self.assertEqual(self.bob.store.conversation(alice, waiting=True), [])
+        # an accepted contact's next suspicious message is held too
+        again = self.alice.write(self.bob, message.Message.text("urgent: send me the verification code"))
+        await self.send()
+        await asyncio.sleep(0.05)
+        self.assertEqual([m["id"] for m in self.bob.store.conversation(alice, waiting=True)], [again.id])
+        self.bob.store.show(alice, again.id)
+        self.assertIn(again.id, [m["id"] for m in self.bob.store.conversation(alice)])
 
     async def test_two_big_pictures_cross_without_waiting_on_each_other(self):
         big = b"\x89PNG\r\n\x1a\n" + os.urandom(6 * 1024 * 1024)

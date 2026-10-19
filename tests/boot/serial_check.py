@@ -703,7 +703,7 @@ def main() -> int:
          True, lambda o: "NACL_OK" in o and "TOR_INSTALLED" in o and "TOR_IDLE" in o and "\nactive" not in "\n" + o, 30),
         # Diamond Chat (docs/SEND.md): an invitation code, a valid user unit, the service with the person's own Tor
         # (not a system one), and Tor gone when the service stops.
-        ("chat: the service and its own Tor", WAYLAND_ENV + "dai-chat code | grep -c '^dai1-'; "
+        ("chat: the service and its own Tor", WAYLAND_ENV + "dai-chat name 'VM test' >/dev/null; dai-chat code | grep -c '^dai1-'; "
          "systemd-analyze --user verify /usr/lib/systemd/user/dai-chat.service >/tmp/chat-unit 2>&1; "
          "echo UNIT_RC=$?; head -n 3 /tmp/chat-unit; dai-chat ''run >/tmp/chat-run.log 2>&1 & CHAT=$!; "
          "for i in $(seq 1 30); do dai-chat status >/tmp/chat-status 2>&1 && break; sleep 1; done; "

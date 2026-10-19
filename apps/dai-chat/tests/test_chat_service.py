@@ -26,7 +26,7 @@ class FakeDiscovery:
     def __init__(self, book):
         self.book = book
 
-    def start(self, address):
+    def start(self, address, announce=True):
         pass
 
     def refresh(self, address):
@@ -44,8 +44,9 @@ class Person:
         self.name, self.identity, self.onion_seed = name, keys.Identity.generate(), os.urandom(32)
         self.store = store.Store(folder / name)
         self.arrived = []
-        self.service = service.Service(self.identity, self.onion_seed, self.store, service.Settings(lan=True, tor=False),
-                                       discovery=FakeDiscovery(book), on_message=self.arrived.append, port=0)
+        self.service = service.Service(self.identity, self.onion_seed, self.store,
+                                       service.Settings(lan=True, tor=False, receive=True, name=f"{name} L"),
+                                       discovery=FakeDiscovery(book), on_message=lambda c, state: self.arrived.append((c, state)), port=0)
         self.code = service.invite_code(self.onion_seed, self.identity)
         self.control = folder / f"{name}-run" / "app.sock"
 
@@ -61,7 +62,7 @@ class ServiceTests(unittest.IsolatedAsyncioTestCase):
             await person.service.start(person.control)
             self.addCleanup(person.store.close)
             self.addCleanup(person.service.stop)
-            self.book[discovery.short(person.identity.public)] = person.service.servers[0].sockets[0].getsockname()[1]
+            self.book[discovery.short(person.identity.public)] = person.service.chat_server.sockets[0].getsockname()[1]
 
     async def test_swap_codes_pair_and_talk(self):
         self.alice.store.wait_for(invite.parse(self.bob.code), "Bob")
@@ -79,9 +80,14 @@ class ServiceTests(unittest.IsolatedAsyncioTestCase):
         self.alice.store.add_message(bob.public, hello, outgoing=True, state="queued")
         await self.alice.service.round()
         await asyncio.sleep(0.05)
-        self.assertEqual([c.name for c in self.bob.arrived], ["Alice"])  # the notification names, never shows
+        # the notification names, never shows; a new contact's message is a request until Bob says yes
+        self.assertEqual([(c.name, state) for c, state in self.bob.arrived], [("Alice", "request")])
         self.assertEqual(self.alice.store.queued(bob.public), [])
-        self.assertEqual(self.bob.store.conversation(self.alice.identity.public)[0]["text"], "שלום בוב")
+        alice = self.alice.identity.public
+        self.assertEqual(self.bob.store.contact(alice).display, "Alice L")  # the name Alice chose
+        self.assertEqual(self.bob.store.conversation(alice), [])
+        self.bob.store.accept(alice)
+        self.assertEqual(self.bob.store.conversation(alice)[0]["text"], "שלום בוב")
 
     async def test_control_socket(self):
         self.assertEqual(stat.S_IMODE(self.alice.control.stat().st_mode), 0o600)
@@ -129,6 +135,11 @@ class CommandLineTests(unittest.TestCase):
         return code, out.getvalue()
 
     def test_a_conversation_from_the_command_line(self):
+        code, said = self.run_cli("code")
+        self.assertEqual(code, 2)  # a display name first, never the user name
+        self.assertIn("dai-chat name", said)
+        self.assertEqual(self.run_cli("name", "\u202e", "\n")[0], 2)  # nothing visible is not a name
+        self.assertIn("Dana L", self.run_cli("name", "Dana", "L")[1])
         code, mine = self.run_cli("code")
         self.assertEqual(code, 0)
         self.assertEqual(self.run_cli("code")[1], mine)  # the same code every time
@@ -189,6 +200,32 @@ class CommandLineTests(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("Tor only", said)
             self.assertFalse(service.Settings.load(service.settings_path()).lan)
+
+    def test_receiving_and_requests(self):
+        self.run_cli("name", "Noa")
+        self.assertFalse(service.Settings.load(service.settings_path()).receive)  # off by default
+        with mock.patch("dai_chat.cli.subprocess.run", return_value=subprocess.CompletedProcess([], 0)):
+            self.assertIn("Receiving is on", self.run_cli("receive", "on")[1])
+        self.assertTrue(service.Settings.load(service.settings_path()).receive)
+        dana = keys.Identity.generate().public
+        db = store.Store(Path(self.tmp.name) / "data" / "dai" / "chat")
+        db.add_contact(store.Contact(dana, "Dana"))
+        db.add_message(dana, message.Message.text("hi Noa"), outgoing=False, state="request")
+        trick = message.Message.text("verify your account at http://1.2.3.4/x")
+        db.add_message(dana, trick, outgoing=False, state="request", warning="ip_link,asks")
+        db.close()
+        said = self.run_cli("requests")[1]
+        self.assertIn("dai-chat accept Dana", said)
+        self.assertIn("hi Noa", said)
+        self.assertNotIn("1.2.3.4", said)  # a suspicious text is not printed
+        self.run_cli("accept", "Dana")
+        self.assertIn("hi Noa", self.run_cli("read", "Dana")[1])
+        said = self.run_cli("requests")[1]
+        self.assertIn("held", said)
+        self.assertIn("a link goes to a bare IP address", said)
+        self.assertEqual(self.run_cli("discard", "Dana", trick.id[:8])[0], 0)
+        self.assertIn("Nothing is waiting", self.run_cli("requests")[1])
+        self.assertIn("blocked Dana", self.run_cli("decline", "Dana")[1])
 
     def test_unknown_contact_and_help(self):
         self.assertEqual(self.run_cli("send", "Nobody", "hi")[0], 2)

@@ -11,6 +11,9 @@ On the wire every frame is   length (4 bytes, big-endian) | bytes
 Rules that hold whoever connects:
   - only a known, unblocked contact gets through the handshake (store.may_talk);
   - a picture from a contact whose six symbols were not compared yet is refused (docs/SEND.md §0);
+  - while receiving is off, every message is answered "deferred": it stays queued on the sender's computer;
+  - every received message is checked (scan.py) and kept as a "request" until its contact is accepted, or as
+    "held" when the checks find it suspicious, until the person decides (store.py);
   - a receipt only changes a message that was sent to the contact who sends it (store.set_state);
   - a broken frame ends the connection: nothing that failed its check is kept;
   - each address gets a few handshakes a minute, then is told nothing.
@@ -29,7 +32,7 @@ from dataclasses import dataclass, field
 from typing import Awaitable, Callable
 
 from . import message as msg
-from . import pairing, pictures
+from . import pairing, pictures, scan
 from .invite import FPR_SIZE, Invite
 from .keys import Identity, fingerprint
 from .session import HELLO_SIZE, MAX_MESSAGE, REPLY_SIZE, HandshakeError, Initiator, Responder, Session, SessionError
@@ -69,6 +72,7 @@ class Result:
     sent: list[str] = field(default_factory=list)  # ids the contact confirmed
     received: list[msg.Message] = field(default_factory=list)
     refused: list[str] = field(default_factory=list)  # ids we refused, or the contact refused
+    deferred: list[str] = field(default_factory=list)  # the contact is not receiving now: still queued
 
 
 class RateLimit:
@@ -89,14 +93,19 @@ class RateLimit:
 class Node:
     """One person's Diamond Chat: answers contacts who connect and delivers the queue to them."""
 
-    def __init__(self, me: Identity, store: Store, on_message: Callable[[bytes, msg.Message], None] | None = None,
+    def __init__(self, me: Identity, store: Store,
+                 on_message: Callable[[bytes, msg.Message, str], None] | None = None,
                  idle_timeout: float = IDLE_TIMEOUT, service: bytes = b"",
                  on_paired: Callable[[Contact], None] | None = None,
-                 clean: Callable[[bytes], tuple[bytes, str]] | None = None) -> None:
+                 clean: Callable[[bytes], tuple[bytes, str]] | None = None, name: str = "",
+                 accepting: Callable[[], bool] = lambda: True,
+                 check: Callable[[int, bytes], scan.Verdict] = scan.check) -> None:
         """`service` is the public key of our onion service, the one in our invitation code; `clean` re-draws
-        a received picture in the sandbox (pictures.py)."""
+        a received picture in the sandbox (pictures.py); `name` is the display name sent when pairing;
+        `accepting` says whether receiving is on; `check` looks for phishing and malware (scan.py)."""
         self.me, self.store, self.on_message = me, store, on_message
-        self.service, self.on_paired = service, on_paired
+        self.service, self.on_paired, self.name = service, on_paired, name
+        self.accepting, self.check = accepting, check
         self.clean = clean or (lambda data: pictures.clean(data, scan_first=True))
         self.idle_timeout = idle_timeout
         self.limit = RateLimit()
@@ -108,7 +117,7 @@ class Node:
         try:
             if not self.limit.allow(address):
                 return None
-            hello = await read_frame(reader, max(HELLO_SIZE, pairing.PAIR_SIZE), HANDSHAKE_TIMEOUT)
+            hello = await read_frame(reader, max(HELLO_SIZE, pairing.PAIR_MAX), HANDSHAKE_TIMEOUT)
             if hello[:1] == pairing.MARK:
                 await self._answer_pairing(hello, writer)
                 return None
@@ -124,10 +133,11 @@ class Node:
     async def _answer_pairing(self, frame: bytes, writer: asyncio.StreamWriter) -> None:
         if not self.service:
             raise pairing.PairingError("pairing is not on")
-        ack, public, _service = pairing.answer(self.me, self.service, frame, self.store.waiting_for)
+        ack, public, _service, display = pairing.answer(self.me, self.service, frame, self.store.waiting_for,
+                                                        self.name)
         write_frame(writer, ack)
         await writer.drain()
-        contact = self.store.paired(fingerprint(public)[:FPR_SIZE], public)
+        contact = self.store.paired(fingerprint(public)[:FPR_SIZE], public, display)
         if contact and self.on_paired:
             self.on_paired(contact)
 
@@ -140,14 +150,15 @@ class Node:
         except (OSError, asyncio.TimeoutError) as exc:
             raise TransportError("the contact is not reachable") from exc
         try:
-            write_frame(writer, pairing.request(self.me, self.service, theirs))
+            write_frame(writer, pairing.request(self.me, self.service, theirs, self.name))
             await writer.drain()
-            public = pairing.finish(self.me, theirs, await read_frame(reader, pairing.ACK_SIZE, HANDSHAKE_TIMEOUT))
+            public, display = pairing.finish(self.me, theirs,
+                                             await read_frame(reader, pairing.ACK_MAX, HANDSHAKE_TIMEOUT))
         except pairing.PairingError as exc:
             raise TransportError("the answer does not match their code") from exc
         finally:
             await _close(writer)
-        contact = self.store.paired(theirs.fingerprint, public)
+        contact = self.store.paired(theirs.fingerprint, public, display)
         if contact is None:
             raise TransportError("this code was cancelled")
         if self.on_paired:
@@ -218,6 +229,9 @@ class Node:
                 elif incoming.kind == msg.RECEIPT:
                     if incoming.id in waiting:
                         waiting.discard(incoming.id)
+                        if incoming.state == "deferred":  # not receiving there now: it stays queued here
+                            result.deferred.append(incoming.id)
+                            continue
                         self.store.set_state(peer, incoming.id, incoming.state)
                         (result.refused if incoming.state == "refused" else result.sent).append(incoming.id)
                 else:
@@ -233,6 +247,8 @@ class Node:
             session.close()
 
     async def _receive(self, peer: bytes, incoming: msg.Message, result: Result) -> str:
+        if not self.accepting():
+            return "deferred"
         contact = self.store.contact(peer)
         if incoming.kind == msg.PICTURE and not self.store.has_message(peer, incoming.id):
             if not (contact and contact.verified):
@@ -245,10 +261,13 @@ class Node:
                 return "refused"
             incoming = msg.Message(msg.PICTURE, body, incoming.id, incoming.time, mime=mime)
         if not self.store.has_message(peer, incoming.id):
-            self.store.add_message(peer, incoming, outgoing=False, state="delivered")
+            verdict = await asyncio.to_thread(self.check, incoming.kind, incoming.body)
+            state = ("request" if not (contact and contact.accepted) else
+                     "held" if verdict.suspicious else "delivered")
+            self.store.add_message(peer, incoming, outgoing=False, state=state, warning=",".join(verdict.reasons))
             result.received.append(incoming)
             if self.on_message:
-                self.on_message(peer, incoming)
+                self.on_message(peer, incoming, state)
         return "delivered"
 
 

@@ -65,11 +65,13 @@ class Discovery:
         self.zc = self.info = self.browser = None
         self.announced_tag = ""
 
-    def start(self, address: str) -> None:
+    def start(self, address: str, announce: bool = True) -> None:
+        """Looks for contacts; announces this computer too only when `announce` (receiving is on)."""
         from zeroconf import IPVersion, ServiceBrowser, ServiceInfo, Zeroconf  # python3-zeroconf
 
         self.zc = (self.factory or (lambda: Zeroconf(ip_version=IPVersion.V4Only)))()
-        self._announce(ServiceInfo, address)
+        if announce:
+            self._announce(ServiceInfo, address)
         self.browser = ServiceBrowser(self.zc, SERVICE, listener=self)
 
     def _announce(self, service_info, address: str) -> None:
@@ -81,7 +83,7 @@ class Discovery:
 
     def refresh(self, address: str) -> None:
         """Called every few minutes: a new hour means a new tag and a new name."""
-        if self.zc is None or tag(self.fpr) == self.announced_tag:
+        if self.zc is None or self.info is None or tag(self.fpr) == self.announced_tag:
             return
         from zeroconf import ServiceInfo
 

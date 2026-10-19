@@ -21,7 +21,7 @@ class Person:
         self.store = store.Store(folder / name)
         self.paired = []
         self.node = transport.Node(self.identity, self.store, service=self.service, idle_timeout=5,
-                                   on_paired=self.paired.append)
+                                   on_paired=self.paired.append, name=f"{name}'s laptop")
         self.code = invite.make(self.service, self.identity.public)
 
     def types(self, other: "Person") -> invite.Invite:
@@ -49,9 +49,10 @@ class PairingTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(contact.public, self.bob.identity.public)
         self.assertFalse(contact.verified)  # until the six symbols are compared
         self.assertEqual(contact.onion, invite.onion_address(self.bob.service))
+        self.assertEqual((contact.display, contact.accepted), ("Bob's laptop", False))  # their chosen name
         await asyncio.sleep(0.05)
         theirs = self.bob.store.contact(self.alice.identity.public)
-        self.assertEqual((theirs.name, theirs.verified), ("Alice", False))
+        self.assertEqual((theirs.name, theirs.verified, theirs.display), ("Alice", False, "Alice's laptop"))
         self.assertEqual(self.bob.paired[0].public, self.alice.identity.public)
         self.assertEqual((self.alice.store.waiting(), self.bob.store.waiting()), ([], []))
         self.assertEqual(sas.symbols(self.alice.identity.public, contact.public),
@@ -85,22 +86,34 @@ class PairingTests(unittest.IsolatedAsyncioTestCase):
         service = keys.Identity.generate().public
         alices = invite.parse(invite.make(service, alice.public))
         bobs = invite.parse(invite.make(service, bob.public))
-        good = pairing.request(alice, service, bobs)
+        good = pairing.request(alice, service, bobs, "Alice")
         waiting = {alices.fingerprint: alices}.get
         forged = good[:65] + mallory.sign(b"x")  # Alice's keys, someone else's signature
         with self.assertRaises(pairing.PairingError):
             pairing.answer(bob, service, forged, waiting)
         other_service = good[:33] + keys.Identity.generate().public + good[65:]  # a different onion address
+        renamed = good[:65] + bytes([7]) + b"Mallory" + good[-64:]  # someone else's name, Alice's signature
+        with self.assertRaises(pairing.PairingError):
+            pairing.answer(bob, service, renamed, waiting)
         with self.assertRaises(pairing.PairingError):
             pairing.answer(bob, service, other_service, waiting)
         meant_for_carol = pairing.request(alice, service, invite.parse(invite.make(service, mallory.public)))
         with self.assertRaises(pairing.PairingError):
             pairing.answer(bob, service, meant_for_carol, waiting)  # signed for someone else's code
-        ack, public, _ = pairing.answer(bob, service, good, waiting)
+        ack, public, _, _ = pairing.answer(bob, service, good, waiting)
         self.assertEqual(public, alice.public)
-        self.assertEqual(pairing.finish(alice, bobs, ack), bob.public)
+        self.assertEqual(pairing.finish(alice, bobs, ack)[0], bob.public)
         with self.assertRaises(pairing.PairingError):
             pairing.finish(mallory, bobs, ack)  # an answer to Alice is not an answer to Mallory
+
+
+class NameTests(unittest.TestCase):
+    def test_a_display_name_hides_nothing(self):
+        self.assertEqual(pairing.clean_name("  Dana \n Levi  "), "Dana Levi")
+        self.assertEqual(pairing.clean_name("\u202egnp.exe"), "gnp.exe")  # no right-to-left override
+        self.assertEqual(pairing.clean_name("דנה\u200f"), "דנה")
+        self.assertEqual(len(pairing.clean_name("x" * 100)), 40)
+        self.assertEqual(pairing.clean_name("\x00\x1b[31m"), "[31m")
 
 
 if __name__ == "__main__":

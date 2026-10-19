@@ -6,7 +6,8 @@
 
   kind 1 text      header {id, time}            body: the text (UTF-8)
   kind 2 picture   header {id, time, mime}      body: the picture (PNG, JPEG or WebP; checked again on arrival)
-  kind 3 receipt   header {id, time, state}     body: empty ("delivered", "seen" or "refused")
+  kind 3 receipt   header {id, time, state}     body: empty ("delivered", "seen", "refused", or "deferred":
+                                                  receiving is off there, so it stays queued here)
   kind 4 bye       header {id, time}            body: empty (nothing more to send on this connection)
 
 Everything is checked when it is read, before anything else touches it: sizes, types, the id's shape.
@@ -26,7 +27,7 @@ MAX_TEXT = 64 * 1024
 MAX_PICTURE = 25 * 1024 * 1024
 MIMES = {"image/png": b"\x89PNG\r\n\x1a\n", "image/jpeg": b"\xff\xd8\xff", "image/webp": b"RIFF"}
 ID = re.compile(r"^[0-9a-f]{32}$")
-STATES = ("delivered", "seen", "refused")
+STATES = ("delivered", "seen", "refused", "deferred")
 
 
 class MessageError(ValueError):

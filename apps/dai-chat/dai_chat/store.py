@@ -4,6 +4,10 @@
 
 ~/.local/share/dai/chat/: chat.db and pictures/, in a 0700 folder, files 0600, on the encrypted disk.
 History is kept until you delete it (the approved choice); deleting a conversation deletes it here only.
+
+A received message is shown only after a choice: the first messages from a contact wait as a "request" until
+you accept that contact (or decline: they are deleted and the contact blocked), and a message the checks find
+suspicious (scan.py) waits as "held" until you decide, even from an accepted contact.
 """
 from __future__ import annotations
 
@@ -23,7 +27,9 @@ CREATE TABLE IF NOT EXISTS contacts (
     onion TEXT NOT NULL DEFAULT '',
     verified INTEGER NOT NULL DEFAULT 0,
     blocked INTEGER NOT NULL DEFAULT 0,
-    added REAL NOT NULL
+    added REAL NOT NULL,
+    display TEXT NOT NULL DEFAULT '',
+    accepted INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS messages (
     id TEXT NOT NULL,
@@ -34,6 +40,7 @@ CREATE TABLE IF NOT EXISTS messages (
     picture TEXT NOT NULL DEFAULT '',
     time REAL NOT NULL,
     state TEXT NOT NULL,
+    warning TEXT NOT NULL DEFAULT '',
     PRIMARY KEY (contact, id)
 );
 CREATE INDEX IF NOT EXISTS by_contact ON messages(contact, time);
@@ -44,16 +51,29 @@ CREATE TABLE IF NOT EXISTS waiting (
     added REAL NOT NULL
 );
 """
+# Columns added after the first version: an older chat.db gets them when it is opened.
+ADDED = (("contacts", "display", "TEXT NOT NULL DEFAULT ''"), ("contacts", "accepted", "INTEGER NOT NULL DEFAULT 0"),
+         ("messages", "warning", "TEXT NOT NULL DEFAULT ''"))
+WAITING_STATES = ("request", "held")  # received, not shown until the person decides
 EXTENSIONS = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
 
 
 @dataclass
 class Contact:
     public: bytes
-    name: str
+    name: str  # what you call them (you typed it)
     onion: str = ""
     verified: bool = False
     blocked: bool = False
+    display: str = ""  # the name they chose for themselves (pairing.clean_name), never a computer user name
+    accepted: bool = False  # you chose to see their messages
+
+
+CONTACT_COLUMNS = "public, name, onion, verified, blocked, display, accepted"
+
+
+def _contact(row) -> Contact:
+    return Contact(row[0], row[1], row[2], bool(row[3]), bool(row[4]), row[5], bool(row[6]))
 
 
 def default_dir() -> Path:
@@ -75,25 +95,29 @@ class Store:
         self.db.execute("PRAGMA foreign_keys = ON")
         self.db.execute("PRAGMA journal_mode = WAL")  # the window and the background service share it
         self.db.executescript(SCHEMA)
+        for table, column, kind in ADDED:
+            names = [row[1] for row in self.db.execute(f"PRAGMA table_info({table})")]
+            if column not in names:
+                self.db.execute(f"ALTER TABLE {table} ADD COLUMN {column} {kind}")
 
     # contacts
     def add_contact(self, contact: Contact) -> None:
         with self.db:
             # an upsert, not INSERT OR REPLACE: a replace deletes the row, and the cascade the history with it
-            self.db.execute("INSERT INTO contacts VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(public) DO UPDATE SET "
+            self.db.execute("INSERT INTO contacts (public, name, onion, verified, blocked, added, display, accepted) "
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(public) DO UPDATE SET "
                             "name = excluded.name, onion = excluded.onion, verified = excluded.verified, "
-                            "blocked = excluded.blocked",
+                            "blocked = excluded.blocked, display = excluded.display, accepted = excluded.accepted",
                             (contact.public, contact.name.strip()[:80] or "?", contact.onion, int(contact.verified),
-                             int(contact.blocked), time.time()))
+                             int(contact.blocked), time.time(), contact.display, int(contact.accepted)))
 
     def contact(self, public: bytes) -> Contact | None:
-        row = self.db.execute("SELECT public, name, onion, verified, blocked FROM contacts WHERE public = ?",
-                              (public,)).fetchone()
-        return Contact(row[0], row[1], row[2], bool(row[3]), bool(row[4])) if row else None
+        row = self.db.execute(f"SELECT {CONTACT_COLUMNS} FROM contacts WHERE public = ?", (public,)).fetchone()
+        return _contact(row) if row else None
 
     def contacts(self) -> list[Contact]:
-        rows = self.db.execute("SELECT public, name, onion, verified, blocked FROM contacts ORDER BY name").fetchall()
-        return [Contact(r[0], r[1], r[2], bool(r[3]), bool(r[4])) for r in rows]
+        rows = self.db.execute(f"SELECT {CONTACT_COLUMNS} FROM contacts ORDER BY name").fetchall()
+        return [_contact(r) for r in rows]
 
     def may_talk(self, public: bytes) -> bool:
         """Only known, unblocked contacts get through the handshake (session.Responder)."""
@@ -126,20 +150,22 @@ class Store:
         with self.db:
             self.db.execute("DELETE FROM waiting WHERE fpr = ?", (fpr,))
 
-    def paired(self, fpr: bytes, public: bytes) -> Contact | None:
-        """The other person's key arrived and matched the code: they become an (unverified) contact."""
+    def paired(self, fpr: bytes, public: bytes, display: str = "") -> Contact | None:
+        """The other person's key arrived and matched the code: they become an (unverified) contact, whose
+        messages wait as requests until accepted."""
         row = self.db.execute("SELECT service, name FROM waiting WHERE fpr = ?", (fpr,)).fetchone()
         if row is None:
             return None
         known = self.contact(public)
         contact = Contact(public, known.name if known else row[1], Invite(row[0], fpr).onion,
-                          verified=bool(known and known.verified), blocked=bool(known and known.blocked))
+                          verified=bool(known and known.verified), blocked=bool(known and known.blocked),
+                          display=display, accepted=bool(known and known.accepted))
         self.add_contact(contact)
         self.cancel_waiting(fpr)
         return contact
 
     # messages
-    def add_message(self, contact: bytes, message: Message, outgoing: bool, state: str) -> None:
+    def add_message(self, contact: bytes, message: Message, outgoing: bool, state: str, warning: str = "") -> None:
         """Keeps a message; a message id belongs to one contact, so another contact cannot reuse or touch it."""
         picture = ""
         if self.has_message(contact, message.id):
@@ -153,8 +179,10 @@ class Store:
             picture = path.name
         text = message.body.decode("utf-8") if message.kind == TEXT else ""
         with self.db:
-            self.db.execute("INSERT OR IGNORE INTO messages VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                            (message.id, contact, int(outgoing), message.kind, text, picture, message.time, state))
+            self.db.execute("INSERT OR IGNORE INTO messages (id, contact, outgoing, kind, text, picture, time, state, "
+                            "warning) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (message.id, contact, int(outgoing), message.kind, text, picture, message.time, state,
+                             warning))
 
     def has_message(self, contact: bytes, message_id: str) -> bool:
         return self.db.execute("SELECT 1 FROM messages WHERE contact = ? AND id = ?",
@@ -178,11 +206,53 @@ class Store:
             return Message(PICTURE, (self.pictures / picture).read_bytes(), message_id, when, mime=mime)
         return Message(TEXT, text.encode("utf-8"), message_id, when)
 
-    def conversation(self, contact: bytes, limit: int = 500) -> list[dict]:
-        rows = self.db.execute("SELECT id, outgoing, kind, text, picture, time, state FROM messages "
-                               "WHERE contact = ? ORDER BY time DESC LIMIT ?", (contact, limit)).fetchall()
-        keys = ("id", "outgoing", "kind", "text", "picture", "time", "state")
+    def conversation(self, contact: bytes, limit: int = 500, waiting: bool = False) -> list[dict]:
+        """The messages shown; with waiting=True, the received ones still waiting for a decision instead."""
+        marks = ",".join("?" * len(WAITING_STATES))
+        where = f"state IN ({marks})" if waiting else f"state NOT IN ({marks})"
+        rows = self.db.execute("SELECT id, outgoing, kind, text, picture, time, state, warning FROM messages "
+                               f"WHERE contact = ? AND {where} ORDER BY time DESC LIMIT ?",
+                               (contact, *WAITING_STATES, limit)).fetchall()
+        keys = ("id", "outgoing", "kind", "text", "picture", "time", "state", "warning")
         return [dict(zip(keys, row)) for row in reversed(rows)]
+
+    def accept(self, contact: bytes) -> None:
+        """You chose to see this contact's messages: the requests are shown, except those the checks held."""
+        with self.db:
+            self.db.execute("UPDATE contacts SET accepted = 1, blocked = 0 WHERE public = ?", (contact,))
+            self.db.execute("UPDATE messages SET state = CASE WHEN warning != '' THEN 'held' ELSE 'delivered' END "
+                            "WHERE contact = ? AND state = 'request'", (contact,))
+
+    def decline(self, contact: bytes) -> int:
+        """You did not want this contact's messages: the waiting ones are deleted, and the contact blocked."""
+        count = self.delete_waiting(contact)
+        self.set_blocked(contact)
+        return count
+
+    def show(self, contact: bytes, message_id: str) -> None:
+        """You read the warning and chose to see this one message."""
+        with self.db:
+            self.db.execute("UPDATE messages SET state = 'delivered', warning = '' WHERE contact = ? AND id = ? "
+                            "AND state = 'held'", (contact, message_id))
+
+    def delete_waiting(self, contact: bytes, message_id: str | None = None) -> int:
+        marks = ",".join("?" * len(WAITING_STATES))
+        query = f"SELECT id, picture FROM messages WHERE contact = ? AND outgoing = 0 AND state IN ({marks})"
+        args: tuple = (contact, *WAITING_STATES)
+        if message_id is not None:
+            query, args = query + " AND id = ?", (*args, message_id)
+        rows = self.db.execute(query, args).fetchall()
+        with self.db:
+            for row_id, picture in rows:
+                self.db.execute("DELETE FROM messages WHERE contact = ? AND id = ?", (contact, row_id))
+                if picture:
+                    (self.pictures / picture).unlink(missing_ok=True)
+        return len(rows)
+
+    def waiting_count(self) -> int:
+        marks = ",".join("?" * len(WAITING_STATES))
+        return self.db.execute(f"SELECT COUNT(*) FROM messages WHERE outgoing = 0 AND state IN ({marks})",
+                               WAITING_STATES).fetchone()[0]
 
     def queued(self, contact: bytes) -> list[str]:
         """Outgoing messages still waiting for the contact to come online, oldest first."""

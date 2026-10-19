@@ -4051,3 +4051,167 @@ msgstr "Guardado. Los contactos de esta red ya pueden llegar a ti directamente."
 #: apps/dai-chat/dai_chat/cli.py
 msgid "Saved. Chat uses Tor only."
 msgstr "Guardado. Chat usa solo Tor."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "A message from {name} was held because {why}. These are warning signs, not proof."
+msgstr "Se retuvo un mensaje de {name} porque: {why}. Son señales de alerta, no una prueba."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "A message from {name} was held: it looks suspicious."
+msgstr "Se retuvo un mensaje de {name}: parece sospechoso."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Accept"
+msgstr "Aceptar"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Calls themselves: {name}"
+msgstr "Se hace llamar: {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Choose your name"
+msgstr "Elige tu nombre"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "ClamAV recognised malware or a known phishing message"
+msgstr "ClamAV reconoció malware o un mensaje de phishing conocido"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Decline and block"
+msgstr "Rechazar y bloquear"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Delete it"
+msgstr "Borrarlo"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Deleted {count} waiting messages and blocked {name}."
+msgstr "Se borraron {count} mensajes en espera y se bloqueó a {name}."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "First choose the name your contacts will see (not your user name): dai-chat name NAME"
+msgstr "Primero elige el nombre que verán tus contactos (no tu nombre de usuario): dai-chat name NAME"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "No display name yet. Choose one: dai-chat name NAME"
+msgstr "Aún no hay nombre visible. Elige uno: dai-chat name NAME"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "No held message with that number."
+msgstr "No hay ningún mensaje retenido con ese número."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Nothing is waiting for you."
+msgstr "No hay nada esperándote."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving is off: messages to you wait on your contacts' computers."
+msgstr "La recepción está desactivada: los mensajes para ti esperan en los ordenadores de tus contactos."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving is on. New contacts' messages wait for your OK, and every message is checked first."
+msgstr "La recepción está activada. Los mensajes de contactos nuevos esperan tu visto bueno, y cada mensaje se revisa antes."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving: off"
+msgstr "Recepción: desactivada"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Receiving: on"
+msgstr "Recepción: activada"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Save"
+msgstr "Guardar"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Show it anyway"
+msgstr "Mostrarlo de todos modos"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "The name your contacts will see. Choose any name: it is not your user name on this computer, and you can change it later."
+msgstr "El nombre que verán tus contactos. Elige cualquiera: no es tu nombre de usuario en este ordenador y puedes cambiarlo después."
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Write a name with letters in it."
+msgstr "Escribe un nombre con letras."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Your contacts see you as: {name}"
+msgstr "Tus contactos te ven como: {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "Your display name"
+msgstr "Tu nombre visible"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "Your name: {name}"
+msgstr "Tu nombre: {name}"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link goes to a bare IP address"
+msgstr "un enlace va a una dirección IP sin nombre"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link is not encrypted (http)"
+msgstr "un enlace no está cifrado (http)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link pretends to be a well-known site"
+msgstr "un enlace se hace pasar por un sitio conocido"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a link uses look-alike letters (xn--)"
+msgstr "un enlace usa letras parecidas (xn--)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "a shortened link hides where it goes"
+msgstr "un enlace acortado oculta adónde lleva"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "it asks for a password, a code, card details or urgent action"
+msgstr "pide una contraseña, un código, datos de tarjeta o una acción urgente"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "it hides the real order of its letters (direction controls)"
+msgstr "oculta el orden real de sus letras (controles de dirección)"
+
+#: apps/dai-chat/dai_chat/gui.py
+msgid "it mentions a program file to open (.exe, .apk …)"
+msgstr "menciona un archivo de programa para abrir (.exe, .apk …)"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{count} more wait for your decision: dai-chat requests"
+msgstr "{count} más esperan tu decisión: dai-chat requests"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name} sent a message. Open Diamond Chat to accept or decline."
+msgstr "{name} envió un mensaje. Abre Diamond Chat para aceptar o rechazar."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name} sent {count} messages. They are shown only if you accept {name}; every message is checked for phishing and malware first."
+msgstr "{name} envió {count} mensajes. Solo se muestran si aceptas a {name}; cada mensaje se revisa antes en busca de phishing y malware."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name}'s messages are shown from now on (suspicious ones still wait for you)."
+msgstr "Los mensajes de {name} se muestran desde ahora (los sospechosos seguirán esperándote)."
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name}, held ({why}): dai-chat show {name} {id} or discard {name} {id}"
+msgstr "{name}, retenido ({why}): dai-chat show {name} {id} o discard {name} {id}"
+
+#: apps/dai-chat/dai_chat/gui.py
+#, python-brace-format
+msgid "{name}, new: dai-chat accept {name} or decline {name}"
+msgstr "{name}, nuevo: dai-chat accept {name} o decline {name}"

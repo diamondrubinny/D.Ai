@@ -2,10 +2,11 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """The Diamond Chat background service (`dai-chat run`, a user systemd unit while Chat is on).
 
-  - listens on 127.0.0.1 (where the onion service forwards) or, with the local network on, on every address
-    (the firewall opens the port only to the local network: docs/SEND.md §3);
-  - starts the person's Tor and publishes their onion service (tor.py);
-  - announces itself on the local network, under an hourly tag (discovery.py);
+  - receives only when the person turned receiving on (off by default): only then does it listen on
+    127.0.0.1 (where the onion service forwards) or, with the local network on, on every address (the
+    firewall opens the port only to the local network: docs/SEND.md §3), publish the onion service and
+    announce itself on the local network; until then, messages to this person wait on their senders' computers;
+  - starts the person's Tor (tor.py), for sending even while receiving is off;
   - every half minute, and at once when the window or the command line says so, tries to deliver what is
     queued and to finish pairings: the local network first, then Tor, waiting longer after each failure;
   - says "a new message from Dana" (never the message itself: the screen may be seen by others).
@@ -29,6 +30,7 @@ from . import message as msg
 from . import transport
 from .discovery import Discovery, short
 from .keys import Identity
+from .pairing import clean_name
 from .store import Contact, Store
 from .tor import Tor, TorError
 
@@ -40,6 +42,8 @@ MAX_WAIT = 15 * 60.0
 class Settings:
     lan: bool = False  # off until the person turns it on (it opens a port to the local network)
     tor: bool = True
+    receive: bool = False  # off until the person turns it on: nobody can reach them before that
+    name: str = ""  # the display name contacts see; chosen by the person, never the computer's user name
 
     @classmethod
     def load(cls, path: Path) -> "Settings":
@@ -47,11 +51,16 @@ class Settings:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return cls()
-        return cls(lan=data.get("lan") is True, tor=data.get("tor") is not False)
+        if not isinstance(data, dict):
+            return cls()
+        name = data.get("name") if isinstance(data.get("name"), str) else ""
+        return cls(lan=data.get("lan") is True, tor=data.get("tor") is not False,
+                   receive=data.get("receive") is True, name=clean_name(name))
 
     def save(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"lan": self.lan, "tor": self.tor}) + "\n", encoding="utf-8")
+        data = {"lan": self.lan, "tor": self.tor, "receive": self.receive, "name": clean_name(self.name)}
+        path.write_text(json.dumps(data, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def settings_path(environ: dict | None = None) -> Path:
@@ -93,14 +102,21 @@ class Backoff:
         self.wait.clear()
 
 
-def notify(contact: Contact, run: Callable = subprocess.Popen) -> None:
+def notify(contact: Contact, state: str = "delivered", run: Callable = subprocess.Popen) -> None:
     """A notification that says who wrote, not what (the screen may be shared), and the diamond chime."""
     from dai_i18n import text, ui_lang
 
     lang = ui_lang()
+    if state == "request":
+        words = text(lang, "{name} sent a message. Open Diamond Chat to accept or decline.",
+                     "‏{name} שלחו הודעה. פתחו את Diamond Chat כדי לאשר או לדחות.", name=contact.name)
+    elif state == "held":
+        words = text(lang, "A message from {name} was held: it looks suspicious.",
+                     "הודעה מאת {name} עוכבה: היא נראית חשודה.", name=contact.name)
+    else:
+        words = text(lang, "A new message from {name}", "הודעה חדשה מאת {name}", name=contact.name)
     try:
-        run(["notify-send", "--app-name=Diamond Chat", "--icon=dai-chat", "Diamond Chat",
-             text(lang, "A new message from {name}", "הודעה חדשה מאת {name}", name=contact.name)],
+        run(["notify-send", "--app-name=Diamond Chat", "--icon=internet-chat", "Diamond Chat", words],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         run(["dai-sound", "message-new-instant"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except OSError:
@@ -110,7 +126,7 @@ def notify(contact: Contact, run: Callable = subprocess.Popen) -> None:
 class Service:
     def __init__(self, me: Identity, onion_seed: bytes, store: Store, settings: Settings,
                  tor_runner: Tor | None = None, discovery: Discovery | None = None,
-                 on_message: Callable[[Contact], None] = notify, port: int = transport.PORT,
+                 on_message: Callable[[Contact, str], None] = notify, port: int = transport.PORT,
                  clock: Callable[[], float] = time.monotonic) -> None:
         from nacl.signing import SigningKey
 
@@ -120,16 +136,18 @@ class Service:
         self.tor = tor_runner if settings.tor else None
         self.discovery = discovery if settings.lan else None
         self.on_message = on_message
-        self.node = transport.Node(me, store, self._arrived, service=self.service_public)
+        self.node = transport.Node(me, store, self._arrived, service=self.service_public, name=settings.name,
+                                   accepting=lambda: self.settings.receive)
+        self.chat_server = None
         self.backoff = Backoff()
         self.tor_state = "off" if self.tor is None else "starting"
         self.poked = asyncio.Event()
         self.servers: list = []
 
-    def _arrived(self, peer: bytes, message: msg.Message) -> None:
+    def _arrived(self, peer: bytes, message: msg.Message, state: str) -> None:
         contact = self.store.contact(peer)
         if contact is not None:
-            self.on_message(contact)
+            self.on_message(contact, state)
 
     # where a contact or a code can be reached, best first
     def routes(self, fpr: bytes, onion: str) -> list[transport.Connect]:
@@ -155,9 +173,11 @@ class Service:
     async def _try(self, key, routes, attempt) -> bool:
         for route in routes:
             try:
-                await attempt(route)
+                result = await attempt(route)
             except transport.TransportError:
                 continue
+            if getattr(result, "deferred", None):  # they are not receiving now: try again later, not at once
+                break
             self.backoff.succeeded(key)
             return True
         self.backoff.failed(key, self.clock())
@@ -184,14 +204,17 @@ class Service:
             writer.close()
 
     def status(self) -> dict:
-        return {"tor": self.tor_state, "lan": self.discovery is not None,
+        return {"tor": self.tor_state, "lan": self.discovery is not None, "receive": self.settings.receive,
+                "requests": self.store.waiting_count(),
                 "onion": self.tor.address if self.tor is not None else "",
                 "waiting": len(self.store.waiting()),
                 "queued": sum(len(self.store.queued(c.public)) for c in self.store.contacts())}
 
     async def start(self, control_path: Path) -> None:
-        host = "0.0.0.0" if self.discovery is not None else "127.0.0.1"
-        self.servers.append(await asyncio.start_server(self.node.handle, host, self.port, limit=2 ** 16))
+        if self.settings.receive:
+            host = "0.0.0.0" if self.discovery is not None else "127.0.0.1"
+            self.chat_server = await asyncio.start_server(self.node.handle, host, self.port, limit=2 ** 16)
+            self.servers.append(self.chat_server)
         control_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         control_path.unlink(missing_ok=True)
         old = os.umask(0o177)
@@ -202,14 +225,15 @@ class Service:
         if self.discovery is not None:
             address = lan_address()
             if address:
-                await asyncio.to_thread(self.discovery.start, address)
+                await asyncio.to_thread(self.discovery.start, address, self.settings.receive)
         if self.tor is not None:
             asyncio.ensure_future(self._start_tor())
 
     async def _start_tor(self) -> None:
         try:
             await asyncio.to_thread(self.tor.start)
-            await asyncio.to_thread(self.tor.publish, self.onion_seed)
+            if self.settings.receive:  # reachable at the onion address only while receiving is on
+                await asyncio.to_thread(self.tor.publish, self.onion_seed)
             self.tor_state = "connecting"
             online = await asyncio.to_thread(self.tor.wait_online, 300)
             self.tor_state = "online" if online else "offline"
