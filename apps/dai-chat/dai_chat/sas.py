@@ -43,5 +43,5 @@ def symbols(a: bytes, b: bytes) -> list[int]:
 
 def describe(indexes: list[int], lang: str) -> str:
     """"💎 diamond · 🐢 turtle · ..." in the person's language (English when we have no names in it)."""
-    column = 2 if lang == "he" else 1
+    column = 2 if lang == "he" else 1  # i18n: ok (a data column: Hebrew names, else English)
     return " · ".join(f"{SYMBOLS[i][0]} {SYMBOLS[i][column]}" for i in indexes)
