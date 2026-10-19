@@ -205,6 +205,14 @@ build_apps() {
   install -m 0755 "$ocr/data/dai-ocr" "$root/usr/bin/dai-ocr"
   install -m 0644 "$ocr/data/dai-ocr.desktop" "$root/usr/share/applications/"
 
+  # D.Ai VM (docs/VM.md): Windows in a window with the person's own media and key; the stack itself is a package list.
+  local vm="$REPO_ROOT/apps/dai-vm"
+  copy_package "$vm/dai_vm" "$root"
+  install -D -m 0644 "$vm/data/drivers.json" "$root/usr/share/dai/vm/drivers.json"
+  install -m 0755 "$vm/data/dai-vm" "$root/usr/bin/dai-vm"
+  install -m 0644 "$vm/data/dai-vm.desktop" "$root/usr/share/applications/"
+  install -D -m 0644 "$vm/data/dai-vm.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-vm.svg"
+
   # D.Ai PDF (docs/PDF.md): the reader that opens every PDF in a sandbox; the default for application/pdf.
   local pdf="$REPO_ROOT/apps/dai-pdf"
   copy_package "$pdf/dai_pdf" "$root"

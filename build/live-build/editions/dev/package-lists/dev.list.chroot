@@ -21,3 +21,16 @@ jq
 ripgrep
 fd-find
 sqlite3
+
+# D.Ai VM (docs/VM.md): the same virtualization stack as the user edition.
+qemu-system-x86
+qemu-system-modules-spice
+qemu-utils
+libvirt-daemon
+libvirt-daemon-driver-qemu
+libvirt-clients
+virt-viewer
+swtpm
+swtpm-tools
+ovmf
+passt

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai VM
+Name[he]=D.Ai VM
+GenericName=Virtual machines
+GenericName[he]=מכונות וירטואליות
+Comment=Windows in a window, with your own installation media and key; private by default
+Comment[he]=Windows בחלון, עם מדיית ההתקנה והמפתח שלכם; פרטי כברירת מחדל
+Exec=dai-vm
+TryExec=dai-vm
+Icon=dai-vm
+Terminal=false
+Categories=System;Emulator;
+Keywords=windows;virtual machine;vm;kvm;qemu;מכונה וירטואלית;
+StartupWMClass=dai-vm

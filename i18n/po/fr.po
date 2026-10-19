@@ -4579,3 +4579,457 @@ msgstr "{n} pièces jointes. Elles sont listées dans le panneau latéral et jam
 #, python-brace-format
 msgid "{n} results for “{q}”"
 msgstr "{n} résultats pour « {q} »"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "/dev/kvm is missing: virtualization is off in the BIOS, or the kvm module did not load."
+msgstr "/dev/kvm est absent : la virtualisation est désactivée dans le BIOS, ou le module kvm ne s'est pas chargé."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A machine can run here."
+msgstr "Une machine peut fonctionner ici."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A machine cannot run here yet."
+msgstr "Une machine ne peut pas encore fonctionner ici."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A name: letters, digits, dots, dashes, underscores."
+msgstr "Un nom : lettres, chiffres, points, tirets, tirets bas."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A new machine"
+msgstr "Une nouvelle machine"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Another system"
+msgstr "Un autre système"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Attach the VirtIO drivers CD (Windows setup needs it to see the disk)"
+msgstr "Attacher le CD des pilotes VirtIO (l'installation de Windows en a besoin pour voir le disque)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Choose a machine, or make one."
+msgstr "Choisissez une machine, ou créez-en une."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Choose the ISO file"
+msgstr "Choisir le fichier ISO"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Choose the installation ISO."
+msgstr "Choisissez l'ISO d'installation."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Choose…"
+msgstr "Choisir…"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Clipboard: off."
+msgstr "Presse-papiers : désactivé."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Compare it with the checksum on the page you downloaded from."
+msgstr "Comparez-la avec la somme de contrôle de la page de téléchargement."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Create the machine"
+msgstr "Créer la machine"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "D.Ai never downloads Windows. Download the ISO from Microsoft's page, choose it here, and type your own key into Windows setup. Whether your license may run in a virtual machine is set by Microsoft's terms for its edition."
+msgstr "D.Ai ne télécharge jamais Windows. Téléchargez l'ISO depuis la page de Microsoft, choisissez-le ici et saisissez votre propre clé dans l'installation de Windows. Le droit d'utiliser votre licence dans une machine virtuelle dépend des conditions Microsoft de son édition."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Delete {name}?"
+msgstr "Supprimer {name} ?"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Delete…"
+msgstr "Supprimer…"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Disc images (*.iso);;All files (*)"
+msgstr "Images disque (*.iso);;Tous les fichiers (*)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Disk size (grows as used)"
+msgstr "Taille du disque (grandit à l'usage)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Disk"
+msgstr "Disque"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Download drivers"
+msgstr "Télécharger les pilotes"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Downloaded and verified: {path}"
+msgstr "Téléchargé et vérifié : {path}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Downloading the drivers… {pct}%"
+msgstr "Téléchargement des pilotes… {pct} %"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Drivers downloaded and verified."
+msgstr "Pilotes téléchargés et vérifiés."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Force off"
+msgstr "Forcer l'arrêt"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Hardware virtualization is on ({kind}) and usable."
+msgstr "La virtualisation matérielle est active ({kind}) et utilisable."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Installation ISO"
+msgstr "ISO d'installation"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Label: {label}"
+msgstr "Étiquette : {label}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Let {user} run virtual machines (KVM)"
+msgstr "Autoriser {user} à lancer des machines virtuelles (KVM)"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Looks like Windows media: {yes}"
+msgstr "Ressemble à un support Windows : {yes}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Machines run as you, in your home folder; nothing about them leaves this computer."
+msgstr "Les machines tournent sous votre nom, dans votre dossier personnel ; rien à leur sujet ne quitte cet ordinateur."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Machines"
+msgstr "Machines"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Missing on this computer: {tools}."
+msgstr "Manque sur cet ordinateur : {tools}."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Network: the internet through D.Ai, as a NAT client (passt). Nothing of the local network reaches in."
+msgstr "Réseau : internet via D.Ai, en client NAT (passt). Rien du réseau local n'entre."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "No driver catalog."
+msgstr "Pas de catalogue de pilotes."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "No drivers in the catalog."
+msgstr "Aucun pilote dans le catalogue."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "No machine called {name}."
+msgstr "Pas de machine nommée {name}."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "No machines yet. dai-vm create NAME --iso FILE"
+msgstr "Pas encore de machine. dai-vm create NAME --iso FILE"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Not created: {why}"
+msgstr "Non créée : {why}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Note: {name} does not look like Windows media (label: {label})."
+msgstr "Remarque : {name} ne ressemble pas à un support Windows (étiquette : {label})."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Open Microsoft's download page"
+msgstr "Ouvrir la page de téléchargement de Microsoft"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Pause"
+msgstr "Pause"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Processors"
+msgstr "Processeurs"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Resume"
+msgstr "Reprendre"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Shared folder: none."
+msgstr "Dossier partagé : aucun."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Sharing the clipboard, a folder or a USB device comes in the next stage, each with its own switch here."
+msgstr "Le partage du presse-papiers, d'un dossier ou d'un périphérique USB arrive à l'étape suivante, chacun avec son interrupteur ici."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Show the screen"
+msgstr "Afficher l'écran"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Shut down"
+msgstr "Éteindre"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Size: {gb:.2f} GB"
+msgstr "Taille : {gb:.2f} Go"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "System"
+msgstr "Système"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Take KVM access from {user}"
+msgstr "Retirer à {user} l'accès KVM"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Takes effect at the next login."
+msgstr "Prend effet à la prochaine connexion."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "That did not work: {why}"
+msgstr "Cela n'a pas fonctionné : {why}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The UEFI firmware with Secure Boot keys (OVMF) is missing; Windows 11 needs it."
+msgstr "Le firmware UEFI avec les clés Secure Boot (OVMF) est absent ; Windows 11 en a besoin."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The VirtIO drivers are not downloaded yet (dai-vm drivers --download); Windows setup will not see the disk until they are attached."
+msgstr "Les pilotes VirtIO ne sont pas encore téléchargés (dai-vm drivers --download) ; l'installation de Windows ne verra pas le disque tant qu'ils ne sont pas attachés."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The catalog has no SHA-256 for these drivers, so they are not downloaded."
+msgstr "Le catalogue n'a pas de SHA-256 pour ces pilotes, ils ne sont donc pas téléchargés."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "The download failed: {why}"
+msgstr "Le téléchargement a échoué : {why}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The drivers are not downloaded yet: use the Download button in the main window first."
+msgstr "Les pilotes ne sont pas encore téléchargés : utilisez d'abord le bouton Télécharger de la fenêtre principale."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The installation ISO"
+msgstr "L'ISO d'installation"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "The media could not be used: {why}"
+msgstr "Le support n'a pas pu être utilisé : {why}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "The screen of {name} opens in its own window."
+msgstr "L'écran de {name} s'ouvre dans sa propre fenêtre."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "This computer cannot run a machine yet (see the top of the window)."
+msgstr "Cet ordinateur ne peut pas encore faire tourner une machine (voir le haut de la fenêtre)."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "This computer has {mb} MB of memory. A Windows machine needs at least {need} MB and D.Ai keeps {host} MB for itself."
+msgstr "Cet ordinateur a {mb} Mo de mémoire. Une machine Windows a besoin d'au moins {need} Mo et D.Ai garde {host} Mo pour lui."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "This deletes the machine and its disk, with everything installed in it. There is no undo."
+msgstr "Cela supprime la machine et son disque, avec tout ce qui y est installé. Pas de retour en arrière."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "This deletes {name} and its disk for good. Add --yes to confirm."
+msgstr "Cela supprime {name} et son disque pour de bon. Ajoutez --yes pour confirmer."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "This processor does not offer hardware virtualization (VT-x or AMD-V), or it is turned off in the BIOS. Without it Windows would run 10 to 50 times slower, so D.Ai VM does not start it."
+msgstr "Ce processeur n'offre pas la virtualisation matérielle (VT-x ou AMD-V), ou elle est désactivée dans le BIOS. Sans elle, Windows tournerait 10 à 50 fois plus lentement, donc D.Ai VM ne le démarre pas."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "This user may not use KVM yet. Say \"allow virtual machines\" to D.Ai Tune (it adds you to the kvm group; log out and in again)."
+msgstr "Cet utilisateur ne peut pas encore utiliser KVM. Dites « allow virtual machines » à D.Ai Tune (il vous ajoute au groupe kvm ; déconnectez-vous puis reconnectez-vous)."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "USB devices: none."
+msgstr "Périphériques USB : aucun."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Unknown command: {verb}. dai-vm --help"
+msgstr "Commande inconnue : {verb}. dai-vm --help"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "VirtIO drivers for Windows: not downloaded ({mb} MB, from Fedora, checked against a pinned SHA-256)."
+msgstr "Pilotes VirtIO pour Windows : non téléchargés ({mb} Mo, depuis Fedora, vérifiés contre un SHA-256 figé)."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "VirtIO drivers {version} are not downloaded ({mb} MB from {host}). dai-vm drivers --download"
+msgstr "Les pilotes VirtIO {version} ne sont pas téléchargés ({mb} Mo depuis {host}). dai-vm drivers --download"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "VirtIO drivers {version} are present: {path}"
+msgstr "Les pilotes VirtIO {version} sont présents : {path}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "VirtIO drivers {v}: ready."
+msgstr "Pilotes VirtIO {v} : prêts."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "What Windows can see"
+msgstr "Ce que Windows peut voir"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which file? dai-vm iso FILE"
+msgstr "Quel fichier ? dai-vm iso FILE"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Which machine? dai-vm {verb} NAME"
+msgstr "Quelle machine ? dai-vm {verb} NAME"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which name? dai-vm create NAME --iso FILE"
+msgstr "Quel nom ? dai-vm create NAME --iso FILE"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which system"
+msgstr "Quel système"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Your files: not reachable."
+msgstr "Vos fichiers : inaccessibles."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "crashed"
+msgstr "plantée"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "does not look like Windows media"
+msgstr "ne ressemble pas à un support Windows"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "label {label}, {gb:.1f} GB"
+msgstr "étiquette {label}, {gb:.1f} Go"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "none"
+msgstr "aucun"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "not defined"
+msgstr "non définie"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "paused"
+msgstr "en pause"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "shutting down"
+msgstr "en cours d'arrêt"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{free:.0f} GB free."
+msgstr "{free:.0f} Go libres."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{free:.0f} GB free: a Windows machine needs at least {need} GB of space."
+msgstr "{free:.0f} Go libres : une machine Windows a besoin d'au moins {need} Go."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{free:.0f} GB free: enough to start; Windows updates will fill it."
+msgstr "{free:.0f} Go libres : assez pour commencer ; les mises à jour Windows les rempliront."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{mb} MB memory · {cpus} processors · {gb} GB disk · Windows {win} · media: {iso}"
+msgstr "{mb} Mo de mémoire · {cpus} processeurs · disque de {gb} Go · Windows {win} · support : {iso}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{mb} MB of memory: Windows will run, with {rec} MB, but it will be slow."
+msgstr "{mb} Mo de mémoire : Windows fonctionnera, avec {rec} Mo, mais lentement."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{mb} MB of memory: {rec} MB for the machine is a good default."
+msgstr "{mb} Mo de mémoire : {rec} Mo pour la machine est une bonne valeur par défaut."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} goes on."
+msgstr "{name} reprend."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is paused."
+msgstr "{name} est en pause."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is ready. Start it, and Windows setup begins in its window."
+msgstr "{name} est prête. Démarrez-la et l'installation de Windows commence dans sa fenêtre."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is ready: {mb} MB, {cpus} CPUs, a {gb} GB disk. Start it with: dai-vm start {name}"
+msgstr "{name} est prête : {mb} Mo, {cpus} CPU, un disque de {gb} Go. Démarrez-la avec : dai-vm start {name}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is starting. Its screen opens in its own window."
+msgstr "{name} démarre. Son écran s'ouvre dans sa propre fenêtre."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is starting."
+msgstr "{name} démarre."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} was asked to shut down, the way Windows likes it."
+msgstr "{name} a été invitée à s'éteindre, comme Windows l'aime."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} was asked to shut down."
+msgstr "{name} a été invitée à s'éteindre."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} was deleted."
+msgstr "{name} a été supprimée."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} was switched off."
+msgstr "{name} a été éteinte."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "＋ New machine…"
+msgstr "＋ Nouvelle machine…"

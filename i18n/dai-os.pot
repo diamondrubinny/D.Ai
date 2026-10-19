@@ -119,7 +119,7 @@ msgid " (not connected)"
 msgstr ""
 
 #. he:  (בסשן שלך)
-#: apps/dai-tune/dai_tune/catalog.py:916
+#: apps/dai-tune/dai_tune/catalog.py:970
 msgid " (your session)"
 msgstr ""
 
@@ -171,6 +171,11 @@ msgstr ""
 msgid "---------- Forwarded message ----------"
 msgstr ""
 
+#. he: ‏/dev/kvm חסר: הווירטואליזציה כבויה ב-BIOS, או שמודול kvm לא נטען.
+#: apps/dai-vm/dai_vm/hardware.py:142
+msgid "/dev/kvm is missing: virtualization is off in the BIOS, or the kvm module did not load."
+msgstr ""
+
 #. he: תהליך אחד
 #: apps/dai-mom/dai_mom/text.py:55
 msgid "1 process"
@@ -192,6 +197,16 @@ msgstr ""
 msgid "A link in this PDF"
 msgstr ""
 
+#. he: מכונה יכולה לרוץ כאן.
+#: apps/dai-vm/dai_vm/cli.py:57
+msgid "A machine can run here."
+msgstr ""
+
+#. he: מכונה עדיין לא יכולה לרוץ כאן.
+#: apps/dai-vm/dai_vm/cli.py:58
+msgid "A machine cannot run here yet."
+msgstr ""
+
 #. he: הודעה מאת {name} עוכבה כי {why}. אלה סימני אזהרה, לא הוכחה.
 #: apps/dai-chat/dai_chat/gui.py:492
 #, python-brace-format
@@ -202,6 +217,16 @@ msgstr ""
 #: apps/dai-chat/dai_chat/service.py:114
 #, python-brace-format
 msgid "A message from {name} was held: it looks suspicious."
+msgstr ""
+
+#. he: שם: אותיות, ספרות, נקודות, מקפים, קו תחתון.
+#: apps/dai-vm/dai_vm/gui.py:247
+msgid "A name: letters, digits, dots, dashes, underscores."
+msgstr ""
+
+#. he: מכונה חדשה
+#: apps/dai-vm/dai_vm/gui.py:140
+msgid "A new machine"
 msgstr ""
 
 #. he: הודעה חדשה מאת {name}
@@ -294,7 +319,7 @@ msgid "Add or build anything, e.g. +install antivirus · +build an app for…"
 msgstr ""
 
 #. he: הוספת חנות האפליקציות Flathub
-#: apps/dai-tune/dai_tune/catalog.py:1026
+#: apps/dai-tune/dai_tune/catalog.py:1080
 msgid "Add the Flathub app store"
 msgstr ""
 
@@ -359,6 +384,11 @@ msgstr ""
 msgid "Allow {kind}"
 msgstr ""
 
+#. he: מערכת אחרת
+#: apps/dai-vm/dai_vm/gui.py:182
+msgid "Another system"
+msgstr ""
+
 #. he: בידוד אפליקציות AppArmor
 #: apps/dai-tune/dai_tune/posture.py:29
 msgid "AppArmor application confinement"
@@ -400,7 +430,7 @@ msgid "Apps, commands, math…    ? ask    + add / build    > terminal"
 msgstr ""
 
 #. he: ערבית
-#: apps/dai-tune/dai_tune/catalog.py:794
+#: apps/dai-tune/dai_tune/catalog.py:848
 msgid "Arabic"
 msgstr ""
 
@@ -454,6 +484,11 @@ msgstr ""
 #. he: בהפעלה
 #: apps/dai-mom/dai_mom/text.py:88
 msgid "At login"
+msgstr ""
+
+#. he: צירוף דיסק דרייברי VirtIO (התקנת Windows צריכה אותו כדי לראות את הדיסק)
+#: apps/dai-vm/dai_vm/gui.py:203
+msgid "Attach the VirtIO drivers CD (Windows setup needs it to see the disk)"
 msgstr ""
 
 #. he: קבצים מצורפים
@@ -536,7 +571,7 @@ msgid "Backup is not set up yet: dai-backup setup"
 msgstr ""
 
 #. he: מצב צריכת חשמל מאוזן
-#: apps/dai-tune/dai_tune/catalog.py:1262
+#: apps/dai-tune/dai_tune/catalog.py:1316
 msgid "Balanced power mode"
 msgstr ""
 
@@ -557,7 +592,7 @@ msgid "Battery saver"
 msgstr ""
 
 #. he: מצב חיסכון בסוללה (סוללה ארוכה יותר, קצת יותר איטי)
-#: apps/dai-tune/dai_tune/catalog.py:1260
+#: apps/dai-tune/dai_tune/catalog.py:1314
 msgid "Battery saver mode (longer battery life, a bit slower)"
 msgstr ""
 
@@ -676,7 +711,7 @@ msgid "Cancelled: the computer starts as before."
 msgstr ""
 
 #. he: אי אפשר לבטל, אבל שום דבר שאתם משתמשים בו לא נמחק (רק יומנים מעבר ל־{JOURNAL_KEEP}).
-#: apps/dai-tune/dai_tune/catalog.py:1221
+#: apps/dai-tune/dai_tune/catalog.py:1275
 #, python-brace-format
 msgid "Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only)."
 msgstr ""
@@ -742,14 +777,35 @@ msgstr ""
 msgid "Choose a contact, or add one."
 msgstr ""
 
+#. he: בחרו מכונה, או צרו אחת.
+#: apps/dai-vm/dai_vm/gui.py:344
+#: apps/dai-vm/dai_vm/gui.py:431
+msgid "Choose a machine, or make one."
+msgstr ""
+
 #. he: בחרו הודעה כדי לקרוא אותה.
 #: apps/dai-j/dai_j/text.py:42
 msgid "Choose a message to read it."
 msgstr ""
 
+#. he: בחירת קובץ ה-ISO
+#: apps/dai-vm/dai_vm/gui.py:170
+msgid "Choose the ISO file"
+msgstr ""
+
+#. he: בחרו את ה-ISO של ההתקנה.
+#: apps/dai-vm/dai_vm/gui.py:260
+msgid "Choose the installation ISO."
+msgstr ""
+
 #. he: בחירת שם
 #: apps/dai-chat/dai_chat/gui.py:406
 msgid "Choose your name"
+msgstr ""
+
+#. he: בחירה…
+#: apps/dai-vm/dai_vm/gui.py:169
+msgid "Choose…"
 msgstr ""
 
 #. he: ‏ClamAV זיהה נוזקה או הודעת פישינג מוכרת
@@ -766,6 +822,11 @@ msgstr ""
 #: apps/dai-clip/dai_clip/text.py:11
 #: apps/dai-command/dai_command/core.py:462
 msgid "Clipboard history"
+msgstr ""
+
+#. he: לוח: כבוי.
+#: apps/dai-vm/dai_vm/gui.py:371
+msgid "Clipboard: off."
 msgstr ""
 
 #. he: סגירה
@@ -786,7 +847,7 @@ msgid "Close or wait for the busiest app"
 msgstr ""
 
 #. he: סגירת פורט {port}/{proto}
-#: apps/dai-tune/dai_tune/catalog.py:334
+#: apps/dai-tune/dai_tune/catalog.py:388
 #, python-brace-format
 msgid "Close port {port}/{proto}"
 msgstr ""
@@ -817,6 +878,11 @@ msgstr ""
 #. he: קוד — מסביר ועורך קוד (D.Ai Code, ‏D.Ai Forge)
 #: apps/dai-welcome/dai_welcome/gui.py:90
 msgid "Coding — explains and edits code (D.Ai Code, D.Ai Forge)"
+msgstr ""
+
+#. he: השוו אותו לסכום הבדיקה בעמוד שממנו הורדתם.
+#: apps/dai-vm/dai_vm/cli.py:225
+msgid "Compare it with the checksum on the page you downloaded from."
 msgstr ""
 
 #. he: השוואת סמלים
@@ -946,6 +1012,11 @@ msgstr ""
 msgid "Could not read the text: {error}"
 msgstr ""
 
+#. he: יצירת המכונה
+#: apps/dai-vm/dai_vm/gui.py:227
+msgid "Create the machine"
+msgstr ""
+
 #. he: צור ✦
 #: apps/dai-forge/dai_forge/gui.py:125
 msgid "Create ✦"
@@ -1067,13 +1138,18 @@ msgstr ""
 msgid "D.Ai has an idea for you"
 msgstr ""
 
+#. he: D.Ai לעולם לא מוריד Windows. הורידו את ה-ISO מהעמוד של Microsoft, בחרו אותו כאן, והקלידו את המפתח שלכם בהתקנת Windows. האם הרישיון שלכם רשאי לרוץ במכונה וירטואלית נקבע בתנאי Microsoft למהדורה שלו.
+#: apps/dai-vm/dai_vm/gui.py:145
+msgid "D.Ai never downloads Windows. Download the ISO from Microsoft's page, choose it here, and type your own key into Windows setup. Whether your license may run in a virtual machine is set by Microsoft's terms for its edition."
+msgstr ""
+
 #. he: הצעה של D.Ai · Enter לבדיקה · Delete להסתרה
 #: apps/dai-command/dai_command/core.py:452
 msgid "D.Ai suggests · Enter to review · Delete to hide"
 msgstr ""
 
 #. he: ערכת הנושא של D.Ai: {name}
-#: apps/dai-tune/dai_tune/catalog.py:751
+#: apps/dai-tune/dai_tune/catalog.py:805
 #, python-brace-format
 msgid "D.Ai theme: {name}"
 msgstr ""
@@ -1089,7 +1165,7 @@ msgid "D.Ai's files are as installed"
 msgstr ""
 
 #. he: צלילי המערכת של D.Ai: {mode}
-#: apps/dai-tune/dai_tune/catalog.py:779
+#: apps/dai-tune/dai_tune/catalog.py:833
 #, python-brace-format
 msgid "D.Ai's system sounds: {mode}"
 msgstr ""
@@ -1116,12 +1192,19 @@ msgstr ""
 
 #. he: מחיקה
 #: apps/dai-j/dai_j/text.py:33
+#: apps/dai-vm/dai_vm/gui.py:508
 msgid "Delete"
 msgstr ""
 
 #. he: מחיקה
 #: apps/dai-chat/dai_chat/gui.py:314
 msgid "Delete it"
+msgstr ""
+
+#. he: למחוק את {name}?
+#: apps/dai-vm/dai_vm/gui.py:505
+#, python-brace-format
+msgid "Delete {name}?"
 msgstr ""
 
 #. he: למחוק את {title} ואת הנתונים שלה? [כ/ל] 
@@ -1150,6 +1233,11 @@ msgstr ""
 #. he: נמחק.
 #: apps/dai-raz/dai_raz/cli.py:160
 msgid "Deleted."
+msgstr ""
+
+#. he: מחיקה…
+#: apps/dai-vm/dai_vm/gui.py:358
+msgid "Delete…"
 msgstr ""
 
 #. he: שולחן העבודה
@@ -1256,6 +1344,11 @@ msgstr ""
 msgid "Diamond, the local AI, and voice"
 msgstr ""
 
+#. he: תמונות דיסק (*.iso);;כל הקבצים (*)
+#: apps/dai-vm/dai_vm/gui.py:237
+msgid "Disc images (*.iso);;All files (*)"
+msgstr ""
+
 #. he: ויתור
 #: apps/dai-j/dai_j/text.py:193
 msgid "Discard"
@@ -1264,6 +1357,11 @@ msgstr ""
 #. he: לוותר על ההודעה הזו?
 #: apps/dai-j/dai_j/text.py:192
 msgid "Discard this message?"
+msgstr ""
+
+#. he: דיסק
+#: apps/dai-vm/dai_vm/gui.py:202
+msgid "Disk"
 msgstr ""
 
 #. he: הצפנת דיסק
@@ -1289,6 +1387,11 @@ msgstr ""
 #. he: סיסמת ההצפנה של הדיסק: 
 #: apps/dai-tune/dai_tune/rescue.py:204
 msgid "Disk passphrase: "
+msgstr ""
+
+#. he: גודל דיסק (גדל לפי השימוש)
+#: apps/dai-vm/dai_vm/gui.py:201
+msgid "Disk size (grows as used)"
 msgstr ""
 
 #. he: דיסק: {free} פנויים מתוך {total}
@@ -1323,9 +1426,20 @@ msgstr ""
 msgid "Done: {name}"
 msgstr ""
 
+#. he: הורדת דרייברים
+#: apps/dai-vm/dai_vm/gui.py:337
+msgid "Download drivers"
+msgstr ""
+
 #. he: הורדת מודל הקוד
 #: apps/dai-forge/dai_forge/gui.py:164
 msgid "Download the coding model"
+msgstr ""
+
+#. he: הורד ואומת: {path}
+#: apps/dai-vm/dai_vm/cli.py:206
+#, python-brace-format
+msgid "Downloaded and verified: {path}"
 msgstr ""
 
 #. he: קבצי התקנה שהורדו ויומני מערכת ישנים.
@@ -1336,6 +1450,12 @@ msgstr ""
 #. he: מוריד ומאמת את המודל…
 #: apps/dai-forge/dai_forge/gui.py:165
 msgid "Downloading and verifying the model…"
+msgstr ""
+
+#. he: מוריד את הדרייברים… {pct}%
+#: apps/dai-vm/dai_vm/gui.py:547
+#, python-brace-format
+msgid "Downloading the drivers… {pct}%"
 msgstr ""
 
 #. he: הורדות
@@ -1364,13 +1484,18 @@ msgstr ""
 msgid "Drive: "
 msgstr ""
 
+#. he: הדרייברים הורדו ואומתו.
+#: apps/dai-vm/dai_vm/gui.py:555
+msgid "Drivers downloaded and verified."
+msgstr ""
+
 #. he: כתובת מייל
 #: apps/dai-j/dai_j/text.py:55
 msgid "E-mail address"
 msgstr ""
 
 #. he: כל חלון של D.Ai יקבל אותה בפעם הבאה שייפתח.
-#: apps/dai-tune/dai_tune/catalog.py:754
+#: apps/dai-tune/dai_tune/catalog.py:808
 msgid "Each D.Ai window takes it the next time it opens."
 msgstr ""
 
@@ -1400,7 +1525,7 @@ msgid "Encryption password again"
 msgstr ""
 
 #. he: אנגלית
-#: apps/dai-tune/dai_tune/catalog.py:794
+#: apps/dai-tune/dai_tune/catalog.py:848
 msgid "English"
 msgstr ""
 
@@ -1461,7 +1586,7 @@ msgid "Every system change can be undone: dai-tune undo"
 msgstr ""
 
 #. he: לכל המשתמשים: המסך ננעל אחרי {minutes} דקות לכל היותר
-#: apps/dai-tune/dai_tune/catalog.py:677
+#: apps/dai-tune/dai_tune/catalog.py:731
 #, python-brace-format
 msgid "Every user: the screen locks after at most {minutes} minutes"
 msgstr ""
@@ -1483,7 +1608,7 @@ msgid "Examples:"
 msgstr ""
 
 #. he: חושף שירות במחשב הזה למחשבים אחרים.
-#: apps/dai-tune/dai_tune/catalog.py:323
+#: apps/dai-tune/dai_tune/catalog.py:377
 msgid "Exposes a service on this computer to other machines."
 msgstr ""
 
@@ -1581,7 +1706,7 @@ msgid "Fixed: {text}"
 msgstr ""
 
 #. he: אפליקציות Flathub רצות בארגז חול ומתעדכנות דרך Flatpak.
-#: apps/dai-tune/dai_tune/catalog.py:1029
+#: apps/dai-tune/dai_tune/catalog.py:1083
 msgid "Flathub apps run sandboxed and update through Flatpak."
 msgstr ""
 
@@ -1611,6 +1736,11 @@ msgstr ""
 msgid "Force close {name}?"
 msgstr ""
 
+#. he: כיבוי בכוח
+#: apps/dai-vm/dai_vm/gui.py:357
+msgid "Force off"
+msgstr ""
+
 #. he: סגירה בכוח מאבדת עבודה שלא נשמרה. הוסיפו ‎--yes‎ כדי לסגור בכוח את {name}.
 #: apps/dai-mom/dai_mom/text.py:71
 #, python-brace-format
@@ -1629,7 +1759,7 @@ msgid "Found: {host} (secure connection)"
 msgstr ""
 
 #. he: פינוי מקום: קבצי התקנה שהורדו ויומני מערכת ישנים
-#: apps/dai-tune/dai_tune/catalog.py:1218
+#: apps/dai-tune/dai_tune/catalog.py:1272
 msgid "Free disk space: downloaded package files and old system logs"
 msgstr ""
 
@@ -1639,7 +1769,7 @@ msgid "Free this space (administrator)"
 msgstr ""
 
 #. he: צרפתית
-#: apps/dai-tune/dai_tune/catalog.py:795
+#: apps/dai-tune/dai_tune/catalog.py:849
 msgid "French"
 msgstr ""
 
@@ -1672,7 +1802,7 @@ msgid "From: {sender}"
 msgstr ""
 
 #. he: גרמנית
-#: apps/dai-tune/dai_tune/catalog.py:796
+#: apps/dai-tune/dai_tune/catalog.py:850
 msgid "German"
 msgstr ""
 
@@ -1706,8 +1836,14 @@ msgstr ""
 msgid "HIGH RISK"
 msgstr ""
 
+#. he: וירטואליזציה בחומרה פועלת ({kind}) וזמינה.
+#: apps/dai-vm/dai_vm/hardware.py:153
+#, python-brace-format
+msgid "Hardware virtualization is on ({kind}) and usable."
+msgstr ""
+
 #. he: עברית
-#: apps/dai-tune/dai_tune/catalog.py:794
+#: apps/dai-tune/dai_tune/catalog.py:848
 msgid "Hebrew"
 msgstr ""
 
@@ -1823,7 +1959,7 @@ msgid "Install Diamond (the local AI) so it can write one: dai-models install qw
 msgstr ""
 
 #. he: התקנה מ־Flathub: 
-#: apps/dai-tune/dai_tune/catalog.py:1067
+#: apps/dai-tune/dai_tune/catalog.py:1121
 msgid "Install from Flathub: "
 msgstr ""
 
@@ -1833,8 +1969,13 @@ msgid "Install printing (D.Ai Forge)"
 msgstr ""
 
 #. he: התקנת: 
-#: apps/dai-tune/dai_tune/catalog.py:451
+#: apps/dai-tune/dai_tune/catalog.py:505
 msgid "Install: "
+msgstr ""
+
+#. he: ISO להתקנה
+#: apps/dai-vm/dai_vm/gui.py:173
+msgid "Installation ISO"
 msgstr ""
 
 #. he: הוא מבקש לפתוח קובץ אחר ({n}). לא נפתח.
@@ -1935,13 +2076,19 @@ msgid "Keeping the clipboard history again."
 msgstr ""
 
 #. he: שפות מקלדת: 
-#: apps/dai-tune/dai_tune/catalog.py:724
+#: apps/dai-tune/dai_tune/catalog.py:778
 msgid "Keyboard layouts: "
 msgstr ""
 
 #. he: מילות מפתח
 #: apps/dai-pdf/dai_pdf/gui.py:321
 msgid "Keywords"
+msgstr ""
+
+#. he: תווית: {label}
+#: apps/dai-vm/dai_vm/cli.py:220
+#, python-brace-format
+msgid "Label: {label}"
 msgstr ""
 
 #. he: שפה
@@ -1967,6 +2114,12 @@ msgstr ""
 #. he: משמאל לימין
 #: apps/dai-j/dai_j/text.py:189
 msgid "Left to right"
+msgstr ""
+
+#. he: לאפשר ל-{user} להריץ מכונות וירטואליות (KVM)
+#: apps/dai-tune/dai_tune/catalog.py:284
+#, python-brace-format
+msgid "Let {user} run virtual machines (KVM)"
 msgstr ""
 
 #. he: מתחילים ✦
@@ -2009,7 +2162,7 @@ msgid "Lock the screen after 5 minutes and keep automatic security updates on."
 msgstr ""
 
 #. he: נעילת מסך אחרי {minutes} דקות ללא פעילות
-#: apps/dai-tune/dai_tune/catalog.py:648
+#: apps/dai-tune/dai_tune/catalog.py:702
 #, python-brace-format
 msgid "Lock the screen after {minutes} minutes of inactivity"
 msgstr ""
@@ -2023,6 +2176,12 @@ msgstr ""
 #: apps/dai-j/dai_j/text.py:61
 #, python-brace-format
 msgid "Looking for the settings of {domain}…"
+msgstr ""
+
+#. he: נראה כמו מדיה של Windows: {yes}
+#: apps/dai-vm/dai_vm/cli.py:222
+#, python-brace-format
+msgid "Looks like Windows media: {yes}"
 msgstr ""
 
 #. he: MOM לא רצה כ־root.
@@ -2040,13 +2199,23 @@ msgstr ""
 msgid "MY APPS"
 msgstr ""
 
+#. he: מכונות
+#: apps/dai-vm/dai_vm/gui.py:327
+msgid "Machines"
+msgstr ""
+
+#. he: מכונות רצות כמוכם, בתיקיית הבית; שום דבר עליהן לא יוצא מהמחשב הזה.
+#: apps/dai-vm/dai_vm/gui.py:392
+msgid "Machines run as you, in your home folder; nothing about them leaves this computer."
+msgstr ""
+
 #. he: קובצי דואר
 #: apps/dai-j/dai_j/text.py:118
 msgid "Mail files"
 msgstr ""
 
 #. he: הוספת {name} למחשב ({locale})
-#: apps/dai-tune/dai_tune/catalog.py:831
+#: apps/dai-tune/dai_tune/catalog.py:885
 #, python-brace-format
 msgid "Make {name} available on this computer ({locale})"
 msgstr ""
@@ -2063,6 +2232,8 @@ msgstr ""
 
 #. he: זיכרון
 #: apps/dai-mom/dai_mom/text.py:17
+#: apps/dai-vm/dai_vm/gui.py:190
+#: apps/dai-vm/dai_vm/gui.py:191
 msgid "Memory"
 msgstr ""
 
@@ -2087,6 +2258,12 @@ msgstr ""
 #. he: הודעות
 #: apps/dai-j/dai_j/text.py:20
 msgid "Messages"
+msgstr ""
+
+#. he: חסרים במחשב הזה: {tools}.
+#: apps/dai-vm/dai_vm/hardware.py:184
+#, python-brace-format
+msgid "Missing on this computer: {tools}."
 msgstr ""
 
 #. he: המודלים רצים על המחשב הזה: השאלות, הקוד והקול שלכם לא יוצאים ממנו. בחרו מה להוריד עכשיו (פעם אחת, מאומת ב־SHA-256, מ־Hugging Face). אפשר להוסיף עוד אחר כך.
@@ -2116,6 +2293,8 @@ msgstr ""
 
 #. he: שם
 #: apps/dai-mom/dai_mom/text.py:16
+#: apps/dai-vm/dai_vm/gui.py:161
+#: apps/dai-vm/dai_vm/gui.py:163
 msgid "Name"
 msgstr ""
 
@@ -2126,12 +2305,17 @@ msgid "Name: {name}\nUser: {user} (administrator)\nComputer: {host}\n{luks}\n\nA
 msgstr ""
 
 #. he: דורש דיסק מערכת מסוג Btrfs. הקבצים האישיים (/home) לא חלק מזה. נשמרות עד 10 תמונות מצב.
-#: apps/dai-tune/dai_tune/catalog.py:1293
+#: apps/dai-tune/dai_tune/catalog.py:1347
 msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it. Up to 10 snapshots are kept."
 msgstr ""
 
+#. he: רשת: האינטרנט דרך D.Ai, כלקוח NAT ‏(passt). שום דבר מהרשת המקומית לא נכנס.
+#: apps/dai-vm/dai_vm/gui.py:369
+msgid "Network: the internet through D.Ai, as a NAT client (passt). Nothing of the local network reaches in."
+msgstr ""
+
 #. he: ביטול נעילת מסך אוטומטית
-#: apps/dai-tune/dai_tune/catalog.py:647
+#: apps/dai-tune/dai_tune/catalog.py:701
 msgid "Never lock the screen automatically"
 msgstr ""
 
@@ -2213,6 +2397,16 @@ msgstr ""
 msgid "No display name yet. Choose one: dai-chat name NAME"
 msgstr ""
 
+#. he: אין קטלוג דרייברים.
+#: apps/dai-vm/dai_vm/gui.py:529
+msgid "No driver catalog."
+msgstr ""
+
+#. he: אין דרייברים בקטלוג.
+#: apps/dai-vm/dai_vm/cli.py:176
+msgid "No drivers in the catalog."
+msgstr ""
+
 #. he: עדיין אין עריכות.
 #: apps/dai-code/dai_code/cli.py:140
 msgid "No edits yet."
@@ -2236,6 +2430,17 @@ msgstr ""
 #. he: אין מחזיק מפתחות: הסיסמה נשמרת רק עד שסוגרים את J.
 #: apps/dai-j/dai_j/text.py:58
 msgid "No keyring: the password is kept only until J closes."
+msgstr ""
+
+#. he: אין מכונה בשם {name}.
+#: apps/dai-vm/dai_vm/cli.py:134
+#, python-brace-format
+msgid "No machine called {name}."
+msgstr ""
+
+#. he: אין עדיין מכונות. dai-vm create NAME --iso FILE
+#: apps/dai-vm/dai_vm/cli.py:65
+msgid "No machines yet. dai-vm create NAME --iso FILE"
 msgstr ""
 
 #. he: לא נמצא במחשב דואר של Thunderbird, ‏Betterbird, ‏Evolution או KMail.
@@ -2342,6 +2547,13 @@ msgstr ""
 msgid "No uncommitted changes to review."
 msgstr ""
 
+#. he: לא נוצר: {why}
+#: apps/dai-vm/dai_vm/cli.py:116
+#: apps/dai-vm/dai_vm/gui.py:491
+#, python-brace-format
+msgid "Not created: {why}"
+msgstr ""
+
 #. he: לא נמצא · D.Ai Forge יכול לבנות או להוסיף את זה, אחרי שתאשרו · Enter
 #: apps/dai-command/dai_command/core.py:450
 msgid "Not found · D.Ai Forge can build it or add it, after your review · Enter"
@@ -2421,6 +2633,12 @@ msgstr ""
 #: apps/dai-raz/dai_raz/report.py:121
 #, python-brace-format
 msgid "Not working {times} of {runs} times: {title}."
+msgstr ""
+
+#. he: שימו לב: {name} לא נראה כמו מדיה של Windows (תווית: {label}).
+#: apps/dai-vm/dai_vm/cli.py:92
+#, python-brace-format
+msgid "Note: {name} does not look like Windows media (label: {label})."
 msgstr ""
 
 #. he: הערות
@@ -2628,6 +2846,11 @@ msgstr ""
 msgid "Open D.Ai Heal (Super+F1)."
 msgstr ""
 
+#. he: פתיחת עמוד ההורדה של Microsoft
+#: apps/dai-vm/dai_vm/gui.py:153
+msgid "Open Microsoft's download page"
+msgstr ""
+
 #. he: פתיחת PDF
 #: apps/dai-pdf/dai_pdf/gui.py:413
 #: apps/dai-pdf/dai_pdf/gui.py:551
@@ -2645,13 +2868,13 @@ msgid "Open it again"
 msgstr ""
 
 #. he: פתיחת פורט {port}/{proto} לכל הרשתות (אינטרנט)
-#: apps/dai-tune/dai_tune/catalog.py:318
+#: apps/dai-tune/dai_tune/catalog.py:372
 #, python-brace-format
 msgid "Open port {port}/{proto} to ANY network (internet)"
 msgstr ""
 
 #. he: פתיחת פורט {port}/{proto} לרשת המקומית בלבד
-#: apps/dai-tune/dai_tune/catalog.py:315
+#: apps/dai-tune/dai_tune/catalog.py:369
 #, python-brace-format
 msgid "Open port {port}/{proto} to the local network only"
 msgstr ""
@@ -2713,7 +2936,7 @@ msgid "PDF files (*.pdf);;All files (*)"
 msgstr ""
 
 #. he: החבילות מגיעות רק ממאגרי Debian/D.Ai החתומים.
-#: apps/dai-tune/dai_tune/catalog.py:454
+#: apps/dai-tune/dai_tune/catalog.py:508
 msgid "Packages come only from the signed Debian/D.Ai repositories."
 msgstr ""
 
@@ -2770,6 +2993,11 @@ msgstr ""
 msgid "Password for {address}"
 msgstr ""
 
+#. he: השהיה
+#: apps/dai-vm/dai_vm/gui.py:354
+msgid "Pause"
+msgstr ""
+
 #. he: מושהה עד {time} · {n} פריטים
 #: apps/dai-clip/dai_clip/text.py:31
 #, python-brace-format
@@ -2782,7 +3010,7 @@ msgid "Performance"
 msgstr ""
 
 #. he: מצב ביצועים (מהיר יותר, צורך יותר חשמל)
-#: apps/dai-tune/dai_tune/catalog.py:1263
+#: apps/dai-tune/dai_tune/catalog.py:1317
 msgid "Performance mode (faster, uses more power)"
 msgstr ""
 
@@ -2807,7 +3035,7 @@ msgid "Port"
 msgstr ""
 
 #. he: פורטוגזית
-#: apps/dai-tune/dai_tune/catalog.py:796
+#: apps/dai-tune/dai_tune/catalog.py:850
 msgid "Portuguese"
 msgstr ""
 
@@ -2852,6 +3080,12 @@ msgstr ""
 msgid "Processor: {value}%"
 msgstr ""
 
+#. he: מעבדים
+#: apps/dai-vm/dai_vm/gui.py:195
+#: apps/dai-vm/dai_vm/gui.py:196
+msgid "Processors"
+msgstr ""
+
 #. he: תוכנות קרסו {count} פעמים. הפרטים ב־D.Ai Heal (‏Super+F1).
 #: apps/dai-raz/dai_raz/report.py:139
 #, python-brace-format
@@ -2879,7 +3113,7 @@ msgid "Put the old settings back"
 msgstr ""
 
 #. he: הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}
-#: apps/dai-tune/dai_tune/catalog.py:1192
+#: apps/dai-tune/dai_tune/catalog.py:1246
 #, python-brace-format
 msgid "Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}"
 msgstr ""
@@ -3024,7 +3258,7 @@ msgid "Remove"
 msgstr ""
 
 #. he: הסרת אפליקציות Flatpak: 
-#: apps/dai-tune/dai_tune/catalog.py:1079
+#: apps/dai-tune/dai_tune/catalog.py:1133
 msgid "Remove Flatpak apps: "
 msgstr ""
 
@@ -3040,12 +3274,12 @@ msgid "Remove {address} from J? The local copy of its mail and its saved passwor
 msgstr ""
 
 #. he: הסרת: 
-#: apps/dai-tune/dai_tune/catalog.py:465
+#: apps/dai-tune/dai_tune/catalog.py:519
 msgid "Remove: "
 msgstr ""
 
 #. he: שינוי שם המחשב ל־{hostname}
-#: apps/dai-tune/dai_tune/catalog.py:548
+#: apps/dai-tune/dai_tune/catalog.py:602
 #, python-brace-format
 msgid "Rename this computer to {hostname}"
 msgstr ""
@@ -3066,7 +3300,7 @@ msgid "Restart"
 msgstr ""
 
 #. he: אחר כך מפעילים מחדש. הקבצים האישיים לא משתנים. לפני כן נשמרת תמונת מצב של עכשיו, כך שאפשר לבטל גם את זה.
-#: apps/dai-tune/dai_tune/catalog.py:1324
+#: apps/dai-tune/dai_tune/catalog.py:1378
 msgid "Restart afterwards. Personal files are not touched. A snapshot of now is taken first, so this can be undone too."
 msgstr ""
 
@@ -3076,7 +3310,7 @@ msgid "Restart it (administrator password)"
 msgstr ""
 
 #. he: הפעלה מחדש של השירות {unit}
-#: apps/dai-tune/dai_tune/catalog.py:954
+#: apps/dai-tune/dai_tune/catalog.py:1008
 #, python-brace-format
 msgid "Restart the service {unit}"
 msgstr ""
@@ -3089,6 +3323,11 @@ msgstr ""
 #. he: תוצאות
 #: apps/dai-command/dai_command/core.py:474
 msgid "Results"
+msgstr ""
+
+#. he: המשך
+#: apps/dai-vm/dai_vm/gui.py:355
+msgid "Resume"
 msgstr ""
 
 #. he: עכשיו · Enter ליומן הפרטיות
@@ -3155,7 +3394,7 @@ msgid "Runs {when}"
 msgstr ""
 
 #. he: רוסית
-#: apps/dai-tune/dai_tune/catalog.py:795
+#: apps/dai-tune/dai_tune/catalog.py:849
 msgid "Russian"
 msgstr ""
 
@@ -3207,7 +3446,7 @@ msgid "Say what to look for: a type, a time, a folder or part of the name."
 msgstr ""
 
 #. he: סריקת וירוסים ל־/home ({daily}) והעברת קבצים נגועים להסגר
-#: apps/dai-tune/dai_tune/catalog.py:1183
+#: apps/dai-tune/dai_tune/catalog.py:1237
 #, python-brace-format
 msgid "Scan /home for viruses ({frequency}) and quarantine infected files"
 msgstr ""
@@ -3368,7 +3607,7 @@ msgid "Service"
 msgstr ""
 
 #. he: אזור זמן: {timezone}
-#: apps/dai-tune/dai_tune/catalog.py:513
+#: apps/dai-tune/dai_tune/catalog.py:567
 #, python-brace-format
 msgid "Set time zone to {timezone}"
 msgstr ""
@@ -3409,8 +3648,18 @@ msgstr ""
 msgid "Several Windows users were found; choose one with --user:"
 msgstr ""
 
+#. he: תיקייה משותפת: אין.
+#: apps/dai-vm/dai_vm/gui.py:372
+msgid "Shared folder: none."
+msgstr ""
+
+#. he: שיתוף הלוח, תיקייה או התקן USB מגיע בשלב הבא, כל אחד עם מתג משלו כאן.
+#: apps/dai-vm/dai_vm/gui.py:379
+msgid "Sharing the clipboard, a folder or a USB device comes in the next stage, each with its own switch here."
+msgstr ""
+
 #. he: ‏D.Ai ב{name} מהכניסה הבאה
-#: apps/dai-tune/dai_tune/catalog.py:852
+#: apps/dai-tune/dai_tune/catalog.py:906
 #, python-brace-format
 msgid "Show D.Ai in {name} from the next login"
 msgstr ""
@@ -3428,6 +3677,16 @@ msgstr ""
 #. he: הצגה או הסתרה של לוח הצד
 #: apps/dai-pdf/dai_pdf/gui.py:447
 msgid "Show or hide the side panel"
+msgstr ""
+
+#. he: הצגת המסך
+#: apps/dai-vm/dai_vm/gui.py:353
+msgid "Show the screen"
+msgstr ""
+
+#. he: כיבוי
+#: apps/dai-vm/dai_vm/gui.py:356
+msgid "Shut down"
 msgstr ""
 
 #. he: לוח הצד
@@ -3453,6 +3712,12 @@ msgstr ""
 #. he: נכנס…
 #: apps/dai-j/dai_j/text.py:79
 msgid "Signing in…"
+msgstr ""
+
+#. he: גודל: {gb:.2f} GB
+#: apps/dai-vm/dai_vm/cli.py:221
+#, python-brace-format
+msgid "Size: {gb:.2f} GB"
 msgstr ""
 
 #. he: צילום מצב לפני עדכונים כבוי
@@ -3526,7 +3791,7 @@ msgid "Spam"
 msgstr ""
 
 #. he: ספרדית
-#: apps/dai-tune/dai_tune/catalog.py:795
+#: apps/dai-tune/dai_tune/catalog.py:849
 msgid "Spanish"
 msgstr ""
 
@@ -3538,11 +3803,12 @@ msgstr ""
 
 #. he: הפעלה
 #: apps/dai-mom/dai_mom/text.py:94
+#: apps/dai-vm/dai_vm/gui.py:352
 msgid "Start"
 msgstr ""
 
 #. he: הפעלת השירות {unit}
-#: apps/dai-tune/dai_tune/catalog.py:918
+#: apps/dai-tune/dai_tune/catalog.py:972
 #, python-brace-format
 msgid "Start and enable {unit}"
 msgstr ""
@@ -3592,13 +3858,13 @@ msgid "Stop"
 msgstr ""
 
 #. he: כיבוי השירות {unit}
-#: apps/dai-tune/dai_tune/catalog.py:919
+#: apps/dai-tune/dai_tune/catalog.py:973
 #, python-brace-format
 msgid "Stop and disable {unit}"
 msgstr ""
 
 #. he: הפסקת סריקות וירוסים מתוזמנות
-#: apps/dai-tune/dai_tune/catalog.py:1187
+#: apps/dai-tune/dai_tune/catalog.py:1241
 msgid "Stop scheduled virus scans"
 msgstr ""
 
@@ -3635,6 +3901,11 @@ msgstr ""
 msgid "Swap: {used} of {total} in use"
 msgstr ""
 
+#. he: מערכת
+#: apps/dai-vm/dai_vm/gui.py:183
+msgid "System"
+msgstr ""
+
 #. he: שינויים במערכת (תתבקש סיסמת מנהל):
 #: apps/dai-welcome/dai_welcome/gui.py:113
 msgid "System changes (the administrator password will be requested):"
@@ -3650,8 +3921,14 @@ msgstr ""
 msgid "System services change through D.Ai Tune (administrator password, undo)."
 msgstr ""
 
+#. he: להסיר מ-{user} את הגישה ל-KVM
+#: apps/dai-tune/dai_tune/catalog.py:286
+#, python-brace-format
+msgid "Take KVM access from {user}"
+msgstr ""
+
 #. he: צילום מצב של המערכת לפני כל עדכון תוכנה
-#: apps/dai-tune/dai_tune/catalog.py:1289
+#: apps/dai-tune/dai_tune/catalog.py:1343
 msgid "Take a snapshot of the system before every software update"
 msgstr ""
 
@@ -3661,8 +3938,13 @@ msgid "Take snapshots before updates"
 msgstr ""
 
 #. he: חל מהכניסה הבאה של כל משתמש. משתמשים יכולים לבחור זמן קצר יותר, לא ארוך יותר.
-#: apps/dai-tune/dai_tune/catalog.py:680
+#: apps/dai-tune/dai_tune/catalog.py:734
 msgid "Takes effect at each user's next login. Users can choose a shorter time, not a longer one."
+msgstr ""
+
+#. he: נכנס לתוקף בכניסה הבאה.
+#: apps/dai-tune/dai_tune/catalog.py:289
+msgid "Takes effect at the next login."
 msgstr ""
 
 #. he: התוספים של שורת המשימות נטענו
@@ -3702,6 +3984,13 @@ msgstr ""
 msgid "That code has a typo. Check it with {name} and try again."
 msgstr ""
 
+#. he: זה לא הצליח: {why}
+#: apps/dai-vm/dai_vm/cli.py:168
+#: apps/dai-vm/dai_vm/gui.py:474
+#, python-brace-format
+msgid "That did not work: {why}"
+msgstr ""
+
 #. he: זה לא נראה כמו כתובת מייל.
 #: apps/dai-j/dai_j/text.py:81
 msgid "That does not look like an e-mail address."
@@ -3725,6 +4014,16 @@ msgstr ""
 msgid "That password did not open {name}. Try again."
 msgstr ""
 
+#. he: קושחת UEFI עם מפתחות Secure Boot ‏(OVMF) חסרה; Windows 11 צריך אותה.
+#: apps/dai-vm/dai_vm/hardware.py:187
+msgid "The UEFI firmware with Secure Boot keys (OVMF) is missing; Windows 11 needs it."
+msgstr ""
+
+#. he: דרייברי VirtIO עדיין לא הורדו (dai-vm drivers --download); התקנת Windows לא תראה את הדיסק עד שיצורפו.
+#: apps/dai-vm/dai_vm/cli.py:100
+msgid "The VirtIO drivers are not downloaded yet (dai-vm drivers --download); Windows setup will not see the disk until they are attached."
+msgstr ""
+
 #. he: הכתובת
 #: apps/dai-pdf/dai_pdf/gui.py:289
 msgid "The address"
@@ -3733,6 +4032,11 @@ msgstr ""
 #. he: הסוללה שחוקה
 #: apps/dai-doctor/dai_doctor/diagnose.py:166
 msgid "The battery is worn"
+msgstr ""
+
+#. he: בקטלוג אין SHA-256 לדרייברים האלה, ולכן הם לא מורדים.
+#: apps/dai-vm/dai_vm/cli.py:188
+msgid "The catalog has no SHA-256 for these drivers, so they are not downloaded."
 msgstr ""
 
 #. he: היסטוריית ההעתקות נוקתה.
@@ -3766,6 +4070,18 @@ msgstr ""
 msgid "The document"
 msgstr ""
 
+#. he: ההורדה נכשלה: {why}
+#: apps/dai-vm/dai_vm/cli.py:203
+#: apps/dai-vm/dai_vm/gui.py:560
+#, python-brace-format
+msgid "The download failed: {why}"
+msgstr ""
+
+#. he: הדרייברים עדיין לא הורדו: השתמשו קודם בכפתור ההורדה בחלון הראשי.
+#: apps/dai-vm/dai_vm/gui.py:211
+msgid "The drivers are not downloaded yet: use the Download button in the main window first."
+msgstr ""
+
 #. he: הקובץ גדול מאוד; הבדיקה נעצרה מוקדם.
 #: apps/dai-pdf/dai_pdf/gui.py:125
 msgid "The file is very large; the inspection stopped early."
@@ -3779,6 +4095,12 @@ msgstr ""
 #. he: חומת האש לא שונתה, ולכן Chat נשאר ב־Tor בלבד.
 #: apps/dai-chat/dai_chat/cli.py:199
 msgid "The firewall was not changed, so Chat stays on Tor only."
+msgstr ""
+
+#. he: ה-ISO של ההתקנה
+#: apps/dai-vm/dai_vm/gui.py:166
+#: apps/dai-vm/dai_vm/gui.py:236
+msgid "The installation ISO"
 msgstr ""
 
 #. he: העדכון האחרון ({date}) שינה {count} חבילות. 
@@ -3796,6 +4118,12 @@ msgstr ""
 #: apps/dai-tune/dai_tune/rescue.py:218
 #, python-brace-format
 msgid "The last update was on {when} (snapshots {pre}..{post})."
+msgstr ""
+
+#. he: לא ניתן להשתמש במדיה: {why}
+#: apps/dai-vm/dai_vm/cli.py:89
+#, python-brace-format
+msgid "The media could not be used: {why}"
 msgstr ""
 
 #. he: ההודעה לא נשלחה. היא עדיין כאן; נסו שוב.
@@ -3832,6 +4160,12 @@ msgstr ""
 #. he: ארגז החול (bubblewrap) חסר; שום דבר לא נפתח.
 #: apps/dai-pdf/dai_pdf/cli.py:66
 msgid "The sandbox (bubblewrap) is missing; nothing was opened."
+msgstr ""
+
+#. he: המסך של {name} נפתח בחלון משלו.
+#: apps/dai-vm/dai_vm/cli.py:156
+#, python-brace-format
+msgid "The screen of {name} opens in its own window."
 msgstr ""
 
 #. he: אפשר לחשב את ציון האבטחה
@@ -3950,10 +4284,32 @@ msgstr ""
 msgid "This app asks to read and write ~/Documents. Allow? [y/N] "
 msgstr ""
 
+#. he: המחשב הזה עדיין לא יכול להריץ מכונה (ראו בראש החלון).
+#: apps/dai-vm/dai_vm/gui.py:244
+msgid "This computer cannot run a machine yet (see the top of the window)."
+msgstr ""
+
+#. he: למחשב הזה יש {mb} MB זיכרון. מכונת Windows צריכה לפחות {need} MB, ו-D.Ai שומר לעצמו {host} MB.
+#: apps/dai-vm/dai_vm/hardware.py:159
+#, python-brace-format
+msgid "This computer has {mb} MB of memory. A Windows machine needs at least {need} MB and D.Ai keeps {host} MB for itself."
+msgstr ""
+
 #. he: המחשב הזה: {ram} RAM
 #: apps/dai-welcome/dai_welcome/gui.py:96
 #, python-brace-format
 msgid "This computer: {ram} RAM"
+msgstr ""
+
+#. he: זה מוחק את המכונה ואת הדיסק שלה, עם כל מה שמותקן בה. אין ביטול.
+#: apps/dai-vm/dai_vm/gui.py:506
+msgid "This deletes the machine and its disk, with everything installed in it. There is no undo."
+msgstr ""
+
+#. he: זה מוחק את {name} ואת הדיסק שלו לתמיד. הוסיפו --yes לאישור.
+#: apps/dai-vm/dai_vm/cli.py:159
+#, python-brace-format
+msgid "This deletes {name} and its disk for good. Add --yes to confirm."
 msgstr ""
 
 #. he: לא ניתן היה לבדוק בקובץ זה סקריפטים וקבצים מצורפים; הוא עדיין מוצג רק בתוך ארגז החול.
@@ -4007,6 +4363,11 @@ msgstr ""
 msgid "This prepares the computer for its new owner:\n  • at the next start, a short setup asks for their name, user, password, computer name{luks}\n  • the temporary user {user} and everything in its home folder are deleted after that\n  • package caches, system logs, the machine ID and SSH host keys are reset now\n"
 msgstr ""
 
+#. he: המעבד הזה לא מציע וירטואליזציה בחומרה (VT-x או AMD-V), או שהיא כבויה ב-BIOS. בלעדיה Windows היה רץ פי 10 עד 50 לאט יותר, ולכן D.Ai VM לא מפעיל אותו.
+#: apps/dai-vm/dai_vm/hardware.py:135
+msgid "This processor does not offer hardware virtualization (VT-x or AMD-V), or it is turned off in the BIOS. Without it Windows would run 10 to 50 times slower, so D.Ai VM does not start it."
+msgstr ""
+
 #. he: הספק הזה מקבל רק את דף הכניסה שלו, ו־J עוד לא תומך בזה. בינתיים Thunderbird עובד: כתבו "+ thunderbird" ב־D.Ai Command.
 #: apps/dai-j/dai_j/text.py:67
 msgid "This provider accepts only its own sign-in page, which J does not support yet. Meanwhile, Thunderbird works: type \"+ thunderbird\" in D.Ai Command."
@@ -4020,6 +4381,11 @@ msgstr ""
 #. he: את העדכון הזה אי אפשר לבטל אוטומטית, אבל את הבאים כן.
 #: apps/dai-doctor/dai_doctor/diagnose.py:235
 msgid "This update cannot be undone automatically, but the next ones can."
+msgstr ""
+
+#. he: המשתמש הזה עדיין לא רשאי להשתמש ב-KVM. אמרו ל-D.Ai Tune "אפשר מכונות וירטואליות" (זה מוסיף אתכם לקבוצת kvm; צאו והיכנסו שוב).
+#: apps/dai-vm/dai_vm/hardware.py:146
+msgid "This user may not use KVM yet. Say \"allow virtual machines\" to D.Ai Tune (it adds you to the kvm group; log out and in again)."
 msgstr ""
 
 #. he: השבוע הכל עבד.
@@ -4128,6 +4494,11 @@ msgstr ""
 msgid "Type your name."
 msgstr ""
 
+#. he: התקני USB: אין.
+#: apps/dai-vm/dai_vm/gui.py:373
+msgid "USB devices: none."
+msgstr ""
+
 #. he: התקני אחסון USB
 #: apps/dai-tune/dai_tune/catalog.py:145
 msgid "USB storage devices"
@@ -4145,7 +4516,7 @@ msgid "Undo it now? [y/N] "
 msgstr ""
 
 #. he: ביטול העדכון האחרון (קבצי המערכת חוזרים למצב שלפניו)
-#: apps/dai-tune/dai_tune/catalog.py:1320
+#: apps/dai-tune/dai_tune/catalog.py:1374
 msgid "Undo the last software update (system files go back to before it)"
 msgstr ""
 
@@ -4162,6 +4533,12 @@ msgstr ""
 #. he: בוטל. המערכת חזרה למצב הקודם.
 #: apps/dai-forge/dai_forge/gui.py:150
 msgid "Undone. The system is back to how it was."
+msgstr ""
+
+#. he: פקודה לא מוכרת: {verb}. dai-vm --help
+#: apps/dai-vm/dai_vm/cli.py:258
+#, python-brace-format
+msgid "Unknown command: {verb}. dai-vm --help"
 msgstr ""
 
 #. he: עבודה שלא נשמרה ב־{name} תאבד.
@@ -4228,6 +4605,30 @@ msgstr ""
 msgid "Videos"
 msgstr ""
 
+#. he: דרייברי VirtIO ל-Windows: לא הורדו ({mb} MB, מ-Fedora, נבדקים מול SHA-256 קבוע).
+#: apps/dai-vm/dai_vm/gui.py:536
+#, python-brace-format
+msgid "VirtIO drivers for Windows: not downloaded ({mb} MB, from Fedora, checked against a pinned SHA-256)."
+msgstr ""
+
+#. he: דרייברי VirtIO ‏{version} לא הורדו ({mb} MB מ-{host}). dai-vm drivers --download
+#: apps/dai-vm/dai_vm/cli.py:183
+#, python-brace-format
+msgid "VirtIO drivers {version} are not downloaded ({mb} MB from {host}). dai-vm drivers --download"
+msgstr ""
+
+#. he: דרייברי VirtIO ‏{version} קיימים: {path}
+#: apps/dai-vm/dai_vm/cli.py:179
+#, python-brace-format
+msgid "VirtIO drivers {version} are present: {path}"
+msgstr ""
+
+#. he: דרייברי VirtIO ‏{v}: מוכנים.
+#: apps/dai-vm/dai_vm/gui.py:533
+#, python-brace-format
+msgid "VirtIO drivers {v}: ready."
+msgstr ""
+
 #. he: הקלדה קולית — הכתבה בעברית ובאנגלית (Super+H)
 #: apps/dai-welcome/dai_welcome/gui.py:91
 msgid "Voice typing — dictate in Hebrew and English (Super+H)"
@@ -4258,6 +4659,11 @@ msgstr ""
 #: apps/dai-welcome/dai_welcome/gui.py:53
 #: apps/dai-welcome/dai_welcome/gui.py:54
 msgid "Welcome to D.Ai OS"
+msgstr ""
+
+#. he: מה Windows רואה
+#: apps/dai-vm/dai_vm/gui.py:365
+msgid "What Windows can see"
 msgstr ""
 
 #. he: מה היא אמרה:
@@ -4302,9 +4708,30 @@ msgstr ""
 msgid "Which file? dai-pdf {command} FILE"
 msgstr ""
 
+#. he: איזה קובץ? dai-vm iso FILE
+#: apps/dai-vm/dai_vm/cli.py:213
+msgid "Which file? dai-vm iso FILE"
+msgstr ""
+
+#. he: איזו מכונה? dai-vm {verb} NAME
+#: apps/dai-vm/dai_vm/cli.py:128
+#, python-brace-format
+msgid "Which machine? dai-vm {verb} NAME"
+msgstr ""
+
+#. he: איזה שם? dai-vm create NAME --iso FILE
+#: apps/dai-vm/dai_vm/cli.py:76
+msgid "Which name? dai-vm create NAME --iso FILE"
+msgstr ""
+
 #. he: איזו? 
 #: apps/dai-tune/dai_tune/rescue.py:200
 msgid "Which one? "
+msgstr ""
+
+#. he: איזו מערכת
+#: apps/dai-vm/dai_vm/gui.py:179
+msgid "Which system"
 msgstr ""
 
 #. he: למי ההודעה? הוסיפו כתובת בשדה אל.
@@ -4431,6 +4858,11 @@ msgstr ""
 #. he: הקבצים שלך מוצפנים. הסיסמה הזו נשאלת בכל הדלקה, לפני כל דבר אחר. היא מחליפה את הסיסמה הזמנית שקיבלת עם המחשב.
 #: apps/dai-oem/dai_oem/wizard.py:54
 msgid "Your files are encrypted. This password is asked every time the computer starts, before anything else. It replaces the temporary one you got with the computer."
+msgstr ""
+
+#. he: הקבצים שלכם: לא נגישים.
+#: apps/dai-vm/dai_vm/gui.py:374
+msgid "Your files: not reachable."
 msgstr ""
 
 #. he: הדואר שלכם, במקום אחד ורגוע
@@ -4591,8 +5023,13 @@ msgstr ""
 msgid "compiles code at run time"
 msgstr ""
 
+#. he: קרס
+#: apps/dai-vm/dai_vm/gui.py:81
+msgid "crashed"
+msgstr ""
+
 #. he: כהה (D.Ai Night)
-#: apps/dai-tune/dai_tune/catalog.py:735
+#: apps/dai-tune/dai_tune/catalog.py:789
 msgid "dark (D.Ai Night)"
 msgstr ""
 
@@ -4604,6 +5041,11 @@ msgstr ""
 #. he: אפליקציה
 #: apps/dai-forge/dai_forge/cli.py:213
 msgid "desktop app"
+msgstr ""
+
+#. he: לא נראה כמו מדיה של Windows
+#: apps/dai-vm/dai_vm/gui.py:255
+msgid "does not look like Windows media"
 msgstr ""
 
 #. he: למשל: תתקין אנטי וירוס · תבנה אפליקציה לרשימת קניות
@@ -4673,7 +5115,7 @@ msgid "hardens security"
 msgstr ""
 
 #. he: ניגודיות גבוהה
-#: apps/dai-tune/dai_tune/catalog.py:736
+#: apps/dai-tune/dai_tune/catalog.py:790
 msgid "high contrast"
 msgstr ""
 
@@ -4718,8 +5160,14 @@ msgstr ""
 msgid "just now"
 msgstr ""
 
+#. he: תווית {label}, {gb:.1f} GB
+#: apps/dai-vm/dai_vm/gui.py:253
+#, python-brace-format
+msgid "label {label}, {gb:.1f} GB"
+msgstr ""
+
 #. he: בהירה (D.Ai Day)
-#: apps/dai-tune/dai_tune/catalog.py:735
+#: apps/dai-tune/dai_tune/catalog.py:789
 msgid "light (D.Ai Day)"
 msgstr ""
 
@@ -4785,6 +5233,7 @@ msgstr ""
 
 #. he: לא
 #: apps/dai-pdf/dai_pdf/gui.py:326
+#: apps/dai-vm/dai_vm/cli.py:223
 msgid "no"
 msgstr ""
 
@@ -4813,6 +5262,16 @@ msgstr ""
 msgid "no such recipe"
 msgstr ""
 
+#. he: אין
+#: apps/dai-vm/dai_vm/gui.py:440
+msgid "none"
+msgstr ""
+
+#. he: לא מוגדר
+#: apps/dai-vm/dai_vm/gui.py:81
+msgid "not defined"
+msgstr ""
+
 #. he: לא מאומת: השוו את הסמלים
 #: apps/dai-chat/dai_chat/cli.py:180
 #: apps/dai-chat/dai_chat/gui.py:426
@@ -4827,13 +5286,14 @@ msgstr ""
 
 #. he: כבוי
 #: apps/dai-quick/dai_quick/gui.py:32
-#: apps/dai-tune/dai_tune/catalog.py:764
+#: apps/dai-tune/dai_tune/catalog.py:818
+#: apps/dai-vm/dai_vm/gui.py:80
 msgid "off"
 msgstr ""
 
 #. he: פועל
 #: apps/dai-quick/dai_quick/gui.py:31
-#: apps/dai-tune/dai_tune/catalog.py:764
+#: apps/dai-tune/dai_tune/catalog.py:818
 msgid "on"
 msgstr ""
 
@@ -4853,13 +5313,18 @@ msgstr ""
 msgid "part of the session"
 msgstr ""
 
+#. he: מושהה
+#: apps/dai-vm/dai_vm/gui.py:80
+msgid "paused"
+msgstr ""
+
 #. he: יומן פרטיות (30 יום, במחשב הזה)
 #: apps/dai-command/dai_command/core.py:445
 msgid "privacy log (30 days, on this computer)"
 msgstr ""
 
 #. he: שקטים
-#: apps/dai-tune/dai_tune/catalog.py:764
+#: apps/dai-tune/dai_tune/catalog.py:818
 msgid "quiet"
 msgstr ""
 
@@ -4870,6 +5335,7 @@ msgstr ""
 
 #. he: פועל
 #: apps/dai-mom/dai_mom/text.py:98
+#: apps/dai-vm/dai_vm/gui.py:80
 msgid "running"
 msgstr ""
 
@@ -4897,6 +5363,11 @@ msgstr ""
 #. he: שולח דואר
 #: apps/dai-forge/dai_forge/apps.py:147
 msgid "sends e-mail"
+msgstr ""
+
+#. he: נכבה
+#: apps/dai-vm/dai_vm/gui.py:81
+msgid "shutting down"
 msgstr ""
 
 #. he: שולח אותות לתהליכים
@@ -5050,6 +5521,7 @@ msgstr ""
 #. he: כן
 #: apps/dai-pdf/dai_pdf/gui.py:326
 #: apps/dai-pdf/dai_pdf/gui.py:328
+#: apps/dai-vm/dai_vm/cli.py:223
 msgid "yes"
 msgstr ""
 
@@ -5130,6 +5602,24 @@ msgstr ""
 msgid "{drive} is not a writable folder"
 msgstr ""
 
+#. he: {free:.0f} GB פנויים.
+#: apps/dai-vm/dai_vm/hardware.py:180
+#, python-brace-format
+msgid "{free:.0f} GB free."
+msgstr ""
+
+#. he: {free:.0f} GB פנויים: מכונת Windows צריכה לפחות {need} GB מקום.
+#: apps/dai-vm/dai_vm/hardware.py:173
+#, python-brace-format
+msgid "{free:.0f} GB free: a Windows machine needs at least {need} GB of space."
+msgstr ""
+
+#. he: {free:.0f} GB פנויים: מספיק להתחלה; עדכוני Windows ימלאו אותו.
+#: apps/dai-vm/dai_vm/hardware.py:177
+#, python-brace-format
+msgid "{free:.0f} GB free: enough to start; Windows updates will fill it."
+msgstr ""
+
 #. he: {free} פנויים מתוך {total}
 #: apps/dai-doctor/dai_doctor/diagnose.py:133
 #, python-brace-format
@@ -5146,6 +5636,24 @@ msgstr ""
 #: apps/dai-privacy/dai_privacy/text.py:21
 #, python-brace-format
 msgid "{icon} {app} is using the {device}"
+msgstr ""
+
+#. he: {mb} MB זיכרון · {cpus} מעבדים · דיסק {gb} GB · Windows {win} · מדיה: {iso}
+#: apps/dai-vm/dai_vm/gui.py:437
+#, python-brace-format
+msgid "{mb} MB memory · {cpus} processors · {gb} GB disk · Windows {win} · media: {iso}"
+msgstr ""
+
+#. he: {mb} MB זיכרון: Windows ירוץ, עם {rec} MB, אבל לאט.
+#: apps/dai-vm/dai_vm/hardware.py:164
+#, python-brace-format
+msgid "{mb} MB of memory: Windows will run, with {rec} MB, but it will be slow."
+msgstr ""
+
+#. he: {mb} MB זיכרון: {rec} MB למכונה הם ברירת מחדל טובה.
+#: apps/dai-vm/dai_vm/hardware.py:168
+#, python-brace-format
+msgid "{mb} MB of memory: {rec} MB for the machine is a good default."
 msgstr ""
 
 #. he: {mem_available} פנויים
@@ -5182,6 +5690,12 @@ msgstr ""
 #: apps/dai-mom/dai_mom/text.py:104
 #, python-brace-format
 msgid "{name} did not change; it may need a restart of the session."
+msgstr ""
+
+#. he: {name} ממשיך.
+#: apps/dai-vm/dai_vm/cli.py:153
+#, python-brace-format
+msgid "{name} goes on."
 msgstr ""
 
 #. he: ‏{name} גדלה ב־{grown} ב־{minutes} דקות, וממשיכה לגדול.
@@ -5245,6 +5759,36 @@ msgstr ""
 msgid "{name} is part of the session. Closing it can end the session or stop the sound and the taskbar until you log in again."
 msgstr ""
 
+#. he: {name} מושהה.
+#: apps/dai-vm/dai_vm/cli.py:150
+#, python-brace-format
+msgid "{name} is paused."
+msgstr ""
+
+#. he: {name} מוכן. הפעילו אותו, והתקנת Windows תתחיל בחלון שלו.
+#: apps/dai-vm/dai_vm/gui.py:493
+#, python-brace-format
+msgid "{name} is ready. Start it, and Windows setup begins in its window."
+msgstr ""
+
+#. he: {name} מוכן: {mb} MB, {cpus} מעבדים, דיסק של {gb} GB. הפעלה: dai-vm start {name}
+#: apps/dai-vm/dai_vm/cli.py:118
+#, python-brace-format
+msgid "{name} is ready: {mb} MB, {cpus} CPUs, a {gb} GB disk. Start it with: dai-vm start {name}"
+msgstr ""
+
+#. he: {name} מופעל.
+#: apps/dai-vm/dai_vm/cli.py:141
+#, python-brace-format
+msgid "{name} is starting."
+msgstr ""
+
+#. he: {name} מופעל. המסך שלו נפתח בחלון משלו.
+#: apps/dai-vm/dai_vm/gui.py:458
+#, python-brace-format
+msgid "{name} is starting. Its screen opens in its own window."
+msgstr ""
+
 #. he: {name} משתמשת ב־{cpu}% מהמעבד.
 #: apps/dai-mom/dai_mom/text.py:49
 #, python-brace-format
@@ -5293,10 +5837,35 @@ msgstr ""
 msgid "{name} stays closed."
 msgstr ""
 
+#. he: {name} התבקש להיכבות, כמו ש-Windows אוהב.
+#: apps/dai-vm/dai_vm/gui.py:469
+#, python-brace-format
+msgid "{name} was asked to shut down, the way Windows likes it."
+msgstr ""
+
+#. he: {name} התבקש להיכבות.
+#: apps/dai-vm/dai_vm/cli.py:144
+#, python-brace-format
+msgid "{name} was asked to shut down."
+msgstr ""
+
+#. he: {name} נמחק.
+#: apps/dai-vm/dai_vm/cli.py:166
+#: apps/dai-vm/dai_vm/gui.py:522
+#, python-brace-format
+msgid "{name} was deleted."
+msgstr ""
+
 #. he: {name} נסגר בכוח.
 #: apps/dai-mom/dai_mom/text.py:78
 #, python-brace-format
 msgid "{name} was forced closed."
+msgstr ""
+
+#. he: {name} כובה.
+#: apps/dai-vm/dai_vm/cli.py:147
+#, python-brace-format
+msgid "{name} was switched off."
 msgstr ""
 
 #. he: {name} · {n} עמודים
@@ -5650,6 +6219,11 @@ msgstr ""
 #. he: ＋ הוספת איש קשר
 #: apps/dai-chat/dai_chat/gui.py:279
 msgid "＋ Add a contact"
+msgstr ""
+
+#. he: ＋ מכונה חדשה…
+#: apps/dai-vm/dai_vm/gui.py:330
+msgid "＋ New machine…"
 msgstr ""
 
 #. he: 🎙 מקשיב… לחצו שוב על המיקרופון לסיום

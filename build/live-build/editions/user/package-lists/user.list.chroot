@@ -3,3 +3,17 @@
 # D.Ai OS — end-user edition extras
 mpv
 galculator
+
+# D.Ai VM (docs/VM.md): Windows in a window, as the user (qemu:///session), with UEFI Secure Boot, TPM 2.0,
+# passt networking and a SPICE viewer. Not in the edu edition.
+qemu-system-x86
+qemu-system-modules-spice
+qemu-utils
+libvirt-daemon
+libvirt-daemon-driver-qemu
+libvirt-clients
+virt-viewer
+swtpm
+swtpm-tools
+ovmf
+passt

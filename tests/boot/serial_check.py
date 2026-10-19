@@ -198,6 +198,26 @@ r.close()
 '''
 PDF_CHECK_B64 = base64.b64encode(PDF_CHECK.encode()).decode()
 
+# Runs inside the VM (which has no KVM of its own): defines a D.Ai VM machine through libvirt's session daemon,
+# which validates the whole definition (UEFI with Secure Boot, the TPM, passt, SPICE on a socket), and removes it.
+VM_CHECK = r'''
+import sys
+from pathlib import Path
+sys.path.insert(0, "/usr/lib/dai")
+from dai_vm import control, hardware, machine
+missing = hardware.missing_tools()
+print("FIRMWARE" if hardware.firmware_present() else "NO_FIRMWARE", "TOOLS_OK" if not missing else "TOOLS_MISSING=" + ",".join(missing))
+home = Path.home()
+m = machine.Machine(name="citest", memory_mb=2048, cpus=1, disk_gb=32, iso=None, drivers_iso=None, windows="11")
+definition = machine.create(m, home)
+v = control.Virsh()
+v.define(definition)
+print("DEFINED", v.state("citest"))
+v.undefine("citest")
+print("UNDEFINED", v.state("citest"))
+'''
+VM_CHECK_B64 = base64.b64encode(VM_CHECK.encode()).decode()
+
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
 
@@ -748,6 +768,14 @@ def main() -> int:
          "xdg-mime query default application/pdf",
          True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
          and "dai-pdf.desktop" in o, 120),
+        # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
+        # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
+        ("vm: the stack, the honest check, a definition libvirt accepts",
+         "if ! command -v virsh >/dev/null; then echo VM_NOT_IN_THIS_EDITION; exit 0; fi; "
+         "dai-vm check; echo CHECK_RC=$?; "
+         f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py",
+         True, lambda o: "VM_NOT_IN_THIS_EDITION" in o or all(mark in o for mark in (
+             "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "UNDEFINED missing")), 180),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

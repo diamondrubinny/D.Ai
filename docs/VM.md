@@ -1,7 +1,39 @@
-# D.Ai VM: Windows on D.Ai, natively (plan for approval)
+# D.Ai VM: Windows on D.Ai, natively
 
 > Written on 2026-10-19 after "build a native Parallels that can run a legal Windows; the user enters their
-> own Windows key". Nothing is built yet.
+> own Windows key".
+>
+> **Decided (19 October 2026, "from now on you decide"):** the recommendations of §5, all of them: the screen in
+> a `remote-viewer` window managed by D.Ai VM; the key typed into Windows setup only (no answer file in stage 1);
+> the user and dev editions; virtio-win downloaded once with a pinned hash; the name "D.Ai VM".
+> **Status: stage 1 built** (§10). Stages 2–4 not started. The Windows install itself is a manual test on a
+> physical computer (§7); it has not been run yet.
+
+## 10. Stage 1: what was built
+
+- `apps/dai-vm`: `hardware.py` (VT-x/AMD-V from the CPU flags, `/dev/kvm` and whether this user may open it, memory
+  with D.Ai's 4 GB kept, free disk, the tools, OVMF with Secure Boot keys; every finding a sentence with ok/warn/fail),
+  `iso.py` (the ISO 9660 label, a "looks like Windows media" hint, the SHA-256 for the person to compare),
+  `drivers.py` (virtio-win 0.1.302-1 pinned by SHA-256 in `data/drivers.json`, https only, hashed as it arrives,
+  kept only when it matches), `machine.py` (the choices, the folder, `qemu-img`, and the libvirt definition:
+  q35, `firmware="efi"` with `secure="yes"` so libvirt picks Debian's Microsoft-keyed OVMF, `tpm-crb` on swtpm,
+  VirtIO disk, VirtIO network with the passt backend, SPICE on a Unix socket, QXL, USB tablet, sound, balloon,
+  RNG, Hyper-V enlightenments and `localtime` for Windows; the SPICE agent channel and a virtiofs folder only
+  when asked), `control.py` (virsh on `qemu:///session`, fixed argv), `gui.py` (the window and the wizard),
+  `cli.py` (`check`, `list`, `create`, `start|stop|poweroff|pause|resume|show|delete`, `drivers`, `iso`).
+- **D.Ai Tune:** "allow virtual machines" / "אפשר מכונות וירטואליות" is `vm.kvm_access`: the root helper adds
+  the person (named in the plan by the person running Tune) to the `kvm` group; undo removes them unless they
+  were in it before; takes effect at the next login.
+- **Tests:** 29 for D.Ai VM (the hardware check on fake computers, the ISO reader, the drivers download that
+  keeps nothing wrong, the definition's every device, the lifecycle through a fake virsh, the window with its
+  wizard, buttons, viewer and deletion, Raz's audit in three themes, the command line) and 4 for the Tune
+  sentence. CI: a VM check (no KVM there) that proves the stack is installed, `dai-vm check` says so honestly,
+  and libvirt accepts a whole definition (`define`, `domstate`, `undefine`).
+- **Image:** `qemu-system-x86`, `qemu-system-modules-spice`, `qemu-utils`, `libvirt-daemon(-driver-qemu)`,
+  `libvirt-clients`, `virt-viewer`, `swtpm(-tools)`, `ovmf`, `passt` in the user and dev editions.
+- **Not yet:** the real Windows 11 install on hardware (the checklist in §7 is the test), USB and clipboard
+  switches (stage 2), a udev rule for USB passthrough, Doctor/MOM/Backup integration (stage 3), the memory
+  measurement on the standard profile.
 > The name "D.Ai VM" is descriptive. "Windows" is Microsoft's trademark and is used here only to name their
 > product, never as part of D.Ai's name or branding (**requires a check** of Microsoft's trademark guidelines
 > before publication).

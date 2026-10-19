@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai VM: Windows (and other systems) in a window, with your own media and key (docs/VM.md). Installed as /usr/bin/dai-vm.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_vm.cli import main; sys.exit(main(["dai-vm", *sys.argv[1:]]))' "$@"

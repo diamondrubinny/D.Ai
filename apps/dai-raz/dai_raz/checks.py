@@ -25,7 +25,7 @@ CREDIT = "Diamond Rubinny (d.Ai)"
 # The D.Ai commands that answer --version with the credit line.
 COMMANDS = ("dai-ai", "dai-backup", "dai-clip", "dai-code", "dai-command", "dai-doctor", "dai-evolve", "dai-find",
             "dai-forge", "dai-heal", "dai-j", "dai-mom", "dai-move", "dai-pdf", "dai-privacy", "dai-quick", "dai-raz",
-            "dai-tune", "dai-voice", "dai-welcome")
+            "dai-tune", "dai-vm", "dai-voice", "dai-welcome")
 PANEL_PLUGINS = ("libdaicommand.so", "libdaistatus.so", "libdaiclock.so")
 # Files that must exist, belong to root and be writable by nobody else.
 PROTECTED_FILES = ("/etc/nftables.conf", "/etc/firefox/policies/policies.json",

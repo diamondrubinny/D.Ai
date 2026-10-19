@@ -12,6 +12,11 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   CPU limits); what the file wants (JavaScript, launching programs, submitting forms, attachments, XFA) is shown
   in a bar and never done; links ask before opening and local ones are refused; Hebrew made readable; search,
   outline, thumbnails, print. The default handler for `application/pdf`; qpdfview left the image.
+- D.Ai VM: Windows in a window with the person's own media and key. A hardware check that says plainly when a
+  computer cannot (no VT-x/AMD-V, too little memory); machines under qemu:///session with UEFI Secure Boot,
+  TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded
+  once with a pinned SHA-256; no clipboard, folder or USB sharing until asked; "allow virtual machines" in
+  D.Ai Tune adds the person to the kvm group, with undo. User and dev editions.
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

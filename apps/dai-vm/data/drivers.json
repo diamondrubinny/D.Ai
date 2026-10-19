@@ -1,0 +1,14 @@
+{
+  "_comment": "VirtIO drivers for Windows guests (docs/VM.md). One pinned release; the SHA-256 is of the ISO itself, computed from the download on 2026-10-19. Apache-2.0 and GPL-2.0 driver sources: https://github.com/virtio-win/kvm-guest-drivers-windows",
+  "drivers": [
+    {
+      "id": "virtio-win",
+      "version": "0.1.302-1",
+      "url": "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.302-1/virtio-win-0.1.302.iso",
+      "file": "virtio-win-0.1.302.iso",
+      "sha256": "303f7ae40dad495d6ae474fdc571df58958a4dbc5c37a522d80f9a203867949d",
+      "size": 877373440,
+      "license": "Apache-2.0 / GPL-2.0 (Red Hat virtio-win)"
+    }
+  ]
+}

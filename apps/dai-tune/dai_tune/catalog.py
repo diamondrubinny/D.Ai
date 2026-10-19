@@ -237,6 +237,60 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# Virtual machines: this user's access to /dev/kvm (D.Ai VM, docs/VM.md)
+# --------------------------------------------------------------------------
+
+USER_RE = re.compile(r"^[a-z_][a-z0-9_-]{0,31}$")
+
+
+def _kvm_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"user", "enabled"})
+    user = str(params.get("user") or "")
+    if not USER_RE.match(user) or user == "root":
+        raise ValidationError("a user name is needed")
+    return {"user": user, "enabled": _bool(params.get("enabled", True))}
+
+
+def _kvm_groups(ctx: Context, user: str) -> list[str]:
+    result = ctx.run(["id", "-nG", user], check=False)
+    return (result.stdout or "").split()
+
+
+def _kvm_capture(params: Params, ctx: Context) -> dict:
+    return {"was_in_kvm": "kvm" in _kvm_groups(ctx, params["user"])}
+
+
+def _kvm_apply(params: Params, ctx: Context) -> None:
+    if params["enabled"]:
+        ctx.run(["usermod", "-aG", "kvm", params["user"]])
+    else:
+        ctx.run(["gpasswd", "-d", params["user"], "kvm"], check=False)
+
+
+def _kvm_restore(params: Params, ctx: Context, extra: dict) -> None:
+    if extra.get("was_in_kvm"):
+        ctx.run(["usermod", "-aG", "kvm", params["user"]], check=False)
+    else:
+        ctx.run(["gpasswd", "-d", params["user"], "kvm"], check=False)
+
+
+register(ActionSpec(
+    id="vm.kvm_access",
+    scope="system",
+    validate=_kvm_validate,
+    apply=_kvm_apply,
+    risk=lambda p: "medium" if p["enabled"] else "low",
+    effect=lambda p: "weakens" if p["enabled"] else "hardens",
+    summary=lambda p, lang: (_t(lang, "Let {user} run virtual machines (KVM)", "לאפשר ל-{user} להריץ מכונות וירטואליות (KVM)", user=p["user"])
+                             if p["enabled"] else
+                             _t(lang, "Take KVM access from {user}", "להסיר מ-{user} את הגישה ל-KVM", user=p["user"])),
+    capture=_kvm_capture,
+    restore=_kvm_restore,
+    note=lambda p, lang: _t(lang, "Takes effect at the next login.", "נכנס לתוקף בכניסה הבאה.") if p["enabled"] else "",
+))
+
+
+# --------------------------------------------------------------------------
 # Firewall: managed allow rules included into the default-deny input chain
 # --------------------------------------------------------------------------
 

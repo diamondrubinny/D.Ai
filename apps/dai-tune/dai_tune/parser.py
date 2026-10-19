@@ -53,6 +53,7 @@ PORT = r"(?:port|פורט|פורטים|יציאה)\s*(?:(?:tcp|udp)\s*)?(\d{1,5}
 ANYWHERE = r"(?:anywhere|any network|internet|everyone|world|public|מכל מקום|מכל רשת|לאינטרנט|מהאינטרנט|לכולם|לכל העולם|ציבורי)"
 
 UPDATES = r"(?:auto(?:matic)?[- ]?updates?|security updates|unattended|עדכונים אוטומטיים|עדכון אוטומטי|עדכוני אבטחה)"
+VIRTUALIZATION = r"(?:virtual ?machines?|virtuali[sz]ation|\bkvm\b|מכונות וירטואליות|מכונה וירטואלית|וירטואליזציה)"
 
 INSTALL = r"^(?:please\s+)?(?:install|add app|התקן|תתקין|להתקין|התקנת)\s+(.+)$"
 REMOVE = r"^(?:please\s+)?(?:remove|uninstall|delete app|הסר|תסיר|להסיר|הסרת|מחק את|תמחק את)\s+(.+)$"
@@ -243,6 +244,13 @@ def parse_clause(clause: str) -> list[Request]:
             return [Request("updates.auto", {"enabled": False}, clause)]
         return [Request("updates.auto", {"enabled": True}, clause)]
 
+    # Virtual machines: this user's access to KVM (D.Ai VM, docs/VM.md). The user is named here, as the person
+    # running Tune, so the root helper adds exactly them and nobody else.
+    if _has(VIRTUALIZATION, c):
+        import getpass
+
+        return [Request("vm.kvm_access", {"user": getpass.getuser(), "enabled": not _has(OFF, c)}, clause)]
+
     # Screen lock.
     if _has(LOCK, c):
         if m := re.search(MINUTES, c, re.IGNORECASE):
@@ -315,6 +323,7 @@ _TOPICS = {
     "hostname": (HOSTNAME, ("system.hostname",)),
     "lock": (LOCK, ("session.lock",)),
     "port": (PORT, ("firewall.",)),
+    "vm": (VIRTUALIZATION, ("vm.",)),
 }
 
 
@@ -376,6 +385,7 @@ EXAMPLES = {
         "פתח פורט 8080",
         "סגור פורט 8080",
         "הפעל עדכונים אוטומטיים",
+        "אפשר מכונות וירטואליות",
         "הפעל ssh",
         "התקן vlc gimp",
         "נעל מסך אחרי 5 דקות",
@@ -396,6 +406,7 @@ EXAMPLES = {
         "open port 8080",
         "close port 8080",
         "enable automatic updates",
+        "allow virtual machines",
         "enable ssh",
         "install vlc gimp",
         "lock the screen after 5 minutes",
