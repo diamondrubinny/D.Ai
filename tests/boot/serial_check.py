@@ -680,6 +680,17 @@ def main() -> int:
          "command -v tor >/dev/null && echo TOR_''INSTALLED; systemctl is-active tor.service tor@default.service; "
          "pgrep -x tor >/dev/null && echo TOR_''RUNNING || echo TOR_''IDLE",
          True, lambda o: "NACL_OK" in o and "TOR_INSTALLED" in o and "TOR_IDLE" in o and "\nactive" not in "\n" + o, 30),
+        # Diamond Chat (docs/SEND.md): an invitation code, a valid user unit, the service with the person's own Tor
+        # (not a system one), and Tor gone when the service stops.
+        ("chat: the service and its own Tor", WAYLAND_ENV + "dai-chat code | grep -c '^dai1-'; "
+         "systemd-analyze --user verify /usr/lib/systemd/user/dai-chat.service >/tmp/chat-unit 2>&1; "
+         "echo UNIT_RC=$?; head -n 3 /tmp/chat-unit; dai-chat ''run >/tmp/chat-run.log 2>&1 & CHAT=$!; "
+         "for i in $(seq 1 30); do dai-chat status >/tmp/chat-status 2>&1 && break; sleep 1; done; "
+         "cat /tmp/chat-status; sleep 5; pgrep -u $(id -u) -x tor >/dev/null && echo TOR_''AS_USER; "
+         "stat -c %a $XDG_RUNTIME_DIR/dai-chat; kill $CHAT; sleep 4; "
+         "pgrep -x tor >/dev/null && echo TOR_''LEFT || echo TOR_''GONE; tail -n 5 /tmp/chat-run.log",
+         True, lambda o: re.search(r"^1$", o, re.M) is not None and "UNIT_RC=0" in o and "Tor:" in o
+         and "TOR_AS_USER" in o and re.search(r"^700$", o, re.M) is not None and "TOR_GONE" in o, 90),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

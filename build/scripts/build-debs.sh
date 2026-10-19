@@ -192,6 +192,12 @@ build_apps() {
   copy_package "$sound/dai_sound" "$root"
   install -m 0755 "$sound/data/dai-sound" "$root/usr/bin/dai-sound"
 
+  # Diamond Chat (docs/SEND.md): the command line and the user service (off until "dai-chat on").
+  local chat="$REPO_ROOT/apps/dai-chat"
+  copy_package "$chat/dai_chat" "$root"
+  install -m 0755 "$chat/data/dai-chat" "$root/usr/bin/dai-chat"
+  install -m 0644 "$chat/data/dai-chat.service" "$root/usr/lib/systemd/user/"
+
   # D.Ai OCR (docs/V2.md F1): copy the text in an area of the screen, Super+Shift+T.
   local ocr="$REPO_ROOT/apps/dai-ocr"
   copy_package "$ocr/dai_ocr" "$root"
@@ -322,7 +328,7 @@ EOF
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin, gnupg, gpgsm" \
     "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, Move, Diamond (local AI), Forge, Code, Voice, Welcome, MOM and J" \
-    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic, libsecret-tools, python3-dnspython"
+    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic, libsecret-tools, python3-dnspython, python3-nacl, python3-zeroconf, tor"
 }
 
 build_ruby() { # Ruby (docs/BROWSER.md): D.Ai's browsing experience on Debian's Firefox ESR, unmodified.

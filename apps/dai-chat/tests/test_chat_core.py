@@ -263,6 +263,16 @@ class KeyStorageTests(unittest.TestCase):
             self.assertEqual(identity.public, again.public)
         self.assertTrue(all(kept["seed"] not in " ".join(argv) for argv in calls))
 
+    def test_a_keyring_that_never_answers_falls_back_to_the_file(self):
+        def stuck(argv, **kwargs):
+            if argv[1] == "store":
+                raise subprocess.TimeoutExpired(argv, 10)
+            return subprocess.CompletedProcess(argv, 1, "", "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _, where = keys.load_or_create([keys.KeyringStore(stuck), keys.FileStore(Path(tmp) / "identity")])
+            self.assertEqual(where, "file")
+
     def test_signatures(self):
         alice = keys.Identity.generate()
         signature = alice.sign(b"x")

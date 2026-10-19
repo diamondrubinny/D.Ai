@@ -41,7 +41,29 @@
   - a typo at any position of the invitation;
   - a picture that is not what it claims to be, SVG refused, a path in the message id;
   - the seed never on a command line.
-- **Next:** stage 2, the transport: TCP on the local network with mDNS, and Tor (an onion service per person). Then pairing, the window and the command field.
+- **Stage 2, the connection:** built.
+  - `transport`: the same exchange over the local network (TCP, port 7714) and over Tor (SOCKS5 on a Unix socket, `.onion` names only).
+    - Both sides send their queues at the same time, receipts come back, then BYE.
+    - Only known contacts get through. Pictures only from a contact whose symbols were compared.
+    - A receipt changes only a message sent to the person who sends it.
+    - A few handshakes a minute per address.
+  - `tor`: the person's own Tor, not a system service.
+    - The sockets are in a 0700 folder, with cookie authentication; Tor exits with Chat.
+    - The onion key is kept like the identity key and given to Tor over the control socket, so the address stays the same. The address Tor returns is checked against the key.
+    - Tested against a real Tor 0.4.9.
+  - `discovery`: mDNS with a random name and a tag that changes every hour, keyed by the code's fingerprint. Contacts find each other; strangers cannot follow a computer. Tested with two real announcers.
+  - `pairing`: each person types the other's code; the computers swap full keys with signatures, and each checks them against the code it typed (as Briar does). Contacts stay "not verified" until the six symbols are compared.
+  - `service` and `cli`: the user service `dai-chat.service` is off until `dai-chat on`. It tries every half minute (sooner when poked), the local network first and then Tor, waiting up to 15 minutes after failures. A notification names the sender, never the message.
+  - Commands: `dai-chat code | add | contacts | symbols | verify | send | read | delete | block | lan | on | off | status`.
+- **Found and fixed on the way:**
+  - updating a contact deleted their history (INSERT OR REPLACE with a cascade);
+  - two big pictures crossing could block both sides;
+  - a locked keyring could crash Chat instead of falling back to the file.
+- **The tests (56):** 25 core tests, plus transport, pairing, Tor, mDNS, the service and the command line, over real sockets. In the VM: a code, a valid user unit, Tor running as the person, and Tor gone when Chat stops.
+- **Next:**
+  - pictures: removing location and camera data, decoding in a sandbox, a size limit, ClamAV;
+  - the window (RTL, accessible, three themes), and "send Dana: …" in the command field;
+  - opening the local-network port through D.Ai Tune, with undo.
 
 ## 1. What I understood
 

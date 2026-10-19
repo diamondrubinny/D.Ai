@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Not enabled by default: "dai-chat on" enables it, "dai-chat off" stops it and Tor with it.
+[Unit]
+Description=Diamond Chat (encrypted messages and pictures between D.Ai computers)
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/SEND.md
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dai-chat run
+Restart=on-failure
+RestartSec=15
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target

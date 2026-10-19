@@ -3792,3 +3792,106 @@ msgstr "Sonidos del sistema de D.Ai: {mode}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "quiet"
 msgstr "suaves"
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "A new message from {name}"
+msgstr "Un mensaje nuevo de {name}"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Could not reach the keyring or the chat folder."
+msgstr "No se pudo acceder al llavero ni a la carpeta del chat."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Deleted {count} messages from this computer. {name} keeps their copy."
+msgstr "Se borraron {count} mensajes de este ordenador. {name} conserva su copia."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Diamond Chat is not running."
+msgstr "Diamond Chat no está en marcha."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "No contact called {name}."
+msgstr "No hay ningún contacto llamado {name}."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Queued. Turn Diamond Chat on to send it."
+msgstr "En cola. Activa Diamond Chat para enviarlo."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Queued; it goes out when {name} is online."
+msgstr "En cola; se enviará cuando el ordenador de {name} esté conectado."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Saved. It takes effect when Chat starts again."
+msgstr "Guardado. Se aplicará cuando Chat vuelva a iniciarse."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "That code has a typo. Check it with {name} and try again."
+msgstr "Ese código tiene una errata. Compruébalo con {name} y vuelve a intentarlo."
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "That is your own code."
+msgstr "Ese es tu propio código."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Tor: {tor}. Local network: {lan}. Waiting to send: {queued}. Codes waiting: {waiting}."
+msgstr "Tor: {tor}. Red local: {lan}. Por enviar: {queued}. Códigos en espera: {waiting}."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Waiting for {name}. Give them your code too: {code}"
+msgstr "Esperando a {name}. Dale también tu código: {code}"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "[a picture]"
+msgstr "[una imagen]"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "blocked"
+msgstr "bloqueado"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "me"
+msgstr "yo"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "not verified: compare the symbols"
+msgstr "sin verificar: comparad los símbolos"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "verified"
+msgstr "verificado"
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "{name}  (waiting for them to add your code)"
+msgstr "{name}  (esperando a que añada tu código)"
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "{name} is verified."
+msgstr "{name} está verificado."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "{name} should see the same six, in the same order. Then: dai-chat verify {name}"
+msgstr "{name} debería ver los mismos seis, en el mismo orden. Luego: dai-chat verify {name}"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Could not change the Diamond Chat service."
+msgstr "No se pudo cambiar el servicio de Diamond Chat."
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Diamond Chat is on. Your code: {code}"
+msgstr "Diamond Chat está activado. Tu código: {code}"
+
+#: apps/dai-chat/dai_chat/cli.py
+msgid "Diamond Chat is off; messages you write wait here."
+msgstr "Diamond Chat está desactivado; los mensajes que escribas esperan aquí."

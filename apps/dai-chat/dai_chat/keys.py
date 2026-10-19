@@ -102,8 +102,11 @@ class KeyringStore:
         return data if len(data) == 32 else None
 
     def save(self, seed: bytes) -> None:
-        result = self.run(["secret-tool", "store", f"--label=Diamond Chat {self.kind}", *self.attributes],
-                          input=base64.b64encode(seed).decode(), capture_output=True, text=True, timeout=10)
+        try:
+            result = self.run(["secret-tool", "store", f"--label=Diamond Chat {self.kind}", *self.attributes],
+                              input=base64.b64encode(seed).decode(), capture_output=True, text=True, timeout=10)
+        except subprocess.TimeoutExpired as exc:  # a locked keyring waiting for a password nobody types
+            raise OSError("the keyring did not answer") from exc
         if result.returncode != 0:
             raise OSError("the keyring refused to store the key")
 
