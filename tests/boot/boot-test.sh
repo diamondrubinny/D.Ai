@@ -14,6 +14,10 @@
 #   BOOT_TIMEOUT  Seconds to wait for the login prompt (default: 600)
 #   DESKTOP_WAIT  Seconds to wait after login prompt before the screenshot (default: 60)
 #   APPS_WAIT     Seconds to wait for demo apps before the second screenshot (default: 20)
+#   QEMU_MEM      Guest memory in MB (default: 6144)
+#   QEMU_SMP      Guest CPUs (default: 2)
+#   MEASURE_JSON  If set, measure login, desktop and memory use after login into this file (measure.py)
+#   MEASURE_ONLY  If 1, stop after the measurement (no screenshots, no interactive checks)
 set -euo pipefail
 
 readonly ISO="${1:-}"
@@ -21,6 +25,10 @@ ARTIFACT_DIR="$(realpath -m "${2:-boot-artifacts}")"
 readonly BOOT_TIMEOUT="${BOOT_TIMEOUT:-600}"
 readonly DESKTOP_WAIT="${DESKTOP_WAIT:-60}"
 readonly APPS_WAIT="${APPS_WAIT:-20}"
+readonly QEMU_MEM="${QEMU_MEM:-6144}"
+readonly QEMU_SMP="${QEMU_SMP:-2}"
+readonly MEASURE_JSON="${MEASURE_JSON:-}"
+readonly MEASURE_ONLY="${MEASURE_ONLY:-0}"
 readonly LOGIN_PATTERN='dai-os login:'
 readonly PANIC_PATTERN='Kernel panic|end Kernel panic|Unable to find a medium containing a live file system'
 
@@ -129,9 +137,10 @@ readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_U
 : >"$SERIAL_LOG"
 # An empty, sparse target disk so the installer sees somewhere to install.
 truncate -s 24G "$EXTRACT_DIR/target-disk.raw"
+LAUNCH_EPOCH="$(date +%s)"
 qemu-system-x86_64 \
   "${ACCEL[@]}" \
-  -m 6144 -smp 2 \
+  -m "$QEMU_MEM" -smp "$QEMU_SMP" \
   -cdrom "$ISO" \
   -drive "file=$EXTRACT_DIR/target-disk.raw,format=raw,if=virtio" \
   -kernel "$KERNEL" -initrd "$INITRD" -append "$CMDLINE" \
@@ -153,12 +162,24 @@ while ((SECONDS - start < BOOT_TIMEOUT)); do
     die "boot failure detected (see $SERIAL_LOG)"
   fi
   if grep -q "$LOGIN_PATTERN" "$SERIAL_LOG"; then
+    LOGIN_EPOCH="$(date +%s)"
     log "login prompt reached after $((SECONDS - start))s"
     break
   fi
-  sleep 5
+  sleep 1
 done
 grep -q "$LOGIN_PATTERN" "$SERIAL_LOG" || die "timed out after ${BOOT_TIMEOUT}s (see $SERIAL_LOG)"
+
+if [[ -n "$MEASURE_JSON" ]]; then
+  log "measuring: ${QEMU_MEM} MB, ${QEMU_SMP} CPU(s), accel=${ACCEL[1]}"
+  measure_ok=1
+  python3 "$SCRIPT_DIR/measure.py" "$SERIAL_SOCK" "$LAUNCH_EPOCH" "$LOGIN_EPOCH" "$MEASURE_JSON" \
+    "$QEMU_MEM" "$QEMU_SMP" "${ACCEL[1]}" "${MEASURE_IDLE:-60}" || measure_ok=0
+  [[ "$measure_ok" == 1 ]] || log "warning: the measurement did not complete (see the output above)"
+  if [[ "$MEASURE_ONLY" == 1 ]]; then
+    exit 0
+  fi
+fi
 
 if grep -q 'FAILED' "$SERIAL_LOG"; then
   log "warning: some units failed to start:"

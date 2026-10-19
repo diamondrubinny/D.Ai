@@ -2,7 +2,10 @@
 
 > Written on 2026-10-19 after "the operating system should work on every computer, with versions from very
 > old computers to the newest, and run smoothly", and the question "can it be written as a native operating
-> system?". **Nothing here is built yet: it waits for approval.**
+> system?".
+>
+> **Decided (19 October 2026):** start with measurements (stage 1, §4). **No 32-bit edition**: D.Ai stays
+> 64-bit only. **Still open:** the memory minimum for Lite (§5.2).
 
 ## 0. Where D.Ai stands today
 
@@ -29,7 +32,6 @@
 |---|---|---|---|---|
 | **D.Ai** (today's) | Computers from about 2012 on, and new ones | Debian 13, amd64 | Everything, including the local AI and voice | 4 GB memory, 2 cores, 32 GB disk. AI: 8 GB recommended |
 | **D.Ai Lite** | Old 64-bit computers, roughly 2007–2012 (Core 2, Athlon 64), hard disks | Debian 13, amd64 | All of D.Ai except the local AI and voice (they can be added later); lighter defaults | 2 GB memory, 1 core, 16 GB disk |
-| **D.Ai Legacy 32** | 32-bit-only computers (Pentium 4, Atom N270 and older) | Debian 12, i386 | Desktop, browser, Command, Tune, Find, Backup, Chat; no AI | 1 GB memory. **Until June 2028 only** |
 | **D.Ai ARM** (later) | Raspberry Pi 4/5, ARM laptops | Debian 13, arm64 | Like Lite at first | Measured on the device |
 
 **Notes:**
@@ -49,11 +51,13 @@
 
    Over budget fails the build, like a failed test. First targets (to tune after the first measurement):
 
-   | | D.Ai (4 GB, 2 cores) | Lite (2 GB, 1 core, HDD) | Legacy 32 (1 GB) |
-   |---|---|---|---|
-   | To the desktop | 25 s | 40 s | 60 s |
-   | Idle memory | 900 MB | 550 MB | 350 MB |
-   | Command bar opens | 0.3 s | 0.6 s | 1 s |
+   | | D.Ai (4 GB, 2 cores) | Lite (2 GB, 1 core, HDD) |
+   |---|---|---|
+   | To the desktop | 25 s | 40 s |
+   | Idle memory | 900 MB | 550 MB |
+   | Command bar opens | 0.3 s | 0.6 s |
+
+   These numbers are guesses until stage 1 measures them on real hardware. They are not gates yet.
 
 2. **A profile chosen at first start, from the hardware, shown and undoable in Tune.**
    - Little memory: no AI model loaded at startup, and no animations.
@@ -81,22 +85,20 @@
 
 ## 4. Stages (each one waits for approval)
 
-1. **Measure:** the performance budget in CI for today's edition, plus a weak QEMU run (2 GB, 1 core). The numbers become the baseline.
+1. **Measure (started):** `tests/boot/measure.py`, run by `boot-test.sh` with `MEASURE_JSON`, in a CI job `measure` after the user edition's build. Two profiles on the same ISO: **weak** (2 GB, 1 CPU) and **standard** (4 GB, 2 CPUs). It records seconds to the login prompt, seconds to the LXQt panel, and memory in use after a minute idle, and says whether KVM or emulation was used. The job is not required, and nothing is gated yet: budgets come after a few runs show the spread. Not measured yet: how long a window takes to open (needs a GUI timer), and real hardware (needs a physical old computer).
 2. **Lite:** a "lite" edition in `build-iso.sh` (without the AI and voice runtimes), the first-start hardware profile through Tune, and the budget checks for Lite.
 3. **New hardware:** the backports kernel offered when needed, with a test on new hardware (a QEMU machine type, plus reports from people).
 4. **Native where it pays:** rewrite what the measurements show is slow.
-5. **Legacy 32** (only if approved): a Debian 12 i386 build with a limited set of apps, its own budget, and an end date stated on the download page.
-6. **ARM** (later): arm64 images for the Raspberry Pi first.
+5. **ARM** (later): arm64 images for the Raspberry Pi first.
 
 ## 5. Decisions needed
 
-1. **32-bit computers:** build Legacy 32 on Debian 12 until June 2028, or state that D.Ai needs a 64-bit processor?
-2. **The minimum for Lite:** 2 GB of memory (the proposal), or lower?
-3. **Order:** start with measuring (stage 1, recommended), or with Lite?
+1. ~~**32-bit computers:**~~ **Decided: no 32-bit edition.** D.Ai needs a 64-bit processor, and the download page says so.
+2. **The minimum for Lite:** 2 GB of memory (the proposal), or lower? To be set from the stage 1 measurements.
+3. ~~**Order:**~~ **Decided: start with measuring.**
 
 ## 6. Risks
 
-- **Legacy 32:** a second base to maintain; it ends in 2028, and after that it is unsafe without paid support.
 - **Budgets that are too tight** can fail builds because of CI noise. They should be measured a few times before they block.
 - **Very old graphics cards:** labwc (Wayland) needs a working kernel graphics driver. On a card without one, a software fallback is slow.
-  - Legacy 32 may need X11 instead (**requires a check** on real hardware).
+  - A computer that needs X11 instead of Wayland would need a check on real hardware (**requires a check**). D.Ai does not support X11 today.

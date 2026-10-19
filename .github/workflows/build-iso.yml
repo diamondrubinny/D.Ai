@@ -73,7 +73,7 @@ jobs:
       - name: Boot menu languages and the way to the desktop (GRUB, syslinux, Plymouth, SDDM)
         run: |
           sudo apt-get install -y -qq --no-install-recommends grub-common >/dev/null || true
-          python3 -m unittest tests/boot/test_boot_languages.py tests/boot/test_boot_look.py -v
+          python3 -m unittest tests/boot/test_boot_languages.py tests/boot/test_boot_look.py tests/boot/test_measure.py -v
 
       - name: Unit tests (dai-ai)
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
@@ -515,6 +515,55 @@ jobs:
 
   # Publish boot screenshots and check reports to the ci-screenshots branch
   # so they can be viewed on GitHub and referenced from docs.
+  # Stage 1 of docs/HARDWARE.md: measure, do not judge. Boots the user edition twice on this runner (without KVM,
+  # so the numbers are relative to other runs of this job, not to real computers) and records login time, desktop
+  # time and memory in use after a minute idle. Not required: a failed measurement does not block the release.
+  measure:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        profile:
+          - { name: weak, memory: 2048, cpus: 1 }
+          - { name: standard, memory: 4096, cpus: 2 }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-system-x86 xorriso
+
+      - name: Download the user edition ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: dai-os-user-iso
+          path: iso
+
+      - name: Measure boot on ${{ matrix.profile.name }} (${{ matrix.profile.memory }} MB, ${{ matrix.profile.cpus }} CPU)
+        env:
+          QEMU_MEM: ${{ matrix.profile.memory }}
+          QEMU_SMP: ${{ matrix.profile.cpus }}
+          MEASURE_JSON: measure-${{ matrix.profile.name }}.json
+          MEASURE_ONLY: "1"
+          MEASURE_IDLE: "60"
+          MEASURE_DESKTOP_TIMEOUT: "2400"
+          BOOT_TIMEOUT: "2400"
+        run: bash tests/boot/boot-test.sh "$(ls iso/*.iso | head -n1)" measure-artifacts
+
+      - name: Upload measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: measure-${{ matrix.profile.name }}
+          path: |
+            measure-${{ matrix.profile.name }}.json
+            measure-artifacts/
+          if-no-files-found: ignore
+          retention-days: 90
+
   screenshots:
     needs: build
     if: >-
