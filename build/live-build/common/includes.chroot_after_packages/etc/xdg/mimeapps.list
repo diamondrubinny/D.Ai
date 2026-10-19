@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
-# D.Ai OS defaults: J writes mail (docs/MAIL.md); Ruby opens the web (docs/BROWSER.md).
+# D.Ai OS defaults: J writes mail (docs/MAIL.md); Ruby opens the web (docs/BROWSER.md); D.Ai PDF opens PDFs
+# in a sandbox (docs/PDF.md).
 [Default Applications]
+application/pdf=dai-pdf.desktop
 x-scheme-handler/mailto=dai-j.desktop
 x-scheme-handler/http=firefox-esr.desktop
 x-scheme-handler/https=firefox-esr.desktop

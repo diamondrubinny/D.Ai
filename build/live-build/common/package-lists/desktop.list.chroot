@@ -34,8 +34,11 @@ pcmanfm-qt
 qterminal
 featherpad
 lximage-qt
-qpdfview
 screengrab
+# D.Ai PDF (docs/PDF.md): Qt PDF renders and pikepdf inspects, both inside a bubblewrap helper
+python3-pyqt6.qtpdf
+python3-pikepdf
+bubblewrap
 # Wayland basics (recommends are off, so they are named here; docs/PLAN.md "OS basics"):
 # drives mount by themselves (udisks2), trash and network folders in the file manager (gvfs),
 # screenshots (grim, slurp) and the screens' layout (wlr-randr).

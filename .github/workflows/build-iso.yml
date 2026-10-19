@@ -209,6 +209,14 @@ jobs:
           PYTHONPATH: apps/dai-sound
         run: python3 -m unittest discover -s apps/dai-sound/tests -t apps/dai-sound -v
 
+      - name: Unit tests (dai-pdf, the sandboxed PDF reader)
+        env:
+          PYTHONPATH: apps/dai-pdf:apps/dai-i18n:apps/dai-raz
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          sudo apt-get install -y -qq --no-install-recommends python3-pyqt6.qtpdf python3-pikepdf bubblewrap >/dev/null
+          python3 -m unittest discover -s apps/dai-pdf/tests -t apps/dai-pdf -v
+
       - name: Unit tests (dai-ocr, copy text from the screen, and its D.Ai Command row)
         env:
           PYTHONPATH: apps/dai-i18n:apps/dai-command:apps/dai-tune

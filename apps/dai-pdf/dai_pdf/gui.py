@@ -1,0 +1,999 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+"""The D.Ai PDF window (docs/PDF.md §4): pages in the middle, a side panel (pages, outline, search,
+attachments), the file bar at the top when the file "wants" something, and the tools above.
+
+The window never touches the file: a Reader (dai_pdf.reader) asks the sandboxed helper for page images, text
+and link rectangles, and this module only shows them. Right-to-left in Hebrew, in the person's theme, every
+control named for screen readers and reachable with Tab; the current page's text is its accessible description.
+"""
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+from typing import Callable
+
+from PyQt6.QtCore import QPoint, QRect, QRectF, QSize, Qt, QTimer
+from PyQt6.QtGui import QColor, QGuiApplication, QIcon, QImage, QKeySequence, QPainter, QPen, QPixmap, QShortcut
+from PyQt6.QtWidgets import (QApplication, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout,
+                             QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QScrollArea, QSplitter,
+                             QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+
+from dai_i18n import pick, qt_direction, ui_lang
+from dai_style import color
+
+from .reader import Document, PdfError, Reader
+from .text import find_all
+
+APP_ID = "dai-pdf"
+POINT = 96 / 72                      # pixels per point at 100 %
+ZOOMS = (50, 75, 100, 125, 150, 200, 300, 400)
+PAGE_GAP = 14
+MARGIN = 24
+CACHE_PAGES = 12
+THUMB_WIDTH = 140
+MAX_THUMBS = 400
+SEARCH_CONTEXT = 40
+MAX_RESULTS = 500
+
+BG, BG2, SURFACE, BORDER, TEXT, MUTED = (color(r) for r in ("bg_900", "bg_800", "surface", "border", "text", "muted"))
+ACCENT, ACCENT_STRONG, ACCENT_2, WARN, OK, DANGER = (color(r) for r in ("accent", "accent_strong", "accent_2", "warn",
+                                                                        "ok", "danger"))
+DISABLED = color("disabled")
+STYLE = f"""
+QWidget#Window, QDialog {{ background: {BG}; color: {TEXT}; }}
+QLabel {{ color: {TEXT}; }}
+#AppTitle {{ font-size: 12pt; font-weight: 700; color: {MUTED}; }}
+#Title {{ font-size: 13pt; font-weight: 700; }}
+#Muted {{ color: {MUTED}; }}
+#Banner {{ background: {SURFACE}; border: 1px solid {WARN}; border-radius: 10px; }}
+#BannerText {{ color: {TEXT}; }}
+#Pages {{ background: {BG2}; }}
+#Message {{ font-size: 13pt; color: {TEXT}; padding: 24px; }}
+QScrollArea {{ border: 1px solid {BORDER}; border-radius: 10px; background: {BG2}; }}
+QScrollArea:focus {{ border: 2px solid {ACCENT_2}; }}
+QTabWidget::pane {{ border: 1px solid {BORDER}; border-radius: 10px; background: {BG2}; }}
+QTabBar::tab {{ background: {SURFACE}; color: {TEXT}; padding: 6px 12px; border: 1px solid {BORDER};
+    border-bottom: none; border-top-left-radius: 8px; border-top-right-radius: 8px; }}
+QTabBar::tab:selected {{ background: {BG2}; border: 1px solid {ACCENT}; border-bottom: none; }}
+QTabBar::tab:focus {{ border: 2px solid {ACCENT_2}; }}
+QListWidget, QTreeWidget {{ background: {BG2}; color: {TEXT}; border: none; outline: none; font-size: 10.5pt; }}
+QListWidget::item, QTreeWidget::item {{ padding: 4px; border-radius: 6px; }}
+QListWidget::item:selected, QTreeWidget::item:selected {{ background: {SURFACE}; color: {TEXT};
+    border: 1px solid {ACCENT}; }}
+QListWidget:focus, QTreeWidget:focus {{ border: 2px solid {ACCENT_2}; }}
+QLineEdit, QComboBox {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 8px;
+    padding: 5px 10px; font-size: 11pt; selection-background-color: {ACCENT_STRONG}; }}
+QLineEdit:focus, QComboBox:focus {{ border: 2px solid {ACCENT_2}; }}
+QComboBox QAbstractItemView {{ background: {SURFACE}; color: {TEXT}; selection-background-color: {ACCENT_STRONG}; }}
+QPushButton {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 8px; padding: 6px 12px; }}
+QPushButton:hover {{ border: 1px solid {ACCENT}; }}
+QPushButton:focus {{ border: 2px solid {ACCENT_2}; }}
+QPushButton#Primary {{ background: {ACCENT_STRONG}; color: #FFFFFF; border: 1px solid {ACCENT_STRONG}; }}
+QPushButton#Primary:focus {{ border: 2px solid {ACCENT_2}; }}
+QPushButton:disabled {{ background: {SURFACE}; color: {DISABLED}; border: 1px solid {BORDER}; }}
+QLineEdit:disabled, QComboBox:disabled {{ color: {DISABLED}; }}
+"""
+
+
+def say(lang: str, en: str, he: str, **kwargs: object) -> str:
+    return pick(lang, en, he).format(**kwargs)
+
+
+def default_open_url(url: str) -> None:
+    subprocess.Popen(["xdg-open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def human_size(size: int) -> str:
+    if size < 0:
+        return "?"
+    for unit in ("B", "KB", "MB", "GB"):
+        if size < 1024 or unit == "GB":
+            return f"{size:.0f} {unit}" if unit == "B" else f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} GB"
+
+
+def findings_sentences(doc: Document, lang: str) -> list[str]:
+    """The file bar's lines: what the file wants, and that none of it is done (docs/PDF.md §0)."""
+    f = doc.findings
+    lines: list[str] = []
+    if not doc.inspected:
+        lines.append(say(lang, "This file could not be inspected for scripts and attachments; it is still shown "
+                               "only inside the sandbox.",
+                         "לא ניתן היה לבדוק בקובץ זה סקריפטים וקבצים מצורפים; הוא עדיין מוצג רק בתוך ארגז החול."))
+    if f.javascript:
+        lines.append(say(lang, "This PDF contains JavaScript ({n}). It is not run.",
+                         "קובץ ה-PDF מכיל JavaScript ({n}). הוא לא מופעל.", n=f.javascript))
+    if f.launch:
+        lines.append(say(lang, "It asks to run a program on this computer ({n}). Refused.",
+                         "הוא מבקש להריץ תוכנית על המחשב הזה ({n}). נדחה.", n=f.launch))
+    if f.remote:
+        lines.append(say(lang, "It asks to open another file ({n}). Not opened.",
+                         "הוא מבקש לפתוח קובץ אחר ({n}). לא נפתח.", n=f.remote))
+    if f.submit:
+        lines.append(say(lang, "A form in it would send data to an address ({n}). Blocked.",
+                         "טופס בו היה שולח נתונים לכתובת ({n}). נחסם.", n=f.submit))
+    if f.attachments:
+        lines.append(say(lang, "{n} attached files. They are listed in the side panel and never opened.",
+                         "{n} קבצים מצורפים. הם מופיעים בלוח הצד ולעולם לא נפתחים.", n=len(f.attachments)))
+    if f.xfa:
+        lines.append(say(lang, "This is an XFA form; only its static page is shown.",
+                         "זהו טופס XFA; מוצג רק הדף הסטטי שלו."))
+    if f.truncated:
+        lines.append(say(lang, "The file is very large; the inspection stopped early.",
+                         "הקובץ גדול מאוד; הבדיקה נעצרה מוקדם."))
+    return lines
+
+
+class PageView(QLabel):
+    """One page: a rendered picture, the links on it, and the search highlights."""
+
+    def __init__(self, window: "PdfWindow", index: int, points: tuple[float, float]) -> None:
+        super().__init__()
+        self.window_, self.index, self.points = window, index, points
+        self.links: list[dict] | None = None
+        self.highlights: list[tuple[float, float, float, float]] = []
+        self.rendered_key: tuple | None = None
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setObjectName("Page")
+        self.setAccessibleName(say(window.lang, "Page {n}", "עמוד {n}", n=index + 1))
+        self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    def pixel_size(self) -> QSize:
+        scale, rotation = self.window_.scale, self.window_.rotation
+        w, h = self.points
+        if rotation in (90, 270):
+            w, h = h, w
+        return QSize(max(1, round(w * scale)), max(1, round(h * scale)))
+
+    def placeholder(self) -> None:
+        size = self.pixel_size()
+        self.setFixedSize(size)
+        if self.rendered_key is not None:
+            self.rendered_key = None
+            self.setPixmap(QPixmap())
+        self.setStyleSheet(f"background: {SURFACE}; border: 1px solid {BORDER};")
+
+    def show_image(self, image: QImage) -> None:
+        pixmap = QPixmap.fromImage(image)
+        if self.window_.rotation:
+            from PyQt6.QtGui import QTransform
+            pixmap = pixmap.transformed(QTransform().rotate(self.window_.rotation))
+        if self.highlights:
+            pixmap = self.with_highlights(pixmap)
+        self.setFixedSize(pixmap.size())
+        self.setStyleSheet(f"border: 1px solid {BORDER};")
+        self.setPixmap(pixmap)
+        self.rendered_key = (self.window_.scale, self.window_.rotation, tuple(self.highlights))
+
+    def with_highlights(self, pixmap: QPixmap) -> QPixmap:
+        painted = QPixmap(pixmap)
+        painter = QPainter(painted)
+        painter.setPen(QPen(QColor(ACCENT_2), 2))
+        fill = QColor(ACCENT_2)
+        fill.setAlpha(70)
+        painter.setBrush(fill)
+        for rect in self.highlights:
+            painter.drawRect(self.to_pixels(rect))
+        painter.end()
+        return painted
+
+    def to_pixels(self, rect: tuple[float, float, float, float]) -> QRect:
+        """A rectangle in page points (top-left origin, unrotated) on this rotated, scaled picture."""
+        x, y, w, h = rect
+        pw, ph = self.points
+        r = self.window_.rotation
+        if r == 90:
+            x, y, w, h = ph - y - h, x, h, w
+        elif r == 180:
+            x, y = pw - x - w, ph - y - h
+        elif r == 270:
+            x, y, w, h = y, pw - x - w, h, w
+        s = self.window_.scale
+        return QRect(round(x * s), round(y * s), max(2, round(w * s)), max(2, round(h * s)))
+
+    def to_points(self, pos: QPoint) -> tuple[float, float]:
+        """A pixel on this picture, as a point on the unrotated page."""
+        s = self.window_.scale
+        x, y = pos.x() / s, pos.y() / s
+        pw, ph = self.points
+        r = self.window_.rotation
+        if r == 90:
+            x, y = y, ph - x
+        elif r == 180:
+            x, y = pw - x, ph - y
+        elif r == 270:
+            x, y = pw - y, x
+        return x, y
+
+    def link_at(self, pos: QPoint) -> dict | None:
+        if not self.links:
+            return None
+        x, y = self.to_points(pos)
+        for link in self.links:
+            lx, ly, lw, lh = link.get("rect", (0, 0, 0, 0))
+            if lx <= x <= lx + lw and ly <= y <= ly + lh:
+                return link
+        return None
+
+    def mouseMoveEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        self.setCursor(Qt.CursorShape.PointingHandCursor if self.link_at(event.pos()) else Qt.CursorShape.ArrowCursor)
+
+    def mousePressEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        if event.button() == Qt.MouseButton.LeftButton:
+            link = self.link_at(event.pos())
+            if link is not None:
+                self.window_.follow_link(link)
+                return
+        super().mousePressEvent(event)
+
+
+class PasswordDialog(QDialog):
+    def __init__(self, parent: QWidget, lang: str, name: str, wrong: bool) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(say(lang, "This PDF is locked", "קובץ ה-PDF נעול"))
+        self.setLayoutDirection(qt_direction(lang))
+        self.setStyleSheet(STYLE)
+        layout = QVBoxLayout(self)
+        text = say(lang, "{name} needs a password to open.", "{name} דורש סיסמה כדי להיפתח.", name=name)
+        if wrong:
+            text = say(lang, "That password did not open {name}. Try again.",
+                       "הסיסמה הזו לא פתחה את {name}. נסו שוב.", name=name)
+        label = QLabel(text)
+        label.setWordWrap(True)
+        layout.addWidget(label)
+        self.password = QLineEdit()
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setAccessibleName(say(lang, "Password", "סיסמה"))
+        self.password.returnPressed.connect(self.accept)
+        layout.addWidget(self.password)
+        buttons = QHBoxLayout()
+        buttons.addStretch(1)
+        cancel = QPushButton(say(lang, "Cancel", "ביטול"))
+        cancel.setAccessibleName(cancel.text())
+        cancel.clicked.connect(self.reject)
+        buttons.addWidget(cancel)
+        ok = QPushButton(say(lang, "Open", "פתיחה"))
+        ok.setObjectName("Primary")
+        ok.setAccessibleName(ok.text())
+        ok.clicked.connect(self.accept)
+        buttons.addWidget(ok)
+        layout.addLayout(buttons)
+
+
+class LinkDialog(QDialog):
+    """A link is shown whole, and opened only on a click here (docs/PDF.md §2)."""
+
+    def __init__(self, parent: QWidget, lang: str, url: str, allowed: bool) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(say(lang, "A link in this PDF", "קישור בקובץ ה-PDF"))
+        self.setLayoutDirection(qt_direction(lang))
+        self.setStyleSheet(STYLE)
+        layout = QVBoxLayout(self)
+        if allowed:
+            lead = say(lang, "Open this address in the browser?", "לפתוח את הכתובת הזו בדפדפן?")
+        else:
+            lead = say(lang, "This link would open a file or a program on this computer. D.Ai PDF does not do that.",
+                       "הקישור הזה היה פותח קובץ או תוכנית על המחשב הזה. D.Ai PDF לא עושה את זה.")
+        label = QLabel(lead)
+        label.setWordWrap(True)
+        layout.addWidget(label)
+        self.address = QLabel(url[:2000])
+        self.address.setObjectName("Muted")
+        self.address.setWordWrap(True)
+        self.address.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.address.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.address.setAccessibleName(say(lang, "The address", "הכתובת"))
+        layout.addWidget(self.address)
+        buttons = QHBoxLayout()
+        buttons.addStretch(1)
+        cancel = QPushButton(say(lang, "Close", "סגירה") if not allowed else say(lang, "Cancel", "ביטול"))
+        cancel.setAccessibleName(cancel.text())
+        cancel.clicked.connect(self.reject)
+        buttons.addWidget(cancel)
+        if allowed:
+            ok = QPushButton(say(lang, "Open the link", "פתיחת הקישור"))
+            ok.setObjectName("Primary")
+            ok.setAccessibleName(ok.text())
+            ok.clicked.connect(self.accept)
+            buttons.addWidget(ok)
+        layout.addLayout(buttons)
+
+
+class InfoDialog(QDialog):
+    def __init__(self, parent: QWidget, lang: str, doc: Document, sandboxed: bool) -> None:
+        super().__init__(parent)
+        self.setWindowTitle(say(lang, "About this PDF", "על קובץ ה-PDF הזה"))
+        self.setLayoutDirection(qt_direction(lang))
+        self.setStyleSheet(STYLE)
+        self.setMinimumWidth(480)
+        layout = QVBoxLayout(self)
+        form = QFormLayout()
+        rows = [
+            (say(lang, "File", "קובץ"), Path(doc.path).name),
+            (say(lang, "Pages", "עמודים"), str(doc.count)),
+            (say(lang, "Title", "כותרת"), doc.metadata.get("title", "")),
+            (say(lang, "Author", "מחבר"), doc.metadata.get("author", "")),
+            (say(lang, "Subject", "נושא"), doc.metadata.get("subject", "")),
+            (say(lang, "Keywords", "מילות מפתח"), doc.metadata.get("keywords", "")),
+            (say(lang, "Created with", "נוצר באמצעות"), " · ".join(filter(None, (doc.metadata.get("creator", ""),
+                                                                            doc.metadata.get("producer", ""))))),
+            (say(lang, "Created", "נוצר"), doc.metadata.get("created", "")),
+            (say(lang, "Modified", "שונה"), doc.metadata.get("modified", "")),
+            (say(lang, "Encrypted", "מוצפן"), say(lang, "yes", "כן") if doc.findings.encrypted else say(lang, "no", "לא")),
+            (say(lang, "Opened in a sandbox", "נפתח בארגז חול"),
+             say(lang, "yes", "כן") if sandboxed else say(lang, "no (test mode)", "לא (מצב בדיקה)")),
+        ]
+        for name, value in rows:
+            label = QLabel(value or "—")
+            label.setWordWrap(True)
+            label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            label.setAccessibleName(name)
+            form.addRow(name, label)
+        layout.addLayout(form)
+        wants = findings_sentences(doc, lang)
+        if wants:
+            title = QLabel(say(lang, "What this file wants to do (and does not get to)",
+                               "מה הקובץ הזה רוצה לעשות (ולא מקבל)"))
+            title.setObjectName("Title")
+            layout.addWidget(title)
+            for line in wants:
+                item = QLabel("• " + line)
+                item.setWordWrap(True)
+                layout.addWidget(item)
+        note = QLabel(say(lang, "Nothing about this file leaves this computer.", "שום דבר על הקובץ הזה לא יוצא מהמחשב הזה."))
+        note.setObjectName("Muted")
+        layout.addWidget(note)
+        close = QPushButton(say(lang, "Close", "סגירה"))
+        close.setAccessibleName(close.text())
+        close.clicked.connect(self.accept)
+        layout.addWidget(close, alignment=Qt.AlignmentFlag.AlignRight)
+
+
+class PdfWindow(QWidget):
+    def __init__(self, path: str | None = None, lang: str | None = None,
+                 reader_factory: Callable[..., Reader] = Reader, open_url: Callable[[str], None] = default_open_url,
+                 sandboxed: bool = True, ask_password: Callable[[str, bool], str | None] | None = None) -> None:
+        super().__init__()
+        self.lang = lang or ui_lang()
+        self.reader_factory, self.open_url, self.sandboxed = reader_factory, open_url, sandboxed
+        self.ask_password = ask_password or self._ask_password
+        self.reader: Reader | None = None
+        self.doc: Document | None = None
+        self.views: list[PageView] = []
+        self.cache: dict[int, tuple[tuple, QImage]] = {}
+        self.cache_order: list[int] = []
+        self.zoom: str = "width"          # "width", "page", or a percentage as a string
+        self.scale: float = POINT
+        self.rotation = 0
+        self.current_page = 0
+        self.results: list[tuple[int, int, int]] = []  # (page, start, length)
+        self.thumbs_done = 0
+        self.setObjectName("Window")
+        self.setWindowTitle("D.Ai PDF")
+        self.setLayoutDirection(qt_direction(self.lang))
+        self.setStyleSheet(STYLE)
+        self.resize(1100, 760)
+        self._build()
+        self._shortcuts()
+        self.render_timer = QTimer(self)
+        self.render_timer.setSingleShot(True)
+        self.render_timer.setInterval(40)
+        self.render_timer.timeout.connect(self.render_visible)
+        self.thumb_timer = QTimer(self)
+        self.thumb_timer.setInterval(30)
+        self.thumb_timer.timeout.connect(self._next_thumbnail)
+        if path:
+            self.open_path(path)
+        else:
+            self.show_message(say(self.lang, "Open a PDF to read it here, inside the sandbox.",
+                                  "פתחו קובץ PDF כדי לקרוא אותו כאן, בתוך ארגז החול."))
+
+    # --- building ----------------------------------------------------------------------------------------------
+
+    def _button(self, text: str, name: str, slot: Callable, layout, primary: bool = False) -> QPushButton:
+        button = QPushButton(text)
+        button.setAccessibleName(name)
+        button.setToolTip(name)
+        if primary:
+            button.setObjectName("Primary")
+        button.clicked.connect(slot)
+        layout.addWidget(button)
+        return button
+
+    def _build(self) -> None:
+        outer = QVBoxLayout(self)
+        top = QHBoxLayout()
+        title = QLabel("💎 D.Ai PDF")
+        title.setObjectName("AppTitle")
+        top.addWidget(title)
+        self.open_button = self._button(say(self.lang, "Open…", "פתיחה…"), say(self.lang, "Open a PDF", "פתיחת PDF"),
+                                        self.open_dialog, top)
+        self.prev_button = self._button("◀", say(self.lang, "Previous page", "העמוד הקודם"),
+                                        lambda: self.go_to(self.current_page - 1), top)
+        self.page_field = QLineEdit()
+        self.page_field.setFixedWidth(64)
+        self.page_field.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.page_field.setAccessibleName(say(self.lang, "Page number", "מספר עמוד"))
+        self.page_field.returnPressed.connect(self._page_typed)
+        top.addWidget(self.page_field)
+        self.count_label = QLabel("")
+        self.count_label.setObjectName("Muted")
+        top.addWidget(self.count_label)
+        self.next_button = self._button("▶", say(self.lang, "Next page", "העמוד הבא"),
+                                        lambda: self.go_to(self.current_page + 1), top)
+        top.addSpacing(12)
+        self.zoom_out = self._button("－", say(self.lang, "Zoom out", "הקטנה"), lambda: self.step_zoom(-1), top)
+        self.zoom_box = QComboBox()
+        self.zoom_box.setAccessibleName(say(self.lang, "Zoom", "הגדלה"))
+        self.zoom_box.addItem(say(self.lang, "Fit width", "לרוחב החלון"), "width")
+        self.zoom_box.addItem(say(self.lang, "Whole page", "עמוד שלם"), "page")
+        for z in ZOOMS:
+            self.zoom_box.addItem(f"{z}%", str(z))
+        self.zoom_box.currentIndexChanged.connect(self._zoom_chosen)
+        top.addWidget(self.zoom_box)
+        self.zoom_in = self._button("＋", say(self.lang, "Zoom in", "הגדלה"), lambda: self.step_zoom(1), top)
+        self.rotate_button = self._button("⟳", say(self.lang, "Rotate the view", "סיבוב התצוגה"), self.rotate, top)
+        top.addSpacing(12)
+        self.search_field = QLineEdit()
+        self.search_field.setPlaceholderText(say(self.lang, "Search in the file", "חיפוש בקובץ"))
+        self.search_field.setAccessibleName(say(self.lang, "Search in the file", "חיפוש בקובץ"))
+        self.search_field.setMinimumWidth(180)
+        self.search_field.returnPressed.connect(self.search)
+        top.addWidget(self.search_field, 1)
+        self.side_button = self._button("☰", say(self.lang, "Show or hide the side panel", "הצגה או הסתרה של לוח הצד"),
+                                        self.toggle_side, top)
+        self.info_button = self._button("ⓘ", say(self.lang, "About this PDF", "על קובץ ה-PDF הזה"), self.show_info, top)
+        self.print_button = self._button("🖨", say(self.lang, "Print", "הדפסה"), self.print_, top)
+        outer.addLayout(top)
+
+        self.banner = QFrame()
+        self.banner.setObjectName("Banner")
+        banner_layout = QHBoxLayout(self.banner)
+        self.banner_text = QLabel("")
+        self.banner_text.setObjectName("BannerText")
+        self.banner_text.setWordWrap(True)
+        self.banner_text.setAccessibleName(say(self.lang, "What this file wants to do", "מה הקובץ הזה רוצה לעשות"))
+        banner_layout.addWidget(self.banner_text, 1)
+        self.banner.hide()
+        outer.addWidget(self.banner)
+
+        self.splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.side = QTabWidget()
+        self.side.setAccessibleName(say(self.lang, "Side panel", "לוח הצד"))
+        self.thumbs = QListWidget()
+        self.thumbs.setViewMode(QListWidget.ViewMode.IconMode)
+        self.thumbs.setIconSize(QSize(THUMB_WIDTH, THUMB_WIDTH))
+        self.thumbs.setResizeMode(QListWidget.ResizeMode.Adjust)
+        self.thumbs.setMovement(QListWidget.Movement.Static)
+        self.thumbs.setAccessibleName(say(self.lang, "Pages", "עמודים"))
+        self.thumbs.currentRowChanged.connect(lambda row: self.go_to(row) if row >= 0 and not self._syncing else None)
+        self.side.addTab(self.thumbs, say(self.lang, "Pages", "עמודים"))
+        self.outline = QTreeWidget()
+        self.outline.setHeaderHidden(True)
+        self.outline.setAccessibleName(say(self.lang, "Outline", "תוכן העניינים"))
+        self.outline.itemActivated.connect(self._outline_chosen)
+        self.outline.itemClicked.connect(self._outline_chosen)
+        self.side.addTab(self.outline, say(self.lang, "Outline", "תוכן העניינים"))
+        self.result_list = QListWidget()
+        self.result_list.setAccessibleName(say(self.lang, "Search results", "תוצאות חיפוש"))
+        self.result_list.currentRowChanged.connect(self._result_chosen)
+        self.side.addTab(self.result_list, say(self.lang, "Search", "חיפוש"))
+        self.attachments = QListWidget()
+        self.attachments.setAccessibleName(say(self.lang, "Attachments (never opened)", "קבצים מצורפים (לעולם לא נפתחים)"))
+        self.side.addTab(self.attachments, say(self.lang, "Attachments", "קבצים מצורפים"))
+        self.side.currentChanged.connect(lambda i: self._thumbnails_start() if i == 0 else None)
+        self.splitter.addWidget(self.side)
+
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setAccessibleName(say(self.lang, "The document", "המסמך"))
+        self.scroll.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.pages_widget = QWidget()
+        self.pages_widget.setObjectName("Pages")
+        self.pages_layout = QVBoxLayout(self.pages_widget)
+        self.pages_layout.setContentsMargins(MARGIN, MARGIN, MARGIN, MARGIN)
+        self.pages_layout.setSpacing(PAGE_GAP)
+        self.pages_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.message = QLabel("")
+        self.message.setObjectName("Message")
+        self.message.setWordWrap(True)
+        self.message.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.pages_layout.addWidget(self.message)
+        self.scroll.setWidget(self.pages_widget)
+        self.scroll.verticalScrollBar().valueChanged.connect(self._scrolled)
+        self.splitter.addWidget(self.scroll)
+        self.splitter.setStretchFactor(0, 0)
+        self.splitter.setStretchFactor(1, 1)
+        self.splitter.setSizes([240, 860])
+        outer.addWidget(self.splitter, 1)
+
+        self.status = QLabel(say(self.lang, "Every PDF opens in a sandbox: no network, no access to your files.",
+                                 "כל PDF נפתח בארגז חול: בלי רשת, בלי גישה לקבצים שלכם."))
+        self.status.setObjectName("Muted")
+        self.status.setWordWrap(True)
+        outer.addWidget(self.status)
+        self._syncing = False
+
+    def _shortcuts(self) -> None:
+        QShortcut(QKeySequence("Ctrl+O"), self, activated=self.open_dialog)
+        QShortcut(QKeySequence("Ctrl+F"), self, activated=lambda: (self.search_field.setFocus(), self.search_field.selectAll()))
+        QShortcut(QKeySequence("F3"), self, activated=self.next_result)
+        QShortcut(QKeySequence("Ctrl+P"), self, activated=self.print_)
+        QShortcut(QKeySequence("Ctrl+I"), self, activated=self.show_info)
+        QShortcut(QKeySequence("Ctrl++"), self, activated=lambda: self.step_zoom(1))
+        QShortcut(QKeySequence("Ctrl+="), self, activated=lambda: self.step_zoom(1))
+        QShortcut(QKeySequence("Ctrl+-"), self, activated=lambda: self.step_zoom(-1))
+        QShortcut(QKeySequence("Ctrl+0"), self, activated=lambda: self.set_zoom("width"))
+        QShortcut(QKeySequence("Ctrl+R"), self, activated=self.rotate)
+        QShortcut(QKeySequence("Ctrl+C"), self, activated=lambda: self.copy_page(False))
+        QShortcut(QKeySequence("Ctrl+Shift+C"), self, activated=lambda: self.copy_page(True))
+        QShortcut(QKeySequence("F9"), self, activated=self.toggle_side)
+        QShortcut(QKeySequence("Ctrl+W"), self, activated=self.close)
+        QShortcut(QKeySequence("Ctrl+Home"), self, activated=lambda: self.go_to(0))
+        QShortcut(QKeySequence("Ctrl+End"), self, activated=lambda: self.go_to(self.count() - 1))
+
+    # --- opening -----------------------------------------------------------------------------------------------
+
+    def count(self) -> int:
+        return self.doc.count if self.doc else 0
+
+    def _ask_password(self, name: str, wrong: bool) -> str | None:
+        dialog = PasswordDialog(self, self.lang, name, wrong)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return None
+        return dialog.password.text()
+
+    def open_dialog(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(self, say(self.lang, "Open a PDF", "פתיחת PDF"), "",
+                                              say(self.lang, "PDF files (*.pdf);;All files (*)",
+                                                  "קובצי PDF (*.pdf);;כל הקבצים (*)"))
+        if path:
+            self.open_path(path)
+
+    def open_path(self, path: str) -> bool:
+        self.close_document()
+        name = Path(path).name
+        password, wrong = "", False
+        while True:
+            reader = self.reader_factory(path, password=password, sandboxed=self.sandboxed)
+            try:
+                doc = reader.open()
+                break
+            except PdfError as exc:
+                reader.close()
+                if exc.kind == "password":
+                    answer = self.ask_password(name, wrong)
+                    if answer is None:
+                        self.show_message(say(self.lang, "{name} stays closed.", "{name} נשאר סגור.", name=name))
+                        return False
+                    password, wrong = answer, True
+                    continue
+                self.show_message(self._error_text(exc, name))
+                return False
+        self.reader, self.doc = reader, doc
+        self.setWindowTitle(f"{doc.title} · D.Ai PDF")
+        self._fill_side()
+        self._build_pages()
+        self.update_banner()
+        self.status.setText(say(self.lang, "{name} · {n} pages · opened in the sandbox", "{name} · {n} עמודים · נפתח בארגז החול",
+                                name=name, n=doc.count) if self.sandboxed else
+                            say(self.lang, "{name} · {n} pages", "{name} · {n} עמודים", name=name, n=doc.count))
+        self.set_zoom(self.zoom)
+        self.go_to(0)
+        return True
+
+    def _error_text(self, exc: PdfError, name: str) -> str:
+        if exc.kind == "missing":
+            return say(self.lang, "There is no file called {name}.", "אין קובץ בשם {name}.", name=name)
+        if exc.kind == "sandbox":
+            return say(self.lang, "The sandbox (bubblewrap) is missing, so {name} was not opened. D.Ai PDF never "
+                                  "opens a file outside it.",
+                       "ארגז החול (bubblewrap) חסר, ולכן {name} לא נפתח. D.Ai PDF לעולם לא פותח קובץ מחוצה לו.", name=name)
+        if exc.kind in ("dead", "timeout"):
+            return say(self.lang, "{name} could not be drawn: the sandboxed helper stopped.",
+                       "לא ניתן היה לצייר את {name}: העוזר בארגז החול נעצר.", name=name)
+        return say(self.lang, "{name} is not a PDF that can be opened.", "{name} אינו קובץ PDF שניתן לפתוח.", name=name)
+
+    def close_document(self) -> None:
+        if self.reader is not None:
+            self.reader.close()
+        self.reader, self.doc = None, None
+        self.thumb_timer.stop()
+        self.cache.clear()
+        self.cache_order.clear()
+        self.results.clear()
+        for view in self.views:
+            self.pages_layout.removeWidget(view)
+            view.deleteLater()
+        self.views = []
+        self.thumbs.clear()
+        self.outline.clear()
+        self.result_list.clear()
+        self.attachments.clear()
+        self.banner.hide()
+        self.count_label.setText("")
+        self.page_field.setText("")
+
+    def closeEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        self.close_document()
+        super().closeEvent(event)
+
+    def show_message(self, text: str) -> None:
+        self.message.setText(text)
+        self.message.show()
+
+    def _fill_side(self) -> None:
+        assert self.doc is not None
+        self._syncing = True
+        self.thumbs.clear()
+        for i in range(self.doc.count):
+            label = self.doc.labels[i] if i < len(self.doc.labels) and self.doc.labels[i] else str(i + 1)
+            item = QListWidgetItem(label)
+            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            item.setToolTip(say(self.lang, "Page {n}", "עמוד {n}", n=i + 1))
+            self.thumbs.addItem(item)
+        self.thumbs_done = 0
+        self.outline.clear()
+        parents: dict[int, QTreeWidgetItem] = {}
+        for entry in self.doc.outline:
+            level = int(entry.get("level", 0))
+            item = QTreeWidgetItem([entry.get("title") or "…"])
+            item.setData(0, Qt.ItemDataRole.UserRole, int(entry.get("page", -1)))
+            parent = parents.get(level - 1)
+            if level > 0 and parent is not None:
+                parent.addChild(item)
+            else:
+                self.outline.addTopLevelItem(item)
+            parents[level] = item
+        self.outline.expandToDepth(0)
+        self.attachments.clear()
+        for att in self.doc.findings.attachments:
+            self.attachments.addItem(f"{att.get('name', '')} · {human_size(int(att.get('size', -1)))}")
+        if not self.doc.findings.attachments:
+            self.attachments.addItem(say(self.lang, "No attached files", "אין קבצים מצורפים"))
+        self._syncing = False
+
+    def _build_pages(self) -> None:
+        assert self.doc is not None
+        self.message.hide()
+        for i, points in enumerate(self.doc.pages):
+            view = PageView(self, i, points)
+            self.pages_layout.addWidget(view, alignment=Qt.AlignmentFlag.AlignHCenter)
+            self.views.append(view)
+        self.count_label.setText(say(self.lang, "of {n}", "מתוך {n}", n=self.doc.count))
+
+    def update_banner(self) -> None:
+        assert self.doc is not None
+        lines = findings_sentences(self.doc, self.lang)
+        if lines:
+            self.banner_text.setText("⚠ " + "  ·  ".join(lines))
+            self.banner.show()
+        else:
+            self.banner.hide()
+
+    # --- zoom, rotation, layout --------------------------------------------------------------------------------
+
+    def _zoom_chosen(self, index: int) -> None:
+        if index >= 0 and not self._syncing:
+            self.set_zoom(str(self.zoom_box.itemData(index)))
+
+    def set_zoom(self, zoom: str) -> None:
+        self.zoom = zoom
+        self._syncing = True
+        for i in range(self.zoom_box.count()):
+            if str(self.zoom_box.itemData(i)) == zoom:
+                self.zoom_box.setCurrentIndex(i)
+        self._syncing = False
+        self._relayout()
+
+    def step_zoom(self, direction: int) -> None:
+        current = round(self.scale / POINT * 100)
+        candidates = sorted(set(ZOOMS) | {current})
+        index = candidates.index(current) + direction
+        index = max(0, min(len(candidates) - 1, index))
+        self.set_zoom(str(candidates[index]))
+
+    def rotate(self) -> None:
+        self.rotation = (self.rotation + 90) % 360
+        self._relayout()
+
+    def _available_width(self) -> int:
+        width = self.scroll.viewport().width() - 2 * MARGIN
+        return max(120, width - self.scroll.verticalScrollBar().sizeHint().width())
+
+    def _relayout(self) -> None:
+        if not self.doc or not self.views:
+            return
+        w, h = self.doc.pages[min(self.current_page, self.doc.count - 1)]
+        if self.rotation in (90, 270):
+            w, h = h, w
+        if self.zoom == "width":
+            self.scale = self._available_width() / max(1.0, w)
+        elif self.zoom == "page":
+            height = max(120, self.scroll.viewport().height() - 2 * MARGIN)
+            self.scale = min(self._available_width() / max(1.0, w), height / max(1.0, h))
+        else:
+            self.scale = int(self.zoom) / 100 * POINT
+        self.scale = max(0.05, min(12.0, self.scale))
+        for view in self.views:
+            view.placeholder()
+        self.render_timer.start()
+
+    def resizeEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        super().resizeEvent(event)
+        if self.zoom in ("width", "page"):
+            self._relayout()
+
+    # --- rendering ---------------------------------------------------------------------------------------------
+
+    def _visible_pages(self) -> list[int]:
+        if not self.views:
+            return []
+        top = self.scroll.verticalScrollBar().value()
+        bottom = top + self.scroll.viewport().height()
+        visible = []
+        for view in self.views:
+            y = view.pos().y()
+            if y + view.height() >= top - 200 and y <= bottom + 200:
+                visible.append(view.index)
+        return visible
+
+    def _render_image(self, index: int, size: QSize) -> QImage | None:
+        assert self.reader is not None
+        key = (size.width(), size.height())
+        cached = self.cache.get(index)
+        if cached and cached[0] == key:
+            return cached[1]
+        try:
+            png, _, _ = self.reader.render(index, size.width(), size.height())
+        except PdfError:
+            return None
+        image = QImage.fromData(png, "PNG")
+        if image.isNull():
+            return None
+        self.cache[index] = (key, image)
+        self.cache_order.append(index)
+        while len(self.cache_order) > CACHE_PAGES:
+            old = self.cache_order.pop(0)
+            if old != index and old in self.cache and old not in self.cache_order:
+                del self.cache[old]
+        return image
+
+    def render_visible(self) -> None:
+        if not self.doc or not self.reader:
+            return
+        for index in self._visible_pages():
+            view = self.views[index]
+            if view.rendered_key == (self.scale, self.rotation, tuple(view.highlights)):
+                continue
+            w, h = view.points
+            image = self._render_image(index, QSize(max(1, round(w * self.scale)), max(1, round(h * self.scale))))
+            if image is None:
+                view.setText(say(self.lang, "This page could not be drawn.", "לא ניתן היה לצייר את העמוד הזה."))
+                continue
+            view.show_image(image)
+            if view.links is None:
+                view.links = self.reader.links(index)
+        self._update_current()
+
+    def _scrolled(self, _value: int) -> None:
+        self.render_timer.start()
+        self._update_current()
+
+    def _update_current(self) -> None:
+        if not self.views:
+            return
+        middle = self.scroll.verticalScrollBar().value() + self.scroll.viewport().height() // 3
+        current = 0
+        for view in self.views:
+            if view.pos().y() <= middle:
+                current = view.index
+        if current != self.current_page or not self.page_field.text():
+            self.current_page = current
+            self.page_field.setText(str(current + 1))
+            self._syncing = True
+            self.thumbs.setCurrentRow(current)
+            self._syncing = False
+            self._describe_page(current)
+
+    def _describe_page(self, index: int) -> None:
+        """The current page's text is its accessible description, so a screen reader can read it."""
+        if not self.reader or not self.doc:
+            return
+        try:
+            text = self.reader.text(index)
+        except PdfError:
+            return
+        self.views[index].setAccessibleDescription(text[:20000])
+        self.scroll.setAccessibleDescription(say(self.lang, "Page {n}: {text}", "עמוד {n}: {text}", n=index + 1,
+                                                 text=text[:4000]))
+
+    def go_to(self, index: int) -> None:
+        if not self.views:
+            return
+        index = max(0, min(len(self.views) - 1, index))
+        view = self.views[index]
+        self.scroll.verticalScrollBar().setValue(max(0, view.pos().y() - MARGIN // 2))
+        self.current_page = index
+        self.page_field.setText(str(index + 1))
+        self.render_timer.start()
+        self._describe_page(index)
+
+    def _page_typed(self) -> None:
+        text = self.page_field.text().strip()
+        if self.doc and text and text in self.doc.labels:
+            self.go_to(self.doc.labels.index(text))
+            return
+        try:
+            self.go_to(int(text) - 1)
+        except ValueError:
+            self.page_field.setText(str(self.current_page + 1))
+
+    def _outline_chosen(self, item: QTreeWidgetItem, _column: int = 0) -> None:
+        page = item.data(0, Qt.ItemDataRole.UserRole)
+        if page is not None and int(page) >= 0:
+            self.go_to(int(page))
+
+    def toggle_side(self) -> None:
+        self.side.setVisible(not self.side.isVisible())
+        if self.side.isVisible() and self.side.currentIndex() == 0:
+            self._thumbnails_start()
+
+    # --- thumbnails --------------------------------------------------------------------------------------------
+
+    def _thumbnails_start(self) -> None:
+        if self.doc and self.thumbs_done < min(self.doc.count, MAX_THUMBS) and not self.thumb_timer.isActive():
+            self.thumb_timer.start()
+
+    def _next_thumbnail(self) -> None:
+        if not self.doc or not self.reader or self.thumbs_done >= min(self.doc.count, MAX_THUMBS):
+            self.thumb_timer.stop()
+            return
+        i = self.thumbs_done
+        self.thumbs_done += 1
+        w, h = self.doc.pages[i]
+        height = max(1, round(THUMB_WIDTH * h / max(1.0, w)))
+        try:
+            png, _, _ = self.reader.render(i, THUMB_WIDTH, height)
+        except PdfError:
+            return
+        pixmap = QPixmap.fromImage(QImage.fromData(png, "PNG"))
+        if not pixmap.isNull():
+            self.thumbs.item(i).setIcon(QIcon(pixmap))
+
+    # --- search ------------------------------------------------------------------------------------------------
+
+    def search(self) -> None:
+        needle = self.search_field.text().strip()
+        self.results = []
+        self.result_list.clear()
+        for view in self.views:
+            if view.highlights:
+                view.highlights = []
+                view.rendered_key = None
+        if not needle or not self.doc or not self.reader:
+            self.render_timer.start()
+            return
+        for page in range(self.doc.count):
+            try:
+                text = self.reader.text(page, as_extracted=True)
+            except PdfError:
+                continue
+            for at in find_all(text, needle):
+                self.results.append((page, at, len(needle)))
+                before = text[max(0, at - SEARCH_CONTEXT):at].replace("\n", " ")
+                after = text[at + len(needle):at + len(needle) + SEARCH_CONTEXT].replace("\n", " ")
+                self.result_list.addItem(say(self.lang, "p. {n}: …{before}{hit}{after}…", "עמ׳ {n}: …{before}{hit}{after}…",
+                                             n=page + 1, before=before, hit=text[at:at + len(needle)], after=after))
+                if len(self.results) >= MAX_RESULTS:
+                    break
+            if len(self.results) >= MAX_RESULTS:
+                break
+        self.side.setCurrentIndex(2)
+        if not self.side.isVisible():
+            self.side.show()
+        if self.results:
+            self.result_list.setCurrentRow(0)
+            self.status.setText(say(self.lang, "{n} results for “{q}”", "{n} תוצאות ל-“{q}”", n=len(self.results), q=needle))
+        else:
+            self.status.setText(say(self.lang, "Nothing found for “{q}”", "לא נמצא דבר עבור “{q}”", q=needle))
+            self.render_timer.start()
+
+    def _result_chosen(self, row: int) -> None:
+        if row < 0 or row >= len(self.results) or not self.reader:
+            return
+        page, start, length = self.results[row]
+        rects = self.reader.select(page, start, length)
+        for view in self.views:
+            if view.highlights and view.index != page:
+                view.highlights = []
+                view.rendered_key = None
+        self.views[page].highlights = rects
+        self.views[page].rendered_key = None
+        self.go_to(page)
+        if rects:
+            y = self.views[page].pos().y() + self.views[page].to_pixels(rects[0]).y() - self.scroll.viewport().height() // 3
+            self.scroll.verticalScrollBar().setValue(max(0, y))
+        self.render_timer.start()
+
+    def next_result(self) -> None:
+        if self.results:
+            self.result_list.setCurrentRow((self.result_list.currentRow() + 1) % len(self.results))
+
+    # --- links, copy, info, print ------------------------------------------------------------------------------
+
+    def follow_link(self, link: dict) -> None:
+        url = str(link.get("url") or "")
+        if not url:
+            page = int(link.get("page", -1))
+            if page >= 0:
+                self.go_to(page)
+            return
+        allowed = url.lower().startswith(("http://", "https://", "mailto:"))
+        dialog = LinkDialog(self, self.lang, url, allowed)
+        if dialog.exec() == QDialog.DialogCode.Accepted and allowed:
+            self.open_url(url)
+
+    def copy_page(self, as_extracted: bool) -> None:
+        if not self.reader or not self.doc:
+            return
+        try:
+            text = self.reader.text(self.current_page, as_extracted=as_extracted)
+        except PdfError:
+            return
+        QGuiApplication.clipboard().setText(text)
+        self.status.setText(say(self.lang, "The text of page {n} was copied ({c} characters).",
+                                "הטקסט של עמוד {n} הועתק ({c} תווים).", n=self.current_page + 1, c=len(text)))
+
+    def show_info(self) -> None:
+        if self.doc:
+            InfoDialog(self, self.lang, self.doc, self.sandboxed).exec()
+
+    def print_(self) -> None:
+        if not self.doc or not self.reader:
+            return
+        try:
+            from PyQt6.QtPrintSupport import QPrintDialog, QPrinter
+        except ImportError:
+            self.status.setText(say(self.lang, "Printing is not available on this computer.", "הדפסה אינה זמינה במחשב הזה."))
+            return
+        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+        dialog = QPrintDialog(printer, self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        self.print_to(printer)
+
+    def print_to(self, printer) -> int:
+        """Every page drawn by the helper at the printer's resolution; returns how many were printed."""
+        assert self.doc is not None and self.reader is not None
+        painter = QPainter(printer)
+        dpi = max(72, printer.resolution())
+        printed = 0
+        for index, (w, h) in enumerate(self.doc.pages):
+            if index:
+                printer.newPage()
+            try:
+                png, _, _ = self.reader.render(index, round(w * dpi / 72), round(h * dpi / 72))
+            except PdfError:
+                continue
+            image = QImage.fromData(png, "PNG")
+            if image.isNull():
+                continue
+            target = painter.viewport()
+            scaled = image.size().scaled(target.size(), Qt.AspectRatioMode.KeepAspectRatio)
+            painter.drawImage(QRectF(target.x(), target.y(), scaled.width(), scaled.height()), image)
+            printed += 1
+        painter.end()
+        return printed
+
+
+def main(argv: list[str] | None = None, path: str | None = None) -> int:
+    app = QApplication(list(sys.argv if argv is None else argv))
+    app.setDesktopFileName(APP_ID)
+    window = PdfWindow(path)
+    window.show()
+    return app.exec()

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai PDF
+Name[he]=D.Ai PDF
+GenericName=PDF reader
+GenericName[he]=קורא PDF
+Comment=Read PDF files, each one inside a sandbox; what a file wants to do is shown, never done
+Comment[he]=קריאת קובצי PDF, כל אחד בתוך ארגז חול; מה שהקובץ רוצה לעשות מוצג, לא מבוצע
+Exec=dai-pdf %f
+TryExec=dai-pdf
+Icon=dai-pdf
+Terminal=false
+Categories=Office;Viewer;
+MimeType=application/pdf;
+Keywords=pdf;reader;document;sandbox;מסמך;קריאה;
+StartupWMClass=dai-pdf

@@ -1,7 +1,34 @@
-# D.Ai PDF: a native reader and editor (plan for approval)
+# D.Ai PDF: a native reader and editor
 
-> Written on 2026-10-19 after "build a native PDF reader and editor feature". Nothing is built yet.
+> Written on 2026-10-19 after "build a native PDF reader and editor feature".
 > The name "D.Ai PDF" is descriptive, like "D.Ai OCR": no new brand, nothing new to check for trademarks.
+>
+> **Decided (19 October 2026, "from now on you decide"):** the name is D.Ai PDF; qpdfview leaves the image once
+> stage 1 is the default viewer; signatures are verify-only until a signing library is in Debian; Diamond only when
+> asked. **Status: stage 1 built** (§10). Stages 2–4 not started.
+
+## 10. Stage 1: what was built
+
+- `apps/dai-pdf`: `sandbox.py` (the bubblewrap command line: `--unshare-all`, the file read-only as
+  `/tmp/document.pdf`, no home, `--clearenv`, `prlimit --data=1.5G --cpu=120`), `helper.py` (runs inside: Qt PDF
+  renders, extracts text and link rectangles; pikepdf inspects), `findings.py` (what the file wants),
+  `reader.py` (the window's side: a deadline on every request, a helper that died is started again, a page that
+  killed it is reported as undrawable), `text.py` (Hebrew made readable, search), `gui.py` (the window and its
+  dialogs), `cli.py` (`dai-pdf FILE`, `info`, `text`, `check`).
+- **A lesson from building it:** an address-space limit (`prlimit --as`) kills PDFium at startup, because it
+  reserves enormous address ranges it never touches. `--data` (writable memory) is enforced: a 7000-pixel page
+  under 160 MB fails as "could not draw", the helper survives, and the next page draws (tested).
+- **Links:** a GoToR action comes out of Qt as a `file:` address; the window refuses every scheme but
+  `http`, `https` and `mailto`, and those only after a dialog that shows the whole address.
+- **Tests:** 36 (findings on every kind of active content; helper and reader directly and inside the real sandbox
+  with the memory limit; Hebrew mirroring; the window: file bar, zoom, rotation, search highlights, link
+  policy, passwords, errors, copy, print to a file, outline, thumbnails; Raz's audit in Hebrew and English in
+  three themes; the command line). CI installs `python3-pyqt6.qtpdf python3-pikepdf bubblewrap`.
+- **Image:** `python3-pyqt6.qtpdf`, `python3-pikepdf`, `bubblewrap` added, `qpdfview` removed;
+  `application/pdf=dai-pdf.desktop`; a VM check opens a file that wants things, proves the helper's command line
+  is bubblewrap's, and that `dai-pdf check` lists and refuses.
+- **Not yet:** text selection by dragging (copy is per page), a window-open timer for docs/HARDWARE.md, the
+  screenshot in CI, and everything in stages 2–4.
 
 ## 0. Why, and what "native" means here
 

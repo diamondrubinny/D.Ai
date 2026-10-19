@@ -4215,3 +4215,367 @@ msgstr "{name}, retenu ({why}) : dai-chat show {name} {id} ou discard {name} {id
 #, python-brace-format
 msgid "{name}, new: dai-chat accept {name} or decline {name}"
 msgstr "{name}, nouveau : dai-chat accept {name} ou decline {name}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "A form in it would send data to an address ({n}). Blocked."
+msgstr "Un formulaire enverrait des données à une adresse ({n}). Bloqué."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A link in this PDF"
+msgstr "Un lien dans ce PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "About this PDF"
+msgstr "À propos de ce PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Attachments (never opened)"
+msgstr "Pièces jointes (jamais ouvertes)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Attachments"
+msgstr "Pièces jointes"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Author"
+msgstr "Auteur"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Created with"
+msgstr "Créé avec"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Created"
+msgstr "Créé"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Encrypted"
+msgstr "Chiffré"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Every PDF opens in a sandbox: no network, no access to your files."
+msgstr "Chaque PDF s'ouvre dans un bac à sable : sans réseau, sans accès à vos fichiers."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "File"
+msgstr "Fichier"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "File: {name}"
+msgstr "Fichier : {name}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Fit width"
+msgstr "Ajuster à la largeur"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "It asks to open another file ({n}). Not opened."
+msgstr "Il demande d'ouvrir un autre fichier ({n}). Non ouvert."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "It asks to run a program on this computer ({n}). Refused."
+msgstr "Il demande d'exécuter un programme sur cet ordinateur ({n}). Refusé."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Keywords"
+msgstr "Mots-clés"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Links to addresses: {n} (opened only when you click and confirm)"
+msgstr "Liens vers des adresses : {n} (ouverts seulement après un clic et une confirmation)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Modified"
+msgstr "Modifié"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Next page"
+msgstr "Page suivante"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No attached files"
+msgstr "Aucune pièce jointe"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "No page {page}: the file has {n}."
+msgstr "Pas de page {page} : le fichier en a {n}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Nothing about this file leaves this computer."
+msgstr "Rien sur ce fichier ne quitte cet ordinateur."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Nothing found for “{q}”"
+msgstr "Rien trouvé pour « {q} »"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Nothing in this file acts on its own."
+msgstr "Rien dans ce fichier n'agit de lui-même."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open a PDF to read it here, inside the sandbox."
+msgstr "Ouvrez un PDF pour le lire ici, dans le bac à sable."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open a PDF"
+msgstr "Ouvrir un PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open the link"
+msgstr "Ouvrir le lien"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open this address in the browser?"
+msgstr "Ouvrir cette adresse dans le navigateur ?"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open"
+msgstr "Ouvrir"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Opened in a sandbox"
+msgstr "Ouvert dans un bac à sable"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open…"
+msgstr "Ouvrir…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Outline"
+msgstr "Sommaire"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "PDF files (*.pdf);;All files (*)"
+msgstr "Fichiers PDF (*.pdf);;Tous les fichiers (*)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Page number"
+msgstr "Numéro de page"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Page {n}"
+msgstr "Page {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Page {n}: {text}"
+msgstr "Page {n} : {text}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Pages"
+msgstr "Pages"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Pages: {n}"
+msgstr "Pages : {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Previous page"
+msgstr "Page précédente"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Print"
+msgstr "Imprimer"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Printing is not available on this computer."
+msgstr "L'impression n'est pas disponible sur cet ordinateur."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Rotate the view"
+msgstr "Faire pivoter l'affichage"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Search in the file"
+msgstr "Rechercher dans le fichier"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Search results"
+msgstr "Résultats de la recherche"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Search"
+msgstr "Rechercher"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Show or hide the side panel"
+msgstr "Afficher ou masquer le panneau latéral"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Side panel"
+msgstr "Panneau latéral"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "That password did not open {name}. Try again."
+msgstr "Ce mot de passe n'a pas ouvert {name}. Réessayez."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The address"
+msgstr "L'adresse"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The document"
+msgstr "Le document"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The file is very large; the inspection stopped early."
+msgstr "Le fichier est très volumineux ; l'inspection s'est arrêtée tôt."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The sandbox (bubblewrap) is missing, so {name} was not opened. D.Ai PDF never opens a file outside it."
+msgstr "Le bac à sable (bubblewrap) est absent, donc {name} n'a pas été ouvert. D.Ai PDF n'ouvre jamais un fichier en dehors."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The sandbox (bubblewrap) is missing; nothing was opened."
+msgstr "Le bac à sable (bubblewrap) est absent ; rien n'a été ouvert."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The text of page {n} was copied ({c} characters)."
+msgstr "Le texte de la page {n} a été copié ({c} caractères)."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no file called {name}."
+msgstr "Il n'y a pas de fichier nommé {name}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "This PDF contains JavaScript ({n}). It is not run."
+msgstr "Ce PDF contient du JavaScript ({n}). Il n'est pas exécuté."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This PDF is locked"
+msgstr "Ce PDF est verrouillé"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This file could not be inspected for scripts and attachments; it is still shown only inside the sandbox."
+msgstr "Ce fichier n'a pas pu être inspecté (scripts, pièces jointes) ; il reste affiché uniquement dans le bac à sable."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This is an XFA form; only its static page is shown."
+msgstr "C'est un formulaire XFA ; seule sa page statique est affichée."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This link would open a file or a program on this computer. D.Ai PDF does not do that."
+msgstr "Ce lien ouvrirait un fichier ou un programme sur cet ordinateur. D.Ai PDF ne fait pas cela."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This page could not be drawn."
+msgstr "Cette page n'a pas pu être dessinée."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Title"
+msgstr "Titre"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What this file wants to do (and does not get to)"
+msgstr "Ce que ce fichier veut faire (et n'obtient pas)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What this file wants to do"
+msgstr "Ce que ce fichier veut faire"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Which file? dai-pdf {command} FILE"
+msgstr "Quel fichier ? dai-pdf {command} FILE"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Whole page"
+msgstr "Page entière"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Zoom in"
+msgstr "Zoom avant"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Zoom out"
+msgstr "Zoom arrière"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Zoom"
+msgstr "Zoom"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "[page {n} could not be read]"
+msgstr "[la page {n} n'a pas pu être lue]"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "no (test mode)"
+msgstr "non (mode test)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "no"
+msgstr "non"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "of {n}"
+msgstr "sur {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "p. {n}: …{before}{hit}{after}…"
+msgstr "p. {n} : …{before}{hit}{after}…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "yes"
+msgstr "oui"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} could not be drawn: the sandboxed helper stopped."
+msgstr "{name} n'a pas pu être dessiné : l'assistant du bac à sable s'est arrêté."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} is locked: add --password"
+msgstr "{name} est verrouillé : ajoutez --password"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} is not a PDF that can be opened."
+msgstr "{name} n'est pas un PDF qui peut être ouvert."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} needs a password to open."
+msgstr "{name} a besoin d'un mot de passe pour s'ouvrir."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} stays closed."
+msgstr "{name} reste fermé."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} · {n} pages · opened in the sandbox"
+msgstr "{name} · {n} pages · ouvert dans le bac à sable"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} · {n} pages"
+msgstr "{name} · {n} pages"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} attached files. They are listed in the side panel and never opened."
+msgstr "{n} pièces jointes. Elles sont listées dans le panneau latéral et jamais ouvertes."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} results for “{q}”"
+msgstr "{n} résultats pour « {q} »"

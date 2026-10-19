@@ -4215,3 +4215,367 @@ msgstr "{name}، محتجزة ({why}): dai-chat show {name} {id} أو discard {n
 #, python-brace-format
 msgid "{name}, new: dai-chat accept {name} or decline {name}"
 msgstr "{name}، جديد: dai-chat accept {name} أو decline {name}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "A form in it would send data to an address ({n}). Blocked."
+msgstr "نموذج فيه كان سيرسل بيانات إلى عنوان ({n}). مُنع."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A link in this PDF"
+msgstr "رابط في هذا الـ PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "About this PDF"
+msgstr "حول هذا الـ PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Attachments (never opened)"
+msgstr "المرفقات (لا تُفتح أبدًا)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Attachments"
+msgstr "المرفقات"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Author"
+msgstr "المؤلف"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Created with"
+msgstr "أُنشئ باستخدام"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Created"
+msgstr "تاريخ الإنشاء"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Encrypted"
+msgstr "مشفّر"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Every PDF opens in a sandbox: no network, no access to your files."
+msgstr "كل PDF يُفتح في صندوق رمل: بلا شبكة، وبلا وصول إلى ملفاتك."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "File"
+msgstr "الملف"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "File: {name}"
+msgstr "الملف: {name}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Fit width"
+msgstr "ملاءمة العرض"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "It asks to open another file ({n}). Not opened."
+msgstr "يطلب فتح ملف آخر ({n}). لم يُفتح."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "It asks to run a program on this computer ({n}). Refused."
+msgstr "يطلب تشغيل برنامج على هذا الحاسوب ({n}). رُفض."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Keywords"
+msgstr "الكلمات المفتاحية"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Links to addresses: {n} (opened only when you click and confirm)"
+msgstr "روابط إلى عناوين: {n} (تُفتح فقط عند النقر والتأكيد)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Modified"
+msgstr "تاريخ التعديل"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Next page"
+msgstr "الصفحة التالية"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No attached files"
+msgstr "لا ملفات مرفقة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "No page {page}: the file has {n}."
+msgstr "لا توجد صفحة {page}: الملف يحتوي {n}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Nothing about this file leaves this computer."
+msgstr "لا شيء عن هذا الملف يغادر هذا الحاسوب."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Nothing found for “{q}”"
+msgstr "لم يُعثر على شيء لـ “{q}”"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Nothing in this file acts on its own."
+msgstr "لا شيء في هذا الملف يعمل من تلقاء نفسه."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open a PDF to read it here, inside the sandbox."
+msgstr "افتح ملف PDF لقراءته هنا، داخل صندوق الرمل."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open a PDF"
+msgstr "فتح PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open the link"
+msgstr "فتح الرابط"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open this address in the browser?"
+msgstr "فتح هذا العنوان في المتصفح؟"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open"
+msgstr "فتح"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Opened in a sandbox"
+msgstr "فُتح في صندوق رمل"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Open…"
+msgstr "فتح…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Outline"
+msgstr "جدول المحتويات"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "PDF files (*.pdf);;All files (*)"
+msgstr "ملفات PDF (*.pdf);;كل الملفات (*)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Page number"
+msgstr "رقم الصفحة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Page {n}"
+msgstr "الصفحة {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Page {n}: {text}"
+msgstr "الصفحة {n}: {text}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Pages"
+msgstr "الصفحات"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Pages: {n}"
+msgstr "الصفحات: {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Previous page"
+msgstr "الصفحة السابقة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Print"
+msgstr "طباعة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Printing is not available on this computer."
+msgstr "الطباعة غير متاحة على هذا الحاسوب."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Rotate the view"
+msgstr "تدوير العرض"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Search in the file"
+msgstr "بحث في الملف"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Search results"
+msgstr "نتائج البحث"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Search"
+msgstr "بحث"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Show or hide the side panel"
+msgstr "إظهار اللوحة الجانبية أو إخفاؤها"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Side panel"
+msgstr "اللوحة الجانبية"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "That password did not open {name}. Try again."
+msgstr "كلمة المرور هذه لم تفتح {name}. حاول مجددًا."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The address"
+msgstr "العنوان"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The document"
+msgstr "المستند"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The file is very large; the inspection stopped early."
+msgstr "الملف كبير جدًا؛ توقف الفحص مبكرًا."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The sandbox (bubblewrap) is missing, so {name} was not opened. D.Ai PDF never opens a file outside it."
+msgstr "صندوق الرمل (bubblewrap) مفقود، لذا لم يُفتح {name}. ‏D.Ai PDF لا يفتح ملفًا خارجه أبدًا."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The sandbox (bubblewrap) is missing; nothing was opened."
+msgstr "صندوق الرمل (bubblewrap) مفقود؛ لم يُفتح شيء."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The text of page {n} was copied ({c} characters)."
+msgstr "نُسخ نص الصفحة {n} ({c} حرفًا)."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no file called {name}."
+msgstr "لا يوجد ملف باسم {name}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "This PDF contains JavaScript ({n}). It is not run."
+msgstr "يحتوي هذا الـ PDF على JavaScript ({n}). لا يُشغَّل."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This PDF is locked"
+msgstr "هذا الـ PDF مقفل"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This file could not be inspected for scripts and attachments; it is still shown only inside the sandbox."
+msgstr "تعذّر فحص هذا الملف بحثًا عن سكربتات ومرفقات؛ ما زال يُعرض داخل صندوق الرمل فقط."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This is an XFA form; only its static page is shown."
+msgstr "هذا نموذج XFA؛ تُعرض صفحته الثابتة فقط."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This link would open a file or a program on this computer. D.Ai PDF does not do that."
+msgstr "هذا الرابط كان سيفتح ملفًا أو برنامجًا على هذا الحاسوب. ‏D.Ai PDF لا يفعل ذلك."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "This page could not be drawn."
+msgstr "تعذّر رسم هذه الصفحة."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Title"
+msgstr "العنوان"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What this file wants to do (and does not get to)"
+msgstr "ما يريد هذا الملف فعله (ولا يُسمح له)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What this file wants to do"
+msgstr "ما يريد هذا الملف فعله"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Which file? dai-pdf {command} FILE"
+msgstr "أي ملف؟ dai-pdf {command} FILE"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Whole page"
+msgstr "الصفحة كاملة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Zoom in"
+msgstr "تكبير"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Zoom out"
+msgstr "تصغير"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Zoom"
+msgstr "التكبير"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "[page {n} could not be read]"
+msgstr "[تعذّرت قراءة الصفحة {n}]"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "no (test mode)"
+msgstr "لا (وضع الاختبار)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "no"
+msgstr "لا"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "of {n}"
+msgstr "من {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "p. {n}: …{before}{hit}{after}…"
+msgstr "ص. {n}: …{before}{hit}{after}…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "yes"
+msgstr "نعم"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} could not be drawn: the sandboxed helper stopped."
+msgstr "تعذّر رسم {name}: توقف المساعد في صندوق الرمل."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} is locked: add --password"
+msgstr "{name} مقفل: أضف ‎--password"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} is not a PDF that can be opened."
+msgstr "{name} ليس ملف PDF يمكن فتحه."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} needs a password to open."
+msgstr "{name} يحتاج كلمة مرور ليُفتح."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} stays closed."
+msgstr "{name} يبقى مغلقًا."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} · {n} pages · opened in the sandbox"
+msgstr "{name} · {n} صفحة · فُتح في صندوق الرمل"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{name} · {n} pages"
+msgstr "{name} · {n} صفحة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} attached files. They are listed in the side panel and never opened."
+msgstr "{n} ملفات مرفقة. تُدرج في اللوحة الجانبية ولا تُفتح أبدًا."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} results for “{q}”"
+msgstr "{n} نتائج لـ “{q}”"

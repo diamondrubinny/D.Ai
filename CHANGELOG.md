@@ -8,6 +8,10 @@ pre-releases are marked `-alpha`, `-beta` or `-rc`.
 First public alpha, built on Debian 13 (trixie). User and developer editions.
 
 ### Added
+- D.Ai PDF: the PDF reader. Every file opens through a bubblewrap helper (no network, no home folder, memory and
+  CPU limits); what the file wants (JavaScript, launching programs, submitting forms, attachments, XFA) is shown
+  in a bar and never done; links ask before opening and local ones are refused; Hebrew made readable; search,
+  outline, thumbnails, print. The default handler for `application/pdf`; qpdfview left the image.
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

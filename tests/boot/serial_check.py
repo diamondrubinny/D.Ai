@@ -172,6 +172,32 @@ print(mime, "GONE" if b"SECRETPLACE" not in out else "KEPT")
 """
 CHAT_PICTURE_B64 = base64.b64encode(CHAT_PICTURE.encode()).decode()
 
+# Runs inside the VM: makes a PDF that wants things, opens it the way the window does, and proves the helper
+# runs under bwrap (its command line) while the file's wishes are only listed.
+PDF_CHECK = r'''
+import sys
+sys.path.insert(0, "/usr/lib/dai")
+import pikepdf
+pdf = pikepdf.new()
+pdf.pages.append(pikepdf.Page(pikepdf.Dictionary(Type=pikepdf.Name.Page, MediaBox=[0, 0, 300, 200])))
+page = pdf.pages[0]
+font = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font, Subtype=pikepdf.Name.Type1, BaseFont=pikepdf.Name.Helvetica))
+page.Resources = pikepdf.Dictionary(Font=pikepdf.Dictionary(F1=font))
+page.Contents = pdf.make_stream(b"BT /F1 24 Tf 20 100 Td (Hello sandbox) Tj ET")
+pdf.Root.OpenAction = pikepdf.Dictionary(S=pikepdf.Name.JavaScript, JS="app.alert(1)")
+pdf.attachments["evil.exe"] = pikepdf.AttachedFileSpec(pdf, b"MZ")
+pdf.save("/tmp/wants.pdf")
+from dai_pdf.reader import Reader
+r = Reader("/tmp/wants.pdf")
+doc = r.open()
+cmdline = open(f"/proc/{r.proc.pid}/cmdline", "rb").read()
+print("SANDBOXED" if b"bwrap" in cmdline and b"--unshare-all" in cmdline else "NOT_SANDBOXED", cmdline[:60])
+png, w, h = r.render(0, 300, 200)
+print("RENDER", w, h, png[:4] == b"\x89PNG", "JS", doc.findings.javascript, "ATT", [a["name"] for a in doc.findings.attachments])
+r.close()
+'''
+PDF_CHECK_B64 = base64.b64encode(PDF_CHECK.encode()).decode()
+
 HEBREW_SAMPLE = "שלום! זוהי D.Ai OS — מערכת הפעלה קלה, מאובטחת וקוד פתוח.\nHello from D.Ai OS.\n"
 
 
@@ -715,6 +741,13 @@ def main() -> int:
         # Diamond Chat pictures (docs/SEND.md): Debian's Qt decodes them inside bubblewrap, and a hidden location goes.
         ("chat: pictures are re-drawn in the sandbox", f"echo {CHAT_PICTURE_B64} | base64 -d > /tmp/chat-picture.py && "
          "python3 -I /tmp/chat-picture.py", True, lambda o: "image/jpeg GONE" in o, 60),
+        # D.Ai PDF (docs/PDF.md): the default handler, a file with JavaScript and an attachment is opened only
+        # through the bubblewrap helper, what it wants is listed and not done, and the text comes out.
+        ("pdf: opened in the sandbox, wants listed, text out", f"echo {PDF_CHECK_B64} | base64 -d > /tmp/pdf-check.py && "
+         "python3 -I /tmp/pdf-check.py; dai-pdf check /tmp/wants.pdf; echo CHECK_RC=$?; dai-pdf text /tmp/wants.pdf; "
+         "xdg-mime query default application/pdf",
+         True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
+         and "dai-pdf.desktop" in o, 120),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

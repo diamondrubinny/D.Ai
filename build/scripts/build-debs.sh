@@ -205,6 +205,13 @@ build_apps() {
   install -m 0755 "$ocr/data/dai-ocr" "$root/usr/bin/dai-ocr"
   install -m 0644 "$ocr/data/dai-ocr.desktop" "$root/usr/share/applications/"
 
+  # D.Ai PDF (docs/PDF.md): the reader that opens every PDF in a sandbox; the default for application/pdf.
+  local pdf="$REPO_ROOT/apps/dai-pdf"
+  copy_package "$pdf/dai_pdf" "$root"
+  install -m 0755 "$pdf/data/dai-pdf" "$root/usr/bin/dai-pdf"
+  install -m 0644 "$pdf/data/dai-pdf.desktop" "$root/usr/share/applications/"
+  install -D -m 0644 "$pdf/data/dai-pdf.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-pdf.svg"
+
   # D.Ai Heal (docs/EVOLVE.md §4): help & repair chat, crash watcher, metadata-only core dumps.
   local heal="$REPO_ROOT/apps/dai-heal"
   copy_package "$heal/dai_heal" "$root"
