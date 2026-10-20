@@ -12,6 +12,7 @@
   dai-tv night on|off         night mode now, in the running Kodi: dim after 5 minutes, the volume down
   dai-tv seed                 before Kodi starts: its add-on database with the channel add-ons enabled (no questions)
   dai-tv channels PLAYLIST.m3u [--epg URL] | --off   live channels from your own playlist (IPTV Simple)
+  dai-tv browse URL | --close   Ruby in TV mode (Firefox, kiosk, big) on a web address; --close is "back to the TV"
   dai-tv --version | --help
 
 Nothing here leaves the computer: Diamond runs locally and Kodi is reached on 127.0.0.1 only.
@@ -204,6 +205,19 @@ def main(argv: list[str] | None = None) -> int:
             seed.channels(kodi_home(), playlist.resolve(), epg=epg)
             print(say(lang, "Live channels from {file}; Kodi shows them when it starts again.",
                       "ערוצים חיים מתוך {file}; Kodi יציג אותם כשיופעל מחדש.", file=playlist.name))
+            return 0
+        if verb == "browse":
+            from . import browse
+
+            if rest[:1] == ["--close"]:
+                print(say(lang, "Back to the TV.", "חזרה לטלוויזיה.") if browse.close() else say(lang, "The browser was not open.", "הדפדפן לא היה פתוח."))
+                return 0
+            url = rest[0] if rest else ""
+            if not browse.allowed(url):
+                print(say(lang, "A web address, please: dai-tv browse https://…", "כתובת אינטרנט, בבקשה: dai-tv browse https://…"), file=sys.stderr)
+                return 2
+            pid = browse.open_url(url)
+            print(say(lang, "Ruby opens {url} on the TV (pid {pid}).", "Ruby פותח את {url} בטלוויזיה (pid {pid}).", url=url, pid=pid))
             return 0
         if verb == "night":
             mode = rest[0].lower() if rest else ""

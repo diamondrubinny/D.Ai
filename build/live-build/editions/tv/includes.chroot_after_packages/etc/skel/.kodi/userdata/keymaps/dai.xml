@@ -12,6 +12,8 @@
     </keyboard>
     <remote>
       <blue>System.Exec(dai-tv listen)</blue>
+      <!-- "My TV" (the remote's TV button) brings the TV back when Ruby is open on it (docs/TV.md §12). -->
+      <mytv>System.Exec(dai-tv browse --close)</mytv>
     </remote>
   </global>
 </keymap>

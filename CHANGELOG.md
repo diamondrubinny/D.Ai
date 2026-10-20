@@ -46,6 +46,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   Diamond; "night mode" and "children's profile with a PIN" in D.Ai Tune (docs/TV.md §10).
 - D.Ai TV, live channels: Kodi's add-on database seeded before its first start (the channel add-ons simply
   there, nothing asked), "live channels from ~/channels.m3u" in D.Ai Tune, with undo (docs/TV.md §11).
+- D.Ai TV, the broadcasters' sites: Ruby in TV mode (a kiosk Firefox profile, big, cleared at exit), the three
+  broadcasters as Kodi favourites, and "back to the TV" from any remote (docs/TV.md §12).
 - Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
   is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick
   and Welcome for finger-sized targets; the login screen's buttons grew to 44 px.

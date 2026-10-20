@@ -908,6 +908,18 @@ def main() -> int:
          "test -e ~/.kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml && echo INSTANCE_LEFT || echo INSTANCE_GONE; tail -n 2 /tmp/tune-ch.txt; fi",
          True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
              "ADDONS_ON_IMAGE=2", "SEED_RC=0", "ROWS 2", "VERSION 33", "KODI_SAYS_ENABLED True", "WINDOW", "CH_RC=0", "INSTANCE=1", "INSTANCE_GONE")), 180),
+        # D.Ai TV stage 3b (docs/TV.md §12): Ruby in TV mode opens on D.Ai's own start page in its own profile, and
+        # "back to the TV" ends it; the favourites and the keymap parse; labwc has the keys.
+        ("tv: Ruby in TV mode and the way back", WAYLAND_ENV + ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
+         "dai-tv browse file:///usr/share/dai/ruby/start.html; echo BROWSE_RC=$?; sleep 8; "
+         "pgrep -f 'ruby-tv' >/dev/null && echo RUBY_TV_RUNNING || echo RUBY_TV_NOT_RUNNING; "
+         "grep -c devPixelsPerPx ~/.config/dai/ruby-tv/user.js | sed 's/^/PREFS=/'; dai-tv browse --close; sleep 3; "
+         "pgrep -f 'ruby-tv' >/dev/null && echo RUBY_TV_STILL_THERE || echo RUBY_TV_GONE; "
+         "python3 -c \"import xml.etree.ElementTree as E, os; r = E.parse(os.path.expanduser('~/.kodi/userdata/favourites.xml')).getroot(); "
+         "print('FAVOURITES', len(r.findall('favourite')))\"; grep -c 'dai-tv browse --close' /etc/dai/tv/labwc/rc.xml | sed 's/^/LABWC_KEYS=/'; "
+         "grep -c '<mytv>' ~/.kodi/userdata/keymaps/dai.xml | sed 's/^/MYTV=/'; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
+             "BROWSE_RC=0", "RUBY_TV_RUNNING", "PREFS=1", "Back to the TV.", "RUBY_TV_GONE", "FAVOURITES 4", "LABWC_KEYS=3", "MYTV=1")), 120),
         # D.Ai TV stage 2b (docs/TV.md §9): Kodi's service listens on this computer only, and dai-tv reaches it.
         ("tv: D.Ai talks to Kodi on this computer only",
          ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "

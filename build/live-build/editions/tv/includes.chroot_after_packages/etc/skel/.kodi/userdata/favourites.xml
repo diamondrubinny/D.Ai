@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- Kodi's favourites (xbmc/favourites/FavouritesService.cpp): the Israeli broadcasters' own sites, opened in
+     Ruby in TV mode (docs/TV.md §12). These are the public home pages; the path of each live player, and
+     whether it plays here (Widevine), requires verification per site. Nothing here is D.Ai's content. -->
+<favourites>
+  <favourite name="כאן 11">System.Exec(dai-tv browse https://www.kan.org.il/)</favourite>
+  <favourite name="קשת 12">System.Exec(dai-tv browse https://www.mako.co.il/)</favourite>
+  <favourite name="רשת 13">System.Exec(dai-tv browse https://13tv.co.il/)</favourite>
+  <favourite name="חזרה לטלוויזיה">System.Exec(dai-tv browse --close)</favourite>
+</favourites>

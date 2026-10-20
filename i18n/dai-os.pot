@@ -333,6 +333,11 @@ msgstr ""
 msgid "A user name in small English letters, digits or -, starting with a letter (and not taken)."
 msgstr ""
 
+#. he: כתובת אינטרנט, בבקשה: dai-tv browse https://…
+#: apps/dai-tv/dai_tv/cli.py:217
+msgid "A web address, please: dai-tv browse https://…"
+msgstr ""
+
 #. he: פרשנות AI — בדקו היטב:
 #: apps/dai-tune/dai_tune/cli.py:150
 msgid "AI interpretation — review it carefully:"
@@ -365,7 +370,7 @@ msgid "Accounts found on this computer"
 msgstr ""
 
 #. he: פעולות: {list}
-#: apps/dai-tv/dai_tv/cli.py:223
+#: apps/dai-tv/dai_tv/cli.py:237
 #, python-brace-format
 msgid "Actions: {list}"
 msgstr ""
@@ -423,7 +428,7 @@ msgid "Add your e-mail address; J finds the settings by itself."
 msgstr ""
 
 #. he: תוספים מוכנים: {ids}
-#: apps/dai-tv/dai_tv/cli.py:183
+#: apps/dai-tv/dai_tv/cli.py:184
 #, python-brace-format
 msgid "Add-ons ready: {ids}"
 msgstr ""
@@ -582,7 +587,7 @@ msgid "Ask what? dai-pdf ask FILE QUESTION"
 msgstr ""
 
 #. he: לשאול מה? dai-tv ask QUESTION
-#: apps/dai-tv/dai_tv/cli.py:150
+#: apps/dai-tv/dai_tv/cli.py:151
 msgid "Ask what? dai-tv ask QUESTION"
 msgstr ""
 
@@ -669,6 +674,11 @@ msgstr ""
 #: apps/dai-oem/dai_oem/wizard.py:73
 #: apps/dai-welcome/dai_welcome/gui.py:66
 msgid "Back"
+msgstr ""
+
+#. he: חזרה לטלוויזיה.
+#: apps/dai-tv/dai_tv/cli.py:213
+msgid "Back to the TV."
 msgstr ""
 
 #. he: גיבוי עכשיו
@@ -1197,8 +1207,8 @@ msgid "Could not decrypt: the key is not on this computer, or the password was n
 msgstr ""
 
 #. he: לא הצלחתי להקשיב: {why}
+#: apps/dai-tv/dai_tv/cli.py:166
 #: apps/dai-tv/dai_tv/cli.py:165
-#: apps/dai-tv/dai_tv/cli.py:164
 #, python-brace-format
 msgid "Could not listen: {why}"
 msgstr ""
@@ -1498,7 +1508,7 @@ msgid "Diamond answered."
 msgstr ""
 
 #. he: ל-Diamond לא הייתה תשובה.
-#: apps/dai-tv/dai_tv/cli.py:87
+#: apps/dai-tv/dai_tv/cli.py:88
 msgid "Diamond had no answer."
 msgstr ""
 
@@ -1510,7 +1520,7 @@ msgstr ""
 #. he: Diamond לא זמין עכשיו ({why}).
 #: apps/dai-pdf/dai_pdf/cli.py:169
 #: apps/dai-pdf/dai_pdf/gui.py:1686
-#: apps/dai-tv/dai_tv/cli.py:89
+#: apps/dai-tv/dai_tv/cli.py:90
 #, python-brace-format
 msgid "Diamond is not available now ({why})."
 msgstr ""
@@ -1526,7 +1536,7 @@ msgid "Diamond is not available. Install a model: D.Ai Command, ? and the questi
 msgstr ""
 
 #. he: Diamond לא מותקן בטלוויזיה הזאת.
-#: apps/dai-tv/dai_tv/cli.py:85
+#: apps/dai-tv/dai_tv/cli.py:86
 msgid "Diamond is not installed on this TV."
 msgstr ""
 
@@ -1670,7 +1680,7 @@ msgstr ""
 
 #. he: בוצע: {name}
 #: apps/dai-mom/dai_mom/text.py:103
-#: apps/dai-tv/dai_tv/cli.py:226
+#: apps/dai-tv/dai_tv/cli.py:240
 #, python-brace-format
 msgid "Done: {name}"
 msgstr ""
@@ -2189,13 +2199,13 @@ msgid "Hardware virtualization is on ({kind}) and usable."
 msgstr ""
 
 #. he: שמעתי: {text}
-#: apps/dai-tv/dai_tv/cli.py:176
+#: apps/dai-tv/dai_tv/cli.py:177
 #, python-brace-format
 msgid "Heard: {text}"
 msgstr ""
 
 #. he: שמעתי: {text} ← {action}
-#: apps/dai-tv/dai_tv/cli.py:174
+#: apps/dai-tv/dai_tv/cli.py:175
 #, python-brace-format
 msgid "Heard: {text} → {action}"
 msgstr ""
@@ -2256,8 +2266,8 @@ msgid "I did not notice any crash or failed service. Tell me what is not working
 msgstr ""
 
 #. he: לא שמעתי כלום.
-#: apps/dai-tv/dai_tv/cli.py:168
 #: apps/dai-tv/dai_tv/cli.py:169
+#: apps/dai-tv/dai_tv/cli.py:170
 msgid "I heard nothing."
 msgstr ""
 
@@ -2477,13 +2487,13 @@ msgid "Keywords"
 msgstr ""
 
 #. he: לא ניתן להגיע ל-Kodi: {why}
-#: apps/dai-tv/dai_tv/cli.py:229
+#: apps/dai-tv/dai_tv/cli.py:243
 #, python-brace-format
 msgid "Kodi could not be reached: {why}"
 msgstr ""
 
 #. he: Kodi לא ענה.
-#: apps/dai-tv/dai_tv/cli.py:134
+#: apps/dai-tv/dai_tv/cli.py:135
 msgid "Kodi did not answer."
 msgstr ""
 
@@ -2547,7 +2557,7 @@ msgid "Links to addresses: {n} (opened only when you click and confirm)"
 msgstr ""
 
 #. he: מקשיב… ({n} שניות)
-#: apps/dai-tv/dai_tv/cli.py:159
+#: apps/dai-tv/dai_tv/cli.py:160
 #, python-brace-format
 msgid "Listening… ({n} seconds)"
 msgstr ""
@@ -2569,7 +2579,7 @@ msgid "Little room for the machine's disk to grow"
 msgstr ""
 
 #. he: ערוצים חיים מתוך {file}; Kodi יציג אותם כשיופעל מחדש.
-#: apps/dai-tv/dai_tv/cli.py:205
+#: apps/dai-tv/dai_tv/cli.py:206
 #, python-brace-format
 msgid "Live channels from {file}; Kodi shows them when it starts again."
 msgstr ""
@@ -2580,7 +2590,7 @@ msgid "Live channels off"
 msgstr ""
 
 #. he: ערוצים חיים כבויים.
-#: apps/dai-tv/dai_tv/cli.py:192
+#: apps/dai-tv/dai_tv/cli.py:193
 msgid "Live channels off."
 msgstr ""
 
@@ -2845,7 +2855,7 @@ msgid "Next week (Monday 8:00)"
 msgstr ""
 
 #. he: מצב לילה כבוי.
-#: apps/dai-tv/dai_tv/cli.py:217
+#: apps/dai-tv/dai_tv/cli.py:231
 msgid "Night mode off."
 msgstr ""
 
@@ -2860,12 +2870,12 @@ msgid "Night mode on the TV: the screen dims after 5 minutes, the volume goes do
 msgstr ""
 
 #. he: מצב לילה פועל: עמעום אחרי 5 דקות, עוצמה נמוכה.
-#: apps/dai-tv/dai_tv/cli.py:216
+#: apps/dai-tv/dai_tv/cli.py:230
 msgid "Night mode on: dim after 5 minutes, the volume down."
 msgstr ""
 
 #. he: מצב לילה: {mode}
-#: apps/dai-tv/dai_tv/cli.py:218
+#: apps/dai-tv/dai_tv/cli.py:232
 #, python-brace-format
 msgid "Night mode: {mode}"
 msgstr ""
@@ -3251,7 +3261,7 @@ msgid "Nothing in this file acts on its own."
 msgstr ""
 
 #. he: שום דבר לא מתנגן.
-#: apps/dai-tv/dai_tv/cli.py:104
+#: apps/dai-tv/dai_tv/cli.py:105
 msgid "Nothing is playing."
 msgstr ""
 
@@ -3367,7 +3377,7 @@ msgid "Off. What was kept has been deleted."
 msgstr ""
 
 #. he: בטלוויזיה עכשיו: {what}. {q}
-#: apps/dai-tv/dai_tv/cli.py:96
+#: apps/dai-tv/dai_tv/cli.py:97
 #, python-brace-format
 msgid "On the TV now: {what}. {q}"
 msgstr ""
@@ -4003,6 +4013,12 @@ msgstr ""
 msgid "Rotation lock: the screen stays as it is."
 msgstr ""
 
+#. he: Ruby פותח את {url} בטלוויזיה (pid {pid}).
+#: apps/dai-tv/dai_tv/cli.py:220
+#, python-brace-format
+msgid "Ruby opens {url} on the TV (pid {pid})."
+msgstr ""
+
 #. he: הריצו שוב עם ‎--yes כדי להעתיק.
 #: apps/dai-move/dai_move/cli.py:100
 msgid "Run again with --yes to copy."
@@ -4408,7 +4424,7 @@ msgid "Show the screen"
 msgstr ""
 
 #. he: מוצג על הטלוויזיה.
-#: apps/dai-tv/dai_tv/cli.py:145
+#: apps/dai-tv/dai_tv/cli.py:146
 msgid "Shown on the TV."
 msgstr ""
 
@@ -4862,7 +4878,7 @@ msgid "That would leave no pages."
 msgstr ""
 
 #. he: לוח השידורים הוא כתובת אינטרנט (http:// או https://).
-#: apps/dai-tv/dai_tv/cli.py:201
+#: apps/dai-tv/dai_tv/cli.py:202
 msgid "The EPG is a web address (http:// or https://)."
 msgstr ""
 
@@ -4894,6 +4910,11 @@ msgstr ""
 #. he: הסוללה שחוקה
 #: apps/dai-doctor/dai_doctor/diagnose.py:166
 msgid "The battery is worn"
+msgstr ""
+
+#. he: הדפדפן לא היה פתוח.
+#: apps/dai-tv/dai_tv/cli.py:213
+msgid "The browser was not open."
 msgstr ""
 
 #. he: בקטלוג אין SHA-256 לדרייברים האלה, ולכן הם לא מורדים.
@@ -5182,7 +5203,7 @@ msgid "There is no ready recipe for this, and Diamond (the local AI) is not inst
 msgstr ""
 
 #. he: לא הייתה רשימה.
-#: apps/dai-tv/dai_tv/cli.py:192
+#: apps/dai-tv/dai_tv/cli.py:193
 msgid "There was no playlist."
 msgstr ""
 
@@ -5543,7 +5564,7 @@ msgid "Unknown command: {verb}. dai-rotate --help"
 msgstr ""
 
 #. he: פקודה לא מוכרת: {verb}. dai-tv --help
-#: apps/dai-tv/dai_tv/cli.py:231
+#: apps/dai-tv/dai_tv/cli.py:245
 #, python-brace-format
 msgid "Unknown command: {verb}. dai-tv --help"
 msgstr ""
@@ -5715,7 +5736,7 @@ msgid "What this file wants to do (and does not get to)"
 msgstr ""
 
 #. he: מה להגיד? dai-tv say TEXT
-#: apps/dai-tv/dai_tv/cli.py:142
+#: apps/dai-tv/dai_tv/cli.py:143
 msgid "What to say? dai-tv say TEXT"
 msgstr ""
 
@@ -5789,7 +5810,7 @@ msgid "Which one? "
 msgstr ""
 
 #. he: איזו רשימה? dai-tv channels FILE.m3u (קובץ במחשב הזה)
-#: apps/dai-tv/dai_tv/cli.py:196
+#: apps/dai-tv/dai_tv/cli.py:197
 msgid "Which playlist? dai-tv channels FILE.m3u (a file on this computer)"
 msgstr ""
 
@@ -6424,7 +6445,7 @@ msgid "not verified: compare the symbols"
 msgstr ""
 
 #. he: אין מה לשנות
-#: apps/dai-tv/dai_tv/cli.py:183
+#: apps/dai-tv/dai_tv/cli.py:184
 msgid "nothing to change"
 msgstr ""
 

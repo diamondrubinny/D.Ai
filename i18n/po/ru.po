@@ -6075,3 +6075,20 @@ msgstr "Какой плейлист? dai-tv channels FILE.m3u (файл на э�
 #: apps/dai-tv/dai_tv/cli.py
 msgid "nothing to change"
 msgstr "менять нечего"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "A web address, please: dai-tv browse https://…"
+msgstr "Нужен веб-адрес: dai-tv browse https://…"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Back to the TV."
+msgstr "Назад к ТВ."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Ruby opens {url} on the TV (pid {pid})."
+msgstr "Ruby открывает {url} на ТВ (pid {pid})."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "The browser was not open."
+msgstr "Браузер не был открыт."

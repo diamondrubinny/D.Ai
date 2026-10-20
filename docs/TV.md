@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Mobile is in
 > `docs/MOBILE.md`. **Decided (under "from now on you decide"):** the editions and stages below; stage 1 begins
-> now. **Status: stages 1, 2 and 3a built** (§7–§11): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening; D.Ai on the remote, by sentence, and live channels from the person's own playlist.
+> now. **Status: stages 1, 2, 3a and 3b built** (§7–§12): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening; D.Ai on the remote, by sentence, and live channels from the person's own playlist.
 
 ## 0. What a "television version" can honestly be
 
@@ -76,6 +76,35 @@
   The tv VM check: the add-ons on the image, the seeded rows, Kodi's own answer, the sentence and its undo.
 - **Not yet (3b):** the broadcasters' web players through Ruby in TV mode; Widevine (**requires verification**
   per service); an EPG by sentence.
+
+## 12. Stage 3b: the broadcasters' sites through Ruby in TV mode (what was built)
+
+- **Ruby in TV mode:** `dai-tv browse URL` starts Firefox ESR (Ruby's policies apply: no telemetry, tracking
+  protection, HTTPS only) in a kiosk window with a profile of its own (`~/.config/dai/ruby-tv`, mode 0700,
+  `user.js` written at every start: scale 1.75 for the sofa, autoplay allowed so a player starts, nothing
+  restored from a crash, everything cleared at exit, links in the same window). Only `https://` and `http://`
+  addresses (and D.Ai's own start page) are accepted. One instance at a time; its PID is kept in the profile.
+- **The broadcasters:** Kodi's favourites (`userdata/favourites.xml`, seeded from `/etc/skel`) carry כאן 11,
+  קשת 12 and רשת 13 as the broadcasters' public home pages (`kan.org.il`, `mako.co.il`, `13tv.co.il`), each
+  opening in Ruby in TV mode, and "חזרה לטלוויזיה". The path of each live player, and whether it plays on this
+  box (Widevine is not enabled by D.Ai; Firefox asks, and the answer **requires verification** per service, and
+  is "no" on ARM), is not claimed. Nothing of the broadcasters' is shipped: D.Ai opens their sites, that is all.
+- **The way back, whatever the remote:** `dai-tv browse --close` ends the browser (only the instance D.Ai
+  started: its PID, checked alive). It is bound in labwc for the TV session to `XF86Back`, `XF86HomePage`
+  and `XF86Close` (the Back/Home keys of keyboard and air-mouse remotes, with any window in front) and in
+  Kodi's keymap to the remote's **My TV** button (CEC remotes, which Kodi holds). Alt+F4 works too.
+- **A limit said plainly:** a remote that reaches the box only through CEC is held by Kodi; Firefox never sees
+  its arrows, so with such a remote the sites can be opened and closed from the TV but not browsed. A keyboard,
+  an air mouse or (stage 4) the phone drives the pages. Arrow-key navigation inside the pages (moving the focus
+  from link to link) needs a content script in Ruby's extension, which Firefox loads only once it is signed
+  (docs/BROWSER.md §10); that is 3c, after signing, not a flag that turns signature checks off.
+- **Also, from stage 2c:** the blue button on a CEC remote now runs D.Ai's listen (it opened Kodi's Pictures
+  by default); red, green and yellow keep Kodi's meanings.
+- **Tests:** dai-tv (9): the command line Firefox gets, the profile and its prefs and mode, one instance at a
+  time, "back to the TV" signalling only that PID, a dead PID ignored, addresses that are refused, the commands.
+  The tv VM check opens D.Ai's start page on the image, sees the process and the prefs, closes it, and checks
+  the favourites, the keymap and the labwc keys.
+- **Not yet (3c):** arrow navigation in pages (the signed extension), a sentence "open Kan 11" in Tune, an EPG.
 
 ## 1. Stages
 

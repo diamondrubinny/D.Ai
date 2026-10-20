@@ -181,6 +181,42 @@ class TvTests(unittest.TestCase):
             self.assertEqual((code, out.strip()), (0, "Live channels off."))
             self.assertEqual(fake.calls, [])  # nothing of this needs the running Kodi
 
+    def test_ruby_in_tv_mode(self):
+        """docs/TV.md §12: a kiosk Firefox in its own profile, one at a time, ended by "back to the TV"."""
+        import tempfile
+        from pathlib import Path
+
+        from dai_tv import browse
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            spawned, killed = [], []
+            pid = browse.open_url("https://www.kan.org.il/", home, spawn=lambda cmd: spawned.append(cmd) or os.getpid(), firefox="/bin/ff")
+            self.assertEqual(pid, os.getpid())
+            self.assertEqual(spawned, [["/bin/ff", "--new-instance", "--kiosk", "--profile", str(home / ".config/dai/ruby-tv"), "https://www.kan.org.il/"]])
+            prefs = (home / ".config/dai/ruby-tv/user.js").read_text()
+            self.assertIn('user_pref("layout.css.devPixelsPerPx", "1.75");', prefs)
+            self.assertIn('user_pref("media.autoplay.default", 0);', prefs)
+            self.assertIn('user_pref("privacy.sanitize.sanitizeOnShutdown", true);', prefs)
+            self.assertEqual(oct((home / ".config/dai/ruby-tv").stat().st_mode & 0o777), "0o700")
+            self.assertEqual(browse.running(home), os.getpid())
+            self.assertTrue(browse.close(home, kill=lambda p, sig: killed.append((p, sig))))
+            self.assertEqual(killed, [(os.getpid(), 15)])
+            self.assertIsNone(browse.running(home))
+            self.assertFalse(browse.close(home, kill=lambda p, sig: killed.append((p, sig))))
+            for bad in ("ftp://x", "file:///etc/passwd", "javascript:alert(1)", "", "rm -rf /"):
+                with self.assertRaises(ValueError):
+                    browse.open_url(bad, home, spawn=lambda cmd: 1)
+            self.assertTrue(browse.allowed("file:///usr/share/dai/ruby/start.html"))
+            (home / ".config/dai/ruby-tv/ruby-tv.pid").write_text("999999999\n")  # a pid that is not alive
+            self.assertIsNone(browse.running(home))
+        fake = self.kodi()
+        with mock.patch.object(browse, "open_url", return_value=4242), mock.patch.object(browse, "close", return_value=True):
+            code, out, _ = self.run_cli(fake, "browse", "https://www.mako.co.il/")
+            self.assertEqual((code, "pid 4242" in out), (0, True), out)
+            code, out, _ = self.run_cli(fake, "browse", "--close")
+            self.assertEqual((code, out.strip()), (0, "Back to the TV."))
+        self.assertEqual(self.run_cli(fake, "browse", "ftp://x")[0], 2)
+
     def test_playing_and_nothing(self):
         fake = self.kodi(playing={"title": "The Film", "year": 1999, "plot": "A long story " * 50, "type": "movie", "label": "x"})
         code, out, _ = self.run_cli(fake, "playing")
