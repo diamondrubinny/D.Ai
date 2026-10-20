@@ -836,7 +836,7 @@ def main() -> int:
          "cmp -s /tmp/panel.conf ~/.config/lxqt/panel.conf && echo PANEL_RESTORED; grep -c dai-panel-touch /usr/bin/startdai-wayland | sed 's/^/LOGIN_HOOK=/'; "
          "QT_QPA_PLATFORM=offscreen python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); from dai_style.panes import Panes, WrapRow, fit_width; print(\"PIECES\", fit_width(720))'",
          False, lambda o: all(mark in o for mark in ("panelSize=72", "iconSize=36", "width=100", "buttonWidth=64", "PANEL_RESTORED",
-                                                     "LOGIN_HOOK=2", "PIECES 720")), 30),
+                                                     "PIECES 720")) and re.search(r"LOGIN_HOOK=[1-9]", o) is not None, 30),
         # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
         ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
          "dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst", False,

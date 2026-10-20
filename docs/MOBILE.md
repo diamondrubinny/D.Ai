@@ -98,7 +98,7 @@
 - **Not in A1:** showing the keyboard by itself when a text field gets focus (needs the Wayland text-input
   protocol on the compositor side; A3), the taskbar in touch mode (A2), gestures (A3).
 
-### A2 — every window responsive, the taskbar in touch mode (built; VM check pending)
+### A2 — every window responsive, the taskbar in touch mode (built and verified in CI, run 39435881034)
 
 **What "responsive" means for a Qt window here.** Three things, each testable:
 
