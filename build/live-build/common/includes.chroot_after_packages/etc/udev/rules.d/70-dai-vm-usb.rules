@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai VM (docs/VM.md §13): a USB device given to a Windows machine is opened by QEMU as the person, in their
 # own session (qemu:///session, no root). The device node must therefore be theirs: the "uaccess" tag gives the
 # user at the seat an ACL on it while they are logged in, and takes it away when they log out (systemd-logind).
