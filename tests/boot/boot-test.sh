@@ -147,7 +147,7 @@ CONSOLE="console=tty0 console=ttyS0,115200"
 readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il timezone=Asia/Jerusalem $CONSOLE"
 MEDIA=(-cdrom "$ISO" -vga std -usb -device usb-tablet)
 if [[ "$PHONE" == 1 ]]; then
-  MEDIA=(-device virtio-scsi-pci -drive "file=$ISO,if=none,id=cd0,media=cdrom,format=raw" -device scsi-cd,drive=cd0
+  MEDIA=(-device virtio-scsi-pci -drive "file=$ISO,if=none,id=cd0,media=cdrom,format=raw" -device "scsi-cd,drive=cd0"
     -device virtio-gpu-pci -device qemu-xhci -device usb-tablet)
 fi
 
