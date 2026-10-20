@@ -213,6 +213,11 @@ build_apps() {
   install -m 0644 "$vm/data/dai-vm.desktop" "$root/usr/share/applications/"
   install -D -m 0644 "$vm/data/dai-vm.svg" "$root/usr/share/icons/hicolor/scalable/apps/dai-vm.svg"
 
+  # D.Ai TV (docs/TV.md stage 2b): D.Ai inside the television, talking to the Kodi on this computer only.
+  local tv="$REPO_ROOT/apps/dai-tv"
+  copy_package "$tv/dai_tv" "$root"
+  install -m 0755 "$tv/data/dai-tv" "$root/usr/bin/dai-tv"
+
   # D.Ai PDF (docs/PDF.md): the reader that opens every PDF in a sandbox; the default for application/pdf.
   local pdf="$REPO_ROOT/apps/dai-pdf"
   copy_package "$pdf/dai_pdf" "$root"

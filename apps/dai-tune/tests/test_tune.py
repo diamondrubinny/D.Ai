@@ -789,7 +789,8 @@ class LanguageTests(TuneTestCase):
         self.assertNotIn("webserverpassword", settings.read_text())
         off = self.plan("turn off remote control")
         executor.apply_steps(off.scoped("user"), self.ctx, journal, actor="1000", scope="user")
-        self.assertIn('<setting id="services.esenabled">false</setting>', settings.read_text())
+        self.assertIn('<setting id="services.esallinterfaces">false</setting>', settings.read_text())
+        self.assertIn('<setting id="services.esenabled">true</setting>', settings.read_text())  # local D.Ai use stays
         with self.assertRaises(catalog.ValidationError):
             catalog.CATALOG["tv.remote_control"].validate({"enabled": True, "password": "has space"}, self.ctx)
         broken = self.home / ".kodi/userdata/guisettings.xml"

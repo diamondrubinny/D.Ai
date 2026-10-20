@@ -854,6 +854,14 @@ def main() -> int:
          "tail -n 3 /tmp/tune-tv.txt; fi",
          True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
              "TUNE_RC=0", "WEB_ON=1", "ES_ON=1", "PORTS_AFTER=0", "SETTINGS_RESTORED")) and re.search(r"PORTS=[3-9]", o) is not None, 120),
+        # D.Ai TV stage 2b (docs/TV.md §9): Kodi's service listens on this computer only, and dai-tv reaches it.
+        ("tv: D.Ai talks to Kodi on this computer only",
+         ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
+         "ss -ltnH | grep 9090 | awk '{print \"RPC_LISTEN=\" $4}'; dai-tv ping; echo PING_RC=$?; dai-tv playing; "
+         "dai-tv say 'שלום מ-D.Ai'; echo SAY_RC=$?; dai-tv do info; echo DO_RC=$?; dai-tv ask 'מה זה' | head -c 200; echo; echo ASK_RC=$?; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or (all(mark in o for mark in (
+             "RPC_LISTEN=127.0.0.1:9090", "pong", "PING_RC=0", "SAY_RC=0", "DO_RC=0", "ASK_RC=0"))
+             and "RPC_LISTEN=0.0.0.0" not in o and "RPC_LISTEN=*" not in o), 120),
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
         ("vm: the stack, the honest check, a definition libvirt accepts",

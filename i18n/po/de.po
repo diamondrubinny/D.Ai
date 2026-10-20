@@ -5502,3 +5502,56 @@ msgstr "Die Maschine {name} starten (ihr Bildschirm öffnet sich in einem Fenste
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Undo deletes the snapshot again."
 msgstr "Rückgängig löscht den Schnappschuss wieder."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Actions: {list}"
+msgstr "Aktionen: {list}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Ask what? dai-tv ask QUESTION"
+msgstr "Was fragen? dai-tv ask QUESTION"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Diamond had no answer."
+msgstr "Diamond hatte keine Antwort."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Diamond is not available now ({why})."
+msgstr "Diamond ist gerade nicht verfügbar ({why})."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Diamond is not installed on this TV."
+msgstr "Diamond ist auf diesem Fernseher nicht installiert."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Kodi could not be reached: {why}"
+msgstr "Kodi war nicht erreichbar: {why}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Kodi did not answer."
+msgstr "Kodi hat nicht geantwortet."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Nothing is playing."
+msgstr "Es läuft nichts."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "On the TV now: {what}. {q}"
+msgstr "Jetzt im Fernseher: {what}. {q}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Shown on the TV."
+msgstr "Auf dem Fernseher angezeigt."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Unknown command: {verb}. dai-tv --help"
+msgstr "Unbekannter Befehl: {verb}. dai-tv --help"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "What to say? dai-tv say TEXT"
+msgstr "Was sagen? dai-tv say TEXT"

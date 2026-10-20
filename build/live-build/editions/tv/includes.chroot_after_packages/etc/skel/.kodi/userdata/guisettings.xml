@@ -14,7 +14,9 @@
   <setting id="services.upnprenderer">false</setting>
   <setting id="services.airplay">false</setting>
   <setting id="services.zeroconf">false</setting>
-  <setting id="services.esenabled">false</setting>
+  <!-- The remote-control service on this computer only (127.0.0.1): D.Ai TV talks to Kodi through it (dai-tv,
+       docs/TV.md stage 2b). Nothing from the network reaches it until "remote control from the phone" is said. -->
+  <setting id="services.esenabled">true</setting>
   <setting id="services.esallinterfaces">false</setting>
   <setting id="input.enablemouse">true</setting>
   <setting id="general.addonupdates">2</setting>

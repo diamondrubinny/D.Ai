@@ -5502,3 +5502,56 @@ msgstr "Démarrer la machine {name} (son écran s'ouvre dans une fenêtre)"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Undo deletes the snapshot again."
 msgstr "Annuler supprime à nouveau l'instantané."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Actions: {list}"
+msgstr "Actions : {list}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Ask what? dai-tv ask QUESTION"
+msgstr "Demander quoi ? dai-tv ask QUESTION"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Diamond had no answer."
+msgstr "Diamond n'avait pas de réponse."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Diamond is not available now ({why})."
+msgstr "Diamond n'est pas disponible maintenant ({why})."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Diamond is not installed on this TV."
+msgstr "Diamond n'est pas installé sur cette TV."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Kodi could not be reached: {why}"
+msgstr "Kodi est injoignable : {why}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Kodi did not answer."
+msgstr "Kodi n'a pas répondu."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Nothing is playing."
+msgstr "Rien n'est en lecture."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "On the TV now: {what}. {q}"
+msgstr "À la TV maintenant : {what}. {q}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Shown on the TV."
+msgstr "Affiché sur la TV."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Unknown command: {verb}. dai-tv --help"
+msgstr "Commande inconnue : {verb}. dai-tv --help"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "What to say? dai-tv say TEXT"
+msgstr "Dire quoi ? dai-tv say TEXT"

@@ -32,6 +32,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.
 - D.Ai TV: "remote control from the phone" in D.Ai Tune turns Kodi's remote services on with a password and
   opens their ports to the local network only, with undo.
+- D.Ai TV: `dai-tv` talks to the Kodi on this computer (127.0.0.1 only): what plays, a notification, an action,
+  and "ask" with Diamond answering on the screen.
 - Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
   is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick
   and Welcome for finger-sized targets; the login screen's buttons grew to 44 px.

@@ -962,7 +962,8 @@ def _tv_remote_apply(params: Params, ctx: Context) -> None:
     on = params["enabled"]
     values = {"services.webserver": "true" if on else "false", "services.webserverport": "8080",
               "services.webserverauthentication": "true", "services.webserverusername": "kodi",
-              "services.esenabled": "true" if on else "false", "services.esallinterfaces": "true" if on else "false"}
+              # the service itself stays on for this computer (dai-tv talks to Kodi through it); "off" closes it to the network
+              "services.esenabled": "true", "services.esallinterfaces": "true" if on else "false"}
     if on:
         values["services.webserverpassword"] = params["password"]
     _kodi_settings_set(ctx.user_path(KODI_SETTINGS), values)

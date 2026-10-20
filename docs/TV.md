@@ -130,3 +130,19 @@ build/live-build/editions/tv/
   checked, then undone and compared with the file as it was.
 - **Not yet:** Diamond and Voice on the remote's microphone, "children's profile" and "night mode", the Living
   Diamond on the TV, "what this add-on sends" before an install (stage 2b).
+
+## 9. Stage 2b: D.Ai talks to Kodi (what was built)
+
+- **`dai-tv`** (`apps/dai-tv`): Kodi's JSON-RPC over its local TCP port only (127.0.0.1:9090; the service is on
+  for this computer, "allow remote control from applications on other systems" stays off until Tune's "remote
+  control from the phone"). `ping`, `playing` (title, year, the plot's first lines), `say TEXT` (a notification on
+  the TV), `ask QUESTION` (Diamond, with what plays now as context; the answer printed and shown on the TV; a
+  plain sentence when Diamond is not installed or not running), `do ACTION` (play, pause, stop, back, select,
+  the arrows, info, volume; a fixed list). Nothing leaves the computer.
+- **Tune's "turn off remote control"** now closes the service to the network and keeps it for this computer.
+- **Tests:** 4 (a fake Kodi on a local socket: every command, exit codes, a refusal, no Kodi, Diamond answering
+  and Diamond absent). The tv VM check sees the port bound to 127.0.0.1 only and every command answered by
+  the real Kodi.
+- **Not yet:** the remote's microphone button (a keymap that runs `dai-tv ask` with Voice; **requires a check**
+  of which CEC key the common TVs send for "voice"), "children's profile" and "night mode" sentences, the Living
+  Diamond on the TV, "what this add-on sends" before an install.
