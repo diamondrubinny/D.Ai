@@ -62,7 +62,7 @@ class DirectEditTests(unittest.TestCase):
             self.editor.save([str(fixtures.not_a_pdf(self.dir / "x.pdf"))], str(out), pages=None)
         self.assertEqual(caught.exception.kind, "broken")
         self.assertFalse(out.exists())
-        self.assertEqual(os.listdir(self.dir), ["a.pdf", "x.pdf"])  # no leftover temp files beside the inputs
+        self.assertEqual(sorted(os.listdir(self.dir)), ["a.pdf", "x.pdf"])  # no leftover temp files beside the inputs
 
     def test_a_locked_file_needs_its_password(self):
         locked = fixtures.locked(self.dir / "l.pdf", "secret")
