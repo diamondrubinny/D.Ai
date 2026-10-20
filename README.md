@@ -39,6 +39,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **MOM**: apps, not processes, explained in plain words | **D.Ai Clip**: never keeps passwords | **Welcome** in Arabic, right to left |
 | ![The USB boot menu](docs/screenshots/boot-menu.png) | ![The loading screen](docs/screenshots/boot-splash.png) | ![The login screen](docs/screenshots/login.png) |
 | **Boot menu**: "Start D.Ai OS", eight languages | **Loading**: the diamond (and the disk passphrase) | **Login**: clock, keyboard language, Caps Lock warning |
+| ![D.Ai TV: Kodi full screen in Hebrew](docs/screenshots/tv-desktop.png) | | |
+| **D.Ai TV**: Kodi in Hebrew on the TV, nothing listening | | |
 
 ## What's included
 

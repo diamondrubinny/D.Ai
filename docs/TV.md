@@ -108,8 +108,8 @@ build/live-build/editions/tv/
   no LXQt, the defaults, `cec-client`, nothing listening). CI builds `tv` in the matrix with the others.
 - **Verified in CI** (run 39381912535): `kodi --windowing=wayland` works on Debian's build ("using the wayland
   windowing system" in kodi.log), the session is `dai-tv.desktop`, no LXQt, the web server and the other
-  services off, nothing listening outside loopback, `cec-client` present. The screenshot goes into
-  `docs/screenshots/tv-desktop.png` from the first run without the add-on dialog.
+  services off, nothing listening outside loopback, `cec-client` present. The screenshot (run 39386058886, no
+  dialog) is `docs/screenshots/tv-desktop.png`.
 - **A lesson from the screenshot:** Debian's binary add-ons (`kodi-pvr-iptvsimple`, `kodi-inputstream-adaptive`)
   are installed disabled, and Kodi's first start asks "enable this add-on?" for each. They were taken out of
   stage 1; stage 3 (IPTV) brings them back and seeds Kodi's add-on database (`Addons33.db`, `installed` table)
