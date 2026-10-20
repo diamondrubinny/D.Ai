@@ -7,6 +7,12 @@
   dai-pdf text FILE [--page N] [--raw]   the text (Hebrew made readable unless --raw); all pages without --page
   dai-pdf check FILE             exit 0: nothing active in the file; 1: scripts, launches, submits, attachments
                                  or an XFA form were found (listed); 2: the file could not be opened
+  dai-pdf merge A B ... -o OUT   one file from several, in this order
+  dai-pdf split FILE --pages 1-3,7 -o OUT      only those pages (extract); without --pages, one file per page
+  dai-pdf rotate FILE --by 90 [--pages 2,4] -o OUT   turn pages (90, 180, 270); all pages without --pages
+  dai-pdf delete FILE --pages 2 -o OUT         the file without those pages
+  dai-pdf fields FILE            the form's fields: name, kind, value
+  dai-pdf fill FILE --set name=value ... [--flatten] -o OUT   fill the form (true/false for check boxes)
   dai-pdf --version | --help
 
 Everything runs on this computer, inside bubblewrap. Nothing in the file is executed, followed or opened.
@@ -149,6 +155,130 @@ def check(args: list[str], lang: str) -> int:
         reader.close()
 
 
+def _editor():
+    from .edit import Editor
+
+    direct = os.environ.get("DAI_PDF_DIRECT") == "1"
+    python = os.environ.get("DAI_PDF_PYTHON") or sys.executable
+    return Editor(sandboxed=not direct, python=python)
+
+
+def _inputs(args: list[str]) -> list[str]:
+    skip, out = False, []
+    for arg in args[1:]:
+        if skip:
+            skip = False
+        elif arg in ("-o", "--pages", "--by", "--set", "--password"):
+            skip = True
+        elif not arg.startswith("--"):
+            out.append(arg)
+    return out
+
+
+def _edit_error(exc, lang: str) -> int:
+    from .edit import EditError
+
+    assert isinstance(exc, EditError)
+    messages = {
+        "missing": ("There is no file called {detail}.", "אין קובץ בשם {detail}."),
+        "password": ("The file is locked: add --password.", "הקובץ נעול: הוסיפו --password."),
+        "sandbox": ("The sandbox (bubblewrap) is missing; nothing was written.", "ארגז החול (bubblewrap) חסר; שום דבר לא נכתב."),
+        "bad request": ("Those pages do not exist in the file ({detail}).", "העמודים האלה לא קיימים בקובץ ({detail})."),
+        "timeout": ("The edit took too long and was stopped.", "העריכה ארכה יותר מדי ונעצרה."),
+    }
+    en, he = messages.get(exc.kind, ("The file could not be edited ({detail}).", "לא ניתן היה לערוך את הקובץ ({detail})."))
+    print(say(lang, en, he, detail=exc.detail or exc.kind), file=sys.stderr)
+    return 2
+
+
+def _count(path: str, password: str) -> int:
+    reader = _reader(path, password)
+    try:
+        return reader.open().count
+    finally:
+        reader.close()
+
+
+def edit(args: list[str], lang: str) -> int:
+    from .edit import EditError, parse_pages
+
+    command = args[0]
+    inputs = _inputs(args)
+    out = _option(args, "-o")
+    password = _option(args, "--password") or ""
+    if not inputs:
+        print(say(lang, "Which file? dai-pdf {command} FILE", "איזה קובץ? dai-pdf {command} FILE", command=command), file=sys.stderr)
+        return 2
+    if command != "fields" and not out:
+        print(say(lang, "Where to? add -o OUT.pdf", "לאן? הוסיפו -o OUT.pdf"), file=sys.stderr)
+        return 2
+    editor = _editor()
+    try:
+        if command == "fields":
+            fields = editor.fields(inputs[0], password)
+            if not fields:
+                print(say(lang, "No form fields in this file.", "אין שדות טופס בקובץ הזה."))
+            for f in fields:
+                value = f.get("value")
+                shown = (say(lang, "checked", "מסומן") if value else say(lang, "unchecked", "לא מסומן")) \
+                    if f["kind"] == "checkbox" else str(value)
+                extra = ""
+                if f.get("options"):
+                    extra = "  [" + ", ".join(o[0] if isinstance(o, list) else str(o) for o in f["options"]) + "]"
+                print(f"{f['name']}  ({f['kind']}, {say(lang, 'page', 'עמוד')} {f['page'] + 1}): {shown}{extra}")
+            return 0
+        if command == "merge":
+            pages = []
+            for i, path in enumerate(inputs):
+                pages += [{"source": i, "index": j, "rotate": 0} for j in range(_count(path, password if i == 0 else ""))]
+            answer = editor.save(inputs, out, pages=pages, passwords=[password])
+        elif command in ("split", "rotate", "delete"):
+            count = _count(inputs[0], password)
+            try:
+                chosen = parse_pages(_option(args, "--pages") or "", count)
+            except ValueError as exc:
+                print(say(lang, "No page {page}: the file has {n}.", "אין עמוד {page}: בקובץ יש {n}.", page=exc, n=count), file=sys.stderr)
+                return 2
+            if command == "split":
+                if _option(args, "--pages") is None:  # one file per page
+                    stem = Path(out)
+                    for index in range(count):
+                        target = stem.with_name(f"{stem.stem}-{index + 1}{stem.suffix or '.pdf'}")
+                        editor.save(inputs[:1], str(target), pages=[{"source": 0, "index": index, "rotate": 0}], passwords=[password])
+                        print(target)
+                    return 0
+                pages = [{"source": 0, "index": i, "rotate": 0} for i in chosen]
+            elif command == "rotate":
+                try:
+                    by = int(_option(args, "--by") or 90)
+                except ValueError:
+                    by = 0
+                if by % 90 or by % 360 == 0:
+                    print(say(lang, "--by takes 90, 180 or 270.", "‏--by מקבל 90, 180 או 270."), file=sys.stderr)
+                    return 2
+                pages = [{"source": 0, "index": i, "rotate": by if i in chosen else 0} for i in range(count)]
+            else:
+                if len(chosen) >= count:
+                    print(say(lang, "That would leave no pages.", "זה לא ישאיר עמודים."), file=sys.stderr)
+                    return 2
+                pages = [{"source": 0, "index": i, "rotate": 0} for i in range(count) if i not in chosen]
+            answer = editor.save(inputs[:1], out, pages=pages, passwords=[password])
+        elif command == "fill":
+            values: dict[str, object] = {}
+            for i, arg in enumerate(args):
+                if arg == "--set" and i + 1 < len(args) and "=" in args[i + 1]:
+                    name, raw = args[i + 1].split("=", 1)
+                    values[name] = True if raw.lower() == "true" else False if raw.lower() == "false" else raw
+            answer = editor.save(inputs[:1], out, fields=values, flatten="--flatten" in args, passwords=[password])
+            print(say(lang, "{n} fields filled.", "{n} שדות מולאו.", n=answer.get("filled", 0)))
+        else:
+            return 2
+    except EditError as exc:
+        return _edit_error(exc, lang)
+    print(say(lang, "{out}: {n} pages", "{out}: {n} עמודים", out=out, n=answer.get("pages", 0)))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv if argv is None else argv)[1:]
     lang = ui_lang()
@@ -161,6 +291,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args and args[0] in ("info", "text", "check"):
         return {"info": info, "text": text, "check": check}[args[0]](args, lang)
+    if args and args[0] in ("merge", "split", "rotate", "delete", "fields", "fill"):
+        return edit(args, lang)
     from .gui import main as window
 
     path = next((a for a in args if not a.startswith("--")), None)

@@ -17,8 +17,9 @@ fixtures.need_libraries()
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt6.QtCore import QSize  # noqa: E402
-from PyQt6.QtWidgets import QApplication, QDialog  # noqa: E402
+from PyQt6.QtWidgets import QApplication, QDialog, QLabel  # noqa: E402
 
+from dai_pdf.edit import Editor  # noqa: E402
 from dai_pdf.reader import Reader  # noqa: E402
 
 RAZ = Path(__file__).resolve().parents[2] / "dai-raz"
@@ -47,10 +48,12 @@ class WindowTests(unittest.TestCase):
         self.dir = Path(self.tmp.name)
         self.opened_urls = []
 
-    def window(self, path=None, lang="en", ask_password=None):
+    def window(self, path=None, lang="en", ask_password=None, confirm_discard=None):
         gui = load_gui()
         win = gui.PdfWindow(str(path) if path else None, lang=lang, reader_factory=factory,
-                            open_url=self.opened_urls.append, sandboxed=False, ask_password=ask_password)
+                            open_url=self.opened_urls.append, sandboxed=False, ask_password=ask_password,
+                            editor=Editor(sandboxed=False, python=fixtures.helper_python()),
+                            confirm_discard=confirm_discard or (lambda: True))  # a modal box would hang offscreen
         self.addCleanup(win.close)
         win.resize(1000, 700)
         win.show()
@@ -180,6 +183,92 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(win.thumbs_done, 5)
         self.assertFalse(win.thumbs.item(4).icon().isNull())
 
+    def test_pages_edited_undone_and_saved(self):
+        import pikepdf
+        win = self.window(fixtures.plain(self.dir / "p.pdf", pages=3))
+        self.assertFalse(win.modified)
+        win.go_to(1)
+        win.rotate_page()
+        self.assertTrue(win.modified)
+        self.assertTrue(win.windowTitle().startswith("• "))
+        self.assertEqual(win.plan[1]["rotate"], 90)
+        win.render_visible()
+        self.assertEqual(win.views[1].pixel_size().width(), win.views[1].pixel_size().height() * 2 // 3)  # turned
+        win.move_page(-1, index=1)
+        self.assertEqual([e["index"] for e in win.plan], [1, 0, 2])
+        self.assertEqual(win.current_page, 0)
+        win.delete_page(index=2)
+        self.assertEqual(len(win.views), 2)
+        self.assertEqual(win.count_label.text(), "of 2")
+        self.assertTrue(win.insert_pdf(str(fixtures.with_outline(self.dir / "o.pdf")), at=1))
+        self.assertEqual([(e["source"], e["index"]) for e in win.plan], [(0, 1), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (0, 0)])
+        self.assertEqual(len(win.sources), 2)
+        win.undo()
+        self.assertEqual(len(win.plan), 2)
+        win.undo()
+        self.assertEqual([e["index"] for e in win.plan], [1, 0, 2])
+        win.redo()
+        self.assertEqual(len(win.plan), 2)
+        win.redo()
+        self.assertEqual(len(win.plan), 7)
+        win.go_to(0)
+        for _ in range(8):
+            win._next_thumbnail()
+        self.assertFalse(win.thumbs.item(1).icon().isNull())
+        out = self.dir / "edited.pdf"
+        self.assertTrue(win.save_to(str(out)))
+        self.assertFalse(win.modified)
+        self.assertIn("Saved edited.pdf", win.status.text())
+        self.assertEqual(win.reader.path, str(out))  # the saved file is now the one shown
+        self.assertEqual(len(win.views), 7)
+        with pikepdf.open(out) as pdf:
+            self.assertEqual([int(p.obj.get("/Rotate", 0)) for p in pdf.pages], [90, 0, 0, 0, 0, 0, 0])
+            self.assertIn(b"Hello D.Ai page 2", bytes(pdf.pages[0].Contents.read_bytes()))
+            self.assertIn(b"Chapter 1", bytes(pdf.pages[1].Contents.read_bytes()))
+        win.delete_page()
+        for _ in range(6):
+            win.delete_page()
+        self.assertEqual(len(win.views), 1)  # the last page stays
+        self.assertIn("at least one page", win.status.text())
+
+    def test_the_form_is_filled_and_flattened(self):
+        from PyQt6.QtWidgets import QCheckBox, QComboBox, QLineEdit
+        win = self.window(fixtures.form(self.dir / "f.pdf"))
+        self.assertEqual([f["name"] for f in win.fields], ["name", "agree", "id", "colour", "size"])
+        self.assertIsInstance(win.field_widgets["name"], QLineEdit)
+        self.assertFalse(win.field_widgets["id"].isEnabled())
+        win.field_widgets["name"].setText("Dana")
+        win.field_widgets["name"].textEdited.emit("Dana")
+        win.field_widgets["agree"].setChecked(True)
+        colour: QComboBox = win.field_widgets["colour"]
+        colour.setCurrentIndex(colour.findData("Blue"))
+        size: QComboBox = win.field_widgets["size"]
+        size.setCurrentIndex(size.findData("L"))
+        self.assertEqual(win.field_values, {"name": "Dana", "agree": True, "colour": "Blue", "size": "L"})
+        self.assertTrue(win.modified)
+        out = self.dir / "filled.pdf"
+        self.assertTrue(win.save_to(str(out)))
+        self.assertEqual({f["name"]: f["value"] for f in win.fields},
+                         {"name": "Dana", "agree": True, "id": "fixed", "colour": "Blue", "size": "L"})
+        win.flatten_box.setChecked(True)
+        flat = self.dir / "flat.pdf"
+        self.assertTrue(win.save_to(str(flat)))
+        self.assertEqual(win.fields, [])
+        self.assertIn("No form fields", win.form_widget.findChild(QLabel).text())
+
+    def test_unsaved_changes_ask_before_closing(self):
+        asked = []
+        win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2), confirm_discard=lambda: asked.append(1) or False)
+        win.rotate_page()
+        win.close()
+        self.assertEqual(asked, [1])
+        self.assertTrue(win.isVisible())  # the close was refused
+        win.undo()
+        self.assertTrue(win.modified)  # an undo back to the original is still "changed": the saved file may differ
+        win.confirm_discard = lambda: True
+        win.close()
+        self.assertFalse(win.isVisible())
+
     def test_accessible_in_both_languages_and_every_theme(self):
         from dai_raz.a11y import assert_accessible
 
@@ -188,6 +277,9 @@ class WindowTests(unittest.TestCase):
             win.search_field.setText("wants")
             win.search()
             assert_accessible(self, win, touch=True)
+            form = self.window(fixtures.form(self.dir / f"f-{lang}.pdf"), lang=lang)
+            form.side.setCurrentIndex(4)
+            assert_accessible(self, form, touch=True)
             gui = sys.modules["dai_pdf.gui"]
             for dialog in (gui.InfoDialog(win, lang, win.doc, False), gui.LinkDialog(win, lang, "https://x", True),
                            gui.LinkDialog(win, lang, "file:///x", False), gui.PasswordDialog(win, lang, "a.pdf", True)):

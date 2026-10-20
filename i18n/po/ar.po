@@ -5046,3 +5046,167 @@ msgstr "تلقائي: يعمل عند توصيل شاشة لمس"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
 msgstr "كل نافذة من D.Ai تأخذه عند فتحها في المرة القادمة؛ ولوحة المفاتيح عند تسجيل الدخول القادم."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "(none)"
+msgstr "(بدون)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "--by takes 90, 180 or 270."
+msgstr "‏--by يقبل 90 أو 180 أو 270."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A file keeps at least one page."
+msgstr "يحتفظ الملف بصفحة واحدة على الأقل."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Checked"
+msgstr "محدد"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Fill in, then save (Ctrl+S). Nothing is sent anywhere."
+msgstr "املأ ثم احفظ (Ctrl+S). لا يُرسل شيء إلى أي مكان."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Flatten when saving (the form can no longer be edited)"
+msgstr "تسطيح عند الحفظ (لا يمكن تعديل النموذج بعدها)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Form"
+msgstr "نموذج"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Insert pages from a PDF"
+msgstr "إدراج صفحات من ملف PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Insert pages from another PDF"
+msgstr "إدراج صفحات من ملف PDF آخر"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Move this page down"
+msgstr "نقل هذه الصفحة لأسفل"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Move this page up"
+msgstr "نقل هذه الصفحة لأعلى"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No form fields in this file."
+msgstr "لا توجد حقول نموذج في هذا الملف."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "One of the files is gone; nothing was written."
+msgstr "اختفى أحد الملفات؛ لم يُكتب شيء."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "PDF files (*.pdf)"
+msgstr "ملفات PDF ‏(*.pdf)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Redo"
+msgstr "إعادة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove this page"
+msgstr "إزالة هذه الصفحة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save as…"
+msgstr "حفظ باسم…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save the PDF as"
+msgstr "حفظ ملف PDF باسم"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save the edited file"
+msgstr "حفظ الملف المعدَّل"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Saved {name} · {n} pages"
+msgstr "تم حفظ {name} · {n} صفحات"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Saving in the sandbox…"
+msgstr "جارٍ الحفظ داخل بيئة العزل…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Saving took too long and was stopped; nothing was written."
+msgstr "استغرق الحفظ وقتًا طويلًا وتم إيقافه؛ لم يُكتب شيء."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "That would leave no pages."
+msgstr "لن يترك ذلك أي صفحات."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The changes were not saved. Close anyway?"
+msgstr "لم تُحفظ التغييرات. الإغلاق على أي حال؟"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The edit took too long and was stopped."
+msgstr "استغرق التعديل وقتًا طويلًا وتم إيقافه."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The file could not be saved ({detail}); nothing was written."
+msgstr "تعذّر حفظ الملف ({detail})؛ لم يُكتب شيء."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The file is locked: add --password."
+msgstr "الملف مقفل: أضف --password."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The sandbox (bubblewrap) is missing; nothing was written."
+msgstr "بيئة العزل (bubblewrap) مفقودة؛ لم يُكتب شيء."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no file called {detail}."
+msgstr "لا يوجد ملف باسم {detail}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Those pages do not exist in the file ({detail})."
+msgstr "هذه الصفحات غير موجودة في الملف ({detail})."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Turn this page"
+msgstr "تدوير هذه الصفحة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Where to? add -o OUT.pdf"
+msgstr "إلى أين؟ أضف ‎-o OUT.pdf"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "checked"
+msgstr "محدد"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "page"
+msgstr "صفحة"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "unchecked"
+msgstr "غير محدد"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} fields filled."
+msgstr "تم ملء {n} حقول."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages from {name} were inserted · not saved yet (Ctrl+S)"
+msgstr "أُدرجت {n} صفحات من {name} · لم يُحفظ بعد (Ctrl+S)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages · not saved yet (Ctrl+S)"
+msgstr "{n} صفحات · لم يُحفظ بعد (Ctrl+S)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{out}: {n} pages"
+msgstr "{out}: {n} صفحات"

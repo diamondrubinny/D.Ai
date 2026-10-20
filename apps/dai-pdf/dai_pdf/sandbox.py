@@ -21,6 +21,9 @@ MEMORY = 1536 * 1024 * 1024
 
 # The helper's entry: `python3 -I -c BOOT <package dir> ...` so -I can ignore PYTHONPATH and still find us.
 BOOT = "import sys; sys.path.insert(0, sys.argv[1]); from dai_pdf.helper import main; sys.exit(main())"
+# The editor's entry (docs/PDF.md stage 2): one request on stdin, one answer on stdout, the result in /tmp/out.
+BOOT_EDIT = "import sys; sys.path.insert(0, sys.argv[1]); from dai_pdf.edit import main; sys.exit(main())"
+IN_DIR, OUT_DIR = "/tmp/in", "/tmp/out"
 
 
 def available() -> bool:
@@ -32,11 +35,7 @@ def package_dir() -> str:
     return str(Path(__file__).resolve().parents[1])
 
 
-def argv(pdf_path: str, python: str = "/usr/bin/python3", binds: tuple[str, ...] = ()) -> list[str]:
-    """The sandboxed helper's command line. `python` and `binds` (read-only) are for tests with another
-    Python; D.Ai uses Debian's, already under /usr."""
-    package = package_dir()
-    extra = [arg for path in (package, *binds) for arg in ("--ro-bind", path, path)]
+def _common(extra: list[str], mounts: list[str]) -> list[str]:
     return [
         "bwrap",
         "--ro-bind", "/usr", "/usr",
@@ -49,7 +48,7 @@ def argv(pdf_path: str, python: str = "/usr/bin/python3", binds: tuple[str, ...]
         "--dev", "/dev",
         "--tmpfs", "/tmp",
         *extra,
-        "--ro-bind", pdf_path, "/tmp/document.pdf",
+        *mounts,
         "--unshare-all",
         "--die-with-parent",
         "--new-session",
@@ -61,10 +60,33 @@ def argv(pdf_path: str, python: str = "/usr/bin/python3", binds: tuple[str, ...]
         "--setenv", "LANG", "C.UTF-8",
         "--",
         "prlimit", f"--data={MEMORY}", f"--cpu={CPU_SECONDS}", "--nofile=256", "--",
-        python, "-I", "-c", BOOT, package, "/tmp/document.pdf",
     ]
+
+
+def _extra(binds: tuple[str, ...]) -> list[str]:
+    return [arg for path in (package_dir(), *binds) for arg in ("--ro-bind", path, path)]
+
+
+def argv(pdf_path: str, python: str = "/usr/bin/python3", binds: tuple[str, ...] = ()) -> list[str]:
+    """The sandboxed helper's command line. `python` and `binds` (read-only) are for tests with another
+    Python; D.Ai uses Debian's, already under /usr."""
+    return _common(_extra(binds), ["--ro-bind", pdf_path, "/tmp/document.pdf"]) + \
+        [python, "-I", "-c", BOOT, package_dir(), "/tmp/document.pdf"]
+
+
+def edit_argv(inputs: list[str], out_dir: str, python: str = "/usr/bin/python3", binds: tuple[str, ...] = ()) -> list[str]:
+    """The sandboxed editor's command line: every input read-only under /tmp/in, the output folder writable as
+    /tmp/out (an empty folder the window made), nothing else of the person's files."""
+    mounts = [arg for i, path in enumerate(inputs) for arg in ("--ro-bind", path, f"{IN_DIR}/{i}.pdf")]
+    mounts += ["--bind", out_dir, OUT_DIR]
+    return _common(_extra(binds), mounts) + [python, "-I", "-c", BOOT_EDIT, package_dir(), IN_DIR, OUT_DIR, str(len(inputs))]
 
 
 def direct_argv(pdf_path: str, python: str = "/usr/bin/python3") -> list[str]:
     """The helper without the sandbox: only for tests, never used by the window."""
     return [python, "-I", "-c", BOOT, package_dir(), pdf_path]
+
+
+def direct_edit_argv(inputs: list[str], out_dir: str, python: str = "/usr/bin/python3") -> list[str]:
+    """The editor without the sandbox: only for tests. The inputs are read from where they are."""
+    return [python, "-I", "-c", BOOT_EDIT, package_dir(), "", out_dir, str(len(inputs)), *inputs]

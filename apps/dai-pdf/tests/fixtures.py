@@ -87,6 +87,46 @@ def active(path: Path) -> Path:
     return path
 
 
+def form(path: Path) -> Path:
+    """A two-page form: a text field and a check box on page 1, a radio group and a drop-down on page 2."""
+    pdf = pikepdf.new()
+    first = _page(pdf, "Please fill in")
+    second = _page(pdf, "And choose")
+    font = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font, Subtype=pikepdf.Name.Type1, BaseFont=pikepdf.Name.Helvetica))
+    da = pikepdf.String("/Helv 12 Tf 0 g")
+    name = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Annot, Subtype=pikepdf.Name.Widget, FT=pikepdf.Name.Tx,
+                                                T=pikepdf.String("name"), V=pikepdf.String(""), Rect=[20, 20, 200, 50], F=4, DA=da))
+    on = pdf.make_stream(b"0 0 1 rg 0 0 20 20 re f")
+    agree = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Annot, Subtype=pikepdf.Name.Widget, FT=pikepdf.Name.Btn,
+                                                 T=pikepdf.String("agree"), V=pikepdf.Name.Off, AS=pikepdf.Name.Off,
+                                                 Rect=[20, 60, 40, 80], F=4,
+                                                 AP=pikepdf.Dictionary(N=pikepdf.Dictionary(Yes=on, Off=pdf.make_stream(b"")))))
+    locked_field = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Annot, Subtype=pikepdf.Name.Widget, FT=pikepdf.Name.Tx,
+                                                        T=pikepdf.String("id"), V=pikepdf.String("fixed"), Ff=1,
+                                                        Rect=[20, 90, 200, 110], F=4, DA=da))
+    first.Annots = pikepdf.Array([name, agree, locked_field])
+    kids = []
+    for i, state in enumerate(("Red", "Blue")):
+        kid = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Annot, Subtype=pikepdf.Name.Widget, AS=pikepdf.Name.Off,
+                                                   Rect=[20 + 40 * i, 20, 40 + 40 * i, 40], F=4,
+                                                   AP=pikepdf.Dictionary(N=pikepdf.Dictionary({"/" + state: on, "/Off": pdf.make_stream(b"")}))))
+        kids.append(kid)
+    colour = pdf.make_indirect(pikepdf.Dictionary(FT=pikepdf.Name.Btn, T=pikepdf.String("colour"), Ff=1 << 15, V=pikepdf.Name.Off,
+                                                  Kids=pikepdf.Array(kids)))
+    for kid in kids:
+        kid.Parent = colour
+    size = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Annot, Subtype=pikepdf.Name.Widget, FT=pikepdf.Name.Ch,
+                                                T=pikepdf.String("size"), Ff=1 << 17, V=pikepdf.String("M"),
+                                                Opt=pikepdf.Array([pikepdf.Array(["S", "Small"]), pikepdf.Array(["M", "Medium"]),
+                                                                   pikepdf.Array(["L", "Large"])]),
+                                                Rect=[20, 60, 120, 80], F=4, DA=da))
+    second.Annots = pikepdf.Array([*kids, size])
+    pdf.Root.AcroForm = pikepdf.Dictionary(Fields=pikepdf.Array([name, agree, locked_field, colour, size]), DA=da,
+                                           DR=pikepdf.Dictionary(Font=pikepdf.Dictionary(Helv=font)))
+    pdf.save(path)
+    return path
+
+
 def locked(path: Path, password: str = "secret") -> Path:
     pdf = pikepdf.new()
     _page(pdf, "Locked page")

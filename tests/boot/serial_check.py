@@ -780,9 +780,13 @@ def main() -> int:
         # through the bubblewrap helper, what it wants is listed and not done, and the text comes out.
         ("pdf: opened in the sandbox, wants listed, text out", f"echo {PDF_CHECK_B64} | base64 -d > /tmp/pdf-check.py && "
          "python3 -I /tmp/pdf-check.py; dai-pdf check /tmp/wants.pdf; echo CHECK_RC=$?; dai-pdf text /tmp/wants.pdf; "
-         "xdg-mime query default application/pdf",
+         "xdg-mime query default application/pdf; "
+         # Stage 2 (editing) in the sandbox: a merged, turned copy and the form's fields, from the command line.
+         "dai-pdf merge /tmp/wants.pdf /tmp/wants.pdf -o /tmp/two.pdf; dai-pdf rotate /tmp/two.pdf --by 90 --pages 2 -o /tmp/turned.pdf; "
+         "echo EDIT_RC=$?; dai-pdf info /tmp/turned.pdf | grep -E '^Pages'; dai-pdf fields /tmp/wants.pdf | head -n 3; "
+         "ls -l /tmp/turned.pdf | cut -c1-10",
          True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
-         and "dai-pdf.desktop" in o, 120),
+         and "dai-pdf.desktop" in o and "EDIT_RC=0" in o and "Pages: 2" in o and "-rw-------" in o, 180),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",

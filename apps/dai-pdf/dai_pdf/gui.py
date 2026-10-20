@@ -16,14 +16,16 @@ from typing import Callable
 
 from PyQt6.QtCore import QPoint, QRect, QRectF, QSize, Qt, QTimer
 from PyQt6.QtGui import QColor, QGuiApplication, QIcon, QImage, QKeySequence, QPainter, QPen, QPixmap, QShortcut
-from PyQt6.QtWidgets import (QApplication, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout,
-                             QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QScrollArea,
-                             QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame,
+                             QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QMessageBox,
+                             QPlainTextEdit, QPushButton, QScrollArea, QTabWidget, QTreeWidget, QTreeWidgetItem,
+                             QVBoxLayout, QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
 from dai_style.panes import Panes, WrapRow, touch_scrolling
 
+from .edit import EditError, Editor
 from .reader import Document, PdfError, Reader
 from .text import find_all
 
@@ -75,6 +77,14 @@ QPushButton#Primary {{ background: {ACCENT_STRONG}; color: #FFFFFF; border: 1px 
 QPushButton#Primary:focus {{ border: 2px solid {ACCENT_2}; }}
 QPushButton:disabled {{ background: {SURFACE}; color: {DISABLED}; border: 1px solid {BORDER}; }}
 QLineEdit:disabled, QComboBox:disabled {{ color: {DISABLED}; }}
+QPlainTextEdit {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 8px; font-size: 11pt; }}
+QPlainTextEdit:focus {{ border: 2px solid {ACCENT_2}; }}
+QCheckBox {{ color: {TEXT}; spacing: 8px; }}
+QCheckBox::indicator {{ width: 18px; height: 18px; border: 1px solid {BORDER}; border-radius: 4px; background: {SURFACE}; }}
+QCheckBox::indicator:checked {{ background: {ACCENT_STRONG}; border: 1px solid {ACCENT_STRONG}; }}
+QCheckBox:focus {{ color: {ACCENT_2}; }}
+#FormHint {{ color: {MUTED}; font-size: 10pt; }}
+#FormBody {{ background: {BG2}; }}
 """
 
 
@@ -134,6 +144,7 @@ class PageView(QLabel):
     def __init__(self, window: "PdfWindow", index: int, points: tuple[float, float]) -> None:
         super().__init__()
         self.window_, self.index, self.points = window, index, points
+        self.extra = 0  # the page's own turn, from an edit (docs/PDF.md stage 2)
         self.links: list[dict] | None = None
         self.highlights: list[tuple[float, float, float, float]] = []
         self.rendered_key: tuple | None = None
@@ -143,8 +154,12 @@ class PageView(QLabel):
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
+    @property
+    def rotation(self) -> int:
+        return (self.window_.rotation + self.extra) % 360
+
     def pixel_size(self) -> QSize:
-        scale, rotation = self.window_.scale, self.window_.rotation
+        scale, rotation = self.window_.scale, self.rotation
         w, h = self.points
         if rotation in (90, 270):
             w, h = h, w
@@ -160,9 +175,9 @@ class PageView(QLabel):
 
     def show_image(self, image: QImage) -> None:
         pixmap = QPixmap.fromImage(image)
-        if self.window_.rotation:
+        if self.rotation:
             from PyQt6.QtGui import QTransform
-            pixmap = pixmap.transformed(QTransform().rotate(self.window_.rotation))
+            pixmap = pixmap.transformed(QTransform().rotate(self.rotation))
         if self.highlights:
             pixmap = self.with_highlights(pixmap)
         self.setFixedSize(pixmap.size())
@@ -186,7 +201,7 @@ class PageView(QLabel):
         """A rectangle in page points (top-left origin, unrotated) on this rotated, scaled picture."""
         x, y, w, h = rect
         pw, ph = self.points
-        r = self.window_.rotation
+        r = self.rotation
         if r == 90:
             x, y, w, h = ph - y - h, x, h, w
         elif r == 180:
@@ -201,7 +216,7 @@ class PageView(QLabel):
         s = self.window_.scale
         x, y = pos.x() / s, pos.y() / s
         pw, ph = self.points
-        r = self.window_.rotation
+        r = self.rotation
         if r == 90:
             x, y = y, ph - x
         elif r == 180:
@@ -357,13 +372,28 @@ class InfoDialog(QDialog):
 class PdfWindow(QWidget):
     def __init__(self, path: str | None = None, lang: str | None = None,
                  reader_factory: Callable[..., Reader] = Reader, open_url: Callable[[str], None] = default_open_url,
-                 sandboxed: bool = True, ask_password: Callable[[str, bool], str | None] | None = None) -> None:
+                 sandboxed: bool = True, ask_password: Callable[[str, bool], str | None] | None = None,
+                 editor: Editor | None = None, confirm_discard: Callable[[], bool] | None = None) -> None:
         super().__init__()
         self.lang = lang or ui_lang()
         self.reader_factory, self.open_url, self.sandboxed = reader_factory, open_url, sandboxed
         self.ask_password = ask_password or self._ask_password
+        self.editor = editor or Editor(sandboxed=sandboxed)
+        self.confirm_discard = confirm_discard or self._confirm_discard
         self.reader: Reader | None = None
         self.doc: Document | None = None
+        # Editing (docs/PDF.md stage 2): the window shows a plan, not the file. plan[i] says which source page
+        # is at position i and how it is turned; the sources are the document and every inserted file. Nothing
+        # is written until "Save": the sandboxed editor builds the file the plan describes.
+        self.sources: list[Reader] = []
+        self.plan: list[dict] = []
+        self.undo_stack: list[tuple[list[dict], dict]] = []
+        self.redo_stack: list[tuple[list[dict], dict]] = []
+        self.fields: list[dict] = []
+        self.field_values: dict[str, object] = {}
+        self.field_widgets: dict[str, QWidget] = {}
+        self.modified = False
+        self.thumb_cache: dict[tuple, QIcon] = {}
         self.views: list[PageView] = []
         self.cache: dict[int, tuple[tuple, QImage]] = {}
         self.cache_order: list[int] = []
@@ -450,6 +480,11 @@ class PdfWindow(QWidget):
                                         self.toggle_side, top)
         self.info_button = self._button("ⓘ", say(self.lang, "About this PDF", "על קובץ ה-PDF הזה"), self.show_info, top)
         self.print_button = self._button("🖨", say(self.lang, "Print", "הדפסה"), self.print_, top)
+        top.addSpacing(12)
+        self.undo_button = self._button("↶", say(self.lang, "Undo", "ביטול"), self.undo, top)
+        self.redo_button = self._button("↷", say(self.lang, "Redo", "ביצוע מחדש"), self.redo, top)
+        self.save_button = self._button(say(self.lang, "Save as…", "שמירה בשם…"), say(self.lang, "Save the edited file", "שמירת הקובץ הערוך"),
+                                        self.save_as, top, primary=True)
         outer.addLayout(top)
 
         self.banner = QFrame()
@@ -473,7 +508,19 @@ class PdfWindow(QWidget):
         self.thumbs.setMovement(QListWidget.Movement.Static)
         self.thumbs.setAccessibleName(say(self.lang, "Pages", "עמודים"))
         self.thumbs.currentRowChanged.connect(lambda row: self.go_to(row) if row >= 0 and not self._syncing else None)
-        self.side.addTab(self.thumbs, say(self.lang, "Pages", "עמודים"))
+        pages_tab = QWidget()
+        pages_layout = QVBoxLayout(pages_tab)
+        pages_layout.setContentsMargins(0, 0, 0, 0)
+        pages_layout.addWidget(self.thumbs, 1)
+        tools = WrapRow()
+        self.rotate_page_button = self._button("⟳", say(self.lang, "Turn this page", "סיבוב העמוד הזה"), self.rotate_page, tools)
+        self.up_button = self._button("↑", say(self.lang, "Move this page up", "הזזת העמוד למעלה"), lambda: self.move_page(-1), tools)
+        self.down_button = self._button("↓", say(self.lang, "Move this page down", "הזזת העמוד למטה"), lambda: self.move_page(1), tools)
+        self.delete_button = self._button("✕", say(self.lang, "Remove this page", "הסרת העמוד הזה"), self.delete_page, tools)
+        self.insert_button = self._button("＋", say(self.lang, "Insert pages from another PDF", "הוספת עמודים מקובץ PDF אחר"),
+                                          self.insert_dialog, tools)
+        pages_layout.addLayout(tools)
+        self.side.addTab(pages_tab, say(self.lang, "Pages", "עמודים"))
         self.outline = QTreeWidget()
         self.outline.setHeaderHidden(True)
         self.outline.setAccessibleName(say(self.lang, "Outline", "תוכן העניינים"))
@@ -487,6 +534,16 @@ class PdfWindow(QWidget):
         self.attachments = QListWidget()
         self.attachments.setAccessibleName(say(self.lang, "Attachments (never opened)", "קבצים מצורפים (לעולם לא נפתחים)"))
         self.side.addTab(self.attachments, say(self.lang, "Attachments", "קבצים מצורפים"))
+        self.form_scroll = QScrollArea()
+        self.form_scroll.setWidgetResizable(True)
+        self.form_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.form_scroll.setAccessibleName(say(self.lang, "Form", "טופס"))
+        self.form_widget = QWidget()
+        self.form_widget.setObjectName("FormBody")
+        self.form_layout = QFormLayout(self.form_widget)
+        self.form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapAllRows)
+        self.form_scroll.setWidget(self.form_widget)
+        self.side.addTab(self.form_scroll, say(self.lang, "Form", "טופס"))
         self.side.currentChanged.connect(lambda i: self._thumbnails_start() if i == 0 else None)
         self.splitter.addWidget(self.side)
 
@@ -535,13 +592,28 @@ class PdfWindow(QWidget):
         QShortcut(QKeySequence("Ctrl+Shift+C"), self, activated=lambda: self.copy_page(True))
         QShortcut(QKeySequence("F9"), self, activated=self.toggle_side)
         QShortcut(QKeySequence("Ctrl+W"), self, activated=self.close)
+        QShortcut(QKeySequence("Ctrl+S"), self, activated=self.save_as)
+        QShortcut(QKeySequence("Ctrl+Z"), self, activated=self.undo)
+        QShortcut(QKeySequence("Ctrl+Shift+Z"), self, activated=self.redo)
+        QShortcut(QKeySequence("Ctrl+Y"), self, activated=self.redo)
         QShortcut(QKeySequence("Ctrl+Home"), self, activated=lambda: self.go_to(0))
         QShortcut(QKeySequence("Ctrl+End"), self, activated=lambda: self.go_to(self.count() - 1))
 
     # --- opening -----------------------------------------------------------------------------------------------
 
     def count(self) -> int:
-        return self.doc.count if self.doc else 0
+        return len(self.plan) if self.doc else 0
+
+    def _src(self, index: int) -> tuple[Reader, int]:
+        """The reader and page that sit at position index of the plan."""
+        entry = self.plan[index]
+        return self.sources[int(entry["source"])], int(entry["index"])
+
+    def _points(self, index: int) -> tuple[float, float]:
+        """The page's size in points before the view's rotation (its own turn applied)."""
+        reader, src = self._src(index)
+        w, h = reader.document.pages[src] if reader.document else (1.0, 1.0)
+        return (h, w) if int(self.plan[index].get("rotate", 0)) in (90, 270) else (w, h)
 
     def _ask_password(self, name: str, wrong: bool) -> str | None:
         dialog = PasswordDialog(self, self.lang, name, wrong)
@@ -577,7 +649,14 @@ class PdfWindow(QWidget):
                 self.show_message(self._error_text(exc, name))
                 return False
         self.reader, self.doc = reader, doc
-        self.setWindowTitle(f"{doc.title} · D.Ai PDF")
+        self.sources = [reader]
+        self.plan = [{"source": 0, "index": i, "rotate": 0} for i in range(doc.count)]
+        self.undo_stack, self.redo_stack = [], []
+        self.field_values = {}
+        self.thumb_cache.clear()
+        self.modified = False
+        self._load_fields()
+        self._title()
         self._fill_side()
         self._build_pages()
         self.update_banner()
@@ -601,9 +680,16 @@ class PdfWindow(QWidget):
         return say(self.lang, "{name} is not a PDF that can be opened.", "{name} אינו קובץ PDF שניתן לפתוח.", name=name)
 
     def close_document(self) -> None:
-        if self.reader is not None:
+        for source in self.sources:
+            source.close()
+        if self.reader is not None and self.reader not in self.sources:
             self.reader.close()
         self.reader, self.doc = None, None
+        self.sources, self.plan, self.fields, self.field_values = [], [], [], {}
+        self.undo_stack, self.redo_stack = [], []
+        self.modified = False
+        self.thumb_cache.clear()
+        self._fill_form_tab()
         self.thumb_timer.stop()
         self.cache.clear()
         self.cache_order.clear()
@@ -621,8 +707,26 @@ class PdfWindow(QWidget):
         self.page_field.setText("")
 
     def closeEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        if self.modified and not self.confirm_discard():
+            event.ignore()
+            return
         self.close_document()
         super().closeEvent(event)
+
+    def _confirm_discard(self) -> bool:
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Question)
+        box.setWindowTitle("D.Ai PDF")
+        box.setText(say(self.lang, "The changes were not saved. Close anyway?", "השינויים לא נשמרו. לסגור בכל זאת?"))
+        box.setStandardButtons(QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Cancel)
+        box.setDefaultButton(QMessageBox.StandardButton.Cancel)
+        return box.exec() == QMessageBox.StandardButton.Discard
+
+    def _title(self) -> None:
+        if self.doc:
+            self.setWindowTitle(("• " if self.modified else "") + f"{self.doc.title} · D.Ai PDF")
+        else:
+            self.setWindowTitle("D.Ai PDF")
 
     def show_message(self, text: str) -> None:
         self.message.setText(text)
@@ -632,11 +736,17 @@ class PdfWindow(QWidget):
         assert self.doc is not None
         self._syncing = True
         self.thumbs.clear()
-        for i in range(self.doc.count):
-            label = self.doc.labels[i] if i < len(self.doc.labels) and self.doc.labels[i] else str(i + 1)
+        for i in range(self.count()):
+            entry = self.plan[i]
+            label = str(i + 1)
+            if entry["source"] == 0 and entry["index"] < len(self.doc.labels) and self.doc.labels[entry["index"]]:
+                label = self.doc.labels[entry["index"]]
             item = QListWidgetItem(label)
             item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             item.setToolTip(say(self.lang, "Page {n}", "עמוד {n}", n=i + 1))
+            key = (entry["source"], entry["index"], entry.get("rotate", 0))
+            if key in self.thumb_cache:
+                item.setIcon(self.thumb_cache[key])
             self.thumbs.addItem(item)
         self.thumbs_done = 0
         self.outline.clear()
@@ -662,11 +772,13 @@ class PdfWindow(QWidget):
     def _build_pages(self) -> None:
         assert self.doc is not None
         self.message.hide()
-        for i, points in enumerate(self.doc.pages):
-            view = PageView(self, i, points)
+        for i in range(self.count()):
+            reader, src = self._src(i)
+            view = PageView(self, i, reader.document.pages[src] if reader.document else (1.0, 1.0))
+            view.extra = int(self.plan[i].get("rotate", 0))
             self.pages_layout.addWidget(view, alignment=Qt.AlignmentFlag.AlignHCenter)
             self.views.append(view)
-        self.count_label.setText(say(self.lang, "of {n}", "מתוך {n}", n=self.doc.count))
+        self.count_label.setText(say(self.lang, "of {n}", "מתוך {n}", n=self.count()))
 
     def update_banner(self) -> None:
         assert self.doc is not None
@@ -710,7 +822,7 @@ class PdfWindow(QWidget):
     def _relayout(self) -> None:
         if not self.doc or not self.views:
             return
-        w, h = self.doc.pages[min(self.current_page, self.doc.count - 1)]
+        w, h = self._points(min(self.current_page, self.count() - 1))
         if self.rotation in (90, 270):
             w, h = h, w
         if self.zoom == "width":
@@ -746,12 +858,13 @@ class PdfWindow(QWidget):
 
     def _render_image(self, index: int, size: QSize) -> QImage | None:
         assert self.reader is not None
-        key = (size.width(), size.height())
+        reader, src = self._src(index)
+        key = (size.width(), size.height(), id(reader), src)
         cached = self.cache.get(index)
         if cached and cached[0] == key:
             return cached[1]
         try:
-            png, _, _ = self.reader.render(index, size.width(), size.height())
+            png, _, _ = reader.render(src, size.width(), size.height())
         except PdfError:
             return None
         image = QImage.fromData(png, "PNG")
@@ -779,7 +892,8 @@ class PdfWindow(QWidget):
                 continue
             view.show_image(image)
             if view.links is None:
-                view.links = self.reader.links(index)
+                reader, src = self._src(index)
+                view.links = reader.links(src)
         self._update_current()
 
     def _scrolled(self, _value: int) -> None:
@@ -804,10 +918,11 @@ class PdfWindow(QWidget):
 
     def _describe_page(self, index: int) -> None:
         """The current page's text is its accessible description, so a screen reader can read it."""
-        if not self.reader or not self.doc:
+        if not self.reader or not self.doc or index >= self.count():
             return
+        reader, src = self._src(index)
         try:
-            text = self.reader.text(index)
+            text = reader.text(src)
         except PdfError:
             return
         self.views[index].setAccessibleDescription(text[:20000])
@@ -848,24 +963,34 @@ class PdfWindow(QWidget):
     # --- thumbnails --------------------------------------------------------------------------------------------
 
     def _thumbnails_start(self) -> None:
-        if self.doc and self.thumbs_done < min(self.doc.count, MAX_THUMBS) and not self.thumb_timer.isActive():
+        if self.doc and self.thumbs_done < min(self.count(), MAX_THUMBS) and not self.thumb_timer.isActive():
             self.thumb_timer.start()
 
     def _next_thumbnail(self) -> None:
-        if not self.doc or not self.reader or self.thumbs_done >= min(self.doc.count, MAX_THUMBS):
+        if not self.doc or not self.reader or self.thumbs_done >= min(self.count(), MAX_THUMBS):
             self.thumb_timer.stop()
             return
         i = self.thumbs_done
         self.thumbs_done += 1
-        w, h = self.doc.pages[i]
+        entry = self.plan[i]
+        key = (entry["source"], entry["index"], entry.get("rotate", 0))
+        if key in self.thumb_cache:
+            self.thumbs.item(i).setIcon(self.thumb_cache[key])
+            return
+        reader, src = self._src(i)
+        w, h = reader.document.pages[src] if reader.document else (1.0, 1.0)
         height = max(1, round(THUMB_WIDTH * h / max(1.0, w)))
         try:
-            png, _, _ = self.reader.render(i, THUMB_WIDTH, height)
+            png, _, _ = reader.render(src, THUMB_WIDTH, height)
         except PdfError:
             return
         pixmap = QPixmap.fromImage(QImage.fromData(png, "PNG"))
+        if entry.get("rotate", 0):
+            from PyQt6.QtGui import QTransform
+            pixmap = pixmap.transformed(QTransform().rotate(int(entry["rotate"])))
         if not pixmap.isNull():
-            self.thumbs.item(i).setIcon(QIcon(pixmap))
+            self.thumb_cache[key] = QIcon(pixmap)
+            self.thumbs.item(i).setIcon(self.thumb_cache[key])
 
     # --- search ------------------------------------------------------------------------------------------------
 
@@ -880,9 +1005,10 @@ class PdfWindow(QWidget):
         if not needle or not self.doc or not self.reader:
             self.render_timer.start()
             return
-        for page in range(self.doc.count):
+        for page in range(self.count()):
+            reader, src = self._src(page)
             try:
-                text = self.reader.text(page, as_extracted=True)
+                text = reader.text(src, as_extracted=True)
             except PdfError:
                 continue
             for at in find_all(text, needle):
@@ -909,7 +1035,10 @@ class PdfWindow(QWidget):
         if row < 0 or row >= len(self.results) or not self.reader:
             return
         page, start, length = self.results[row]
-        rects = self.reader.select(page, start, length)
+        if page >= self.count():
+            return
+        reader, src = self._src(page)
+        rects = reader.select(src, start, length)
         for view in self.views:
             if view.highlights and view.index != page:
                 view.highlights = []
@@ -943,8 +1072,9 @@ class PdfWindow(QWidget):
     def copy_page(self, as_extracted: bool) -> None:
         if not self.reader or not self.doc:
             return
+        reader, src = self._src(self.current_page)
         try:
-            text = self.reader.text(self.current_page, as_extracted=as_extracted)
+            text = reader.text(src, as_extracted=as_extracted)
         except PdfError:
             return
         QGuiApplication.clipboard().setText(text)
@@ -975,22 +1105,266 @@ class PdfWindow(QWidget):
         painter = QPainter(printer)
         dpi = max(72, printer.resolution())
         printed = 0
-        for index, (w, h) in enumerate(self.doc.pages):
+        for index in range(self.count()):
+            reader, src = self._src(index)
+            w, h = reader.document.pages[src] if reader.document else (1.0, 1.0)
             if index:
                 printer.newPage()
             try:
-                png, _, _ = self.reader.render(index, round(w * dpi / 72), round(h * dpi / 72))
+                png, _, _ = reader.render(src, round(w * dpi / 72), round(h * dpi / 72))
             except PdfError:
                 continue
             image = QImage.fromData(png, "PNG")
             if image.isNull():
                 continue
+            if self.plan[index].get("rotate", 0):
+                from PyQt6.QtGui import QTransform
+                image = image.transformed(QTransform().rotate(int(self.plan[index]["rotate"])))
             target = painter.viewport()
             scaled = image.size().scaled(target.size(), Qt.AspectRatioMode.KeepAspectRatio)
             painter.drawImage(QRectF(target.x(), target.y(), scaled.width(), scaled.height()), image)
             printed += 1
         painter.end()
         return printed
+
+    # --- editing (docs/PDF.md stage 2) -------------------------------------------------------------------------
+
+    def _snapshot(self) -> None:
+        self.undo_stack.append(([dict(e) for e in self.plan], dict(self.field_values)))
+        del self.undo_stack[:-100]
+        self.redo_stack.clear()
+
+    def _apply_plan(self, current: int) -> None:
+        """The views, thumbnails and counters follow the plan; the file itself is untouched until Save."""
+        self.cache.clear()
+        self.cache_order.clear()
+        self.results.clear()
+        self.result_list.clear()
+        for view in self.views:
+            self.pages_layout.removeWidget(view)
+            view.deleteLater()
+        self.views = []
+        self.thumb_timer.stop()
+        self._fill_side()
+        if self.plan:
+            self._build_pages()
+            self._relayout()
+            self.go_to(max(0, min(current, self.count() - 1)))
+            if self.side.isVisible() and self.side.currentIndex() == 0:
+                self._thumbnails_start()
+        self.modified = True
+        self._title()
+        self.status.setText(say(self.lang, "{n} pages · not saved yet (Ctrl+S)", "{n} עמודים · עדיין לא נשמר (Ctrl+S)", n=self.count()))
+
+    def rotate_page(self, index: int | None = None) -> None:
+        if not self.doc:
+            return
+        index = self.current_page if index is None else index
+        self._snapshot()
+        self.plan[index]["rotate"] = (int(self.plan[index].get("rotate", 0)) + 90) % 360
+        self._apply_plan(index)
+
+    def move_page(self, delta: int, index: int | None = None) -> None:
+        if not self.doc:
+            return
+        index = self.current_page if index is None else index
+        target = index + delta
+        if not 0 <= target < self.count():
+            return
+        self._snapshot()
+        self.plan[index], self.plan[target] = self.plan[target], self.plan[index]
+        self._apply_plan(target)
+
+    def delete_page(self, index: int | None = None) -> None:
+        if not self.doc or self.count() <= 1:
+            self.status.setText(say(self.lang, "A file keeps at least one page.", "קובץ שומר לפחות עמוד אחד."))
+            return
+        index = self.current_page if index is None else index
+        self._snapshot()
+        del self.plan[index]
+        self._apply_plan(index)
+
+    def insert_dialog(self) -> None:
+        if not self.doc:
+            return
+        path, _ = QFileDialog.getOpenFileName(self, say(self.lang, "Insert pages from a PDF", "הוספת עמודים מקובץ PDF"), "",
+                                              say(self.lang, "PDF files (*.pdf);;All files (*)", "קובצי PDF (*.pdf);;כל הקבצים (*)"))
+        if path:
+            self.insert_pdf(path)
+
+    def insert_pdf(self, path: str, at: int | None = None) -> bool:
+        """Every page of another file, after the current page (or at `at`); the file opens in its own sandbox."""
+        if not self.doc:
+            return False
+        name = Path(path).name
+        password, wrong = "", False
+        while True:
+            reader = self.reader_factory(path, password=password, sandboxed=self.sandboxed)
+            try:
+                other = reader.open()
+                break
+            except PdfError as exc:
+                reader.close()
+                if exc.kind == "password":
+                    answer = self.ask_password(name, wrong)
+                    if answer is None:
+                        return False
+                    password, wrong = answer, True
+                    continue
+                self.status.setText(self._error_text(exc, name))
+                return False
+        self._snapshot()
+        self.sources.append(reader)
+        source = len(self.sources) - 1
+        at = self.current_page + 1 if at is None else max(0, min(self.count(), at))
+        self.plan[at:at] = [{"source": source, "index": i, "rotate": 0} for i in range(other.count)]
+        self._apply_plan(at)
+        self.status.setText(say(self.lang, "{n} pages from {name} were inserted · not saved yet (Ctrl+S)",
+                                "{n} עמודים מ-{name} נוספו · עדיין לא נשמר (Ctrl+S)", n=other.count, name=name))
+        return True
+
+    def undo(self) -> None:
+        if not self.undo_stack:
+            return
+        self.redo_stack.append(([dict(e) for e in self.plan], dict(self.field_values)))
+        self.plan, self.field_values = self.undo_stack.pop()
+        self._apply_plan(self.current_page)
+        self._fill_form_tab()
+
+    def redo(self) -> None:
+        if not self.redo_stack:
+            return
+        self.undo_stack.append(([dict(e) for e in self.plan], dict(self.field_values)))
+        self.plan, self.field_values = self.redo_stack.pop()
+        self._apply_plan(self.current_page)
+        self._fill_form_tab()
+
+    # --- forms -------------------------------------------------------------------------------------------------
+
+    def _load_fields(self) -> None:
+        self.fields = []
+        if self.reader is not None:
+            try:
+                self.fields = self.editor.fields(self.reader.path, self.reader.password)
+            except EditError as exc:
+                self.fields = []
+                if exc.kind == "sandbox":
+                    self.status.setText(self._error_text(PdfError("sandbox"), Path(self.reader.path).name))
+        self._fill_form_tab()
+
+    def _fill_form_tab(self) -> None:
+        while self.form_layout.count():
+            item = self.form_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)
+                widget.deleteLater()
+        self.field_widgets = {}
+        if not self.fields:
+            hint = QLabel(say(self.lang, "No form fields in this file.", "אין שדות טופס בקובץ הזה.") if self.doc else "")
+            hint.setObjectName("FormHint")
+            hint.setWordWrap(True)
+            self.form_layout.addRow(hint)
+            return
+        hint = QLabel(say(self.lang, "Fill in, then save (Ctrl+S). Nothing is sent anywhere.",
+                          "מלאו, ואז שמרו (Ctrl+S). שום דבר לא נשלח לשום מקום."))
+        hint.setObjectName("FormHint")
+        hint.setWordWrap(True)
+        self.form_layout.addRow(hint)
+        for field in self.fields:
+            name = str(field["name"])
+            value = self.field_values.get(name, field.get("value"))
+            label = QLabel(name + (" *" if field.get("required") else ""))
+            label.setWordWrap(True)
+            widget: QWidget
+            if field["kind"] == "checkbox":
+                box = QCheckBox(say(self.lang, "Checked", "מסומן"))
+                box.setChecked(bool(value))
+                box.toggled.connect(lambda on, n=name: self._field_changed(n, bool(on)))
+                widget = box
+            elif field["kind"] in ("radio", "choice"):
+                combo = QComboBox()
+                if field["kind"] == "radio":
+                    combo.addItem(say(self.lang, "(none)", "(ללא)"), "Off")
+                    for option in field.get("options", []):
+                        combo.addItem(str(option), str(option))
+                else:
+                    for option in field.get("options", []):
+                        export, shown = (option[0], option[1]) if isinstance(option, list) else (str(option), str(option))
+                        combo.addItem(str(shown), str(export))
+                at = combo.findData(str(value))
+                combo.setCurrentIndex(max(0, at))
+                combo.currentIndexChanged.connect(lambda _i, n=name, c=combo: self._field_changed(n, str(c.currentData())))
+                widget = combo
+            elif field.get("multiline"):
+                text = QPlainTextEdit()
+                text.setPlainText(str(value or ""))
+                text.setFixedHeight(90)
+                text.textChanged.connect(lambda n=name, t=text: self._field_changed(n, t.toPlainText()))
+                widget = text
+            else:
+                line = QLineEdit(str(value or ""))
+                line.textEdited.connect(lambda text, n=name: self._field_changed(n, text))
+                widget = line
+            widget.setAccessibleName(name)
+            widget.setEnabled(not field.get("readonly"))
+            label.setBuddy(widget)
+            self.form_layout.addRow(label, widget)
+            self.field_widgets[name] = widget
+        self.flatten_box = QCheckBox(say(self.lang, "Flatten when saving (the form can no longer be edited)",
+                                         "שיטוח בשמירה (לא ניתן יהיה לערוך את הטופס יותר)"))
+        self.flatten_box.setAccessibleName(self.flatten_box.text())
+        self.form_layout.addRow(self.flatten_box)
+
+    def _field_changed(self, name: str, value: object) -> None:
+        self.field_values[name] = value
+        if not self.modified:
+            self.modified = True
+            self._title()
+
+    # --- saving ------------------------------------------------------------------------------------------------
+
+    def save_as(self) -> None:
+        if not self.doc or not self.reader:
+            return
+        suggested = str(Path(self.reader.path).with_name(Path(self.reader.path).stem + "-edited.pdf"))
+        path, _ = QFileDialog.getSaveFileName(self, say(self.lang, "Save the PDF as", "שמירת ה-PDF בשם"), suggested,
+                                              say(self.lang, "PDF files (*.pdf)", "קובצי PDF (*.pdf)"))
+        if path:
+            self.save_to(path)
+
+    def save_to(self, path: str) -> bool:
+        """The plan and the form, written by the sandboxed editor; then the saved file is opened here."""
+        if not self.doc or not self.reader:
+            return False
+        if not path.lower().endswith(".pdf"):
+            path += ".pdf"
+        flatten = bool(getattr(self, "flatten_box", None) and self.flatten_box.isChecked())
+        self.status.setText(say(self.lang, "Saving in the sandbox…", "שומר בארגז החול…"))
+        QApplication.processEvents()
+        try:
+            answer = self.editor.save([s.path for s in self.sources], path, pages=[dict(e) for e in self.plan],
+                                      fields=dict(self.field_values), flatten=flatten,
+                                      passwords=[s.password for s in self.sources])
+        except EditError as exc:
+            self.status.setText(self._edit_error_text(exc))
+            return False
+        self.modified = False
+        saved = Path(path).name
+        self.open_path(path)
+        self.status.setText(say(self.lang, "Saved {name} · {n} pages", "נשמר {name} · {n} עמודים", name=saved, n=answer.get("pages", 0)))
+        return True
+
+    def _edit_error_text(self, exc: EditError) -> str:
+        if exc.kind == "sandbox":
+            return self._error_text(PdfError("sandbox"), "")
+        if exc.kind == "timeout":
+            return say(self.lang, "Saving took too long and was stopped; nothing was written.",
+                       "השמירה ארכה יותר מדי ונעצרה; שום דבר לא נכתב.")
+        if exc.kind == "missing":
+            return say(self.lang, "One of the files is gone; nothing was written.", "אחד הקבצים נעלם; שום דבר לא נכתב.")
+        return say(self.lang, "The file could not be saved ({detail}); nothing was written.",
+                   "לא ניתן היה לשמור את הקובץ ({detail}); שום דבר לא נכתב.", detail=exc.detail or exc.kind)
 
 
 def main(argv: list[str] | None = None, path: str | None = None) -> int:

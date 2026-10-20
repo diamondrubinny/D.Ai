@@ -5046,3 +5046,167 @@ msgstr "automático: activado cuando hay una pantalla táctil"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
 msgstr "Cada ventana de D.Ai lo aplica la próxima vez que se abra; el teclado, en el próximo inicio de sesión."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "(none)"
+msgstr "(ninguno)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "--by takes 90, 180 or 270."
+msgstr "--by acepta 90, 180 o 270."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A file keeps at least one page."
+msgstr "Un archivo conserva al menos una página."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Checked"
+msgstr "Marcado"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Fill in, then save (Ctrl+S). Nothing is sent anywhere."
+msgstr "Rellena y guarda (Ctrl+S). No se envía nada a ningún sitio."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Flatten when saving (the form can no longer be edited)"
+msgstr "Aplanar al guardar (el formulario ya no podrá editarse)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Form"
+msgstr "Formulario"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Insert pages from a PDF"
+msgstr "Insertar páginas de un PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Insert pages from another PDF"
+msgstr "Insertar páginas de otro PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Move this page down"
+msgstr "Mover esta página hacia abajo"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Move this page up"
+msgstr "Mover esta página hacia arriba"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No form fields in this file."
+msgstr "No hay campos de formulario en este archivo."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "One of the files is gone; nothing was written."
+msgstr "Uno de los archivos ya no existe; no se escribió nada."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "PDF files (*.pdf)"
+msgstr "Archivos PDF (*.pdf)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Redo"
+msgstr "Rehacer"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove this page"
+msgstr "Quitar esta página"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save as…"
+msgstr "Guardar como…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save the PDF as"
+msgstr "Guardar el PDF como"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save the edited file"
+msgstr "Guardar el archivo editado"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Saved {name} · {n} pages"
+msgstr "Guardado {name} · {n} páginas"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Saving in the sandbox…"
+msgstr "Guardando en el entorno aislado…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Saving took too long and was stopped; nothing was written."
+msgstr "Guardar tardó demasiado y se detuvo; no se escribió nada."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "That would leave no pages."
+msgstr "Eso no dejaría ninguna página."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The changes were not saved. Close anyway?"
+msgstr "Los cambios no se guardaron. ¿Cerrar de todos modos?"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The edit took too long and was stopped."
+msgstr "La edición tardó demasiado y se detuvo."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The file could not be saved ({detail}); nothing was written."
+msgstr "No se pudo guardar el archivo ({detail}); no se escribió nada."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The file is locked: add --password."
+msgstr "El archivo está bloqueado: añade --password."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The sandbox (bubblewrap) is missing; nothing was written."
+msgstr "Falta el entorno aislado (bubblewrap); no se escribió nada."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no file called {detail}."
+msgstr "No hay ningún archivo llamado {detail}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Those pages do not exist in the file ({detail})."
+msgstr "Esas páginas no existen en el archivo ({detail})."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Turn this page"
+msgstr "Girar esta página"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Where to? add -o OUT.pdf"
+msgstr "¿Dónde? añade -o OUT.pdf"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "checked"
+msgstr "marcado"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "page"
+msgstr "página"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "unchecked"
+msgstr "sin marcar"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} fields filled."
+msgstr "{n} campos rellenados."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages from {name} were inserted · not saved yet (Ctrl+S)"
+msgstr "Se insertaron {n} páginas de {name} · aún sin guardar (Ctrl+S)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages · not saved yet (Ctrl+S)"
+msgstr "{n} páginas · aún sin guardar (Ctrl+S)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{out}: {n} pages"
+msgstr "{out}: {n} páginas"

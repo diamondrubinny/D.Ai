@@ -12,6 +12,10 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   CPU limits); what the file wants (JavaScript, launching programs, submitting forms, attachments, XFA) is shown
   in a bar and never done; links ask before opening and local ones are refused; Hebrew made readable; search,
   outline, thumbnails, print. The default handler for `application/pdf`; qpdfview left the image.
+- D.Ai PDF, editing: pages turned, moved, removed, inserted from another file, merged and split; forms filled
+  (text, check boxes, radio groups, drop-downs) and flattened; undo and redo; every save built by a one-shot
+  sandboxed editor that sees only the inputs read-only and an empty output folder. `dai-pdf merge|split|rotate|
+  delete|fields|fill` on the command line.
 - D.Ai VM: Windows in a window with the person's own media and key. A hardware check that says plainly when a
   computer cannot (no VT-x/AMD-V, too little memory); machines under qemu:///session with UEFI Secure Boot,
   TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded

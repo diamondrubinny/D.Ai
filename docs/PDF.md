@@ -5,7 +5,7 @@
 >
 > **Decided (19 October 2026, "from now on you decide"):** the name is D.Ai PDF; qpdfview leaves the image once
 > stage 1 is the default viewer; signatures are verify-only until a signing library is in Debian; Diamond only when
-> asked. **Status: stage 1 built** (§10). Stages 2–4 not started.
+> asked. **Status: stages 1 and 2a built** (§10, §11). Stage 2b (annotations) and stages 3–4 not started.
 
 ## 10. Stage 1: what was built
 
@@ -29,6 +29,30 @@
   is bubblewrap's, and that `dai-pdf check` lists and refuses.
 - **Not yet:** text selection by dragging (copy is per page), a window-open timer for docs/HARDWARE.md, the
   screenshot in CI, and everything in stages 2–4.
+
+## 11. Stage 2a: pages and forms (what was built)
+
+- **Editing never touches the file until Save, and never in the window.** `edit.py` runs as a one-shot helper
+  under bubblewrap (`sandbox.edit_argv`): every input bound read-only under `/tmp/in`, an empty folder the window
+  made bound writable as `/tmp/out`, one JSON request on stdin, one answer on stdout, the result moved to where
+  the person asked only after the helper finished cleanly (mode 0600). The window shows a **plan**: which source
+  page is at each position and how it is turned; "Save as…" asks the editor to build that file.
+- **Pages:** turn, move up and down, remove (never the last one), insert every page of another PDF (opened in
+  its own sandbox, with its own password if it has one), merge and split from the command line. Undo and redo
+  (Ctrl+Z, Ctrl+Shift+Z) over the plan and the form. A "•" in the title and a question before closing when there
+  are unsaved changes.
+- **Forms:** the Form tab lists the fields (text, multi-line, check box, radio group, drop-down; read-only ones
+  disabled; required ones marked), filled in place; values go in with pikepdf (`/V`, `/AS`, `NeedAppearances`,
+  appearance streams regenerated) and "Flatten when saving" bakes them in (`flatten_annotations`). XFA forms are
+  shown with the stage 1 notice and are not editable.
+- **Command line:** `merge`, `split` (a range, or one file per page), `rotate`, `delete`, `fields`, `fill
+  --set name=value [--flatten]`, all `-o OUT`, all through the same sandboxed editor.
+- **Tests:** 49 for D.Ai PDF now (the editor directly and inside bubblewrap; pages, passwords, bad requests that
+  write nothing, fields listed, filled, flattened; the window: edit, undo, redo, thumbnails of turned pages, save
+  and reopen, the form tab, the close question; Raz's audit with the Form tab open, touch and narrow passes).
+  The VM check merges, turns and lists fields from the shell.
+- **Not yet (stage 2b):** annotations (highlight, note, free text, drawing, stamps and signatures as pictures),
+  and dragging pages in the thumbnail list (the buttons move them for now).
 
 ## 0. Why, and what "native" means here
 

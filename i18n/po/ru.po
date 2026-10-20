@@ -5046,3 +5046,167 @@ msgstr "автоматически: включён, когда подключё�
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
 msgstr "Каждое окно D.Ai применит это при следующем открытии; клавиатура — при следующем входе."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "(none)"
+msgstr "(нет)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "--by takes 90, 180 or 270."
+msgstr "--by принимает 90, 180 или 270."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A file keeps at least one page."
+msgstr "В файле остаётся хотя бы одна страница."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Checked"
+msgstr "Отмечено"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Fill in, then save (Ctrl+S). Nothing is sent anywhere."
+msgstr "Заполните и сохраните (Ctrl+S). Ничего никуда не отправляется."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Flatten when saving (the form can no longer be edited)"
+msgstr "Сделать плоским при сохранении (форму больше нельзя будет редактировать)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Form"
+msgstr "Форма"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Insert pages from a PDF"
+msgstr "Вставить страницы из PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Insert pages from another PDF"
+msgstr "Вставить страницы из другого PDF"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Move this page down"
+msgstr "Переместить страницу вниз"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Move this page up"
+msgstr "Переместить страницу вверх"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No form fields in this file."
+msgstr "В этом файле нет полей формы."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "One of the files is gone; nothing was written."
+msgstr "Один из файлов исчез; ничего не записано."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "PDF files (*.pdf)"
+msgstr "Файлы PDF (*.pdf)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Redo"
+msgstr "Повторить"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove this page"
+msgstr "Удалить эту страницу"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save as…"
+msgstr "Сохранить как…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save the PDF as"
+msgstr "Сохранить PDF как"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Save the edited file"
+msgstr "Сохранить изменённый файл"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Saved {name} · {n} pages"
+msgstr "Сохранено {name} · страниц: {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Saving in the sandbox…"
+msgstr "Сохранение в песочнице…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Saving took too long and was stopped; nothing was written."
+msgstr "Сохранение заняло слишком долго и было остановлено; ничего не записано."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "That would leave no pages."
+msgstr "Тогда не останется ни одной страницы."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The changes were not saved. Close anyway?"
+msgstr "Изменения не сохранены. Всё равно закрыть?"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The edit took too long and was stopped."
+msgstr "Правка заняла слишком долго и была остановлена."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "The file could not be saved ({detail}); nothing was written."
+msgstr "Не удалось сохранить файл ({detail}); ничего не записано."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The file is locked: add --password."
+msgstr "Файл заблокирован: добавьте --password."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The sandbox (bubblewrap) is missing; nothing was written."
+msgstr "Песочница (bubblewrap) отсутствует; ничего не записано."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no file called {detail}."
+msgstr "Файла с именем {detail} нет."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Those pages do not exist in the file ({detail})."
+msgstr "Таких страниц в файле нет ({detail})."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Turn this page"
+msgstr "Повернуть эту страницу"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Where to? add -o OUT.pdf"
+msgstr "Куда? добавьте -o OUT.pdf"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "checked"
+msgstr "отмечено"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "page"
+msgstr "страница"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "unchecked"
+msgstr "не отмечено"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} fields filled."
+msgstr "Заполнено полей: {n}."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages from {name} were inserted · not saved yet (Ctrl+S)"
+msgstr "Вставлено страниц из {name}: {n} · ещё не сохранено (Ctrl+S)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages · not saved yet (Ctrl+S)"
+msgstr "Страниц: {n} · ещё не сохранено (Ctrl+S)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{out}: {n} pages"
+msgstr "{out}: страниц: {n}"

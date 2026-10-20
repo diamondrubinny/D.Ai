@@ -77,5 +77,52 @@ class CliTests(unittest.TestCase):
         self.assertEqual((code, "No page 9" in err), (2, True))
 
 
+    def test_edit_commands(self):
+        import pikepdf
+        a = fixtures.plain(self.dir / "a.pdf", pages=3)
+        b = fixtures.plain(self.dir / "b.pdf", pages=1)
+        out = self.dir / "m.pdf"
+        code, text, err = self.run_cli("merge", str(a), str(b), "-o", str(out))
+        self.assertEqual((code, err), (0, ""), text)
+        self.assertIn("4 pages", text)
+        code, text, _ = self.run_cli("rotate", str(out), "--by", "90", "--pages", "2", "-o", str(self.dir / "r.pdf"))
+        self.assertEqual(code, 0, text)
+        with pikepdf.open(self.dir / "r.pdf") as pdf:
+            self.assertEqual([int(p.obj.get("/Rotate", 0)) for p in pdf.pages], [0, 90, 0, 0])
+        code, text, _ = self.run_cli("delete", str(out), "--pages", "1,4", "-o", str(self.dir / "d.pdf"))
+        self.assertEqual(code, 0, text)
+        self.assertIn("2 pages", text)
+        code, text, _ = self.run_cli("split", str(out), "--pages", "3-4", "-o", str(self.dir / "s.pdf"))
+        self.assertEqual(code, 0, text)
+        code, text, _ = self.run_cli("split", str(out), "-o", str(self.dir / "each.pdf"))
+        self.assertEqual(code, 0, text)
+        self.assertEqual(sorted(p.name for p in self.dir.glob("each-*.pdf")), ["each-1.pdf", "each-2.pdf", "each-3.pdf", "each-4.pdf"])
+        code, _, err = self.run_cli("delete", str(out), "--pages", "9", "-o", str(self.dir / "x.pdf"))
+        self.assertEqual(code, 2)
+        self.assertIn("No page", err)
+        code, _, err = self.run_cli("rotate", str(out), "--by", "45", "-o", str(self.dir / "x.pdf"))
+        self.assertEqual(code, 2)
+        code, _, err = self.run_cli("merge", str(a))
+        self.assertEqual(code, 2)
+        self.assertIn("-o", err)
+        self.assertFalse((self.dir / "x.pdf").exists())
+
+    def test_fields_and_fill(self):
+        form = fixtures.form(self.dir / "f.pdf")
+        code, text, _ = self.run_cli("fields", str(form))
+        self.assertEqual(code, 0, text)
+        self.assertIn("name  (text, page 1): ", text)
+        self.assertIn("agree  (checkbox, page 1): unchecked", text)
+        self.assertIn("size  (choice, page 2): M  [S, M, L]", text)
+        out = self.dir / "filled.pdf"
+        code, text, _ = self.run_cli("fill", str(form), "--set", "name=Dana", "--set", "agree=true", "--flatten", "-o", str(out))
+        self.assertEqual(code, 0, text)
+        self.assertIn("2 fields filled.", text)
+        code, text, _ = self.run_cli("fields", str(out))
+        self.assertIn("No form fields", text)
+        code, text, _ = self.run_cli("fields", str(fixtures.plain(self.dir / "p.pdf")))
+        self.assertIn("No form fields", text)
+
+
 if __name__ == "__main__":
     unittest.main()
