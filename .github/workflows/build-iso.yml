@@ -366,7 +366,7 @@ jobs:
   build-phone:
     needs: [lint]
     runs-on: ubuntu-24.04
-    timeout-minutes: 170
+    timeout-minutes: 200
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -379,8 +379,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends qemu-user-static binfmt-support
           ls /proc/sys/fs/binfmt_misc/ | grep -E '^qemu-aarch64$'
+      # Under emulation the package installation alone takes about an hour (the bootstrap is mmdebstrap's,
+      # minutes instead of debootstrap's hour: build-iso.sh bootstrap_foreign).
       - name: Build the phone ISO (arm64, Debian trixie container)
-        timeout-minutes: 120
+        timeout-minutes: 150
         run: |
           version="0.1.0-alpha+${GITHUB_SHA::7}"
           docker run --rm --privileged \

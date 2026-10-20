@@ -62,8 +62,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   and wlr-randr; "rotate the screen", "auto-rotate", "lock the screen rotation" in D.Ai Tune. Gestures are
   not in labwc 0.8, and D.Ai says so instead of faking them.
 - D.Ai Phone, experimental (`docs/MOBILE.md` C1a): `build-iso.sh phone` builds an arm64 image with Phosh,
-  Calls, Chatty and the D.Ai apps in touch mode, through QEMU user emulation; CI boots it in QEMU's virt
-  machine on its own job, which cannot fail the workflow while it is being proven.
+  Calls, Chatty and the D.Ai apps in touch mode, through QEMU user emulation (the chroot comes from mmdebstrap,
+  which keeps the package resolution on the host and off the emulator); CI boots it in QEMU's virt machine on
+  its own job, which cannot fail the workflow while it is being proven.
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

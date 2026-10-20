@@ -162,10 +162,14 @@ a separate "home" gesture is A3.
   ModemManager, and the D.Ai apps with touch mode on for every user; the shared layer stays (the LXQt desktop
   is on the image too, as a second session). The live login goes straight into Phosh, as the tv edition's does
   into Kodi.
-- **How it is built on an amd64 runner:** live-build bootstraps the arm64 chroot through `qemu-aarch64-static`
-  (`--bootstrap-qemu-arch arm64 --bootstrap-qemu-static`, options of live-build's `lb config`), with the host's
-  binfmt_misc handler (the runner installs `qemu-user-static`, fix-binary flag); GRUB EFI only (no syslinux on
-  arm64); the shared package lists get the arm64 kernel in place of the amd64 one and lose the x86 microcode;
+- **How it is built on an amd64 runner:** the arm64 chroot is made by `mmdebstrap` (apt resolves and downloads
+  on the host; only dpkg runs under emulation) and handed to live-build as its bootstrap cache
+  (`cache/bootstrap`, restored by `lb bootstrap_cache`): live-build's own bootstrap runs debootstrap's second
+  stage inside the chroot, where its Perl parsing of the package index took 53 minutes under emulation in the
+  first CI run (dpkg's real work was 5), past the job's time limit. The chroot's binaries run through
+  `qemu-aarch64-static` with the host's binfmt_misc handler (the runner installs `qemu-user-static`, fix-binary
+  flag; live-build's `--bootstrap-qemu-*` options stay as the fallback when the cache is missing); GRUB EFI
+  only (no syslinux on arm64); the shared package lists get the arm64 kernel in place of the amd64 one and lose the x86 microcode;
   D.Ai's own packages are installed only where their architecture fits ("all" apps yes; the llama.cpp and
   whisper.cpp runtimes and the panel plugin are amd64 builds and are left out, so Diamond and Voice are not on
   the phone image yet). Secure Boot's shim is left out: on an arm64 phone it is a per-device matter.

@@ -25,6 +25,7 @@ OUT_DIR="$(realpath -m "${2:-$REPO_ROOT/out}")"
 WORK_DIR="$(realpath -m "${WORK_DIR:-$REPO_ROOT/.work/$EDITION}")"
 readonly SCRIPT_DIR REPO_ROOT OUT_DIR WORK_DIR
 readonly VERSION="${DAI_VERSION:-0.1.0-alpha}"
+readonly ARCHIVE_AREAS="main non-free-firmware"
 export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(date +%s)}"
 
 log() { printf '[build-iso] %s\n' "$*" >&2; }
@@ -69,8 +70,29 @@ install_build_deps() {
     # The arm64 chroot runs through qemu-aarch64-static (binfmt_misc on the host must know it: the runner
     # installs qemu-user-static, which registers the handler with the fix-binary flag). GRUB for arm64 is an
     # arm64-only package: live-build installs it inside the chroot for the binary stage, not on this host.
-    apt-get install -y --no-install-recommends qemu-user-static binfmt-support
+    # mmdebstrap makes the chroot (see bootstrap_foreign); arch-test is how it confirms the emulation works.
+    apt-get install -y --no-install-recommends qemu-user-static binfmt-support mmdebstrap arch-test
   fi
+}
+
+# live-build's own bootstrap stage runs debootstrap's second stage inside the chroot, so debootstrap's Perl
+# parsing of the package index runs under QEMU emulation too: 53 of the 58 minutes that stage took in CI
+# (dpkg's real work was 5). mmdebstrap resolves and downloads with the host's apt and only runs dpkg under
+# emulation. The result goes to cache/bootstrap, which live-build restores (lb bootstrap_cache) and then
+# skips its own bootstrap stage, --bootstrap-qemu-* of lb config included.
+bootstrap_foreign() {
+  local mirror="${DEBIAN_MIRROR:-http://deb.debian.org/debian}" root=cache/bootstrap
+  log "bootstrapping $ARCH with mmdebstrap (apt on the host, dpkg under emulation)"
+  rm -rf -- "$root"
+  mkdir -p cache
+  # --variant=debootstrap is debootstrap's default package set (required + important).
+  mmdebstrap --mode=root --format=directory --architectures="$ARCH" --variant=debootstrap \
+    --components="${ARCHIVE_AREAS// /,}" trixie "$root" "$mirror"
+  # The marks live-build's bootstrap stage leaves in /etc/os-release of a live image (bootstrap_debootstrap).
+  chroot "$root" dpkg-divert --quiet --local --add --no-rename --divert /etc/os-release.debootstrap /etc/os-release
+  rm -f -- "$root/etc/os-release"
+  cp -- "$root/usr/lib/os-release" "$root/etc/os-release"
+  printf 'IMAGE_ID=live\nBUILD_ID=%s\n' "$(date --utc -d "@$SOURCE_DATE_EPOCH" +%Y%m%dT%H%M%SZ)" >>"$root/etc/os-release"
 }
 
 configure() {
@@ -87,8 +109,10 @@ configure() {
 
   local arch_args=(--architectures "$ARCH" --linux-flavours "$ARCH" --uefi-secure-boot enable)
   if [[ "$ARCH" == arm64 ]]; then
-    # No syslinux on arm64 (GRUB EFI only); the chroot's binaries run through qemu-aarch64-static; Secure Boot
-    # on arm64 phones is a per-device matter (docs/MOBILE.md C1), so the shim is left out here.
+    # No syslinux on arm64 (GRUB EFI only); the chroot's binaries run through qemu-aarch64-static (the
+    # bootstrap itself comes from mmdebstrap, see bootstrap_foreign; these options are the fallback when
+    # cache/bootstrap is missing); Secure Boot on arm64 phones is a per-device matter (docs/MOBILE.md C1), so
+    # the shim is left out here.
     arch_args=(--architectures arm64 --linux-flavours arm64 --bootloaders grub-efi
       --bootstrap-qemu-arch arm64 --bootstrap-qemu-static /usr/bin/qemu-aarch64-static --uefi-secure-boot disable)
   fi
@@ -96,7 +120,7 @@ configure() {
     --mode debian \
     --distribution trixie \
     "${arch_args[@]}" \
-    --archive-areas "main non-free-firmware" \
+    --archive-areas "$ARCHIVE_AREAS" \
     --apt-recommends false \
     --security true \
     --updates true \
@@ -201,6 +225,7 @@ main() {
   cd "$WORK_DIR"
 
   configure
+  [[ "$ARCH" == "$(dpkg --print-architecture)" ]] || bootstrap_foreign
   lb build 2>&1 | tee build.log
 
   local iso="$WORK_DIR/dai-os-$EDITION-$ARCH.hybrid.iso"
