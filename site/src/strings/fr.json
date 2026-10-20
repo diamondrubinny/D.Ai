@@ -1,170 +1,703 @@
 {
- "lang": "fr", "dir": "ltr", "locale": "fr_FR",
- "title": "D.Ai OS : un système d'exploitation gratuit et privé, avec une IA qui tourne sur votre ordinateur",
- "description": "D.Ai OS est un système d'exploitation gratuit et open source, basé sur Debian, disponible en huit langues. Son IA tourne sur votre ordinateur, pas dans le cloud. Pas de publicité, pas de télémétrie, pas de compte. Conçu pour les ordinateurs qui ne peuvent pas passer à Windows 11.",
- "skip": "Aller au contenu",
- "nav": {"label": "Navigation principale", "tour": "Visite", "inside": "Contenu", "compare": "Comparatif", "windows": "Depuis Windows 10", "download": "Télécharger"},
- "hero": {
-  "eyebrow": "Gratuit · open source · version 0.1 alpha",
-  "title_html": "L'ordinateur qui <span class=\"grad\">fait ce que vous dites</span> et le garde pour lui",
-  "lead": "D.Ai OS est un système d'exploitation gratuit basé sur Debian. Vous écrivez ou dites ce que vous voulez, et il configure, installe, retrouve vos fichiers et répond à vos questions. Son IA, Diamond, tourne sur votre ordinateur : rien de ce que vous lui demandez n'en sort. Pas de publicité, pas de télémétrie, aucun compte nécessaire.",
-  "download": "Télécharger gratuitement sur GitHub",
-  "tour": "Faire la visite",
-  "chips_label": "En bref",
-  "chips": ["L'IA sur l'ordinateur, pas dans le cloud", "8 langues, y compris de droite à gauche", "Chaque modification peut être annulée", "Disque chiffré", "Fonctionne dès 4 Go de RAM"],
-  "alt": "Le bureau de D.Ai OS : un fond sombre avec des vagues violettes et turquoise, une barre des tâches flottante avec le bouton diamant, un champ de commande, la langue, le volume et l'horloge."
- },
- "tour": {
-  "title": "Visite du système",
-  "intro": "Chaque image ici est une vraie capture d'écran, prise automatiquement pendant que D.Ai OS est testé à chaque modification.",
-  "items": [
-   {"img": "ask-diamond", "w": 1280, "h": 800, "kicker": "D.Ai Command · Diamond", "title": "Posez une question, obtenez la réponse sur votre propre ordinateur",
-    "text": "Appuyez sur le diamant ou commencez à taper dans le panneau. Écrivez <code>?</code> suivi d'une question, et Diamond répond. Diamond est un modèle d'IA qui tourne sur votre processeur (llama.cpp) : vos questions, vos fichiers et votre voix ne quittent jamais l'ordinateur. Le même champ ouvre des applications, fait des calculs, retrouve des fichiers et exécute des commandes.",
-    "alt": "La fenêtre D.Ai Command au-dessus du gestionnaire de fichiers : la question « what is linux? » et la réponse de Diamond, marquée « s'exécute sur cet ordinateur »."},
-   {"img": "forge-antivirus", "w": 1280, "h": 800, "kicker": "D.Ai Forge", "title": "« Installe un antivirus » : d'abord un plan, puis un clic",
-    "text": "Écrivez <code>+</code> et ce dont vous avez besoin. D.Ai vous montre exactement ce qui va se passer avant que quoi que ce soit ne change : quels paquets, quel service, une analyse quotidienne. Vous validez, et c'est fait. Chaque modification du système est enregistrée et peut être annulée.",
-    "alt": "D.Ai Command avec « +install antivirus » : le plan affiche les paquets ClamAV, l'activation du service de mise à jour et une analyse quotidienne du dossier personnel."},
-   {"img": "find", "w": 1280, "h": 800, "kicker": "D.Ai Find · D.Ai Doctor", "title": "Demandez simplement : « trouve les photos d'aujourd'hui », « pourquoi l'ordinateur est-il lent ? »",
-    "text": "Écrivez ce que vous cherchez, comme vous le diriez, et le fichier est retrouvé d'après son sens et sa date. Demandez pourquoi quelque chose est lent ou plein, et D.Ai Doctor vérifie l'ordinateur et propose un correctif sûr, en hébreu, en anglais et dans six autres langues.",
-    "alt": "D.Ai Command au-dessus de l'installateur avec « find photos from today », et le résultat : beach.jpg dans Images, d'aujourd'hui."},
-   {"img": "heal", "w": 1280, "h": 800, "kicker": "D.Ai Heal", "title": "Quand quelque chose ne va plus, il explique et propose un correctif",
-    "text": "Un programme a planté ou un service a échoué ? D.Ai Heal affiche une notification et ouvre une discussion qui explique simplement ce qui s'est passé. Le correctif provient d'une liste fermée, et il ne s'exécute que lorsque vous cliquez (Super+F1).",
-    "alt": "La fenêtre « D.Ai Help & Repair » : « Dites-moi ce qui ne fonctionne pas, ou choisissez un problème que j'ai remarqué », avec deux problèmes détectés, un service en échec et une application qui a planté, et un champ pour décrire un problème."},
-   {"img": "forge-app", "w": 1280, "h": 800, "kicker": "D.Ai Forge · applications", "title": "Besoin d'une petite application ? Décrivez-la",
-    "text": "« Crée-moi une liste de tâches. » Diamond écrit l'application, la teste et la corrige jusqu'à ce qu'elle fonctionne, puis l'exécute dans un bac à sable : elle ne peut ni lire vos fichiers ni aller sur Internet sans votre autorisation.",
-    "alt": "Une application de liste de tâches appelée « Mes tâches », en hébreu, créée par D.Ai Forge, avec deux tâches, un bouton d'ajout et un bouton de suppression."},
-   {"img": "quick", "w": 1280, "h": 800, "kicker": "D.Ai Quick", "title": "Tous les réglages rapides, au même endroit",
-    "text": "Wi-Fi, ne pas déranger, économie de batterie, micro et volume. Mais aussi le score de sécurité de l'ordinateur avec ce qui l'améliorerait, les problèmes détectés par D.Ai Heal, et qui a utilisé la caméra ou le micro.",
-    "alt": "Le panneau D.Ai Quick : les tuiles Wi-Fi, ne pas déranger, économie de batterie et sourdine, un curseur de volume, « Sécurité 85/100 », « D.Ai Heal a trouvé 2 problèmes » et « Rien n'enregistre »."},
-   {"img": "mail", "w": 1100, "h": 640, "kicker": "J · messagerie", "title": "Une messagerie qui lit aussi de droite à gauche",
-    "text": "J est l'application de messagerie de D.Ai. Elle trouve seule les paramètres de votre serveur, signe et chiffre vos e-mails (OpenPGP et S/MIME), supprime les pixels espions des messages et importe vos e-mails depuis Outlook (PST) et Thunderbird.",
-    "alt": "La fenêtre de messagerie J en hébreu : les dossiers à droite, une liste de messages et un message ouvert contenant le compte rendu d'une réunion."},
-   {"img": "mom", "w": 820, "h": 560, "kicker": "MOM", "title": "Ce qui ralentit l'ordinateur, expliqué simplement",
-    "text": "MOM affiche des applications, pas une liste de processus : la mémoire et le processeur que chacune utilise, si elle tourne dans un bac à sable et ce qu'elle enregistre. Diamond explique ce qu'est une application et pourquoi elle est lourde, et un processus qui s'emballe est arrêté avant de bloquer l'ordinateur.",
-    "alt": "La fenêtre MOM en hébreu : Ruby, J, GIMP et Zoom avec leur utilisation de la mémoire et du processeur ; GIMP signalé comme isolé dans un bac à sable et Zoom comme en train d'enregistrer."},
-   {"img": "clip", "w": 1280, "h": 800, "kicker": "D.Ai Clip", "title": "Un historique du presse-papiers qui ne garde jamais les mots de passe",
-    "text": "Super+V affiche ce que vous avez copié, en hébreu comme en anglais, avec une recherche. Les mots de passe, jetons et numéros de carte sont reconnus et jamais enregistrés.",
-    "alt": "La fenêtre de l'historique du presse-papiers avec une recherche et deux textes copiés, l'un en hébreu et l'autre en anglais."},
-   {"img": "way-in", "w": 1280, "h": 800, "kicker": "Dès la première seconde", "title": "Le menu de démarrage, l'écran de chargement et la connexion, tous aux couleurs de D.Ai",
-    "text": "Du menu de la clé USB (en huit langues), en passant par l'écran de chargement, où un disque chiffré demande sa phrase secrète, jusqu'à l'écran de connexion avec l'horloge, la langue du clavier et l'avertissement Caps Lock, de droite à gauche en hébreu et en arabe.",
-    "alt": "Quatre images : le menu de démarrage de la clé USB avec le diamant et « Start D.Ai OS », son sous-menu Langue, l'écran de chargement avec le diamant, et l'écran de connexion avec l'horloge et un champ de mot de passe."},
-   {"img": "installer", "w": 1280, "h": 800, "kicker": "Installation", "title": "Essayez-le depuis une clé USB, puis installez-le avec chiffrement",
-    "text": "D.Ai OS démarre depuis une clé USB sans rien modifier : vous pouvez d'abord vérifier le Wi-Fi, le son et l'imprimante. L'installateur chiffre tout le disque, et l'assistant de bienvenue vous pose quelques questions dans votre langue.",
-    "alt": "L'installateur de D.Ai OS : les étapes sur le côté (bienvenue, emplacement, clavier, partitions, utilisateurs, résumé, installation, fin) et le diamant de D.Ai OS."}
-  ]
- },
- "inside": {
-  "title": "Ce qu'il contient",
-  "intro": "Basé sur Debian 13, avec des programmes conçus pour D.Ai. Tout ce qui suit fait partie de la version 0.1, fonctionne hors ligne et ne coûte rien.",
-  "groups": [
-   {"icon": "💬", "title": "Dites-le, c'est fait", "items": [
-    ["D.Ai Command", "un seul champ pour les applications, les fichiers, les calculs, les questions (<code>?</code>), les réglages (<code>!</code>), l'installation (<code>+</code>) et le terminal (<code>&gt;</code>)."],
-    ["D.Ai Tune", "les réglages en une phrase : « verrouille l'écran après 5 minutes », « ouvre le port 8080 », « thème clair ». Il affiche d'abord un plan, et chaque modification peut être annulée."],
-    ["D.Ai Find", "« le PDF sur le bail de la semaine dernière » : la recherche de fichiers en langage courant."],
-    ["D.Ai Voice", "la dictée en hébreu, en anglais et dans d'autres langues, sur l'ordinateur (Whisper)."],
-    ["Mauvais clavier ?", "un texte tapé dans la mauvaise langue se corrige d'une seule touche (Pause)."]]},
-   {"icon": "💎", "title": "Diamond, l'IA sur votre ordinateur", "items": [
-    ["Diamond", "répond, explique et résume. Les modèles sont téléchargés une seule fois et vérifiés avec SHA-256."],
-    ["D.Ai Forge", "installe des logiciels selon un plan que vous validez, et crée de petites applications dans un bac à sable."],
-    ["Automatisations", "« tous les matins, sauvegarde mes photos » : des tâches planifiées qui s'exécutent dans un bac à sable."],
-    ["D.Ai Code", "un assistant de programmation pour les développeurs, lui aussi local."]]},
-   {"icon": "🩺", "title": "Il prend soin de lui-même", "items": [
-    ["D.Ai Doctor", "« pourquoi l'ordinateur est-il lent ? », « qu'est-ce qui remplit le disque ? », avec des correctifs sûrs."],
-    ["D.Ai Heal", "quand quelque chose plante : une notification, une explication et un correctif que vous validez."],
-    ["Raz", "vérifie le système avant et après chaque mise à jour et signale ce qui ne fonctionne plus. Chaque fenêtre D.Ai passe aussi un contrôle d'accessibilité avant chaque version."],
-    ["Instantanés et Rescue", "le système est sauvegardé avant chaque mise à jour. Annulez-la en une phrase, ou depuis la clé USB si l'ordinateur ne démarre plus."]]},
-   {"icon": "🛡", "title": "Confidentialité et sécurité", "items": [
-    ["Dès le premier jour", "chiffrement du disque, pare-feu, AppArmor et mises à jour de sécurité automatiques."],
-    ["D.Ai Privacy", "un point rouge apparaît quand quelque chose enregistre ou filme, et un journal local indique qui l'a fait et quand."],
-    ["D.Ai Backup", "une sauvegarde chiffrée et automatique sur un disque externe, configurée en une phrase."],
-    ["Ruby", "le navigateur : Firefox ESR avec protection contre le pistage, uBlock Origin et conteneurs, configuré pour la confidentialité."],
-    ["Rien n'est envoyé", "pas de télémétrie, pas de publicité, et aucun compte obligatoire."]]},
-   {"icon": "☀", "title": "Au quotidien", "items": [
-    ["D.Ai Move", "depuis Windows : documents, images, favoris du navigateur et e-mails."],
-    ["Thèmes", "D.Ai Night, D.Ai Day et contraste élevé, dans chaque fenêtre D.Ai, choisis en une phrase (« thème clair »)."],
-    ["L'essentiel", "captures d'écran (Impr. écran), éclairage nocturne, clavier virtuel, loupe, et la plupart des imprimantes sans pilote."],
-    ["Logiciels", "les paquets Debian et Flathub, plus des recettes pour Zoom, Steam, des alternatives à Office et les VPN professionnels."]]},
-   {"icon": "🧩", "title": "Éditions", "items": [
-    ["Utilisateurs", "pour un usage quotidien."],
-    ["Développeurs", "avec git, Python, des outils de compilation et D.Ai Code."],
-    ["Éducation", "pour les écoles : politiques d'organisation, pas de compte cloud, pas de pistage."],
-    ["Vendeurs d'ordinateurs (OEM)", "une seule installation, et l'acheteur crée son propre utilisateur au premier démarrage."]]}
-  ]
- },
- "compare": {
-  "title": "D.Ai OS face aux autres",
-  "intro": "Ce que chaque système offre par défaut. Nous l'avons rédigé aussi honnêtement que possible, y compris là où D.Ai est encore jeune.",
-  "caption": "D.Ai OS comparé à Windows 11, macOS, Ubuntu et ChromeOS",
-  "headers": ["", "D.Ai OS", "Windows 11", "macOS", "Ubuntu", "ChromeOS"],
-  "rows": [
-   {"label": "Prix", "cells": [["ok", "Gratuit"], ["part", "Licence payante, généralement incluse avec un PC neuf"], ["part", "Gratuit, uniquement sur les ordinateurs Apple"], ["ok", "Gratuit"], ["part", "Gratuit, fourni avec un Chromebook"]]},
-   {"label": "Open source", "cells": [["ok", "Oui (Apache-2.0)"], ["no", "Non"], ["part", "Seulement des parties du noyau"], ["ok", "Oui"], ["part", "Seulement ChromiumOS"]]},
-   {"label": "Où tourne l'assistant IA", "cells": [["ok", "Sur votre ordinateur, par défaut"], ["part", "Surtout en ligne ; certaines fonctions sur l'appareil avec les PC Copilot+"], ["part", "Sur l'appareil, et sur les serveurs d'Apple pour les demandes plus lourdes (Mac compatibles)"], ["no", "Pas d'assistant intégré"], ["part", "Surtout en ligne (Google)"]]},
-   {"label": "Compte requis pour la configuration", "cells": [["ok", "Non"], ["no", "Généralement un compte Microsoft"], ["ok", "Facultatif"], ["ok", "Non"], ["no", "Un compte Google (ou invité)"]]},
-   {"label": "Publicités et promotions dans le système", "cells": [["ok", "Aucune"], ["no", "Suggestions et promotions, certaines désactivables"], ["ok", "Pas de publicité tierce"], ["part", "Offres pour Ubuntu Pro"], ["ok", "Pas de publicité dans le système"]]},
-   {"label": "Données d'utilisation envoyées", "cells": [["ok", "Aucune"], ["no", "Données de diagnostic obligatoires"], ["part", "Demandé lors de la configuration"], ["part", "Demandé lors de la configuration"], ["part", "Données d'utilisation envoyées à Google, facultatif"]]},
-   {"label": "Ordinateurs qui ne peuvent pas passer à Windows 11", "cells": [["ok", "Oui, dès 4 Go de RAM, sans TPM 2.0"], ["no", "Non"], ["no", "Ordinateurs Apple uniquement"], ["ok", "Oui"], ["part", "ChromeOS Flex, modèles certifiés"]]},
-   {"label": "Annuler une mauvaise mise à jour", "cells": [["ok", "Tout le système, en une phrase ou depuis la clé USB"], ["part", "Désinstaller une mise à jour, Restauration du système"], ["part", "Restaurer depuis Time Machine"], ["part", "Non configuré par défaut"], ["ok", "Automatique"]]},
-   {"label": "Chiffrement du disque", "cells": [["ok", "Dans l'installateur"], ["part", "Selon l'édition et l'appareil"], ["ok", "FileVault"], ["ok", "En option dans l'installateur"], ["ok", "Toujours"]]},
-   {"label": "Maturité", "cells": [["part", "Nouveau : version 0.1 alpha"], ["ok", "Mature"], ["ok", "Mature"], ["ok", "Mature"], ["ok", "Mature"]]}
-  ],
-  "legend": {"ok": "oui / bien", "part": "en partie", "no": "non"},
-  "note": "Réglages par défaut en octobre 2026, d'après les informations publiques de chaque éditeur. Les produits évoluent : vérifiez avant de décider. Windows, macOS, Ubuntu et ChromeOS sont des marques de leurs propriétaires respectifs ; D.Ai n'est pas affilié à eux."
- },
- "windows": {
-  "title": "Vous avez Windows 10 ? Voici comment passer à D.Ai OS",
-  "intro": "Windows 10 ne reçoit plus de mises à jour de sécurité gratuites. Au lieu d'acheter un nouvel ordinateur :",
-  "steps": [
-   "<strong>Essayez sans installer.</strong> Copiez D.Ai OS sur une clé USB et démarrez l'ordinateur dessus. Demandez « est-ce que le Wi-Fi va fonctionner ? » et il vérifie le Wi-Fi, le son, l'imprimante et la caméra <em>avant</em> que quoi que ce soit ne change.",
-   "<strong>Sauvegardez</strong> votre dossier (<code>C:\\Users\\votre-nom</code>) sur un disque externe.",
-   "<strong>Installez</strong> avec le chiffrement du disque, en 20 à 30 minutes.",
-   "<strong>Récupérez vos fichiers :</strong> « transfère mes fichiers depuis Windows ». Documents, images et bureau sont transférés, avec les favoris de Chrome et d'Edge et les e-mails d'Outlook. Rien n'est écrasé.",
-   "<strong>Installez ce dont vous avez besoin :</strong> <code>+ zoom</code>, <code>+ steam</code>, <code>+ printer</code>, <code>+ install word</code>."
-  ],
-  "guide": "Le guide complet : passer de Windows 10 à D.Ai OS"
- },
- "honest": {
-  "title": "Ce qui ne fonctionnera pas (mieux vaut le savoir avant)",
-  "intro": "Nous préférons que vous le sachiez maintenant plutôt que de le découvrir après l'installation.",
-  "caption": "Programmes et jeux sur D.Ai OS",
-  "headers": ["Quoi", "État", "Alternative"],
-  "rows": [
-   ["La plupart des jeux Steam", "ok", "Fonctionne (Proton)", "<code>+ steam</code>"],
-   ["Jeux avec anti-triche au niveau du noyau (Call of Duty, Valorant)", "no", "Ne fonctionne pas", "Aucune pour l'instant"],
-   ["Word, Excel, PowerPoint", "part", "Avec LibreOffice ou ONLYOFFICE", "<code>+ install word</code>"],
-   ["Adobe Photoshop et Premiere", "no", "Ne fonctionne pas", "GIMP, Krita, Kdenlive"],
-   ["Petits programmes Windows (.exe)", "part", "Certains fonctionnent", "<code>+ windows programs</code> (Bottles)"],
-   ["Imprimantes et scanners", "ok", "La plupart", "<code>+ printer</code>"],
-   ["VPN professionnel (OpenVPN, Cisco, GlobalProtect)", "ok", "Fonctionne", "<code>+ work vpn</code>"]
-  ]
- },
- "download": {
-  "title": "Télécharger",
-  "intro": "Une seule image pour essayer et installer. Choisissez l'édition qui vous convient.",
-  "editions": [
-   {"name": "Utilisateurs", "text": "Pour un usage quotidien : tout ce qui figure sur cette page."},
-   {"name": "Développeurs", "text": "Ajoute git, Python, des outils de compilation et D.Ai Code."},
-   {"name": "Éducation", "text": "Pour les écoles et les organisations : politiques, et pas de compte cloud."}
-  ],
-  "requirements_title": "Ce qu'il vous faut",
-  "requirements": ["Un PC 64 bits (x86_64)", "4 Go de RAM (8 Go ou plus pour Diamond et la dictée)", "25 Go d'espace disque (64 Go ou plus sur SSD recommandés)", "Une clé USB de 8 Go ou plus"],
-  "cta": "Télécharger la dernière version",
-  "all": "Toutes les versions et notes de version sur GitHub",
-  "note": "Il s'agit d'une version alpha : sauvegardez vos fichiers importants avant l'installation. Vérifiez le téléchargement avec <code>SHA256SUMS</code> (<a href=\"https://github.com/diamondrubinny/D.Ai/blob/main/docs/INSTALL.md\">le guide d'installation</a>)."
- },
- "faq": {
-  "title": "Questions",
-  "items": [
-   ["Est-ce vraiment gratuit ?", "Oui. C'est un logiciel open source sous licence Apache-2.0, sans publicité ni abonnement."],
-   ["L'IA envoie-t-elle quelque chose sur Internet ?", "Non. Les modèles sont téléchargés une seule fois et vérifiés avec SHA-256, puis ils tournent sur l'ordinateur. Les questions, les fichiers et la voix ne sont envoyés nulle part."],
-   ["Comment fonctionnent les mises à jour ?", "Les mises à jour de sécurité de Debian s'installent automatiquement. Les mises à jour de D.Ai proviennent d'un dépôt signé, quand vous le décidez. Le système est sauvegardé avant chaque mise à jour, qui peut donc être annulée."],
-   ["Et si quelque chose ne fonctionne plus ?", "Chaque modification faite en une phrase peut être annulée (<code>dai-tune undo</code>). Demandez « pourquoi X ne fonctionne pas ? » (D.Ai Doctor), ou signalez le problème sur <a href=\"https://github.com/diamondrubinny/D.Ai/issues\">GitHub</a>."],
-   ["Quelles langues sont prises en charge ?", "Hébreu, anglais, arabe, russe, espagnol, français, allemand et portugais : le système, les commandes de l'IA et ce site web."],
-   ["Qui développe D.Ai OS ?", "Diamond Rubinny (d.Ai), sous forme de projet open source. Le code est sur GitHub, et chacun peut le lire, le vérifier et y contribuer."]
-  ]
- },
- "footer": {
-  "label": "Liens", "privacy": "Politique de confidentialité", "terms": "Conditions d'utilisation", "accessibility": "Déclaration d'accessibilité", "source": "Code source",
-  "line": "Le code est sous licence Apache-2.0 · « D.Ai » et le logo diamant sont des marques déposées · Ce site n'utilise ni cookies, ni scripts, ni traceurs."
- }
+  "lang": "fr",
+  "dir": "ltr",
+  "locale": "fr_FR",
+  "title": "D.Ai OS : un système d'exploitation gratuit et privé, avec une IA qui tourne sur votre ordinateur",
+  "description": "D.Ai OS est un système d'exploitation gratuit et open source, basé sur Debian, disponible en huit langues. Son IA tourne sur votre ordinateur, pas dans le cloud. Pas de publicité, pas de télémétrie, pas de compte. Conçu pour les ordinateurs qui ne peuvent pas passer à Windows 11.",
+  "skip": "Aller au contenu",
+  "nav": {
+    "label": "Navigation principale",
+    "tour": "Visite",
+    "inside": "Contenu",
+    "compare": "Comparatif",
+    "windows": "Depuis Windows 10",
+    "download": "Télécharger",
+    "support": "Soutenir"
+  },
+  "hero": {
+    "eyebrow": "Gratuit · open source · version 0.1 alpha",
+    "title_html": "L'ordinateur qui <span class=\"grad\">fait ce que vous dites</span> et le garde pour lui",
+    "lead": "D.Ai OS est un système d'exploitation gratuit basé sur Debian. Vous écrivez ou dites ce que vous voulez, et il configure, installe, retrouve vos fichiers et répond à vos questions. Son IA, Diamond, tourne sur votre ordinateur : rien de ce que vous lui demandez n'en sort. Pas de publicité, pas de télémétrie, aucun compte nécessaire.",
+    "download": "Télécharger gratuitement sur GitHub",
+    "tour": "Faire la visite",
+    "chips_label": "En bref",
+    "chips": [
+      "L'IA sur l'ordinateur, pas dans le cloud",
+      "8 langues, y compris de droite à gauche",
+      "Chaque modification peut être annulée",
+      "Disque chiffré",
+      "Fonctionne dès 4 Go de RAM"
+    ],
+    "alt": "Le bureau de D.Ai OS : un fond sombre avec des vagues violettes et turquoise, une barre des tâches flottante avec le bouton diamant, un champ de commande, la langue, le volume et l'horloge."
+  },
+  "tour": {
+    "title": "Visite du système",
+    "intro": "Chaque image ici est une vraie capture d'écran, prise automatiquement pendant que D.Ai OS est testé à chaque modification.",
+    "items": [
+      {
+        "img": "ask-diamond",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Command · Diamond",
+        "title": "Posez une question, obtenez la réponse sur votre propre ordinateur",
+        "text": "Appuyez sur le diamant ou commencez à taper dans le panneau. Écrivez <code>?</code> suivi d'une question, et Diamond répond. Diamond est un modèle d'IA qui tourne sur votre processeur (llama.cpp) : vos questions, vos fichiers et votre voix ne quittent jamais l'ordinateur. Le même champ ouvre des applications, fait des calculs, retrouve des fichiers et exécute des commandes.",
+        "alt": "La fenêtre D.Ai Command au-dessus du gestionnaire de fichiers : la question « what is linux? » et la réponse de Diamond, marquée « s'exécute sur cet ordinateur »."
+      },
+      {
+        "img": "forge-antivirus",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Forge",
+        "title": "« Installe un antivirus » : d'abord un plan, puis un clic",
+        "text": "Écrivez <code>+</code> et ce dont vous avez besoin. D.Ai vous montre exactement ce qui va se passer avant que quoi que ce soit ne change : quels paquets, quel service, une analyse quotidienne. Vous validez, et c'est fait. Chaque modification du système est enregistrée et peut être annulée.",
+        "alt": "D.Ai Command avec « +install antivirus » : le plan affiche les paquets ClamAV, l'activation du service de mise à jour et une analyse quotidienne du dossier personnel."
+      },
+      {
+        "img": "find",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Find · D.Ai Doctor",
+        "title": "Demandez simplement : « trouve les photos d'aujourd'hui », « pourquoi l'ordinateur est-il lent ? »",
+        "text": "Écrivez ce que vous cherchez, comme vous le diriez, et le fichier est retrouvé d'après son sens et sa date. Demandez pourquoi quelque chose est lent ou plein, et D.Ai Doctor vérifie l'ordinateur et propose un correctif sûr, en hébreu, en anglais et dans six autres langues.",
+        "alt": "D.Ai Command au-dessus de l'installateur avec « find photos from today », et le résultat : beach.jpg dans Images, d'aujourd'hui."
+      },
+      {
+        "img": "heal",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Heal",
+        "title": "Quand quelque chose ne va plus, il explique et propose un correctif",
+        "text": "Un programme a planté ou un service a échoué ? D.Ai Heal affiche une notification et ouvre une discussion qui explique simplement ce qui s'est passé. Le correctif provient d'une liste fermée, et il ne s'exécute que lorsque vous cliquez (Super+F1).",
+        "alt": "La fenêtre « D.Ai Help & Repair » : « Dites-moi ce qui ne fonctionne pas, ou choisissez un problème que j'ai remarqué », avec deux problèmes détectés, un service en échec et une application qui a planté, et un champ pour décrire un problème."
+      },
+      {
+        "img": "forge-app",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Forge · applications",
+        "title": "Besoin d'une petite application ? Décrivez-la",
+        "text": "« Crée-moi une liste de tâches. » Diamond écrit l'application, la teste et la corrige jusqu'à ce qu'elle fonctionne, puis l'exécute dans un bac à sable : elle ne peut ni lire vos fichiers ni aller sur Internet sans votre autorisation.",
+        "alt": "Une application de liste de tâches appelée « Mes tâches », en hébreu, créée par D.Ai Forge, avec deux tâches, un bouton d'ajout et un bouton de suppression."
+      },
+      {
+        "img": "quick",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Quick",
+        "title": "Tous les réglages rapides, au même endroit",
+        "text": "Wi-Fi, ne pas déranger, économie de batterie, micro et volume. Mais aussi le score de sécurité de l'ordinateur avec ce qui l'améliorerait, les problèmes détectés par D.Ai Heal, et qui a utilisé la caméra ou le micro.",
+        "alt": "Le panneau D.Ai Quick : les tuiles Wi-Fi, ne pas déranger, économie de batterie et sourdine, un curseur de volume, « Sécurité 85/100 », « D.Ai Heal a trouvé 2 problèmes » et « Rien n'enregistre »."
+      },
+      {
+        "img": "mail",
+        "w": 1100,
+        "h": 640,
+        "kicker": "J · messagerie",
+        "title": "Une messagerie qui lit aussi de droite à gauche",
+        "text": "J est l'application de messagerie de D.Ai. Elle trouve seule les paramètres de votre serveur, signe et chiffre vos e-mails (OpenPGP et S/MIME), supprime les pixels espions des messages et importe vos e-mails depuis Outlook (PST) et Thunderbird.",
+        "alt": "La fenêtre de messagerie J en hébreu : les dossiers à droite, une liste de messages et un message ouvert contenant le compte rendu d'une réunion."
+      },
+      {
+        "img": "mom",
+        "w": 820,
+        "h": 560,
+        "kicker": "MOM",
+        "title": "Ce qui ralentit l'ordinateur, expliqué simplement",
+        "text": "MOM affiche des applications, pas une liste de processus : la mémoire et le processeur que chacune utilise, si elle tourne dans un bac à sable et ce qu'elle enregistre. Diamond explique ce qu'est une application et pourquoi elle est lourde, et un processus qui s'emballe est arrêté avant de bloquer l'ordinateur.",
+        "alt": "La fenêtre MOM en hébreu : Ruby, J, GIMP et Zoom avec leur utilisation de la mémoire et du processeur ; GIMP signalé comme isolé dans un bac à sable et Zoom comme en train d'enregistrer."
+      },
+      {
+        "img": "clip",
+        "w": 1280,
+        "h": 800,
+        "kicker": "D.Ai Clip",
+        "title": "Un historique du presse-papiers qui ne garde jamais les mots de passe",
+        "text": "Super+V affiche ce que vous avez copié, en hébreu comme en anglais, avec une recherche. Les mots de passe, jetons et numéros de carte sont reconnus et jamais enregistrés.",
+        "alt": "La fenêtre de l'historique du presse-papiers avec une recherche et deux textes copiés, l'un en hébreu et l'autre en anglais."
+      },
+      {
+        "img": "way-in",
+        "w": 1280,
+        "h": 800,
+        "kicker": "Dès la première seconde",
+        "title": "Le menu de démarrage, l'écran de chargement et la connexion, tous aux couleurs de D.Ai",
+        "text": "Du menu de la clé USB (en huit langues), en passant par l'écran de chargement, où un disque chiffré demande sa phrase secrète, jusqu'à l'écran de connexion avec l'horloge, la langue du clavier et l'avertissement Caps Lock, de droite à gauche en hébreu et en arabe.",
+        "alt": "Quatre images : le menu de démarrage de la clé USB avec le diamant et « Start D.Ai OS », son sous-menu Langue, l'écran de chargement avec le diamant, et l'écran de connexion avec l'horloge et un champ de mot de passe."
+      },
+      {
+        "img": "installer",
+        "w": 1280,
+        "h": 800,
+        "kicker": "Installation",
+        "title": "Essayez-le depuis une clé USB, puis installez-le avec chiffrement",
+        "text": "D.Ai OS démarre depuis une clé USB sans rien modifier : vous pouvez d'abord vérifier le Wi-Fi, le son et l'imprimante. L'installateur chiffre tout le disque, et l'assistant de bienvenue vous pose quelques questions dans votre langue.",
+        "alt": "L'installateur de D.Ai OS : les étapes sur le côté (bienvenue, emplacement, clavier, partitions, utilisateurs, résumé, installation, fin) et le diamant de D.Ai OS."
+      }
+    ]
+  },
+  "inside": {
+    "title": "Ce qu'il contient",
+    "intro": "Basé sur Debian 13, avec des programmes conçus pour D.Ai. Tout ce qui suit fait partie de la version 0.1, fonctionne hors ligne et ne coûte rien.",
+    "groups": [
+      {
+        "icon": "💬",
+        "title": "Dites-le, c'est fait",
+        "items": [
+          [
+            "D.Ai Command",
+            "un seul champ pour les applications, les fichiers, les calculs, les questions (<code>?</code>), les réglages (<code>!</code>), l'installation (<code>+</code>) et le terminal (<code>&gt;</code>)."
+          ],
+          [
+            "D.Ai Tune",
+            "les réglages en une phrase : « verrouille l'écran après 5 minutes », « ouvre le port 8080 », « thème clair ». Il affiche d'abord un plan, et chaque modification peut être annulée."
+          ],
+          [
+            "D.Ai Find",
+            "« le PDF sur le bail de la semaine dernière » : la recherche de fichiers en langage courant."
+          ],
+          [
+            "D.Ai Voice",
+            "la dictée en hébreu, en anglais et dans d'autres langues, sur l'ordinateur (Whisper)."
+          ],
+          [
+            "Mauvais clavier ?",
+            "un texte tapé dans la mauvaise langue se corrige d'une seule touche (Pause)."
+          ]
+        ]
+      },
+      {
+        "icon": "💎",
+        "title": "Diamond, l'IA sur votre ordinateur",
+        "items": [
+          [
+            "Diamond",
+            "répond, explique et résume. Les modèles sont téléchargés une seule fois et vérifiés avec SHA-256."
+          ],
+          [
+            "D.Ai Forge",
+            "installe des logiciels selon un plan que vous validez, et crée de petites applications dans un bac à sable."
+          ],
+          [
+            "Automatisations",
+            "« tous les matins, sauvegarde mes photos » : des tâches planifiées qui s'exécutent dans un bac à sable."
+          ],
+          [
+            "D.Ai Code",
+            "un assistant de programmation pour les développeurs, lui aussi local."
+          ]
+        ]
+      },
+      {
+        "icon": "🩺",
+        "title": "Il prend soin de lui-même",
+        "items": [
+          [
+            "D.Ai Doctor",
+            "« pourquoi l'ordinateur est-il lent ? », « qu'est-ce qui remplit le disque ? », avec des correctifs sûrs."
+          ],
+          [
+            "D.Ai Heal",
+            "quand quelque chose plante : une notification, une explication et un correctif que vous validez."
+          ],
+          [
+            "Raz",
+            "vérifie le système avant et après chaque mise à jour et signale ce qui ne fonctionne plus. Chaque fenêtre D.Ai passe aussi un contrôle d'accessibilité avant chaque version."
+          ],
+          [
+            "Instantanés et Rescue",
+            "le système est sauvegardé avant chaque mise à jour. Annulez-la en une phrase, ou depuis la clé USB si l'ordinateur ne démarre plus."
+          ]
+        ]
+      },
+      {
+        "icon": "🛡",
+        "title": "Confidentialité et sécurité",
+        "items": [
+          [
+            "Dès le premier jour",
+            "chiffrement du disque, pare-feu, AppArmor et mises à jour de sécurité automatiques."
+          ],
+          [
+            "D.Ai Privacy",
+            "un point rouge apparaît quand quelque chose enregistre ou filme, et un journal local indique qui l'a fait et quand."
+          ],
+          [
+            "D.Ai Backup",
+            "une sauvegarde chiffrée et automatique sur un disque externe, configurée en une phrase."
+          ],
+          [
+            "Ruby",
+            "le navigateur : Firefox ESR avec protection contre le pistage, uBlock Origin et conteneurs, configuré pour la confidentialité."
+          ],
+          [
+            "Rien n'est envoyé",
+            "pas de télémétrie, pas de publicité, et aucun compte obligatoire."
+          ]
+        ]
+      },
+      {
+        "icon": "☀",
+        "title": "Au quotidien",
+        "items": [
+          [
+            "D.Ai Move",
+            "depuis Windows : documents, images, favoris du navigateur et e-mails."
+          ],
+          [
+            "Thèmes",
+            "D.Ai Night, D.Ai Day et contraste élevé, dans chaque fenêtre D.Ai, choisis en une phrase (« thème clair »)."
+          ],
+          [
+            "L'essentiel",
+            "captures d'écran (Impr. écran), éclairage nocturne, clavier virtuel, loupe, et la plupart des imprimantes sans pilote."
+          ],
+          [
+            "Logiciels",
+            "les paquets Debian et Flathub, plus des recettes pour Zoom, Steam, des alternatives à Office et les VPN professionnels."
+          ]
+        ]
+      },
+      {
+        "icon": "🧩",
+        "title": "Éditions",
+        "items": [
+          [
+            "Utilisateurs",
+            "pour un usage quotidien."
+          ],
+          [
+            "Développeurs",
+            "avec git, Python, des outils de compilation et D.Ai Code."
+          ],
+          [
+            "Éducation",
+            "pour les écoles : politiques d'organisation, pas de compte cloud, pas de pistage."
+          ],
+          [
+            "Vendeurs d'ordinateurs (OEM)",
+            "une seule installation, et l'acheteur crée son propre utilisateur au premier démarrage."
+          ]
+        ]
+      }
+    ]
+  },
+  "compare": {
+    "title": "D.Ai OS face aux autres",
+    "intro": "Ce que chaque système offre par défaut. Nous l'avons rédigé aussi honnêtement que possible, y compris là où D.Ai est encore jeune.",
+    "caption": "D.Ai OS comparé à Windows 11, macOS, Ubuntu et ChromeOS",
+    "headers": [
+      "",
+      "D.Ai OS",
+      "Windows 11",
+      "macOS",
+      "Ubuntu",
+      "ChromeOS"
+    ],
+    "rows": [
+      {
+        "label": "Prix",
+        "cells": [
+          [
+            "ok",
+            "Gratuit"
+          ],
+          [
+            "part",
+            "Licence payante, généralement incluse avec un PC neuf"
+          ],
+          [
+            "part",
+            "Gratuit, uniquement sur les ordinateurs Apple"
+          ],
+          [
+            "ok",
+            "Gratuit"
+          ],
+          [
+            "part",
+            "Gratuit, fourni avec un Chromebook"
+          ]
+        ]
+      },
+      {
+        "label": "Open source",
+        "cells": [
+          [
+            "ok",
+            "Oui (Apache-2.0)"
+          ],
+          [
+            "no",
+            "Non"
+          ],
+          [
+            "part",
+            "Seulement des parties du noyau"
+          ],
+          [
+            "ok",
+            "Oui"
+          ],
+          [
+            "part",
+            "Seulement ChromiumOS"
+          ]
+        ]
+      },
+      {
+        "label": "Où tourne l'assistant IA",
+        "cells": [
+          [
+            "ok",
+            "Sur votre ordinateur, par défaut"
+          ],
+          [
+            "part",
+            "Surtout en ligne ; certaines fonctions sur l'appareil avec les PC Copilot+"
+          ],
+          [
+            "part",
+            "Sur l'appareil, et sur les serveurs d'Apple pour les demandes plus lourdes (Mac compatibles)"
+          ],
+          [
+            "no",
+            "Pas d'assistant intégré"
+          ],
+          [
+            "part",
+            "Surtout en ligne (Google)"
+          ]
+        ]
+      },
+      {
+        "label": "Compte requis pour la configuration",
+        "cells": [
+          [
+            "ok",
+            "Non"
+          ],
+          [
+            "no",
+            "Généralement un compte Microsoft"
+          ],
+          [
+            "ok",
+            "Facultatif"
+          ],
+          [
+            "ok",
+            "Non"
+          ],
+          [
+            "no",
+            "Un compte Google (ou invité)"
+          ]
+        ]
+      },
+      {
+        "label": "Publicités et promotions dans le système",
+        "cells": [
+          [
+            "ok",
+            "Aucune"
+          ],
+          [
+            "no",
+            "Suggestions et promotions, certaines désactivables"
+          ],
+          [
+            "ok",
+            "Pas de publicité tierce"
+          ],
+          [
+            "part",
+            "Offres pour Ubuntu Pro"
+          ],
+          [
+            "ok",
+            "Pas de publicité dans le système"
+          ]
+        ]
+      },
+      {
+        "label": "Données d'utilisation envoyées",
+        "cells": [
+          [
+            "ok",
+            "Aucune"
+          ],
+          [
+            "no",
+            "Données de diagnostic obligatoires"
+          ],
+          [
+            "part",
+            "Demandé lors de la configuration"
+          ],
+          [
+            "part",
+            "Demandé lors de la configuration"
+          ],
+          [
+            "part",
+            "Données d'utilisation envoyées à Google, facultatif"
+          ]
+        ]
+      },
+      {
+        "label": "Ordinateurs qui ne peuvent pas passer à Windows 11",
+        "cells": [
+          [
+            "ok",
+            "Oui, dès 4 Go de RAM, sans TPM 2.0"
+          ],
+          [
+            "no",
+            "Non"
+          ],
+          [
+            "no",
+            "Ordinateurs Apple uniquement"
+          ],
+          [
+            "ok",
+            "Oui"
+          ],
+          [
+            "part",
+            "ChromeOS Flex, modèles certifiés"
+          ]
+        ]
+      },
+      {
+        "label": "Annuler une mauvaise mise à jour",
+        "cells": [
+          [
+            "ok",
+            "Tout le système, en une phrase ou depuis la clé USB"
+          ],
+          [
+            "part",
+            "Désinstaller une mise à jour, Restauration du système"
+          ],
+          [
+            "part",
+            "Restaurer depuis Time Machine"
+          ],
+          [
+            "part",
+            "Non configuré par défaut"
+          ],
+          [
+            "ok",
+            "Automatique"
+          ]
+        ]
+      },
+      {
+        "label": "Chiffrement du disque",
+        "cells": [
+          [
+            "ok",
+            "Dans l'installateur"
+          ],
+          [
+            "part",
+            "Selon l'édition et l'appareil"
+          ],
+          [
+            "ok",
+            "FileVault"
+          ],
+          [
+            "ok",
+            "En option dans l'installateur"
+          ],
+          [
+            "ok",
+            "Toujours"
+          ]
+        ]
+      },
+      {
+        "label": "Maturité",
+        "cells": [
+          [
+            "part",
+            "Nouveau : version 0.1 alpha"
+          ],
+          [
+            "ok",
+            "Mature"
+          ],
+          [
+            "ok",
+            "Mature"
+          ],
+          [
+            "ok",
+            "Mature"
+          ],
+          [
+            "ok",
+            "Mature"
+          ]
+        ]
+      }
+    ],
+    "legend": {
+      "ok": "oui / bien",
+      "part": "en partie",
+      "no": "non"
+    },
+    "note": "Réglages par défaut en octobre 2026, d'après les informations publiques de chaque éditeur. Les produits évoluent : vérifiez avant de décider. Windows, macOS, Ubuntu et ChromeOS sont des marques de leurs propriétaires respectifs ; D.Ai n'est pas affilié à eux."
+  },
+  "windows": {
+    "title": "Vous avez Windows 10 ? Voici comment passer à D.Ai OS",
+    "intro": "Windows 10 ne reçoit plus de mises à jour de sécurité gratuites. Au lieu d'acheter un nouvel ordinateur :",
+    "steps": [
+      "<strong>Essayez sans installer.</strong> Copiez D.Ai OS sur une clé USB et démarrez l'ordinateur dessus. Demandez « est-ce que le Wi-Fi va fonctionner ? » et il vérifie le Wi-Fi, le son, l'imprimante et la caméra <em>avant</em> que quoi que ce soit ne change.",
+      "<strong>Sauvegardez</strong> votre dossier (<code>C:\\Users\\votre-nom</code>) sur un disque externe.",
+      "<strong>Installez</strong> avec le chiffrement du disque, en 20 à 30 minutes.",
+      "<strong>Récupérez vos fichiers :</strong> « transfère mes fichiers depuis Windows ». Documents, images et bureau sont transférés, avec les favoris de Chrome et d'Edge et les e-mails d'Outlook. Rien n'est écrasé.",
+      "<strong>Installez ce dont vous avez besoin :</strong> <code>+ zoom</code>, <code>+ steam</code>, <code>+ printer</code>, <code>+ install word</code>."
+    ],
+    "guide": "Le guide complet : passer de Windows 10 à D.Ai OS"
+  },
+  "honest": {
+    "title": "Ce qui ne fonctionnera pas (mieux vaut le savoir avant)",
+    "intro": "Nous préférons que vous le sachiez maintenant plutôt que de le découvrir après l'installation.",
+    "caption": "Programmes et jeux sur D.Ai OS",
+    "headers": [
+      "Quoi",
+      "État",
+      "Alternative"
+    ],
+    "rows": [
+      [
+        "La plupart des jeux Steam",
+        "ok",
+        "Fonctionne (Proton)",
+        "<code>+ steam</code>"
+      ],
+      [
+        "Jeux avec anti-triche au niveau du noyau (Call of Duty, Valorant)",
+        "no",
+        "Ne fonctionne pas",
+        "Aucune pour l'instant"
+      ],
+      [
+        "Word, Excel, PowerPoint",
+        "part",
+        "Avec LibreOffice ou ONLYOFFICE",
+        "<code>+ install word</code>"
+      ],
+      [
+        "Adobe Photoshop et Premiere",
+        "no",
+        "Ne fonctionne pas",
+        "GIMP, Krita, Kdenlive"
+      ],
+      [
+        "Petits programmes Windows (.exe)",
+        "part",
+        "Certains fonctionnent",
+        "<code>+ windows programs</code> (Bottles)"
+      ],
+      [
+        "Imprimantes et scanners",
+        "ok",
+        "La plupart",
+        "<code>+ printer</code>"
+      ],
+      [
+        "VPN professionnel (OpenVPN, Cisco, GlobalProtect)",
+        "ok",
+        "Fonctionne",
+        "<code>+ work vpn</code>"
+      ]
+    ]
+  },
+  "download": {
+    "title": "Télécharger",
+    "intro": "Une seule image pour essayer et installer. Choisissez l'édition qui vous convient.",
+    "editions": [
+      {
+        "name": "Utilisateurs",
+        "text": "Pour un usage quotidien : tout ce qui figure sur cette page."
+      },
+      {
+        "name": "Développeurs",
+        "text": "Ajoute git, Python, des outils de compilation et D.Ai Code."
+      },
+      {
+        "name": "Éducation",
+        "text": "Pour les écoles et les organisations : politiques, et pas de compte cloud."
+      }
+    ],
+    "requirements_title": "Ce qu'il vous faut",
+    "requirements": [
+      "Un PC 64 bits (x86_64)",
+      "4 Go de RAM (8 Go ou plus pour Diamond et la dictée)",
+      "25 Go d'espace disque (64 Go ou plus sur SSD recommandés)",
+      "Une clé USB de 8 Go ou plus"
+    ],
+    "cta": "Télécharger la dernière version",
+    "all": "Toutes les versions et notes de version sur GitHub",
+    "note": "Il s'agit d'une version alpha : sauvegardez vos fichiers importants avant l'installation. Vérifiez le téléchargement avec <code>SHA256SUMS</code> (<a href=\"https://github.com/diamondrubinny/D.Ai/blob/main/docs/INSTALL.md\">le guide d'installation</a>)."
+  },
+  "support": {
+    "title": "Soutenir le projet",
+    "intro": "D.Ai OS est gratuit et libre, sans publicité ni abonnement, et le restera. Qui veut l'aider à avancer peut le soutenir par un montant unique ou mensuel via GitHub Sponsors.",
+    "once": "Une fois",
+    "monthly": "Mensuel",
+    "per_month": "par mois",
+    "custom": "Autre montant",
+    "what_title": "Où va l'argent",
+    "what": [
+      "Les minutes de construction et de test en CI : chaque changement est construit, démarré dans une machine virtuelle et vérifié",
+      "Du matériel de test : des ordinateurs, une tablette et un téléphone Linux, un boîtier TV",
+      "Des comptes et des clés : la signature de l'extension, le dépôt de mises à jour, les certificats",
+      "Une revue juridique, un audit d'accessibilité et une revue de sécurité externe avant une sortie"
+    ],
+    "note": "Le soutien est un don à un projet libre, pas l'achat d'un service ; il ne promet ni fonctionnalité ni date. GitHub gère le paiement ; nous ne voyons jamais les données de carte.",
+    "thanks": "Merci. Chaque soutien figure dans SPONSORS.md, sauf demande contraire."
+  },
+  "faq": {
+    "title": "Questions",
+    "items": [
+      [
+        "Est-ce vraiment gratuit ?",
+        "Oui. C'est un logiciel open source sous licence Apache-2.0, sans publicité ni abonnement."
+      ],
+      [
+        "L'IA envoie-t-elle quelque chose sur Internet ?",
+        "Non. Les modèles sont téléchargés une seule fois et vérifiés avec SHA-256, puis ils tournent sur l'ordinateur. Les questions, les fichiers et la voix ne sont envoyés nulle part."
+      ],
+      [
+        "Comment fonctionnent les mises à jour ?",
+        "Les mises à jour de sécurité de Debian s'installent automatiquement. Les mises à jour de D.Ai proviennent d'un dépôt signé, quand vous le décidez. Le système est sauvegardé avant chaque mise à jour, qui peut donc être annulée."
+      ],
+      [
+        "Et si quelque chose ne fonctionne plus ?",
+        "Chaque modification faite en une phrase peut être annulée (<code>dai-tune undo</code>). Demandez « pourquoi X ne fonctionne pas ? » (D.Ai Doctor), ou signalez le problème sur <a href=\"https://github.com/diamondrubinny/D.Ai/issues\">GitHub</a>."
+      ],
+      [
+        "Quelles langues sont prises en charge ?",
+        "Hébreu, anglais, arabe, russe, espagnol, français, allemand et portugais : le système, les commandes de l'IA et ce site web."
+      ],
+      [
+        "Qui développe D.Ai OS ?",
+        "Diamond Rubinny (d.Ai), sous forme de projet open source. Le code est sur GitHub, et chacun peut le lire, le vérifier et y contribuer."
+      ]
+    ]
+  },
+  "footer": {
+    "label": "Liens",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "accessibility": "Déclaration d'accessibilité",
+    "source": "Code source",
+    "line": "Le code est sous licence Apache-2.0 · « D.Ai » et le logo diamant sont des marques déposées · Ce site n'utilise ni cookies, ni scripts, ni traceurs."
+  }
 }

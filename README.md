@@ -161,6 +161,14 @@ tests/     unit, VM and apt-repository tests
 
 See `docs/PLAN.md` for the roadmap.
 
+## Support the project
+
+D.Ai OS is free and open source and stays that way. If you want to help it move forward, the **Sponsor** button
+on this repository and [rubinny.com/#support](https://rubinny.com/#support) take a one-time ($5, $10, $25,
+$100) or monthly ($5, $10, $25) amount through GitHub Sponsors; the page says where the money goes (CI minutes,
+test hardware, signing and certificates, the legal, accessibility and security reviews). Supporters are listed
+in `SPONSORS.md`.
+
 ## Contributing
 
 Contributions are welcome. Please read `CONTRIBUTING.md` first. The project uses the Developer Certificate of Origin (DCO), so sign off your commits with `git commit -s`. Please follow `CODE_OF_CONDUCT.md`.
@@ -180,6 +188,7 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 **D.Ai OS** היא מערכת הפעלה חופשית, מאובטחת ובקוד פתוח (מבוססת Debian 13) עם AI מקומי שרץ על המחשב שלכם, ממשק עברית מלא, ומבנה שמאפשר להרחיב את המערכת רק באמצעות טקסט.
 
 - **AI פרטי:** המודל רץ מקומית, ושירות ה-AI לא מחובר לרשת.
+- **תמיכה בפרויקט:** כפתור Sponsor בריפו, או [rubinny.com/#support](https://rubinny.com/#support): סכום חד-פעמי או חודשי דרך GitHub Sponsors, והדף אומר לאן הכסף הולך.
 - **הגדרות בטקסט:** כותבים מה רוצים ("חסום USB", "פתח פורט"), מקבלים תוכנית לבדיקה ואישור, ותמיד אפשר לבטל.
 - **D.Ai Forge:** כותבים `+ תתקין אנטי וירוס`, והמערכת בונה תוכנית, אתם בודקים, והיא מותקנת. אפשר גם לבקש בניית אפליקציה.
 - **מערכת שמפתחת ומתקנת את עצמה:** כל אפליקציה שה-AI בונה נבדקת בארגז חול ומתוקנת לפני שאתם רואים אותה; אוטומציות רצות לפי לוח זמנים; וכשמשהו קורס, נפתח צ'אט שמסביר ומתקן באישורכם.

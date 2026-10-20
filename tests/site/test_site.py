@@ -12,7 +12,7 @@ LANGS = ("en", "ar", "ru", "es", "fr", "de", "pt")
 LEGAL = ("privacy.html", "terms.html", "accessibility.html")
 PAGES = sorted([*SITE.glob("*.html"), *(SITE / lang / "index.html" for lang in LANGS), *(SITE / "en" / p for p in LEGAL)])
 RTL = {"he", "ar"}
-SECTION_IDS = {"main", "hero-title", "tour", "tour-title", "inside", "inside-title", "compare", "compare-title",
+SECTION_IDS = {"main", "hero-title", "tour", "tour-title", "inside", "inside-title", "compare", "compare-title", "support", "support-title",
                "windows", "windows-title", "honest", "honest-title", "download", "download-title", "faq", "faq-title"}
 
 

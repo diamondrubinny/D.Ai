@@ -160,3 +160,9 @@ main, header.top, footer { overflow-wrap: break-word; }
   * { animation: none !important; transition: none !important; }
   .btn:hover { transform: none; }
 }
+
+/* Support: the amount buttons (docs/SITE.md §3) */
+.amounts { margin: 1rem 0; }
+.amounts h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+.btn.amount { min-width: 5.5rem; justify-content: center; font-weight: 600; }
+.btn.amount span { font-weight: 400; font-size: .9em; }

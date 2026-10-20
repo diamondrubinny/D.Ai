@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The "Sponsor" button on the repository (docs/SITE.md §3). GitHub shows it once GitHub Sponsors is enabled
+# for the account; the amounts are chosen on rubinny.com/#support and in the Sponsors profile's tiers.
+github: [diamondrubinny]
+custom: ["https://rubinny.com/#support"]

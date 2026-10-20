@@ -39,6 +39,14 @@ languages = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(languages)
 
 
+# Support (docs/SITE.md §3): GitHub Sponsors, which handles the payment; the amounts are in US dollars, the
+# only currency GitHub Sponsors bills in. The URL parameters pre-fill the amount and the frequency on the
+# sponsor page (requires verification against GitHub's documentation once the profile is enabled).
+SPONSORS = "https://github.com/sponsors/diamondrubinny"
+ONE_TIME = (5, 10, 25, 100)
+MONTHLY = (5, 10, 25)
+
+
 def esc(value: str) -> str:
     return html.escape(value, quote=True)
 
@@ -122,7 +130,7 @@ def landing(s: dict, folder: str) -> str:
     url = f"{DOMAIN}/{folder + '/' if folder else ''}"
     n, hero = s["nav"], s["hero"]
     nav = (f'\n      <nav class="main" aria-label="{esc(n["label"])}">'
-           + "".join(f'<a href="#{key}">{esc(n[key])}</a>' for key in ("tour", "inside", "compare", "windows"))
+           + "".join(f'<a href="#{key}">{esc(n[key])}</a>' for key in ("tour", "inside", "compare", "windows", "support"))
            + f'<a class="btn small primary" href="#download">{esc(n["download"])}</a></nav>')
     out = [head(s, s["title"], s["description"], prefix, url, alternates), top(s, prefix, "#main", nav)]
 
@@ -258,6 +266,29 @@ def landing(s: dict, folder: str) -> str:
           </div>
         </div>
       </div>
+    </section>
+""")
+
+    sp = s["support"]
+    once = "".join(f'<a class="btn amount" href="{SPONSORS}?frequency=one-time&amp;amount={n}" rel="noopener">${n}</a>' for n in ONE_TIME)
+    monthly = "".join(f'<a class="btn amount" href="{SPONSORS}?frequency=recurring&amp;amount={n}" rel="noopener">${n} <span>{esc(sp["per_month"])}</span></a>'
+                      for n in MONTHLY)
+    what = "".join(f"<li>{esc(x)}</li>" for x in sp["what"])
+    out.append(f"""    <section id="support" class="wrap" aria-labelledby="support-title">
+      <h2 id="support-title">{esc(sp['title'])}</h2>
+      <p class="intro">{esc(sp['intro'])}</p>
+      <div class="amounts" role="group" aria-label="{esc(sp['once'])}">
+        <h3>{esc(sp['once'])}</h3>
+        <div class="cta">{once}<a class="btn" href="{SPONSORS}" rel="noopener">{esc(sp['custom'])}</a></div>
+      </div>
+      <div class="amounts" role="group" aria-label="{esc(sp['monthly'])}">
+        <h3>{esc(sp['monthly'])}</h3>
+        <div class="cta">{monthly}</div>
+      </div>
+      <h3>{esc(sp['what_title'])}</h3>
+      <ul class="needs">{what}</ul>
+      <p class="note">{esc(sp['note'])}</p>
+      <p>{esc(sp['thanks'])}</p>
     </section>
 """)
 

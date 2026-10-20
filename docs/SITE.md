@@ -49,6 +49,16 @@
    - GDPR for visitors from Europe;
    - the liability clause.
 4. **Accessibility review** by an accessibility consultant (Israeli standard 5568) before publishing the statement.
+5. **GitHub Sponsors:** enable it for the account `diamondrubinny` (GitHub → Sponsors → Get sponsored; it asks
+   for a Stripe Connect account and tax details, and GitHub reviews the profile). Until then the "Sponsor" button
+   (`.github/FUNDING.yml`) is hidden and the amount buttons on `#support` land on a page that says the profile is
+   not set up. Suggested tiers in the profile, matching the site's buttons (US dollars, the only currency GitHub
+   Sponsors bills in): one-time $5, $10, $25, $100; monthly $5, $10, $25. Each with a plain text: what the money
+   goes to, no perks that would make it a purchase. The site's buttons pre-fill the amount through URL parameters
+   (`?frequency=one-time&amount=25`); **requires verification** against GitHub's documentation after enabling,
+   and the amounts on the site and in the profile are kept the same (`build/scripts/site-build.py`: `ONE_TIME`,
+   `MONTHLY`). Tax and receipts: GitHub Sponsors does not issue donation receipts for tax purposes in Israel;
+   **requires a check** with an accountant before saying anything about deductibility.
 
 ---
 
