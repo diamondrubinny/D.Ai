@@ -37,7 +37,7 @@ fi
 # keyboard starts hidden and waits; Super+Alt+K (dai-keyboard) shows and hides it.
 if command -v wvkbd-mobintl >/dev/null 2>&1 && \
 	python3 -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_style; sys.exit(0 if dai_style.touch() else 1)' 2>/dev/null; then
-	wvkbd-mobintl -L 260 -H >/dev/null 2>&1 &
+	wvkbd-mobintl -L 260 --hidden >/dev/null 2>&1 &
 fi
 
 # D.Ai sounds (docs/SOUNDS.md): the login chime, and USB devices and the charger as they come and go.

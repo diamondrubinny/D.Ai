@@ -607,7 +607,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p publish
-          for edition in user dev edu; do
+          for edition in user dev edu tv; do
             for file in desktop.png apps.png panel-field.png ai-answer.png start-menu.png forge-preview.png forge-window.png forge-app.png installer.png welcome.png clip.png quick.png mom.png welcome-ar.png mom-ru.png j.png find.png doctor.png heal.png keyboard.png magnifier.png boot-menu.png boot-languages.png login.png boot-splash-1.png boot-splash-2.png boot-splash-3.png system-checks.txt; do
               src="shots/boot-$edition/$file"
               if [ -f "$src" ]; then cp "$src" "publish/$edition-$file"; fi

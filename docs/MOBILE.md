@@ -91,9 +91,9 @@
   44 px; the show-password eye too.
 - **On-screen keyboard:** `wvkbd` (it is a wlroots layer-shell client and already ran under labwc in the VM
   check `os: night light and on-screen keyboard`). `squeekboard` needs Phosh's text-input integration and is
-  left for track C. In touch mode labwc's autostart starts `wvkbd-mobintl -L 260 -H` (hidden) and
-  `dai-keyboard` (Super+Alt+K) toggles it with SIGRTMIN. **Requires verification in the VM:** that Debian 13's
-  wvkbd has `-H` and the toggle signal (the check `touch: the profile, Tune, the keyboard` prints
-  `HIDDEN_FLAG` and `KBD_STILL_RUNNING`).
+  left for track C. In touch mode labwc's autostart starts `wvkbd-mobintl -L 260 --hidden` and
+  `dai-keyboard` (Super+Alt+K) toggles it with SIGRTMIN. Verified against wvkbd 0.15 (Debian 13): `--hidden`
+  and the SIGUSR1/SIGUSR2/SIGRTMIN handlers are in its source; the first VM run showed that `-H` is the portrait
+  height, not "hidden", and it was corrected. The check `touch: the profile, Tune, the keyboard` covers it.
 - **Not in A1:** showing the keyboard by itself when a text field gets focus (needs the Wayland text-input
   protocol on the compositor side; A3), the taskbar in touch mode (A2), gestures (A3).

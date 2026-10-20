@@ -823,11 +823,12 @@ def main() -> int:
          "dai-tune --yes 'מצב מגע' >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/touch | sed 's/^/FILE=/'; "
          "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_style; print(\"NOW\", \"ON\" if dai_style.touch() else \"OFF\")'; "
          "dai-tune undo >/dev/null 2>&1; test -f ~/.config/dai/touch && echo FILE_LEFT || echo FILE_GONE; "
-         "wvkbd-mobintl -h 2>&1 | grep -c -- '-H' | sed 's/^/HIDDEN_FLAG=/'; wvkbd-mobintl -L 260 -H >/dev/null 2>&1 & sleep 2; "
-         "pgrep -x wvkbd-mobintl >/dev/null && echo KBD_RUNNING; dai-keyboard; sleep 1; pgrep -x wvkbd-mobintl >/dev/null && echo KBD_STILL_RUNNING; "
-         "pkill -x wvkbd-mobintl; grep -c 'wvkbd-mobintl -L 260 -H' ~/.config/labwc/autostart | sed 's/^/AUTOSTART=/'",
+         "wvkbd-mobintl -h 2>&1 | grep -c -- '--hidden' | sed 's/^/HIDDEN_FLAG=/'; wvkbd-mobintl -L 260 --hidden >/tmp/wvkbd.log 2>&1 & sleep 2; "
+         "pgrep -x wvkbd-mobintl >/dev/null && echo KBD_RUNNING || cat /tmp/wvkbd.log; dai-keyboard & sleep 2; "
+         "pgrep -x wvkbd-mobintl >/dev/null && echo KBD_STILL_RUNNING; pgrep -c -x wvkbd-mobintl | sed 's/^/KBD_PROCS=/'; "
+         "pkill -x wvkbd-mobintl; grep -c 'wvkbd-mobintl -L 260 --hidden' ~/.config/labwc/autostart | sed 's/^/AUTOSTART=/'",
          False, lambda o: all(mark in o for mark in ("NO_SCREEN", "AUTO auto OFF", "ENV ON", "SHEET True", "TUNE_RC=0", "FILE=on",
-                                                     "NOW ON", "FILE_GONE", "KBD_RUNNING", "KBD_STILL_RUNNING", "AUTOSTART=1"))
+                                                     "NOW ON", "FILE_GONE", "KBD_RUNNING", "KBD_STILL_RUNNING", "KBD_PROCS=1", "AUTOSTART=1"))
          and "HIDDEN_FLAG=0" not in o, 60),
         # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
         ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
