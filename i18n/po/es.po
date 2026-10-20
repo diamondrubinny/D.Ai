@@ -6092,3 +6092,57 @@ msgstr "Ruby abre {url} en la TV (pid {pid})."
 #: apps/dai-tv/dai_tv/cli.py
 msgid "The browser was not open."
 msgstr "El navegador no estaba abierto."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "All is well on this TV."
+msgstr "Todo va bien en esta TV."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Everything else on this computer stays out of its reach."
+msgstr "Todo lo demás de este equipo queda fuera de su alcance."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Inside Windows the folder appears as a drive (the VirtIO drivers must be installed there). Writing is a second choice."
+msgstr "Dentro de Windows la carpeta aparece como una unidad (los controladores VirtIO deben estar instalados allí). Escribir es una segunda elección."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Nothing of this computer is shared with a machine until you say so. Share one folder, read-only to begin with."
+msgstr "Nada de este equipo se comparte con una máquina hasta que tú lo digas. Comparte una carpeta, de solo lectura para empezar."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "To let it write: dai-vm share {name} --writable"
+msgstr "Para dejarle escribir: dai-vm share {name} --writable"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "clipboard not shared"
+msgstr "portapapeles no compartido"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "clipboard shared"
+msgstr "portapapeles compartido"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "dai-vm share {name} --folder ~/Documents/Shared (then start the machine again)"
+msgstr "dai-vm share {name} --folder ~/Documents/Shared (luego inicia la máquina de nuevo)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} reads and writes {folder}"
+msgstr "{name} lee y escribe en {folder}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} reads {folder} and cannot write to it"
+msgstr "{name} lee {folder} y no puede escribir en ella"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} sees none of your files, by design"
+msgstr "{name} no ve ninguno de tus archivos, a propósito"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{n} USB devices given to it"
+msgstr "{n} dispositivos USB asignados"

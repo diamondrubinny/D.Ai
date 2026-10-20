@@ -265,6 +265,8 @@ doctor = subprocess.run(["dai-doctor", "machine"], capture_output=True, text=Tru
 print("DOCTOR_RC", doctor.returncode, "DOCTOR_KVM", "hardware acceleration" in doctor.stdout, doctor.stdout.strip().splitlines()[:2])
 udev = subprocess.run(["udevadm", "verify", "/etc/udev/rules.d/70-dai-vm-usb.rules"], capture_output=True, text=True, timeout=60)
 print("UDEV_RC", udev.returncode, (udev.stdout + udev.stderr).strip().splitlines()[-1:])
+sharing = subprocess.run(["dai-doctor", "sharing"], capture_output=True, text=True, timeout=120)
+print("SHARING_RC", sharing.returncode, "SHARING_SAYS", "sees none of your files" in sharing.stdout)
 # Stage 2: a shared folder, the clipboard and a USB device in the definition; libvirt must accept it too.
 share = home / "dai-vm-share"
 share.mkdir(exist_ok=True)
@@ -937,9 +939,12 @@ def main() -> int:
          "pgrep -f 'ruby-tv' >/dev/null && echo RUBY_TV_STILL_THERE || echo RUBY_TV_GONE; "
          "python3 -c \"import xml.etree.ElementTree as E, os; r = E.parse(os.path.expanduser('~/.kodi/userdata/favourites.xml')).getroot(); "
          "print('FAVOURITES', len(r.findall('favourite')))\"; grep -c 'dai-tv browse --close' /etc/dai/tv/labwc/rc.xml | sed 's/^/LABWC_KEYS=/'; "
-         "grep -c '<mytv>' ~/.kodi/userdata/keymaps/dai.xml | sed 's/^/MYTV=/'; fi",
+         "grep -c '<mytv>' ~/.kodi/userdata/keymaps/dai.xml | sed 's/^/MYTV=/'; "
+         # Stage 2d (docs/TV.md §13): D.Ai's word on the TV, and its six-hourly timer enabled for this user.
+         "dai-tv status --notify | head -n 2; echo STATUS_RC=$?; systemctl --user is-enabled dai-tv-status.timer | sed 's/^/TIMER=/'; fi",
          True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
-             "BROWSE_RC=0", "RUBY_TV_RUNNING", "PREFS=1", "Back to the TV.", "RUBY_TV_GONE", "FAVOURITES 4", "LABWC_KEYS=3", "MYTV=1")), 120),
+             "BROWSE_RC=0", "RUBY_TV_RUNNING", "PREFS=1", "Back to the TV.", "RUBY_TV_GONE", "FAVOURITES 4", "LABWC_KEYS=3", "MYTV=1",
+             "STATUS_RC=0", "TIMER=enabled")), 150),
         # D.Ai TV stage 2b (docs/TV.md §9): Kodi's service listens on this computer only, and dai-tv reaches it.
         ("tv: D.Ai talks to Kodi on this computer only",
          ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
@@ -956,7 +961,7 @@ def main() -> int:
          f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py; fi",
          True, lambda o: "VM_NOT_IN_THIS_EDITION" in o or all(mark in o for mark in (
              "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "SHARED_DEFINED shut off True",
-             "TUNE_RC 0", "UNDO_RC 0", "LAUNCHER True", "DOCTOR_RC 0", "DOCTOR_KVM True", "UDEV_RC 0",
+             "TUNE_RC 0", "UNDO_RC 0", "LAUNCHER True", "DOCTOR_RC 0", "DOCTOR_KVM True", "UDEV_RC 0", "SHARING_RC 0", "SHARING_SAYS True",
              "UNDEFINED missing LAUNCHER_GONE True")), 300),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "

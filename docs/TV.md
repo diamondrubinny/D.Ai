@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Mobile is in
 > `docs/MOBILE.md`. **Decided (under "from now on you decide"):** the editions and stages below; stage 1 begins
-> now. **Status: stages 1, 2, 3a and 3b built** (§7–§12): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening; D.Ai on the remote, by sentence, and live channels from the person's own playlist.
+> now. **Status: stages 1, 2, 3a and 3b built** (§7–§13): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening; D.Ai on the remote, by sentence, and live channels from the person's own playlist.
 
 ## 0. What a "television version" can honestly be
 
@@ -105,6 +105,19 @@
   The tv VM check opens D.Ai's start page on the image, sees the process and the prefs, closes it, and checks
   the favourites, the keymap and the labwc keys.
 - **Not yet (3c):** arrow navigation in pages (the signed extension), a sentence "open Kan 11" in Tune, an EPG.
+
+## 13. Stage 2d: D.Ai's word on the TV (what was built)
+
+- **The one thing worth knowing:** `dai-tv status` runs D.Ai Doctor on the box (memory and processor, the
+  disk, updates) and prints the most pressing finding with its first advice; `--notify` puts it on the TV as a
+  notification. When all is well it says so and shows nothing. Without Doctor it says all is well rather than
+  fail. A user timer (`dai-tv-status.timer`, ten minutes after login and every six hours, enabled for every
+  user of the tv edition by its hook) does the same by itself: the sofa hears "the disk is almost full" once,
+  not a dashboard. The Living Diamond itself (D.Ai's status mark) stays on the desktop; this is its voice.
+- **Tests:** dai-tv (10): the first bad or warn finding in Doctor's order, the notification's text and length,
+  silence on good news, Doctor absent. The tv VM check runs it with `--notify` and sees the timer enabled.
+- **Not yet:** "what this add-on sends" before a Kodi add-on install (Kodi offers no hook before an install;
+  a review of the add-on's code after install is a stage of its own).
 
 ## 1. Stages
 

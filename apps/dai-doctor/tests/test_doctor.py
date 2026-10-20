@@ -110,14 +110,34 @@ class DiagnoseTests(FakeSystem):
         hebrew = diagnose(facts, ("machine",), "he")
         self.assertIn("האצת חומרה", hebrew[0].title)
 
+    def test_why_windows_cannot_see_my_files(self):
+        """docs/VM.md §14: nothing shared by design (warn, with the command), read-only (ok), writable (ok)."""
+        machines = [("office", 4096, 2), ("lab", 2048, 1), ("open", 2048, 1)]
+        sharing = {"office": {"shared_folder": "", "shared_readonly": True, "clipboard": False, "usb": 0},
+                   "lab": {"shared_folder": "/home/dana/Shared", "shared_readonly": True, "clipboard": True, "usb": 2},
+                   "open": {"shared_folder": "/home/dana/Shared", "shared_readonly": False, "clipboard": False, "usb": 0}}
+        findings = diagnose(self.facts(machines=machines, sharing=sharing), ("sharing",))
+        self.assertEqual([(f.key, f.level) for f in findings],
+                         [("sharing-office", "warn"), ("sharing-lab", "ok"), ("sharing-open", "ok")])
+        self.assertIn("dai-vm share office --folder", findings[0].fixes[0].label)
+        self.assertIn("clipboard not shared.", findings[0].detail)
+        self.assertIn("2 USB devices", findings[1].detail)
+        self.assertIn("dai-vm share lab --writable", findings[1].fixes[0].label)
+        self.assertIn("reads and writes /home/dana/Shared", findings[2].title)
+        self.assertEqual(diagnose(self.facts(), ("sharing",))[0].level, "ok")
+        for text, topic in (("why can't windows see my files", "sharing"), ("למה ווינדוס לא רואה את הקבצים שלי", "sharing"),
+                            ("how do i share a folder with windows", "sharing"), ("why is windows slow", "machine"), ("my files are gone", None)):
+            self.assertEqual(topic_for(text), topic, text)
+
     def test_machine_facts_come_from_dai_vm_files(self):
         folder = self.home / ".local/share/dai/vm/machines/office"
         folder.mkdir(parents=True)
         (folder / "machine.json").write_text('{"name": "office", "memory_mb": 4096, "cpus": 2, "disk_gb": 64}')
         (self.home / ".local/share/dai/vm/machines/broken").mkdir()
         (self.home / ".local/share/dai/vm/machines/broken/machine.json").write_text("{")
-        facts = collect(self.root, self.home, runner=quiet, topics=("machine",))
+        facts = collect(self.root, self.home, runner=quiet, topics=("machine", "sharing"))
         self.assertEqual(facts.machines, [("office", 4096, 2)])
+        self.assertEqual(facts.sharing, {"office": {"shared_folder": "", "shared_readonly": True, "clipboard": False, "usb": 0}})
         self.assertFalse(facts.kvm)  # no /dev/kvm in the fake root
         self.assertGreater(facts.machines_free, 0)
         self.assertTrue(any(p.name == "firefox-esr" for p in facts.processes))

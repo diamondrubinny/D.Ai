@@ -222,6 +222,7 @@ build_apps() {
   local tv="$REPO_ROOT/apps/dai-tv"
   copy_package "$tv/dai_tv" "$root"
   install -m 0755 "$tv/data/dai-tv" "$root/usr/bin/dai-tv"
+  install -m 0644 "$tv/data/dai-tv-status.timer" "$tv/data/dai-tv-status.service" "$root/usr/lib/systemd/user/"
 
   # D.Ai PDF (docs/PDF.md): the reader that opens every PDF in a sandbox; the default for application/pdf.
   local pdf="$REPO_ROOT/apps/dai-pdf"

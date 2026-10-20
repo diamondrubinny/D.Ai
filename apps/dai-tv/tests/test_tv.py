@@ -217,6 +217,42 @@ class TvTests(unittest.TestCase):
             self.assertEqual((code, out.strip()), (0, "Back to the TV."))
         self.assertEqual(self.run_cli(fake, "browse", "ftp://x")[0], 2)
 
+    def test_the_one_thing_worth_knowing(self):
+        """docs/TV.md §13: Doctor's most pressing finding on the TV; silence when all is well or Doctor is absent."""
+        import sys
+        import types
+
+        class Finding:
+            def __init__(self, key, level, title, detail, fixes=()):
+                self.key, self.level, self.title, self.detail, self.fixes = key, level, title, detail, list(fixes)
+
+        class Fix:
+            def __init__(self, label):
+                self.label = label
+
+        fake = self.kodi()
+        doctor = types.ModuleType("dai_doctor")
+        diagnose = types.ModuleType("dai_doctor.diagnose")
+        facts = types.ModuleType("dai_doctor.facts")
+        facts.collect = lambda topics, sample, budget: {"topics": topics}
+        diagnose.diagnose = lambda f, topics, lang: [Finding("cpu", "ok", "Fine", "x"),
+                                                       Finding("disk", "warn", "The disk is almost full", "2.1 GB free of 60 GB.", [Fix("dai-doctor disk")]),
+                                                       Finding("memory", "bad", "Memory is almost full", "Only 300 MB free.")]
+        with mock.patch.dict(sys.modules, {"dai_doctor": doctor, "dai_doctor.diagnose": diagnose, "dai_doctor.facts": facts}):
+            code, out, _ = self.run_cli(fake, "status", "--notify")
+        self.assertEqual(code, 0)
+        self.assertEqual(out.splitlines(), ["The disk is almost full: 2.1 GB free of 60 GB.", "  → dai-doctor disk"])  # the first bad or warn, in order
+        self.assertEqual(fake.calls[-1], ("GUI.ShowNotification", {"title": "D.Ai", "message": "The disk is almost full. 2.1 GB free of 60 GB.", "displaytime": 12000}))
+        diagnose.diagnose = lambda f, topics, lang: [Finding("cpu", "ok", "Fine", "x")]
+        with mock.patch.dict(sys.modules, {"dai_doctor": doctor, "dai_doctor.diagnose": diagnose, "dai_doctor.facts": facts}):
+            code, out, _ = self.run_cli(fake, "status", "--notify")
+        self.assertEqual((code, out.strip()), (0, "All is well on this TV."))
+        self.assertEqual(fake.calls[-1][0], "GUI.ShowNotification")  # no new notification for good news
+        self.assertEqual(len([c for c in fake.calls if c[0] == "GUI.ShowNotification"]), 1)
+        with mock.patch.dict(sys.modules, {"dai_doctor": None}):
+            code, out, _ = self.run_cli(fake, "status")
+        self.assertEqual((code, out.strip()), (0, "All is well on this TV."))
+
     def test_playing_and_nothing(self):
         fake = self.kodi(playing={"title": "The Film", "year": 1999, "plot": "A long story " * 50, "type": "movie", "label": "x"})
         code, out, _ = self.run_cli(fake, "playing")

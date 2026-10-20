@@ -8,4 +8,8 @@ chmod 0755 /usr/bin/startdai-tv /usr/bin/dai-tv-kodi /usr/lib/live/config/9000-d
 # Kodi's event server and web server are off in the defaults; the firewall is default-deny anyway.
 # The bundled Hebrew language pack belongs to every new user (seeded from /etc/skel at first login).
 chmod -R a+rX /etc/skel/.kodi
+# D.Ai's word on the TV every six hours (docs/TV.md §13): the timer for every user of this edition
+# (same as "systemctl --global enable dai-tv-status.timer"; a chroot has no systemd to ask).
+install -d /etc/systemd/user/timers.target.wants
+ln -sf /usr/lib/systemd/user/dai-tv-status.timer /etc/systemd/user/timers.target.wants/dai-tv-status.timer
 echo "dai-tv: television session ready"

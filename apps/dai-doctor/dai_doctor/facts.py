@@ -68,6 +68,7 @@ class Facts:
     machines: list[tuple[str, int, int]] = field(default_factory=list)  # D.Ai VM machines: (name, memory MB, CPUs)
     kvm: bool | None = None           # /dev/kvm usable by this user (None: not looked at)
     machines_free: int = 0            # bytes free where the machines' disks live
+    sharing: dict[str, dict] = field(default_factory=dict)  # name → shared_folder, shared_readonly, clipboard, usb
 
 
 def _read(path: Path) -> str:
@@ -195,14 +196,28 @@ def last_apt_run(root: Path) -> tuple[str, int] | None:
 
 def vm_machines(home: Path) -> list[tuple[str, int, int]]:
     """D.Ai VM's machines (docs/VM.md), read from their own files so Doctor needs nothing from dai-vm."""
+    return [(name, int(data["memory_mb"]), int(data["cpus"])) for name, data in _machine_files(home)]
+
+
+def vm_sharing(home: Path) -> dict[str, dict]:
+    """What each machine may see of this computer: the shared folder (and whether it may write), the clipboard,
+    the USB devices it was given (docs/VM.md §14)."""
+    return {name: {"shared_folder": data.get("shared_folder") or "", "shared_readonly": bool(data.get("shared_readonly", True)),
+                   "clipboard": bool(data.get("clipboard", False)), "usb": len(data.get("usb") or [])}
+            for name, data in _machine_files(home)}
+
+
+def _machine_files(home: Path) -> list[tuple[str, dict]]:
     import json
 
     found = []
     for path in sorted((home / ".local/share/dai/vm/machines").glob("*/machine.json")):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-            found.append((str(data["name"]), int(data["memory_mb"]), int(data["cpus"])))
+            found.append((str(data["name"]), data))
+            int(data["memory_mb"]), int(data["cpus"])
         except (OSError, ValueError, KeyError, TypeError):
+            found and found.pop()
             continue
     return found
 
@@ -250,6 +265,9 @@ def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = r
         facts.root_fs = root_filesystem(root)
         facts.snapshots = (root / "etc/snapper/configs/root").exists()
         facts.last_update = last_apt_run(root)
+    if "sharing" in topics:
+        facts.machines = facts.machines or vm_machines(home)
+        facts.sharing = vm_sharing(home)
     if "machine" in topics:
         facts.processes = facts.processes or processes(root, sample)
         facts.kvm = os.access(root / "dev/kvm", os.R_OK | os.W_OK)

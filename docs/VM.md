@@ -6,7 +6,7 @@
 > **Decided (19 October 2026, "from now on you decide"):** the recommendations of §5, all of them: the screen in
 > a `remote-viewer` window managed by D.Ai VM; the key typed into Windows setup only (no answer file in stage 1);
 > the user and dev editions; virtio-win downloaded once with a pinned hash; the name "D.Ai VM".
-> **Status: stages 1, 2 and 3 built** (§10–§13). Stage 4 not started. The Windows install itself is a manual test on a
+> **Status: stages 1, 2, 3 and 4a built** (§10–§14). The Windows install itself is a manual test on a
 > physical computer (§7); it has not been run yet.
 
 ## 10. Stage 1: what was built
@@ -102,8 +102,20 @@
   copying it after `machines on`; Find. The VM check on the image: the launcher exists and is gone with the
   machine, `dai-doctor machine` answers (and sees that the CI machine has no acceleration), `udevadm verify`
   accepts the rule.
-- **Not yet (stage 4):** Diamond's help inside the machine, a second machine kind (another Linux), the
-  Tune posture sentence "Windows cannot see my files".
+- **Not yet (stage 4):** Diamond's help inside the machine, a second machine kind (another Linux); "Windows
+  cannot see my files" is answered by Doctor (§14).
+
+## 14. Stage 4a: "Windows cannot see my files" (what was built)
+
+- **The question, answered as it is meant:** "למה ווינדוס לא רואה את הקבצים שלי" / "why can't Windows see my
+  files" / "windows shared folder" is Doctor's `sharing` topic (in the command bar and `dai-doctor sharing`).
+  For every machine it says what that machine may see of this computer: nothing (by design, the warning with the
+  exact `dai-vm share NAME --folder …` to change it), one folder read-only (and how to allow writing), or one
+  folder read and write; the clipboard and the USB devices given to it are named in the same line. All advice;
+  the switches stay in D.Ai VM. The facts come from the machines' own files, as in §13.
+- **Tests:** three machines (nothing shared, read-only with the clipboard and two USB devices, writable), the
+  questions in both languages, "why is Windows slow" still the machine topic, the facts read. The VM check
+  runs `dai-doctor sharing` on the CI machine and sees the by-design answer.
 
 > The name "D.Ai VM" is descriptive. "Windows" is Microsoft's trademark and is used here only to name their
 > product, never as part of D.Ai's name or branding (**requires a check** of Microsoft's trademark guidelines

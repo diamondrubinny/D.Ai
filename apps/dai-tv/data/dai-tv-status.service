@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai on the TV: D.Ai Doctor's most pressing finding, shown on the screen
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/TV.md
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/dai-tv status --notify
+TimeoutStartSec=2min
+Nice=15
+IOSchedulingClass=idle
+NoNewPrivileges=yes
+PrivateTmp=yes

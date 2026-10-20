@@ -17,7 +17,7 @@ msgid "\n  ✗ It crashed when started; Diamond is fixing it ({repair}/2)…"
 msgstr ""
 
 #. he:  הכל נראה תקין.
-#: apps/dai-doctor/dai_doctor/cli.py:89
+#: apps/dai-doctor/dai_doctor/cli.py:90
 msgid "\nEverything looks fine."
 msgstr ""
 
@@ -334,7 +334,7 @@ msgid "A user name in small English letters, digits or -, starting with a letter
 msgstr ""
 
 #. he: כתובת אינטרנט, בבקשה: dai-tv browse https://…
-#: apps/dai-tv/dai_tv/cli.py:217
+#: apps/dai-tv/dai_tv/cli.py:243
 msgid "A web address, please: dai-tv browse https://…"
 msgstr ""
 
@@ -370,7 +370,7 @@ msgid "Accounts found on this computer"
 msgstr ""
 
 #. he: פעולות: {list}
-#: apps/dai-tv/dai_tv/cli.py:237
+#: apps/dai-tv/dai_tv/cli.py:263
 #, python-brace-format
 msgid "Actions: {list}"
 msgstr ""
@@ -428,7 +428,7 @@ msgid "Add your e-mail address; J finds the settings by itself."
 msgstr ""
 
 #. he: תוספים מוכנים: {ids}
-#: apps/dai-tv/dai_tv/cli.py:184
+#: apps/dai-tv/dai_tv/cli.py:199
 #, python-brace-format
 msgid "Add-ons ready: {ids}"
 msgstr ""
@@ -451,6 +451,11 @@ msgstr ""
 #. he: כל תיבות הדואר
 #: apps/dai-j/dai_j/text.py:11
 msgid "All inboxes"
+msgstr ""
+
+#. he: הכול בסדר בטלוויזיה הזאת.
+#: apps/dai-tv/dai_tv/cli.py:227
+msgid "All is well on this TV."
 msgstr ""
 
 #. he: כל הדואר
@@ -587,7 +592,7 @@ msgid "Ask what? dai-pdf ask FILE QUESTION"
 msgstr ""
 
 #. he: לשאול מה? dai-tv ask QUESTION
-#: apps/dai-tv/dai_tv/cli.py:151
+#: apps/dai-tv/dai_tv/cli.py:166
 msgid "Ask what? dai-tv ask QUESTION"
 msgstr ""
 
@@ -677,7 +682,7 @@ msgid "Back"
 msgstr ""
 
 #. he: חזרה לטלוויזיה.
-#: apps/dai-tv/dai_tv/cli.py:213
+#: apps/dai-tv/dai_tv/cli.py:239
 msgid "Back to the TV."
 msgstr ""
 
@@ -940,7 +945,7 @@ msgid "Checking the signature…"
 msgstr ""
 
 #. he: בודק את המחשב…
-#: apps/dai-doctor/dai_doctor/cli.py:61
+#: apps/dai-doctor/dai_doctor/cli.py:62
 msgid "Checking this computer…"
 msgstr ""
 
@@ -1036,7 +1041,7 @@ msgid "Close apps or browser tabs you are not using"
 msgstr ""
 
 #. he: סגרו אפליקציות שלא בשימוש, או תנו למכונה פחות זיכרון
-#: apps/dai-doctor/dai_doctor/diagnose.py:314
+#: apps/dai-doctor/dai_doctor/diagnose.py:317
 msgid "Close apps you are not using, or give the machine less memory"
 msgstr ""
 
@@ -1207,8 +1212,8 @@ msgid "Could not decrypt: the key is not on this computer, or the password was n
 msgstr ""
 
 #. he: לא הצלחתי להקשיב: {why}
-#: apps/dai-tv/dai_tv/cli.py:166
-#: apps/dai-tv/dai_tv/cli.py:165
+#: apps/dai-tv/dai_tv/cli.py:181
+#: apps/dai-tv/dai_tv/cli.py:180
 #, python-brace-format
 msgid "Could not listen: {why}"
 msgstr ""
@@ -1341,7 +1346,8 @@ msgid "D.Ai Tune — configure the system by writing what you need."
 msgstr ""
 
 #. he: D.Ai VM יוצר אחת ממדיית ההתקנה שלכם: dai-vm create NAME --iso FILE
-#: apps/dai-doctor/dai_doctor/diagnose.py:281
+#: apps/dai-doctor/dai_doctor/diagnose.py:284
+#: apps/dai-doctor/dai_doctor/diagnose.py:340
 msgid "D.Ai VM makes one from your own installation media: dai-vm create NAME --iso FILE"
 msgstr ""
 
@@ -1508,7 +1514,7 @@ msgid "Diamond answered."
 msgstr ""
 
 #. he: ל-Diamond לא הייתה תשובה.
-#: apps/dai-tv/dai_tv/cli.py:88
+#: apps/dai-tv/dai_tv/cli.py:89
 msgid "Diamond had no answer."
 msgstr ""
 
@@ -1520,7 +1526,7 @@ msgstr ""
 #. he: Diamond לא זמין עכשיו ({why}).
 #: apps/dai-pdf/dai_pdf/cli.py:169
 #: apps/dai-pdf/dai_pdf/gui.py:1686
-#: apps/dai-tv/dai_tv/cli.py:90
+#: apps/dai-tv/dai_tv/cli.py:91
 #, python-brace-format
 msgid "Diamond is not available now ({why})."
 msgstr ""
@@ -1536,7 +1542,7 @@ msgid "Diamond is not available. Install a model: D.Ai Command, ? and the questi
 msgstr ""
 
 #. he: Diamond לא מותקן בטלוויזיה הזאת.
-#: apps/dai-tv/dai_tv/cli.py:86
+#: apps/dai-tv/dai_tv/cli.py:87
 msgid "Diamond is not installed on this TV."
 msgstr ""
 
@@ -1680,7 +1686,7 @@ msgstr ""
 
 #. he: בוצע: {name}
 #: apps/dai-mom/dai_mom/text.py:103
-#: apps/dai-tv/dai_tv/cli.py:240
+#: apps/dai-tv/dai_tv/cli.py:266
 #, python-brace-format
 msgid "Done: {name}"
 msgstr ""
@@ -1905,6 +1911,11 @@ msgstr ""
 msgid "Everything done in the machine since then is lost, unless it is in a later snapshot."
 msgstr ""
 
+#. he: כל השאר במחשב הזה נשאר מחוץ להישג ידו.
+#: apps/dai-doctor/dai_doctor/diagnose.py:359
+msgid "Everything else on this computer stays out of its reach."
+msgstr ""
+
 #. he: הכל הוקם. אפשר לבטל בכל רגע.
 #: apps/dai-forge/dai_forge/gui.py:148
 msgid "Everything is set up. You can undo it at any time."
@@ -2099,7 +2110,7 @@ msgid "Free disk space: downloaded package files and old system logs"
 msgstr ""
 
 #. he: פנו מקום (dai-doctor disk) או מחקו מכונה שכבר לא בשימוש
-#: apps/dai-doctor/dai_doctor/diagnose.py:321
+#: apps/dai-doctor/dai_doctor/diagnose.py:324
 msgid "Free space (dai-doctor disk) or delete a machine you no longer use"
 msgstr ""
 
@@ -2199,13 +2210,13 @@ msgid "Hardware virtualization is on ({kind}) and usable."
 msgstr ""
 
 #. he: שמעתי: {text}
-#: apps/dai-tv/dai_tv/cli.py:177
+#: apps/dai-tv/dai_tv/cli.py:192
 #, python-brace-format
 msgid "Heard: {text}"
 msgstr ""
 
 #. he: שמעתי: {text} ← {action}
-#: apps/dai-tv/dai_tv/cli.py:175
+#: apps/dai-tv/dai_tv/cli.py:190
 #, python-brace-format
 msgid "Heard: {text} → {action}"
 msgstr ""
@@ -2266,8 +2277,8 @@ msgid "I did not notice any crash or failed service. Tell me what is not working
 msgstr ""
 
 #. he: לא שמעתי כלום.
-#: apps/dai-tv/dai_tv/cli.py:169
-#: apps/dai-tv/dai_tv/cli.py:170
+#: apps/dai-tv/dai_tv/cli.py:184
+#: apps/dai-tv/dai_tv/cli.py:185
 msgid "I heard nothing."
 msgstr ""
 
@@ -2323,7 +2334,7 @@ msgid "Improve"
 msgstr ""
 
 #. he: ב-D.Ai VM תנו ל-{name} פחות זיכרון (חצי מזיכרון המחשב מספיק בהחלט)
-#: apps/dai-doctor/dai_doctor/diagnose.py:301
+#: apps/dai-doctor/dai_doctor/diagnose.py:304
 #, python-brace-format
 msgid "In D.Ai VM, give {name} less memory (half of the computer's is plenty)"
 msgstr ""
@@ -2346,6 +2357,11 @@ msgstr ""
 #. he: הוספת עמודים מקובץ PDF אחר
 #: apps/dai-pdf/dai_pdf/gui.py:679
 msgid "Insert pages from another PDF"
+msgstr ""
+
+#. he: בתוך Windows התיקייה מופיעה ככונן (דרייברי VirtIO חייבים להיות מותקנים שם). כתיבה היא בחירה שנייה.
+#: apps/dai-doctor/dai_doctor/diagnose.py:354
+msgid "Inside Windows the folder appears as a drive (the VirtIO drivers must be installed there). Writing is a second choice."
 msgstr ""
 
 #. he: התקינו את Diamond כדי שיכתוב מתכון: dai-models install qwen2.5-0.5b
@@ -2435,7 +2451,7 @@ msgid "It uses {memory} of memory and {cpu}% of the processor ({processes})."
 msgstr ""
 
 #. he: ניתנו לו {given} מתוך {total} של המחשב; D.Ai ו-Windows נדחקים זה בזה.
-#: apps/dai-doctor/dai_doctor/diagnose.py:298
+#: apps/dai-doctor/dai_doctor/diagnose.py:301
 #, python-brace-format
 msgid "It was given {given} of the computer's {total}; D.Ai and Windows then squeeze each other."
 msgstr ""
@@ -2487,13 +2503,13 @@ msgid "Keywords"
 msgstr ""
 
 #. he: לא ניתן להגיע ל-Kodi: {why}
-#: apps/dai-tv/dai_tv/cli.py:243
+#: apps/dai-tv/dai_tv/cli.py:269
 #, python-brace-format
 msgid "Kodi could not be reached: {why}"
 msgstr ""
 
 #. he: Kodi לא ענה.
-#: apps/dai-tv/dai_tv/cli.py:135
+#: apps/dai-tv/dai_tv/cli.py:150
 msgid "Kodi did not answer."
 msgstr ""
 
@@ -2557,7 +2573,7 @@ msgid "Links to addresses: {n} (opened only when you click and confirm)"
 msgstr ""
 
 #. he: מקשיב… ({n} שניות)
-#: apps/dai-tv/dai_tv/cli.py:160
+#: apps/dai-tv/dai_tv/cli.py:175
 #, python-brace-format
 msgid "Listening… ({n} seconds)"
 msgstr ""
@@ -2569,17 +2585,17 @@ msgid "Little free space on {mount}"
 msgstr ""
 
 #. he: נשאר מעט זיכרון בזמן ש-Windows רץ
-#: apps/dai-doctor/dai_doctor/diagnose.py:311
+#: apps/dai-doctor/dai_doctor/diagnose.py:314
 msgid "Little memory is left while Windows runs"
 msgstr ""
 
 #. he: נשאר מעט מקום לדיסק של המכונה לגדול
-#: apps/dai-doctor/dai_doctor/diagnose.py:317
+#: apps/dai-doctor/dai_doctor/diagnose.py:320
 msgid "Little room for the machine's disk to grow"
 msgstr ""
 
 #. he: ערוצים חיים מתוך {file}; Kodi יציג אותם כשיופעל מחדש.
-#: apps/dai-tv/dai_tv/cli.py:206
+#: apps/dai-tv/dai_tv/cli.py:221
 #, python-brace-format
 msgid "Live channels from {file}; Kodi shows them when it starts again."
 msgstr ""
@@ -2590,7 +2606,7 @@ msgid "Live channels off"
 msgstr ""
 
 #. he: ערוצים חיים כבויים.
-#: apps/dai-tv/dai_tv/cli.py:193
+#: apps/dai-tv/dai_tv/cli.py:208
 msgid "Live channels off."
 msgstr ""
 
@@ -2855,7 +2871,7 @@ msgid "Next week (Monday 8:00)"
 msgstr ""
 
 #. he: מצב לילה כבוי.
-#: apps/dai-tv/dai_tv/cli.py:231
+#: apps/dai-tv/dai_tv/cli.py:257
 msgid "Night mode off."
 msgstr ""
 
@@ -2870,12 +2886,12 @@ msgid "Night mode on the TV: the screen dims after 5 minutes, the volume goes do
 msgstr ""
 
 #. he: מצב לילה פועל: עמעום אחרי 5 דקות, עוצמה נמוכה.
-#: apps/dai-tv/dai_tv/cli.py:230
+#: apps/dai-tv/dai_tv/cli.py:256
 msgid "Night mode on: dim after 5 minutes, the volume down."
 msgstr ""
 
 #. he: מצב לילה: {mode}
-#: apps/dai-tv/dai_tv/cli.py:232
+#: apps/dai-tv/dai_tv/cli.py:258
 #, python-brace-format
 msgid "Night mode: {mode}"
 msgstr ""
@@ -2887,7 +2903,8 @@ msgid "No USB devices plugged in (hubs are not listed)."
 msgstr ""
 
 #. he: עדיין אין מכונת Windows
-#: apps/dai-doctor/dai_doctor/diagnose.py:280
+#: apps/dai-doctor/dai_doctor/diagnose.py:283
+#: apps/dai-doctor/dai_doctor/diagnose.py:339
 msgid "No Windows machine yet"
 msgstr ""
 
@@ -3261,7 +3278,7 @@ msgid "Nothing in this file acts on its own."
 msgstr ""
 
 #. he: שום דבר לא מתנגן.
-#: apps/dai-tv/dai_tv/cli.py:105
+#: apps/dai-tv/dai_tv/cli.py:106
 msgid "Nothing is playing."
 msgstr ""
 
@@ -3293,6 +3310,11 @@ msgstr ""
 #. he: אין תוצאות.
 #: apps/dai-clip/dai_clip/text.py:15
 msgid "Nothing matches."
+msgstr ""
+
+#. he: שום דבר מהמחשב הזה לא משותף עם מכונה עד שתגידו. שתפו תיקייה אחת, לקריאה בלבד בהתחלה.
+#: apps/dai-doctor/dai_doctor/diagnose.py:348
+msgid "Nothing of this computer is shared with a machine until you say so. Share one folder, read-only to begin with."
 msgstr ""
 
 #. he: אין מה להשחיר: הוסיפו --page N --box LEFT,TOP,WIDTH,HEIGHT.
@@ -3377,7 +3399,7 @@ msgid "Off. What was kept has been deleted."
 msgstr ""
 
 #. he: בטלוויזיה עכשיו: {what}. {q}
-#: apps/dai-tv/dai_tv/cli.py:97
+#: apps/dai-tv/dai_tv/cli.py:98
 #, python-brace-format
 msgid "On the TV now: {what}. {q}"
 msgstr ""
@@ -3445,7 +3467,7 @@ msgid "Only these facts, on this computer. Secrets in the command line are hidde
 msgstr ""
 
 #. he: רק {mem_available} פנויים ל-D.Ai.
-#: apps/dai-doctor/dai_doctor/diagnose.py:312
+#: apps/dai-doctor/dai_doctor/diagnose.py:315
 #, python-brace-format
 msgid "Only {mem_available} is free for D.Ai."
 msgstr ""
@@ -4014,7 +4036,7 @@ msgid "Rotation lock: the screen stays as it is."
 msgstr ""
 
 #. he: Ruby פותח את {url} בטלוויזיה (pid {pid}).
-#: apps/dai-tv/dai_tv/cli.py:220
+#: apps/dai-tv/dai_tv/cli.py:246
 #, python-brace-format
 msgid "Ruby opens {url} on the TV (pid {pid})."
 msgstr ""
@@ -4424,7 +4446,7 @@ msgid "Show the screen"
 msgstr ""
 
 #. he: מוצג על הטלוויזיה.
-#: apps/dai-tv/dai_tv/cli.py:146
+#: apps/dai-tv/dai_tv/cli.py:161
 msgid "Shown on the TV."
 msgstr ""
 
@@ -4878,7 +4900,7 @@ msgid "That would leave no pages."
 msgstr ""
 
 #. he: לוח השידורים הוא כתובת אינטרנט (http:// או https://).
-#: apps/dai-tv/dai_tv/cli.py:202
+#: apps/dai-tv/dai_tv/cli.py:217
 msgid "The EPG is a web address (http:// or https://)."
 msgstr ""
 
@@ -4913,7 +4935,7 @@ msgid "The battery is worn"
 msgstr ""
 
 #. he: הדפדפן לא היה פתוח.
-#: apps/dai-tv/dai_tv/cli.py:213
+#: apps/dai-tv/dai_tv/cli.py:239
 msgid "The browser was not open."
 msgstr ""
 
@@ -5041,7 +5063,7 @@ msgid "The machine has: {ids}"
 msgstr ""
 
 #. he: המכונה משתמשת ב-{cpu:.0f}% מהמעבד: Windows Update או תוכנת התקנה עובדים בתוכה.
-#: apps/dai-doctor/dai_doctor/diagnose.py:306
+#: apps/dai-doctor/dai_doctor/diagnose.py:309
 #, python-brace-format
 msgid "The machine uses {cpu:.0f}% of the processor: Windows Update or an installer is working inside it."
 msgstr ""
@@ -5203,7 +5225,7 @@ msgid "There is no ready recipe for this, and Diamond (the local AI) is not inst
 msgstr ""
 
 #. he: לא הייתה רשימה.
-#: apps/dai-tv/dai_tv/cli.py:193
+#: apps/dai-tv/dai_tv/cli.py:208
 msgid "There was no playlist."
 msgstr ""
 
@@ -5383,6 +5405,12 @@ msgstr ""
 msgid "To"
 msgstr ""
 
+#. he: כדי לאפשר כתיבה: dai-vm share {name} --writable
+#: apps/dai-doctor/dai_doctor/diagnose.py:356
+#, python-brace-format
+msgid "To let it write: dai-vm share {name} --writable"
+msgstr ""
+
 #. he: אל: {to}
 #: apps/dai-j/dai_j/text.py:50
 #, python-brace-format
@@ -5481,7 +5509,7 @@ msgid "Turn on battery saver"
 msgstr ""
 
 #. he: הפעילו וירטואליזציה בהגדרות הקושחה (BIOS/UEFI) ואז הפעילו מחדש
-#: apps/dai-doctor/dai_doctor/diagnose.py:291
+#: apps/dai-doctor/dai_doctor/diagnose.py:294
 msgid "Turn on virtualization in the firmware settings (BIOS/UEFI), then restart"
 msgstr ""
 
@@ -5564,7 +5592,7 @@ msgid "Unknown command: {verb}. dai-rotate --help"
 msgstr ""
 
 #. he: פקודה לא מוכרת: {verb}. dai-tv --help
-#: apps/dai-tv/dai_tv/cli.py:245
+#: apps/dai-tv/dai_tv/cli.py:271
 #, python-brace-format
 msgid "Unknown command: {verb}. dai-tv --help"
 msgstr ""
@@ -5664,7 +5692,7 @@ msgid "VirtIO drivers {v}: ready."
 msgstr ""
 
 #. he: וירטואליזציה (VT-x או AMD-V) כבויה בקושחה של המחשב, או ש-/dev/kvm לא זמין לכם; הכול בתוך המכונה איטי פי כמה.
-#: apps/dai-doctor/dai_doctor/diagnose.py:287
+#: apps/dai-doctor/dai_doctor/diagnose.py:290
 msgid "Virtualization (VT-x or AMD-V) is off in the computer's firmware, or /dev/kvm is not yours to use; everything inside the machine is many times slower."
 msgstr ""
 
@@ -5684,7 +5712,7 @@ msgid "WEAKENS security"
 msgstr ""
 
 #. he: חכו ש-Windows יסיים, או השהו את המכונה ב-D.Ai VM
-#: apps/dai-doctor/dai_doctor/diagnose.py:308
+#: apps/dai-doctor/dai_doctor/diagnose.py:311
 msgid "Wait for Windows to finish, or pause the machine in D.Ai VM"
 msgstr ""
 
@@ -5736,7 +5764,7 @@ msgid "What this file wants to do (and does not get to)"
 msgstr ""
 
 #. he: מה להגיד? dai-tv say TEXT
-#: apps/dai-tv/dai_tv/cli.py:143
+#: apps/dai-tv/dai_tv/cli.py:158
 msgid "What to say? dai-tv say TEXT"
 msgstr ""
 
@@ -5810,7 +5838,7 @@ msgid "Which one? "
 msgstr ""
 
 #. he: איזו רשימה? dai-tv channels FILE.m3u (קובץ במחשב הזה)
-#: apps/dai-tv/dai_tv/cli.py:197
+#: apps/dai-tv/dai_tv/cli.py:212
 msgid "Which playlist? dai-tv channels FILE.m3u (a file on this computer)"
 msgstr ""
 
@@ -5855,12 +5883,12 @@ msgid "Wi-Fi is switched off"
 msgstr ""
 
 #. he: ל-Windows יש מה שהוא צריך
-#: apps/dai-doctor/dai_doctor/diagnose.py:325
+#: apps/dai-doctor/dai_doctor/diagnose.py:328
 msgid "Windows has what it needs"
 msgstr ""
 
 #. he: Windows עצמו עסוק
-#: apps/dai-doctor/dai_doctor/diagnose.py:305
+#: apps/dai-doctor/dai_doctor/diagnose.py:308
 msgid "Windows itself is busy"
 msgstr ""
 
@@ -5880,7 +5908,7 @@ msgid "Windows may write into the folder."
 msgstr ""
 
 #. he: Windows רץ בלי האצת חומרה
-#: apps/dai-doctor/dai_doctor/diagnose.py:286
+#: apps/dai-doctor/dai_doctor/diagnose.py:289
 msgid "Windows runs without hardware acceleration"
 msgstr ""
 
@@ -6148,6 +6176,16 @@ msgstr ""
 msgid "checked"
 msgstr ""
 
+#. he: לוח לא משותף
+#: apps/dai-doctor/dai_doctor/diagnose.py:361
+msgid "clipboard not shared"
+msgstr ""
+
+#. he: לוח משותף
+#: apps/dai-doctor/dai_doctor/diagnose.py:361
+msgid "clipboard shared"
+msgstr ""
+
 #. he: מקמפל קוד בזמן ריצה
 #: apps/dai-forge/dai_forge/apps.py:157
 msgid "compiles code at run time"
@@ -6156,6 +6194,12 @@ msgstr ""
 #. he: קרס
 #: apps/dai-vm/dai_vm/gui.py:82
 msgid "crashed"
+msgstr ""
+
+#. he: dai-vm share {name} --folder ~/Documents/Shared (ואז הפעילו את המכונה מחדש)
+#: apps/dai-doctor/dai_doctor/diagnose.py:350
+#, python-brace-format
+msgid "dai-vm share {name} --folder ~/Documents/Shared (then start the machine again)"
 msgstr ""
 
 #. he: כהה (D.Ai Night)
@@ -6445,7 +6489,7 @@ msgid "not verified: compare the symbols"
 msgstr ""
 
 #. he: אין מה לשנות
-#: apps/dai-tv/dai_tv/cli.py:184
+#: apps/dai-tv/dai_tv/cli.py:199
 msgid "nothing to change"
 msgstr ""
 
@@ -6876,7 +6920,7 @@ msgid "{free} free of {total}."
 msgstr ""
 
 #. he: {free} פנויים היכן שהמכונות נמצאות; Windows נעצר כשהדיסק שלו לא יכול לגדול.
-#: apps/dai-doctor/dai_doctor/diagnose.py:318
+#: apps/dai-doctor/dai_doctor/diagnose.py:321
 #, python-brace-format
 msgid "{free} free where the machines live; Windows stops when its disk cannot grow."
 msgstr ""
@@ -6926,7 +6970,7 @@ msgid "{mem_available} free"
 msgstr ""
 
 #. he: {names}; האצת חומרה פועלת.
-#: apps/dai-doctor/dai_doctor/diagnose.py:326
+#: apps/dai-doctor/dai_doctor/diagnose.py:329
 #, python-brace-format
 msgid "{names}; hardware acceleration is on."
 msgstr ""
@@ -7089,10 +7133,28 @@ msgstr ""
 msgid "{name} needs a password to open."
 msgstr ""
 
+#. he: {name} קורא וכותב ב-{folder}
+#: apps/dai-doctor/dai_doctor/diagnose.py:358
+#, python-brace-format
+msgid "{name} reads and writes {folder}"
+msgstr ""
+
+#. he: {name} קורא את {folder} ולא יכול לכתוב בה
+#: apps/dai-doctor/dai_doctor/diagnose.py:353
+#, python-brace-format
+msgid "{name} reads {folder} and cannot write to it"
+msgstr ""
+
 #. he: {name} לא רואה שום תיקייה שלכם.
 #: apps/dai-vm/dai_vm/gui.py:604
 #, python-brace-format
 msgid "{name} sees no folder of yours."
+msgstr ""
+
+#. he: {name} לא רואה אף קובץ שלכם, בכוונה
+#: apps/dai-doctor/dai_doctor/diagnose.py:347
+#, python-brace-format
+msgid "{name} sees none of your files, by design"
 msgstr ""
 
 #. he: ‏{name} שלחו הודעה. פתחו את Diamond Chat כדי לאשר או לדחות.
@@ -7120,7 +7182,7 @@ msgid "{name} stays closed."
 msgstr ""
 
 #. he: {name} לוקח את רוב הזיכרון
-#: apps/dai-doctor/dai_doctor/diagnose.py:297
+#: apps/dai-doctor/dai_doctor/diagnose.py:300
 #, python-brace-format
 msgid "{name} takes most of the memory"
 msgstr ""
@@ -7202,6 +7264,12 @@ msgstr ""
 #: apps/dai-vm/dai_vm/cli.py:214
 #, python-brace-format
 msgid "{name}: clipboard {clip} · folder {folder}{mode}. Takes effect at the next start."
+msgstr ""
+
+#. he: {n} התקני USB ניתנו לה
+#: apps/dai-doctor/dai_doctor/diagnose.py:363
+#, python-brace-format
+msgid "{n} USB devices given to it"
 msgstr ""
 
 #. he: {n} קבצים מצורפים. הם מופיעים בלוח הצד ולעולם לא נפתחים.
@@ -7403,7 +7471,7 @@ msgid "✓ Fixed: it is running again."
 msgstr ""
 
 #. he: ✓ פונו {size}
-#: apps/dai-doctor/dai_doctor/cli.py:87
+#: apps/dai-doctor/dai_doctor/cli.py:88
 #, python-brace-format
 msgid "✓ Freed {size}"
 msgstr ""

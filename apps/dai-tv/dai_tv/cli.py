@@ -13,6 +13,7 @@
   dai-tv seed                 before Kodi starts: its add-on database with the channel add-ons enabled (no questions)
   dai-tv channels PLAYLIST.m3u [--epg URL] | --off   live channels from your own playlist (IPTV Simple)
   dai-tv browse URL | --close   Ruby in TV mode (Firefox, kiosk, big) on a web address; --close is "back to the TV"
+  dai-tv status [--notify]    the one thing worth knowing (D.Ai Doctor: memory, disk, updates); --notify shows it on the TV
   dai-tv --version | --help
 
 Nothing here leaves the computer: Diamond runs locally and Kodi is reached on 127.0.0.1 only.
@@ -112,6 +113,20 @@ def describe(now: dict | None, lang: str) -> str:
     return title + (f"\n{plot[:300]}" if plot else "")
 
 
+STATUS_TOPICS = ("slow", "disk", "update")
+
+
+def worst_finding(lang: str):
+    """D.Ai Doctor's most pressing finding on this box (None when all is well, or Doctor is not here)."""
+    try:
+        from dai_doctor.diagnose import diagnose
+        from dai_doctor.facts import collect
+    except ImportError:
+        return None
+    findings = diagnose(collect(topics=STATUS_TOPICS, sample=0.25, budget=1.0), STATUS_TOPICS, lang)
+    return next((f for f in findings if f.level in ("bad", "warn")), None)
+
+
 def kodi_home() -> "Path":
     from pathlib import Path
 
@@ -205,6 +220,17 @@ def main(argv: list[str] | None = None) -> int:
             seed.channels(kodi_home(), playlist.resolve(), epg=epg)
             print(say(lang, "Live channels from {file}; Kodi shows them when it starts again.",
                       "ערוצים חיים מתוך {file}; Kodi יציג אותם כשיופעל מחדש.", file=playlist.name))
+            return 0
+        if verb == "status":
+            found = worst_finding(lang)
+            if found is None:
+                print(say(lang, "All is well on this TV.", "הכול בסדר בטלוויזיה הזאת."))
+                return 0
+            print(f"{found.title}: {found.detail}")
+            for fix in found.fixes[:1]:
+                print("  → " + fix.label)
+            if "--notify" in rest:
+                rpc.notify("D.Ai", f"{found.title}. {found.detail}"[:200], 12)
             return 0
         if verb == "browse":
             from . import browse

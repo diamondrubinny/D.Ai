@@ -6092,3 +6092,57 @@ msgstr "Ruby открывает {url} на ТВ (pid {pid})."
 #: apps/dai-tv/dai_tv/cli.py
 msgid "The browser was not open."
 msgstr "Браузер не был открыт."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "All is well on this TV."
+msgstr "На этом ТВ всё в порядке."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Everything else on this computer stays out of its reach."
+msgstr "Всё остальное на этом компьютере ей недоступно."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Inside Windows the folder appears as a drive (the VirtIO drivers must be installed there). Writing is a second choice."
+msgstr "Внутри Windows папка видна как диск (там должны быть установлены драйверы VirtIO). Запись — отдельный выбор."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Nothing of this computer is shared with a machine until you say so. Share one folder, read-only to begin with."
+msgstr "Ничего с этого компьютера не открыто машине, пока вы не скажете. Откройте одну папку, для начала только для чтения."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "To let it write: dai-vm share {name} --writable"
+msgstr "Чтобы разрешить запись: dai-vm share {name} --writable"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "clipboard not shared"
+msgstr "буфер обмена не общий"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "clipboard shared"
+msgstr "буфер обмена общий"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "dai-vm share {name} --folder ~/Documents/Shared (then start the machine again)"
+msgstr "dai-vm share {name} --folder ~/Documents/Shared (затем запустите машину снова)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} reads and writes {folder}"
+msgstr "{name} читает и пишет в {folder}"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} reads {folder} and cannot write to it"
+msgstr "{name} читает {folder} и не может туда писать"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} sees none of your files, by design"
+msgstr "{name} не видит ваших файлов — так задумано"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{n} USB devices given to it"
+msgstr "ей отдано USB-устройств: {n}"

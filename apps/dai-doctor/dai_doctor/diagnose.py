@@ -251,6 +251,9 @@ QUESTIONS = {
     # First: "the printer doesn't work since the update" is about the update.
     "update": (r"(?:(?:since|after) (?:the |an |last |latest )?update|update (?:broke|ruined)|broke after|"
                r"(?:מאז|אחרי|לאחר) (?:ה)?עדכון|העדכון (?:שבר|הרס|קלקל|דפק))"),
+    # "Windows cannot see my files" is about sharing (docs/VM.md §14), before "machine" claims it.
+    "sharing": (r"^(?=.*(?:\bwindows\b|virtual machine|\bvm\b|ווינדוס|וינדוס|המכונה))"
+                r"(?=.*(?:\bfiles?\b|\bfolders?\b|\bshared?\b|\bclipboard\b|קבצים|קובץ|תיקייה|תיקיה|שיתוף|משותפת|לוח))"),
     # "Windows is slow" is about the machine (docs/VM.md §13), before "slow" claims it.
     "machine": r"(?:\bwindows\b|virtual machine|\bvm\b|dai-vm|ווינדוס|וינדוס|חלונות|מכונה וירטואלית|המכונה הווירטואלית)",
     "slow": r"(?:\bslow\b|\bsluggish\b|\blag(?:gy|ging)?\b|\bfreez(?:e|es|ing)\b|\bhang(?:s|ing)?\b|"
@@ -328,7 +331,41 @@ def machine(facts: Facts, lang: str) -> list[Finding]:
     return findings
 
 
-TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware, "update": update, "machine": machine}
+def sharing(facts: Facts, lang: str) -> list[Finding]:
+    """Why Windows cannot see the files (docs/VM.md §14): nothing is shared until the person says so, and a shared
+    folder is read-only until allowed. All advice; the switches are in D.Ai VM."""
+    findings = []
+    if not facts.machines:
+        findings.append(Finding("sharing", "ok", _t(lang, "No Windows machine yet", "עדיין אין מכונת Windows"),
+                                _t(lang, "D.Ai VM makes one from your own installation media: dai-vm create NAME --iso FILE",
+                                   "D.Ai VM יוצר אחת ממדיית ההתקנה שלכם: dai-vm create NAME --iso FILE")))
+        return findings
+    for name, _memory, _cpus in facts.machines:
+        share = facts.sharing.get(name, {})
+        folder = share.get("shared_folder") or ""
+        if not folder:
+            findings.append(Finding(f"sharing-{name}", "warn", _t(lang, "{name} sees none of your files, by design", "{name} לא רואה אף קובץ שלכם, בכוונה", name=name),
+                                    _t(lang, "Nothing of this computer is shared with a machine until you say so. Share one folder, read-only to begin with.",
+                                       "שום דבר מהמחשב הזה לא משותף עם מכונה עד שתגידו. שתפו תיקייה אחת, לקריאה בלבד בהתחלה."),
+                                    [Fix("advice", _t(lang, "dai-vm share {name} --folder ~/Documents/Shared (then start the machine again)",
+                                                      "dai-vm share {name} --folder ~/Documents/Shared (ואז הפעילו את המכונה מחדש)", name=name))]))
+        elif share.get("shared_readonly", True):
+            findings.append(Finding(f"sharing-{name}", "ok", _t(lang, "{name} reads {folder} and cannot write to it", "{name} קורא את {folder} ולא יכול לכתוב בה", name=name, folder=folder),
+                                    _t(lang, "Inside Windows the folder appears as a drive (the VirtIO drivers must be installed there). Writing is a second choice.",
+                                       "בתוך Windows התיקייה מופיעה ככונן (דרייברי VirtIO חייבים להיות מותקנים שם). כתיבה היא בחירה שנייה."),
+                                    [Fix("advice", _t(lang, "To let it write: dai-vm share {name} --writable", "כדי לאפשר כתיבה: dai-vm share {name} --writable", name=name))]))
+        else:
+            findings.append(Finding(f"sharing-{name}", "ok", _t(lang, "{name} reads and writes {folder}", "{name} קורא וכותב ב-{folder}", name=name, folder=folder),
+                                    _t(lang, "Everything else on this computer stays out of its reach.", "כל השאר במחשב הזה נשאר מחוץ להישג ידו.")))
+        extras = []
+        extras.append(_t(lang, "clipboard shared", "לוח משותף") if share.get("clipboard") else _t(lang, "clipboard not shared", "לוח לא משותף"))
+        if share.get("usb"):
+            extras.append(_t(lang, "{n} USB devices given to it", "{n} התקני USB ניתנו לה", n=share["usb"]))
+        findings[-1].detail += " " + "; ".join(extras) + "."
+    return findings
+
+
+TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware, "update": update, "machine": machine, "sharing": sharing}
 
 
 def _topic(lowered: str) -> str | None:
