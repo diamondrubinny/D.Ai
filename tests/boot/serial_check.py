@@ -797,7 +797,8 @@ def main() -> int:
          "ss -ltnH | awk '{print $4}' | grep -vE '^(127[.]|[[]::1[]])' | sed 's/^/OPEN=/'; echo LISTENERS_CHECKED; "
          "grep -iE 'Loaded language|windowing|Running on' ~/.kodi/temp/kodi.log 2>/dev/null | head -n 4; fi",
          True, lambda o: "TV_NOT_THIS_EDITION" in o or (all(mark in o for mark in (
-             "dai-tv.desktop", "NO_LXQT", "HE_PACK", "CEC_TOOL", "LISTENERS_CHECKED", "WEBSERVER_OFF=1", "HEBREW=1"))
+             "dai-tv.desktop", "NO_LXQT", "HE_PACK", "CEC_TOOL", "LISTENERS_CHECKED", "HEBREW=1"))
+          and re.search(r"WEBSERVER_OFF=[1-9]", o)
              and "LXQT_RUNNING" not in o and "OPEN=" not in o and "KODI_PROCS=0" not in o), 90),
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
