@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai TV (docs/TV.md): nothing listens on the box, Kodi's remote-control ports stay closed, and the TV
+# session's files are executable. The desktop session stays installed: "Exit" in Kodi reaches it.
+set -eu
+chmod 0755 /usr/bin/startdai-tv /usr/bin/dai-tv-kodi /usr/lib/live/config/9000-dai-sddm-autologin
+# Kodi's event server and web server are off in the defaults; the firewall is default-deny anyway.
+# The bundled Hebrew language pack belongs to every new user (seeded from /etc/skel at first login).
+chmod -R a+rX /etc/skel/.kodi
+echo "dai-tv: television session ready"

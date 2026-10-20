@@ -359,7 +359,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        edition: [user, dev, edu]
+        edition: [user, dev, edu, tv]
     steps:
       - uses: actions/checkout@v4
 

@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai TV (docs/TV.md): the 10-foot interface on a TV-connected computer, driven by the TV's remote.
+kodi
+kodi-inputstream-adaptive
+kodi-pvr-iptvsimple
+cec-utils
+mpv
+# Hardware video decoding on Intel and AMD graphics
+va-driver-all
+mesa-va-drivers

@@ -1,0 +1,28 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- D.Ai TV's defaults for Kodi (docs/TV.md §2): Hebrew with the bundled language pack, a font that has Hebrew
+     letters, no web server, no UPnP, no AirPlay, no Zeroconf announcements, the remote through CEC, nothing
+     reported anywhere. Kodi rewrites this file; these are the starting values. -->
+<settings version="2">
+  <setting id="locale.language">resource.language.he_il</setting>
+  <setting id="locale.country">Israel</setting>
+  <setting id="lookandfeel.font">Arial</setting>
+  <setting id="locale.charset">CP1255</setting>
+  <setting id="services.webserver">false</setting>
+  <setting id="services.upnp">false</setting>
+  <setting id="services.upnpserver">false</setting>
+  <setting id="services.upnprenderer">false</setting>
+  <setting id="services.airplay">false</setting>
+  <setting id="services.zeroconf">false</setting>
+  <setting id="services.esenabled">false</setting>
+  <setting id="services.esallinterfaces">false</setting>
+  <setting id="input.enablemouse">true</setting>
+  <setting id="general.addonupdates">2</setting>
+  <setting id="general.addonnotifications">false</setting>
+  <setting id="addons.unknownsources">false</setting>
+  <setting id="videoplayer.useprimedecoderforhw">true</setting>
+  <setting id="videoplayer.usevaapi">true</setting>
+  <setting id="locale.subtitlelanguage">Hebrew</setting>
+  <setting id="locale.audiolanguage">original</setting>
+  <setting id="subtitles.charset">CP1255</setting>
+</settings>

@@ -83,6 +83,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 - **user**: the everyday desktop
 - **dev**: user edition plus developer tools
 - **edu**: user edition plus learning apps (GCompris, Tux Paint, TuxMath, Stellarium, KDE Edu, Marble) and organization policies for schools
+- **tv**: the television edition for a computer on the TV's HDMI: boots into Kodi full screen in Hebrew, driven by the TV's remote (CEC); no telemetry, no account, nothing listening; "Exit" reaches the desktop (`docs/TV.md`)
+- **server**: no desktop, hardened for internal servers (`docs/SERVER.md`); not built in CI yet
 
 ## D.Ai Forge
 

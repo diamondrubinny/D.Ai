@@ -17,6 +17,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded
   once with a pinned SHA-256; no clipboard, folder or USB sharing until asked; "allow virtual machines" in
   D.Ai Tune adds the person to the kvm group, with undo. User and dev editions.
+- D.Ai TV, the television edition (`build-iso.sh tv`): Kodi 21 full screen on labwc, autologin, the bundled
+  Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC; "Exit" in Kodi turns the
+  session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

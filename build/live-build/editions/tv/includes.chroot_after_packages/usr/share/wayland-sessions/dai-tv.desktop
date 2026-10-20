@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai TV
+Name[he]=D.Ai TV
+Comment=The television interface (Kodi) full screen, driven by the remote; leave it to reach the desktop
+Comment[he]=ממשק הטלוויזיה (Kodi) במסך מלא, מופעל מהשלט; יציאה ממנו מביאה לשולחן העבודה
+Exec=startdai-tv
+TryExec=startdai-tv
+DesktopNames=DAI-TV

@@ -1,0 +1,42 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai TV session (docs/TV.md §3): labwc with no panel and no decorations, Kodi full screen as its client.
+# When Kodi exits ("Exit" in its power menu), the same labwc turns into the desktop (lxqt-session), so a TV
+# box is a computer one key away. "Power off" and "Reboot" in Kodi go through logind as usual.
+set -eu
+
+: "${XDG_CONFIG_HOME:=$HOME/.config}"
+: "${XDG_DATA_HOME:=$HOME/.local/share}"
+: "${XDG_CACHE_HOME:=$HOME/.cache}"
+: "${XDG_CONFIG_DIRS:=/etc/xdg}"
+case ":$XDG_CONFIG_DIRS:" in
+	*:/usr/share:*) ;;
+	*) XDG_CONFIG_DIRS="$XDG_CONFIG_DIRS:/usr/share" ;;
+esac
+: "${XDG_DATA_DIRS:=/usr/local/share:/usr/share}"
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME XDG_CONFIG_DIRS XDG_DATA_DIRS
+
+# The language D.Ai speaks to this person (shared with the desktop session, docs/I18N.md §9).
+language_env="$XDG_CONFIG_HOME/dai/language.env"
+if [ -r "$language_env" ]; then
+	wanted_lang=$(sed -n 's/^LANG=\([a-z][a-z]_[A-Z][A-Z]\.UTF-8\)$/\1/p' "$language_env" | tail -n 1)
+	if [ -n "$wanted_lang" ] && locale -a 2>/dev/null | grep -qix "$(printf '%s' "$wanted_lang" | sed 's/UTF-8$/utf8/')"; then
+		export LANG="$wanted_lang" LC_MESSAGES="$wanted_lang"
+	fi
+fi
+
+export XDG_CURRENT_DESKTOP="DAI-TV:labwc:wlroots"
+export XDG_SESSION_DESKTOP="DAI-TV"
+export QT_QPA_PLATFORM="wayland;xcb"
+
+if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --quiet; then
+	export WLR_NO_HARDWARE_CURSORS=1
+fi
+
+# Kodi's defaults for this person, once: Hebrew with the bundled language pack, no servers, CEC on.
+if [ ! -d "$HOME/.kodi" ] && [ -d /etc/skel/.kodi ]; then
+	cp -r /etc/skel/.kodi "$HOME/.kodi"
+fi
+
+exec labwc -C /etc/dai/tv/labwc -S dai-tv-kodi

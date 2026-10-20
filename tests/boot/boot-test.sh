@@ -201,6 +201,12 @@ sleep "$APPS_WAIT"
 monitor "screendump $ARTIFACT_DIR/apps.png -f png" || log "warning: screenshot failed"
 [[ -s "$ARTIFACT_DIR/apps.png" ]] && log "screenshot: $ARTIFACT_DIR/apps.png"
 
+# The TV edition boots into Kodi, not the desktop: the desktop's interactive checks and screenshots below do
+# not apply to it (docs/TV.md §5); its own checks ran in serial_check.py, and its screenshot is desktop.png.
+if [[ "$(basename "$ISO")" == dai-os-tv-* ]]; then
+  log "tv edition: skipping the desktop's interactive checks"
+else
+
 # Interactive checks driven through the QEMU monitor (real keyboard/mouse).
 # usb-tablet gives absolute coordinates: 0..32767 across the 1280x800 screen.
 click() { # click <x> <y> in screen pixels
@@ -375,6 +381,8 @@ sleep 6
 monitor "screendump $ARTIFACT_DIR/login.png -f png" || log "warning: screenshot failed"
 type_keys alt-f4
 sleep 2
+
+fi  # not the TV edition
 
 if ((checks_ok == 0)); then
   log "last serial console lines:"

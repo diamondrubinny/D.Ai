@@ -198,6 +198,16 @@ r.close()
 '''
 PDF_CHECK_B64 = base64.b64encode(PDF_CHECK.encode()).decode()
 
+# Checks that must pass on the TV edition too (everything about the system, nothing about the LXQt desktop).
+TV_REQUIRED = {
+    "dai-release", "credit", "graphical target", "display manager", "labwc compositor", "pipewire",
+    "network manager", "firewall loaded", "firewall input policy", "apparmor enabled", "kptr_restrict",
+    "root locked", "zram swap", "failed units", "tune: version", "tune: polkit action", "tune: security score",
+    "ai: daid has no network", "packages: installed by dpkg", "policy: applied on drop", "installer: calamares",
+    "installer: LUKS available", "boot: D.Ai loading screen (Plymouth)", "login: D.Ai login screen loads (SDDM)",
+    "os: secure boot shim", "i18n: boot menu languages", "pdf: opened in the sandbox, wants listed, text out",
+}
+
 # Runs inside the VM (which has no KVM of its own): defines a D.Ai VM machine through libvirt's session daemon,
 # which validates the whole definition (UEFI with Secure Boot, the TPM, passt, SPICE on a socket), and removes it.
 VM_CHECK = r'''
@@ -262,6 +272,11 @@ def main() -> int:
         return 1
     # Quiet the console: no kernel messages, no colors, fixed width.
     serial.run("sudo dmesg -n 1; export TERM=dumb PAGER=cat SYSTEMD_PAGER=cat SYSTEMD_COLORS=0")
+
+    # The edition decides which checks are required: the TV edition boots into Kodi, not LXQt, so the desktop's
+    # checks are run (as information) but only the shared ones and its own are required (docs/TV.md §5).
+    edition = (serial.run(". /etc/dai-release 2>/dev/null; echo EDITION=$EDITION").strip().splitlines() or [""])[-1]
+    edition = edition.removeprefix("EDITION=").strip()
 
     # (name, command, required, predicate on output)
     checks = [
@@ -768,6 +783,18 @@ def main() -> int:
          "xdg-mime query default application/pdf",
          True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
          and "dai-pdf.desktop" in o, 120),
+        # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
+        # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
+        ("tv: the session, Kodi, the defaults, nothing listening",
+         ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
+         "grep -h Session= /etc/sddm.conf /etc/sddm.conf.d/*.conf; pgrep -af 'kodi' | grep -c -v grep; "
+         "pgrep -x lxqt-session >/dev/null && echo LXQT_RUNNING || echo NO_LXQT; kodi --version | head -n 1; "
+         "grep -c 'services.webserver\">false' ~/.kodi/userdata/guisettings.xml; "
+         "grep -c 'resource.language.he_il' ~/.kodi/userdata/guisettings.xml; test -d ~/.kodi/addons/resource.language.he_il && echo HE_PACK; "
+         "command -v cec-client >/dev/null && echo CEC_TOOL; ss -ltn | tail -n +2 | wc -l | sed 's/^/LISTENING=/'; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
+             "dai-tv.desktop", "NO_LXQT", "HE_PACK", "CEC_TOOL", "LISTENING=0")) and "LXQT_RUNNING" not in o
+         and any(line.strip() not in ("0", "") and line.strip().isdigit() for line in o.splitlines()), 90),
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
         ("vm: the stack, the honest check, a definition libvirt accepts",
@@ -860,10 +887,12 @@ def main() -> int:
     ]
 
     failed_required = 0
-    lines = []
+    lines = [f"[INFO] edition: {edition or '?'}"]
     for check in checks:
         name, command, required, ok = check[:4]
         timeout = check[4] if len(check) > 4 else 30
+        if edition == "tv" and name not in TV_REQUIRED and not name.startswith("tv:"):
+            required = False
         try:
             output = serial.run(command, timeout=timeout)
             passed = ok(output)

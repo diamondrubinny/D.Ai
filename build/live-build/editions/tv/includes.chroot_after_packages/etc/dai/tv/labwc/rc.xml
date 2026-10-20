@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- labwc for D.Ai TV (docs/TV.md §3): one full-screen client, no decorations, the keyboard still works. -->
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>0</gap>
+  </core>
+  <theme>
+    <name>D.Ai-Night</name>
+    <titlebar><layout></layout></titlebar>
+  </theme>
+  <windowRules>
+    <windowRule identifier="*" serverDecoration="no" />
+  </windowRules>
+  <keyboard>
+    <default />
+    <keybind key="W-Return"><action name="Execute" command="qterminal" /></keybind>
+    <keybind key="C-A-Delete"><action name="Execute" command="lxqt-leave" /></keybind>
+  </keyboard>
+</labwc_config>

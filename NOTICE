@@ -19,3 +19,7 @@ Third-party components (not part of this repository's source):
   at build time by apps/dai-panel-plugin.
 - Language models downloaded by the user with dai-models keep their own
   licenses (listed in apps/dai-ai/data/models.json).
+- Kodi's Hebrew language pack (resource.language.he_il, GPL-2.0-or-later,
+  Team Kodi and its translators), bundled in the D.Ai TV edition under
+  /etc/skel/.kodi/addons so the television interface speaks Hebrew without a
+  download; from https://mirrors.kodi.tv/addons/omega/.

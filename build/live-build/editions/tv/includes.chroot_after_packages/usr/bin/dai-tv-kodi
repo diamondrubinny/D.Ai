@@ -1,0 +1,32 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# labwc's session client for D.Ai TV: Kodi full screen on Wayland; when it exits, the desktop takes over.
+# The desktop's own seeding (labwc config, panel label) is what startdai-wayland does; this does the same
+# before handing over, so the first desktop looks right.
+set -u
+
+kodi --windowing=wayland --standalone
+code=$?
+
+# Kodi asked for a power action: logind does it; nothing more to start here.
+if [ "$code" -eq 64 ] || [ "$code" -eq 66 ]; then
+	exit 0
+fi
+
+labwc_config="${XDG_CONFIG_HOME:-$HOME/.config}/labwc"
+if [ ! -d "$labwc_config" ] && [ -d /etc/skel/.config/labwc ]; then
+	mkdir -p "$(dirname "$labwc_config")"
+	cp -r /etc/skel/.config/labwc "$labwc_config"
+fi
+panel_conf="${XDG_CONFIG_HOME:-$HOME/.config}/lxqt/panel.conf"
+if [ ! -e "$panel_conf" ] && [ -f /etc/xdg/lxqt/panel.conf ]; then
+	mkdir -p "$(dirname "$panel_conf")"
+	case "${LANG:-}" in
+		he*) sed 's/^text=Start$/text=התחל/' /etc/xdg/lxqt/panel.conf >"$panel_conf" ;;
+		*) cp /etc/xdg/lxqt/panel.conf "$panel_conf" ;;
+	esac
+fi
+export XDG_CURRENT_DESKTOP="LXQt:labwc:wlroots" XDG_SESSION_DESKTOP="LXQt" XDG_MENU_PREFIX="lxqt-" QT_QPA_PLATFORMTHEME="lxqt"
+labwc --reconfigure 2>/dev/null || true
+exec lxqt-session

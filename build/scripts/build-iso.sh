@@ -31,8 +31,8 @@ log() { printf '[build-iso] %s\n' "$*" >&2; }
 die() { log "error: $*"; exit 1; }
 
 case "$EDITION" in
-  user | dev | edu | server) ;;
-  *) die "usage: $(basename "$0") <user|dev|edu|server> [output-dir]" ;;
+  user | dev | edu | tv | server) ;;
+  *) die "usage: $(basename "$0") <user|dev|edu|tv|server> [output-dir]" ;;
 esac
 
 [[ $EUID -eq 0 ]] || die "must run as root inside a disposable container or VM"
