@@ -221,8 +221,37 @@ home = Path.home()
 m = machine.Machine(name="citest", memory_mb=2048, cpus=1, disk_gb=32, iso=None, drivers_iso=None, windows="11")
 definition = machine.create(m, home)
 v = control.Virsh()
-v.define(definition)
+try:
+    v.define(definition)
+except control.VmError as exc:
+    # Seen once on the CI VM with identical packages and XML: libvirt's firmware match failed on first contact.
+    # Say what libvirt knows, then ask once more after its QEMU probe had a moment.
+    import subprocess, time
+    print("DEFINE_FIRST_TRY_FAILED", exc)
+    caps = subprocess.run(["virsh", "-c", "qemu:///session", "domcapabilities", "--machine", "q35", "--arch", "x86_64"],
+                          capture_output=True, text=True, timeout=120)
+    text = caps.stdout + caps.stderr
+    start = text.find("<firmware")
+    print("DOMCAPS_RC", caps.returncode, text[start:start + 600].replace("\n", " ") if start >= 0 else text[-400:])
+    time.sleep(5)
+    v.define(definition)
+    print("DEFINED_ON_RETRY")
 print("DEFINED", v.state("citest"))
+# Stage 2: a shared folder, the clipboard and a USB device in the definition; libvirt must accept it too.
+share = home / "dai-vm-share"
+share.mkdir(exist_ok=True)
+m = machine.load("citest", home)
+m.clipboard, m.shared_folder, m.usb = True, str(share), ["0781:5583"]
+v.redefine(machine.update(m, home))
+xml = (machine.machine_dir("citest", home) / "domain.xml").read_text()
+print("SHARED_DEFINED", v.state("citest"), "virtiofs" in xml and "memfd" in xml and "0x0781" in xml)
+try:
+    v.snapshot_take("citest", "ci-snap", "taken by the boot test")
+    print("SNAP_TAKEN", [s["label"] for s in v.snapshots("citest")])
+    v.snapshot_delete("citest", "ci-snap")
+    print("SNAP_GONE", v.snapshots("citest"))
+except control.VmError as exc:
+    print("SNAP_FAILED", exc)
 v.undefine("citest")
 print("UNDEFINED", v.state("citest"))
 '''
