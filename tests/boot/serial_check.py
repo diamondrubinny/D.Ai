@@ -252,6 +252,13 @@ try:
     print("SNAP_GONE", v.snapshots("citest"))
 except control.VmError as exc:
     print("SNAP_FAILED", exc)
+# Stage 3: the machine by sentence through D.Ai Tune (user scope, neutral, so --yes is fine), with undo.
+import subprocess
+tune = subprocess.run(["dai-tune", "--yes", "צילום מצב של ווינדוס לפני העדכון"], capture_output=True, text=True, timeout=300)
+print("TUNE_RC", tune.returncode, (tune.stdout + tune.stderr).strip().splitlines()[-1:])
+print("TUNE_SNAP", [s["label"] for s in v.snapshots("citest")])
+undo = subprocess.run(["dai-tune", "undo"], capture_output=True, text=True, timeout=300)
+print("UNDO_RC", undo.returncode, "TUNE_SNAP_AFTER", [s["label"] for s in v.snapshots("citest")])
 v.undefine("citest")
 print("UNDEFINED", v.state("citest"))
 '''
@@ -855,7 +862,7 @@ def main() -> int:
          f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py; fi",
          True, lambda o: "VM_NOT_IN_THIS_EDITION" in o or all(mark in o for mark in (
              "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "SHARED_DEFINED shut off True",
-             "UNDEFINED missing")), 240),
+             "TUNE_RC 0", "UNDO_RC 0", "UNDEFINED missing")), 300),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

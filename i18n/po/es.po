@@ -5483,3 +5483,22 @@ msgstr "pág. {n}"
 #, python-brace-format
 msgid "{n} marks · not saved yet (Ctrl+S)"
 msgstr "{n} marcas · aún sin guardar (Ctrl+S)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "A snapshot of the machine {name}, called {label} (go back to it in D.Ai VM)"
+msgstr "Una instantánea de la máquina {name}, llamada {label} (vuelve a ella en D.Ai VM)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Ask the machine {name} to shut down"
+msgstr "Pedir a la máquina {name} que se apague"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Start the machine {name} (its screen opens in a window)"
+msgstr "Iniciar la máquina {name} (su pantalla se abre en una ventana)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Undo deletes the snapshot again."
+msgstr "Deshacer elimina la instantánea de nuevo."

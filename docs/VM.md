@@ -60,6 +60,17 @@
 - **Not yet:** sound and USB redirection through the SPICE viewer itself (works through `remote-viewer` today
   by its own menu), suspend to disk at logout, autostart of the guest tools.
 
+## 12. Stage 3a: the machine by sentence (what was built)
+
+- **D.Ai Tune:** "start Windows" / "הפעל את ווינדוס", "shut down Windows" / "כבה את ווינדוס", "snapshot Windows
+  before the update" / "צילום מצב של ווינדוס לפני העדכון" (the snapshot is called `before-update`; without those
+  words it gets the date). A machine may be named ("the machine called office" / "המכונה בשם office"); with one
+  machine it is meant, with several Tune lists them and asks. Everything goes through `dai-vm` as the person
+  (user scope, no root); undo shuts down what was started, starts what was stopped, deletes the snapshot.
+- **VM check:** the sentence applied on the CI machine and undone, the snapshot seen and gone.
+- **Not yet (stage 3b):** the taskbar entry and MOM's cost line for a running machine, Doctor's "Windows is slow
+  because…", Backup's choice to include or skip the disks, Find skipping the disks.
+
 > The name "D.Ai VM" is descriptive. "Windows" is Microsoft's trademark and is used here only to name their
 > product, never as part of D.Ai's name or branding (**requires a check** of Microsoft's trademark guidelines
 > before publication).

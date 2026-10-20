@@ -837,6 +837,87 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# D.Ai VM (docs/VM.md stage 3): the machines by sentence, through dai-vm as the person
+# --------------------------------------------------------------------------
+
+MACHINES_DIR = ".local/share/dai/vm/machines"
+LABEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$")
+
+
+def _machines(ctx: Context) -> list[str]:
+    folder = ctx.user_path(MACHINES_DIR)
+    try:
+        return sorted(p.name for p in folder.iterdir() if (p / "machine.json").is_file())
+    except OSError:
+        return []
+
+
+def _machine_name(params: Params, ctx: Context) -> str:
+    """The machine the sentence meant: the one named, or the only one there is."""
+    name = str(params.get("name") or "")
+    known = _machines(ctx)
+    if name:
+        if not LABEL_RE.match(name):
+            raise ValidationError("a machine name is letters, digits, dots, dashes and underscores")
+        if name not in known:
+            raise ValidationError(f"no machine called {name} (dai-vm list)")
+        return name
+    if len(known) == 1:
+        return known[0]
+    if not known:
+        raise ValidationError("there is no machine yet: make one in D.Ai VM")
+    raise ValidationError("say which machine: " + ", ".join(known))
+
+
+def _vm_power_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"name", "action"})
+    return {"name": _machine_name(params, ctx), "action": _choice(params.get("action"), ("start", "stop"), "action")}
+
+
+def _vm_power_restore(params: Params, ctx: Context, extra: dict) -> None:
+    ctx.run(["dai-vm", "stop" if params["action"] == "start" else "start", params["name"]], check=False)
+
+
+register(ActionSpec(
+    id="vm.power",
+    scope="user",
+    validate=_vm_power_validate,
+    apply=lambda p, c: c.run(["dai-vm", p["action"], p["name"]]),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Start the machine {name} (its screen opens in a window)", "הפעלת המכונה {name} (המסך שלה נפתח בחלון)", name=p["name"])
+                             if p["action"] == "start" else
+                             _t(lang, "Ask the machine {name} to shut down", "בקשה מהמכונה {name} להיכבות", name=p["name"])),
+    restore=_vm_power_restore,
+))
+
+
+def _vm_snapshot_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"name", "label"})
+    label = str(params.get("label") or "")
+    if not label:
+        import datetime
+        label = datetime.datetime.now().strftime("%Y-%m-%d-%H%M")
+    if not LABEL_RE.match(label):
+        raise ValidationError("a snapshot name is letters, digits, dots, dashes and underscores")
+    return {"name": _machine_name(params, ctx), "label": label}
+
+
+register(ActionSpec(
+    id="vm.snapshot",
+    scope="user",
+    validate=_vm_snapshot_validate,
+    apply=lambda p, c: c.run(["dai-vm", "snapshot", p["name"], "take", p["label"], "--note", "D.Ai Tune"]),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "A snapshot of the machine {name}, called {label} (go back to it in D.Ai VM)",
+                               "תמונת מצב של המכונה {name}, בשם {label} (חזרה אליה ב-D.Ai VM)", name=p["name"], label=p["label"]),
+    restore=lambda p, c, e: c.run(["dai-vm", "snapshot", p["name"], "delete", p["label"]], check=False),
+    note=lambda p, lang: _t(lang, "Undo deletes the snapshot again.", "ביטול מוחק את תמונת המצב."),
+))
+
+
+# --------------------------------------------------------------------------
 # D.Ai TV (docs/TV.md stage 2): Kodi's remote-control services, off by default
 # --------------------------------------------------------------------------
 

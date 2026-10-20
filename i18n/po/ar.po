@@ -5483,3 +5483,22 @@ msgstr "ص. {n}"
 #, python-brace-format
 msgid "{n} marks · not saved yet (Ctrl+S)"
 msgstr "{n} علامات · لم يُحفظ بعد (Ctrl+S)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "A snapshot of the machine {name}, called {label} (go back to it in D.Ai VM)"
+msgstr "لقطة للجهاز {name} باسم {label} (عُد إليها في D.Ai VM)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Ask the machine {name} to shut down"
+msgstr "طلب إيقاف الجهاز {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Start the machine {name} (its screen opens in a window)"
+msgstr "تشغيل الجهاز {name} (تُفتح شاشته في نافذة)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Undo deletes the snapshot again."
+msgstr "التراجع يحذف اللقطة مجددًا."

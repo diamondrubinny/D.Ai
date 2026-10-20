@@ -26,6 +26,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai VM, working together: the clipboard, a shared folder (read-only unless allowed) and USB devices as
   switches per machine, off by default, applied through libvirt; USB devices in and out while the machine runs;
   snapshots taken, listed, reverted and deleted, in the window and on the command line.
+- D.Ai VM in D.Ai Tune: "start Windows", "shut down Windows", "snapshot Windows before the update", with undo.
 - D.Ai TV, the television edition (`build-iso.sh tv`): Kodi 21 full screen on labwc, autologin, the bundled
   Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC tools; "Exit" in Kodi turns the
   session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.

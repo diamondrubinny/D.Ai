@@ -54,6 +54,15 @@ ANYWHERE = r"(?:anywhere|any network|internet|everyone|world|public|מכל מק�
 
 UPDATES = r"(?:auto(?:matic)?[- ]?updates?|security updates|unattended|עדכונים אוטומטיים|עדכון אוטומטי|עדכוני אבטחה)"
 VIRTUALIZATION = r"(?:virtual ?machines?|virtuali[sz]ation|\bkvm\b|מכונות וירטואליות|מכונה וירטואלית|וירטואליזציה)"
+# D.Ai VM (docs/VM.md stage 3): "start Windows", "snapshot Windows before the update". The machine may be named
+# ("the machine called office"); otherwise the only machine is meant and Tune says so when there are several.
+WINDOWS_MACHINE = r"(?:\bwindows\b|\b(?:virtual )?machine\b|ווינדוס|וינדוס|windows|המכונה הווירטואלית|המכונה)"
+MACHINE_NAME = r"(?:(?:called|named|בשם)\s+([A-Za-z0-9][A-Za-z0-9_.-]{0,39}))"
+SNAPSHOT = r"(?:\bsnapshot\b|צילום מצב|תמונת מצב)"
+START = r"(?:\b(?:start|boot|launch|run|open)\b|הפעל|תפעיל|להפעיל|הפעלת|הדלק|תדליק|פתח|תפתח)"
+SHUTDOWN = r"(?:\b(?:shut ?down|stop|turn off|switch off|power off|close)\b|כבה|תכבה|לכבות|כיבוי|סגור|תסגור)"
+BEFORE_UPDATE = r"(?:before (?:the |an? )?(?:windows )?updates?|לפני (?:ה)?עדכון(?:ים)?)"
+
 # D.Ai TV (docs/TV.md stage 2): the phone as the remote; Kodi's services stay off until this is said.
 TV_REMOTE = r"(?:\b(?:remote control|control (?:the |my )?tv|tv remote|kodi remote|phone as (?:a |the )?remote)\b|"\
             r"שלט מהטלפון|שליטה מרחוק בטלוויזיה|שלט לטלוויזיה|שלט רחוק|לשלוט בטלוויזיה)"
@@ -264,6 +273,18 @@ def parse_clause(clause: str) -> list[Request]:
 
         return [Request("vm.kvm_access", {"user": getpass.getuser(), "enabled": not _has(OFF, c)}, clause)]
 
+    # D.Ai VM: the machines by sentence (not "allow virtual machines", which is KVM access above).
+    if _has(WINDOWS_MACHINE, c) and not _has(VIRTUALIZATION, c):
+        named = re.search(MACHINE_NAME, c, re.IGNORECASE)
+        name = named.group(1) if named else ""
+        if _has(SNAPSHOT, c):
+            label = "before-update" if _has(BEFORE_UPDATE, c) else ""
+            return [Request("vm.snapshot", {"name": name, "label": label}, clause)]
+        if _has(SHUTDOWN, c):
+            return [Request("vm.power", {"name": name, "action": "stop"}, clause)]
+        if _has(START, c):
+            return [Request("vm.power", {"name": name, "action": "start"}, clause)]
+
     # D.Ai TV: remote control from the phone.
     if _has(TV_REMOTE, c):
         # "בטלוויזיה" (in the TV) contains "בטל" (cancel): the word is set aside before looking for an "off".
@@ -348,6 +369,7 @@ _TOPICS = {
     "port": (PORT, ("firewall.",)),
     "vm": (VIRTUALIZATION, ("vm.",)),
     "tv": (TV_REMOTE, ("tv.",)),
+    "machine": (r"(?:ווינדוס|וינדוס|\bwindows\b)", ("vm.",)),
     "touch": (TOUCH_WORD, ("appearance.touch",)),
 }
 
@@ -422,6 +444,8 @@ EXAMPLES = {
         "מצב פרטיות",
         "מצב מגע",
         "שלט מהטלפון",
+        "הפעל את ווינדוס",
+        "צילום מצב של ווינדוס לפני העדכון",
         "פנה מקום בדיסק",
         "מצב חיסכון בסוללה",
         "הפעל צילום מצב לפני כל עדכון",
@@ -445,6 +469,8 @@ EXAMPLES = {
         "privacy mode",
         "touch mode",
         "remote control from the phone",
+        "start windows",
+        "snapshot windows before the update",
         "free up disk space",
         "battery saver mode",
         "snapshots before updates",
