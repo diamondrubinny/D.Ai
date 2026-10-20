@@ -50,6 +50,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - Responsive windows (`docs/MOBILE.md` A2): Chat, J, PDF and VM stack their panes one above the other under
   700 px, toolbars wrap, lists follow the finger; Raz checks that nothing is cut off at a phone-like width; the
   taskbar grows for touch at login (`dai-panel-touch`).
+- Rotation on tablets (`docs/MOBILE.md` A3): the screen follows the accelerometer through iio-sensor-proxy
+  and wlr-randr; "rotate the screen", "auto-rotate", "lock the screen rotation" in D.Ai Tune. Gestures are
+  not in labwc 0.8, and D.Ai says so instead of faking them.
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

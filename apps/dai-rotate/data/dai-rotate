@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Rotate: the screen follows the tablet (docs/MOBILE.md A3). Installed as /usr/bin/dai-rotate.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_rotate.cli import main; sys.exit(main(["dai-rotate", *sys.argv[1:]]))' "$@"

@@ -170,6 +170,11 @@ build_apps() {
   install -d "$root/etc/xdg/autostart"
   install -m 0644 "$privacy/data/dai-privacy-autostart.desktop" "$root/etc/xdg/autostart/dai-privacy.desktop"
 
+  local rotate="$REPO_ROOT/apps/dai-rotate"
+  copy_package "$rotate/dai_rotate" "$root"
+  install -m 0755 "$rotate/data/dai-rotate" "$root/usr/bin/dai-rotate"
+  install -m 0644 "$rotate/data/dai-rotate-autostart.desktop" "$root/etc/xdg/autostart/dai-rotate.desktop"
+
   local backup="$REPO_ROOT/apps/dai-backup"
   copy_package "$backup/dai_backup" "$root"
   install -m 0755 "$backup/data/dai-backup" "$root/usr/bin/dai-backup"

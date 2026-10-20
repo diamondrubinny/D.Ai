@@ -5954,3 +5954,81 @@ msgstr "التوقيع لا يطابق الملف: إما أنه تغيّر أو
 #: apps/dai-pdf/dai_pdf/gui.py
 msgid "the signed part is intact, but something was added to the file after signing."
 msgstr "الجزء الموقَّع سليم، لكن شيئًا أُضيف إلى الملف بعد التوقيع."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Choice: {mode}"
+msgstr "الاختيار: {mode}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "No iio-sensor-proxy here; nothing to follow."
+msgstr "لا يوجد iio-sensor-proxy هنا؛ لا شيء لمتابعته."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "Rotation lock: the screen stays as it is."
+msgstr "قفل الدوران: تبقى الشاشة كما هي."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "Saved; no screen could be turned now (is this a Wayland session?)."
+msgstr "حُفظ؛ تعذّر تدوير أي شاشة الآن (هل هذه جلسة Wayland؟)."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Screen {name}: transform {transform}"
+msgstr "الشاشة {name}: تحويل {transform}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Sensor: {state}"
+msgstr "المستشعر: {state}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "The screen follows the tablet."
+msgstr "تتبع الشاشة الجهاز اللوحي."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "The screen is turned to {t}."
+msgstr "دُوِّرت الشاشة إلى {t}."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "The screen's rotation: {name}"
+msgstr "دوران الشاشة: {name}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Unknown command: {verb}. dai-rotate --help"
+msgstr "أمر غير معروف: {verb}. dai-rotate --help"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "follows the tablet"
+msgstr "يتبع الجهاز اللوحي"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "locked as it is"
+msgstr "مقفل كما هو"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "monitor-sensor is installed"
+msgstr "monitor-sensor مثبّت"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "no iio-sensor-proxy (no accelerometer follows)"
+msgstr "لا يوجد iio-sensor-proxy (لا مقياس تسارع يُتابَع)"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "turned 270°"
+msgstr "مُدار 270°"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "turned 90°"
+msgstr "مُدار 90°"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "upright"
+msgstr "قائم"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "upside down"
+msgstr "مقلوب"

@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Television is in
 > `docs/TV.md`. **Decided (under "from now on you decide"):** the three tracks below and their order.
-> **Status:** plan; track A (touch profile) begins after D.Ai TV stage 1.
+> **Status:** A1, A2 and A3 built (§5); B1 blocked on the Chat protocol review; C1 not started.
 
 ## 0. What a "mobile version" can honestly be
 
@@ -125,6 +125,36 @@ effect at the next login, and turning it off restores the desktop sizes. The dia
 a separate "home" gesture is A3.
 
 **Not in A2.** Gestures (edge swipes, A3), rotation (A3), the on-screen keyboard appearing by itself (A3).
+
+### A3 — rotation, and what labwc can and cannot do with fingers (built)
+
+- **The screen follows the tablet.** `dai-rotate` (`apps/dai-rotate`) reads `monitor-sensor` from
+  iio-sensor-proxy (now in the desktop package list; it keeps the accelerometer claimed while it runs) and turns
+  every screen with `wlr-randr --transform` whenever the reported orientation changes: left-up → 90, right-up →
+  270, bottom-up → 180, normal → normal, the mapping GNOME uses (**requires a check** on a real tablet: a
+  vendor's sensor mount can be off by a half turn). labwc maps touch to the output, so fingers follow the
+  picture. The choice lives in `~/.config/dai/rotate`: `auto` (default), `off` (rotation lock), or a fixed
+  `normal | 90 | 180 | 270`, read again on every reading, so a change takes at once. It starts with the session
+  from `/etc/xdg/autostart` and exits quietly where there is no sensor.
+- **By sentence** (`display.rotation` in D.Ai Tune): "סובב את המסך" / "rotate the screen" (a quarter turn),
+  "… 180", "סובב את המסך חזרה" / "rotate the screen back", "סיבוב מסך אוטומטי" / "auto-rotate the screen",
+  "נעל את סיבוב המסך" / "lock the screen rotation"; a fixed orientation is applied at once through
+  `dai-rotate apply`; undo puts the file back and applies again. The command line: `dai-rotate status | set MODE`.
+- **Gestures: not in labwc 0.8.** Its configuration (labwc-config(5), 0.8.4) knows touch only as
+  `mapToOutput` and `mouseEmulation`, and tablets as mapping and rotation; there is no swipe or edge gesture.
+  So "edge swipes for the taskbar and Quick" cannot be built on this compositor today, and D.Ai does not fake
+  them: in touch mode the taskbar is always at the bottom with big targets (A2), and Quick and the command bar
+  are one tap away. When labwc gains gestures (or D.Ai moves to a compositor that has them), this is the place.
+- **The keyboard by itself:** still not; wvkbd has no text-input protocol and labwc does not forward one. The
+  keyboard key (Super+Alt+K) and the panel toggle stay the way.
+- **The camera and the privacy indicator on tablets:** the indicator (docs/PRIVACY.md) already shows every
+  camera and microphone use, tablets included; a camera app is a choice to make (none in LXQt; `cheese` pulls
+  GNOME, `kamoso` KDE) and is not made here.
+- **Tests:** dai-rotate (5): the sensor lines, the mapping, one turn per change on every screen, the choice read
+  as it changes (off, fixed, nonsense), wlr-randr failing, the command line; Tune: thirteen sentences in both
+  languages, the file and its undo. The VM check turns the CI screen to 90 and back through `dai-rotate` and
+  through the sentence, and sees the transform in wlr-randr.
+
 
 **A2, what was built.** `dai_style.panes`: `Panes` (the splitter that stacks under 700 px), `WrapRow` (a
 toolbar row that wraps; Qt's flow layout, right-to-left aware), `touch_scrolling()` (QScroller's touch gesture on

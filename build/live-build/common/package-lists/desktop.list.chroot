@@ -58,6 +58,8 @@ tesseract-ocr-fra
 tesseract-ocr-deu
 tesseract-ocr-por
 wlr-randr
+# The accelerometer of a tablet, for D.Ai Rotate (docs/MOBILE.md A3); harmless on a PC without one.
+iio-sensor-proxy
 pavucontrol-qt
 nm-tray
 blueman

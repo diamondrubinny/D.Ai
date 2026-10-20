@@ -213,6 +213,10 @@ jobs:
         env:
           PYTHONPATH: apps/dai-tv:apps/dai-i18n
         run: python3 -m unittest discover -s apps/dai-tv/tests -t apps/dai-tv -v
+      - name: Unit tests (dai-rotate, the screen follows the tablet)
+        env:
+          PYTHONPATH: apps/dai-rotate:apps/dai-i18n
+        run: python3 -m unittest discover -s apps/dai-rotate/tests -t apps/dai-rotate -v
 
       - name: Unit tests (dai-vm, Windows in a window, and the Tune sentence for KVM access)
         env:

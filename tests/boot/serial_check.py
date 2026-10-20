@@ -934,6 +934,14 @@ def main() -> int:
                                                      "NOW ON", "FILE_GONE", "KBD_RUNNING", "KBD_STILL_RUNNING", "KBD_PROCS=1", "AUTOSTART=1"))
          and "HIDDEN_FLAG=0" not in o, 60),
         # Touch, A2 (docs/MOBILE.md): the panel grows for touch and comes back, and the responsive pieces import.
+        # Mobile A3 (docs/MOBILE.md): the screen turned to 90 and back by dai-rotate and by the sentence, seen in wlr-randr.
+        ("touch: the screen turns and turns back", WAYLAND_ENV + "dai-rotate status | head -n 3; dai-rotate set 90 >/dev/null; echo SET_RC=$?; "
+         "wlr-randr | grep -c 'Transform: 90' | sed 's/^/TURNED=/'; dai-rotate set normal >/dev/null; wlr-randr | grep -c 'Transform: normal' | sed 's/^/BACK=/'; "
+         "dai-tune --yes 'סובב את המסך' >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/rotate | sed 's/^/FILE=/'; wlr-randr | grep -c 'Transform: 90' | sed 's/^/TURNED2=/'; "
+         "dai-tune undo >/dev/null 2>&1; test -f ~/.config/dai/rotate && echo FILE_LEFT || echo FILE_GONE; dai-rotate set normal >/dev/null; "
+         "wlr-randr | grep -c 'Transform: normal' | sed 's/^/BACK2=/'; test -f /etc/xdg/autostart/dai-rotate.desktop && echo AUTOSTART_OK",
+         False, lambda o: all(mark in o for mark in ("Choice:", "SET_RC=0", "TURNED=1", "BACK=1", "TUNE_RC=0", "FILE=90", "TURNED2=1",
+                                                      "FILE_GONE", "BACK2=1", "AUTOSTART_OK")), 90),
         ("touch: the panel and the responsive pieces", "cp ~/.config/lxqt/panel.conf /tmp/panel.conf; dai-panel-touch on /tmp/panel.conf; "
          "grep -E '^(panelSize|iconSize|width|buttonWidth)=' /tmp/panel.conf | tr '\\n' ' '; echo; dai-panel-touch off /tmp/panel.conf; "
          "cmp -s /tmp/panel.conf ~/.config/lxqt/panel.conf && echo PANEL_RESTORED; grep -c dai-panel-touch /usr/bin/startdai-wayland | sed 's/^/LOGIN_HOOK=/'; "

@@ -752,6 +752,30 @@ class LanguageTests(TuneTestCase):
         with self.assertRaises(catalog.ValidationError):
             catalog.CATALOG["appearance.touch"].validate({"mode": "sometimes"}, self.ctx)
 
+    def test_rotation_sentences_and_file(self):
+        """docs/MOBILE.md A3: the screen's rotation by sentence, written for dai-rotate, applied now, undone."""
+        cases = {"rotate the screen": "90", "סובב את המסך": "90", "rotate the screen 180": "180", "turn the display upside down": None,
+                 "auto-rotate the screen": "auto", "automatic screen rotation": "auto", "סיבוב מסך אוטומטי": "auto",
+                 "lock the screen rotation": "off", "don't rotate the screen": "off", "נעל את סיבוב המסך": "off",
+                 "rotate the screen back": "normal", "סובב את המסך חזרה": "normal", "screen orientation 270": "270"}
+        for sentence, mode in cases.items():
+            result = parser.parse(sentence)
+            found = [(r.action, r.params) for r in result.requests]
+            if mode is None:
+                self.assertNotIn("display.rotation", [a for a, _ in found], sentence)  # "turn" alone is not rotation
+            else:
+                self.assertEqual(found, [("display.rotation", {"mode": mode})], sentence)
+        self.assertNotIn("display.rotation", [r.action for r in parser.parse("lock the screen after 5 minutes").requests])
+        plan = self.plan("סובב את המסך")
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        journal = executor.Journal.for_user(self.ctx)
+        entry = executor.apply_steps(plan.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertEqual((self.home / ".config/dai/rotate").read_text(), "90\n")
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertFalse((self.home / ".config/dai/rotate").exists())
+        with self.assertRaises(catalog.ValidationError):
+            catalog.CATALOG["display.rotation"].validate({"mode": "45"}, self.ctx)
+
     def test_tv_remote_control_sentences_and_ports(self):
         for sentence in ("remote control from the phone", "let the phone control the tv", "שלט מהטלפון", "אפשר שליטה מרחוק בטלוויזיה"):
             plan = self.plan(sentence)

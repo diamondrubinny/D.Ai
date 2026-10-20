@@ -5954,3 +5954,81 @@ msgstr "a assinatura NÃO corresponde ao ficheiro: foi alterado, ou a assinatura
 #: apps/dai-pdf/dai_pdf/gui.py
 msgid "the signed part is intact, but something was added to the file after signing."
 msgstr "a parte assinada está intacta, mas algo foi acrescentado ao ficheiro depois da assinatura."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Choice: {mode}"
+msgstr "Escolha: {mode}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "No iio-sensor-proxy here; nothing to follow."
+msgstr "Não há iio-sensor-proxy aqui; nada a seguir."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "Rotation lock: the screen stays as it is."
+msgstr "Bloqueio de rotação: o ecrã fica como está."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "Saved; no screen could be turned now (is this a Wayland session?)."
+msgstr "Guardado; nenhum ecrã pôde ser rodado agora (é uma sessão Wayland?)."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Screen {name}: transform {transform}"
+msgstr "Ecrã {name}: transformação {transform}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Sensor: {state}"
+msgstr "Sensor: {state}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "The screen follows the tablet."
+msgstr "O ecrã segue o tablet."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "The screen is turned to {t}."
+msgstr "O ecrã foi rodado para {t}."
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "The screen's rotation: {name}"
+msgstr "A rotação do ecrã: {name}"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+#, python-brace-format
+msgid "Unknown command: {verb}. dai-rotate --help"
+msgstr "Comando desconhecido: {verb}. dai-rotate --help"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "follows the tablet"
+msgstr "segue o tablet"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "locked as it is"
+msgstr "bloqueado como está"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "monitor-sensor is installed"
+msgstr "o monitor-sensor está instalado"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "no iio-sensor-proxy (no accelerometer follows)"
+msgstr "sem iio-sensor-proxy (nenhum acelerómetro é seguido)"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "turned 270°"
+msgstr "rodado 270°"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "turned 90°"
+msgstr "rodado 90°"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "upright"
+msgstr "direito"
+
+#: apps/dai-rotate/dai_rotate/cli.py
+msgid "upside down"
+msgstr "de pernas para o ar"

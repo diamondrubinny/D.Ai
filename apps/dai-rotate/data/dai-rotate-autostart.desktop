@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The screen follows the tablet (docs/MOBILE.md A3). Exits at once where there is no sensor to follow.
+[Desktop Entry]
+Type=Application
+Name=D.Ai Rotate
+Name[he]=סיבוב מסך של D.Ai
+Exec=dai-rotate run
+TryExec=dai-rotate
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

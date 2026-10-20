@@ -122,6 +122,17 @@ TOUCH = [
     ("on", TOUCH_WORD),
 ]
 
+ROTATE_WORD = r"(?:\brotat(?:e|ion|ing)\b|\borientation\b|סיבוב|סובב|תסובב|לסובב|הסיבוב)"
+SCREEN_WORD = r"(?:\bscreen\b|\bdisplay\b|מסך|המסך|תצוגה)"
+ROTATION = [
+    ("auto", r"(?:\bauto(?:matic)?(?:ally)?\b|אוטומטי|אוטומטית)"),
+    ("off", r"(?:\block\b|\bdon'?t\b|\bstop\b|\bnever\b|\bturn off\b|\bdisable\b|נעל|תנעל|נעילת|אל תסובב|בטל|כבה|הפסק)"),
+    ("normal", r"(?:\bupright\b|\bback\b|\bstraight\b|\bnormal\b|ישר|חזרה|רגיל|בחזרה)"),
+    ("180", r"(?:\b180\b|upside down|הפוך)"),
+    ("270", r"(?:\b270\b)"),
+    ("90", r"(?:\b90\b)"),
+]
+
 KEYBOARD = r"(?:keyboard|layouts?|מקלדת|שפות מקלדת|שפות הקלדה)"
 LANGUAGES = [
     ("il", r"(?:hebrew|עברית)"), ("us", r"(?:english|אנגלית)"), ("ru", r"(?:russian|רוסית)"),
@@ -289,6 +300,10 @@ def parse_clause(clause: str) -> list[Request]:
         if _has(START, c):
             return [Request("vm.power", {"name": name, "action": "start"}, clause)]
 
+    # The screen's rotation on a tablet (docs/MOBILE.md A3): "rotate the screen", "auto-rotate", "lock rotation".
+    if _has(ROTATE_WORD, c) and _has(SCREEN_WORD, c):
+        chosen = next((mode for mode, pattern in ROTATION if _has(pattern, c)), "90")
+        return [Request("display.rotation", {"mode": chosen}, clause)]
     # D.Ai TV: night mode and the children's profile (docs/TV.md §10).
     if _has(TV_NIGHT, c):
         return [Request("tv.night_mode", {"enabled": not _has(OFF, re.sub(r"בטלוויזיה", "", c))}, clause)]
@@ -382,6 +397,7 @@ _TOPICS = {
     "tv": (f"(?:{TV_REMOTE}|{TV_NIGHT}|{TV_CHILDREN})", ("tv.",)),
     "machine": (r"(?:ווינדוס|וינדוס|\bwindows\b)", ("vm.",)),
     "touch": (TOUCH_WORD, ("appearance.touch",)),
+    "rotation": (ROTATE_WORD + r"(?=.*" + SCREEN_WORD + r")", ("display.rotation",)),
 }
 
 
@@ -395,6 +411,9 @@ def _uncovered_topics(clause: str, requests: list[Request]) -> list[str]:
     # "open port 22 for ssh" is about the port; "enable ssh" brings the port itself.
     if "port" in missing and any(r.action == "service.ssh" for r in requests):
         missing.remove("port")
+    # "lock the screen rotation" locks the rotation, not the session.
+    if "lock" in missing and any(r.action == "display.rotation" for r in requests):
+        missing.remove("lock")
     return missing
 
 
@@ -457,6 +476,8 @@ EXAMPLES = {
         "שלט מהטלפון",
         "מצב לילה",
         "פרופיל ילדים עם קוד 2468",
+        "סובב את המסך",
+        "סיבוב מסך אוטומטי",
         "הפעל את ווינדוס",
         "צילום מצב של ווינדוס לפני העדכון",
         "פנה מקום בדיסק",
@@ -484,6 +505,8 @@ EXAMPLES = {
         "remote control from the phone",
         "night mode",
         "children's profile with pin 2468",
+        "rotate the screen",
+        "lock the screen rotation",
         "start windows",
         "snapshot windows before the update",
         "free up disk space",

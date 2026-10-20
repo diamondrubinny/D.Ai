@@ -1097,6 +1097,36 @@ register(ActionSpec(
 ))
 
 
+# The screen's rotation on a tablet (docs/MOBILE.md A3), read by dai-rotate.
+ROTATE_FILE = ".config/dai/rotate"
+ROTATE_NAMES = {"auto": ("follows the tablet", "עוקב אחרי הטאבלט"), "off": ("locked as it is", "נעול כמו שהוא"),
+                "normal": ("upright", "ישר"), "90": ("turned 90°", "מסובב 90°"), "180": ("upside down", "הפוך"),
+                "270": ("turned 270°", "מסובב 270°")}
+
+
+def _rotation_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"mode"})
+    return {"mode": _choice(params.get("mode"), tuple(ROTATE_NAMES), "mode")}
+
+
+def _rotation_apply(params: Params, ctx: Context) -> None:
+    write_file(ctx.user_path(ROTATE_FILE), params["mode"] + "\n", mode=0o600)
+    ctx.run(["dai-rotate", "apply"], check=False)  # a fixed orientation turns the screen now; auto and off wait for the sensor
+
+
+register(ActionSpec(
+    id="display.rotation",
+    scope="user",
+    validate=_rotation_validate,
+    apply=_rotation_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "The screen's rotation: {name}", "סיבוב המסך: {name}", name=pick(lang, *ROTATE_NAMES[p["mode"]])),
+    files=lambda p, c: [c.user_path(ROTATE_FILE)],
+    restore=lambda p, c, e: c.run(["dai-rotate", "apply"], check=False),
+))
+
+
 # --------------------------------------------------------------------------
 # D.Ai's system sounds (docs/SOUNDS.md), read by dai-sound
 # --------------------------------------------------------------------------
