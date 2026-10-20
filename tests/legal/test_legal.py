@@ -14,6 +14,10 @@ SOURCE = re.compile(r"\.(?:py|sh|cpp|h|css|html|desktop|service|timer|path|polic
                     r"(?:^|/)apps/[^/]+/data/[a-z0-9-]+$|/labwc/autostart$|\.hook\.chroot$")
 
 
+# Third-party files bundled verbatim keep their own license and notices (listed in NOTICE), never ours.
+THIRD_PARTY = ("build/live-build/editions/tv/includes.chroot_after_packages/etc/skel/.kodi/addons/",)
+
+
 def tracked() -> list[str]:
     result = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True)
     return result.stdout.splitlines()
@@ -21,7 +25,7 @@ def tracked() -> list[str]:
 
 class LegalTests(unittest.TestCase):
     def test_every_source_file_keeps_the_notice(self):
-        missing = [f for f in tracked() if SOURCE.search(f) and (ROOT / f).is_file()
+        missing = [f for f in tracked() if SOURCE.search(f) and (ROOT / f).is_file() and not f.startswith(THIRD_PARTY)
                    and NOTICE not in (ROOT / f).read_text(encoding="utf-8", errors="replace")]
         self.assertEqual(missing, [], "add the SPDX line and the copyright notice to these files")
 
