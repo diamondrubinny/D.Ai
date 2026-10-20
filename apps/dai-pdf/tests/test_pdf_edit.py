@@ -106,6 +106,66 @@ class DirectEditTests(unittest.TestCase):
         self.editor.save([str(form)], str(out), pages=[{"source": 0, "index": 1, "rotate": 0}], fields={"size": "S"})
         self.assertEqual([(f["name"], f["value"]) for f in self.editor.fields(str(out)) if f["page"] == 0], [("colour", "Off"), ("size", "S")])
 
+    def test_marks_become_annotations_and_pictures(self):
+        """docs/PDF.md stage 2b: markup as real annotations, text and stamps drawn into the page, a page's own
+        /Rotate honoured, bad requests refused."""
+        import os as _os
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        a = fixtures.plain(self.dir / "a.pdf", pages=2)
+        logo = fixtures.picture(self.dir / "logo.png")
+        out = self.dir / "marked.pdf"
+        answer = self.editor.save([str(a)], str(out), annotations=[
+            {"page": 0, "kind": "highlight", "rect": [20, 80, 150, 30], "color": "#FFEB3B"},
+            {"page": 0, "kind": "underline", "rect": [20, 80, 150, 30], "color": "#1565C0"},
+            {"page": 1, "kind": "strikeout", "rect": [20, 80, 100, 30], "color": "#C62828", "text": "wrong"},
+            {"page": 1, "kind": "note", "rect": [250, 10, 20, 20], "color": "#FFEB3B", "text": "שימו לב"},
+            {"page": 0, "kind": "text", "rect": [10, 140, 200, 40], "color": "#111111", "text": "שלום עולם, hello", "size": 14},
+            {"page": 1, "kind": "stamp", "rect": [200, 120, 80, 40], "image": 0}], pictures=[str(logo)])
+        self.assertEqual(answer["marked"], 6)
+        with pikepdf.open(out) as pdf:
+            first, second = pdf.pages[0], pdf.pages[1]
+            kinds = [str(x.Subtype) for x in first.Annots]
+            self.assertEqual(kinds, ["/Highlight", "/Underline"])
+            rect = [float(v) for v in first.Annots[0].Rect]
+            self.assertEqual(rect, [20.0, 90.0, 170.0, 120.0])  # top 80 on a 200 pt page: PDF y from 90 to 120
+            self.assertEqual([float(v) for v in first.Annots[0].C], [1.0, 0.9216, 0.2314])
+            self.assertEqual([str(x.Subtype) for x in second.Annots], ["/StrikeOut", "/Text"])
+            self.assertEqual(str(second.Annots[1].Contents), "שימו לב")
+            self.assertIn("DaiImg", str(first.Resources.XObject.keys()))
+            self.assertIn(b"/DaiImg", b"".join(c.read_bytes() for c in (first.Contents if isinstance(first.Contents, pikepdf.Array) else [first.Contents])))
+            stamp = second.Resources.XObject[[k for k in second.Resources.XObject.keys() if k.startswith("/DaiImg")][0]]
+            self.assertEqual((int(stamp.Width), int(stamp.Height)), (120, 60))
+            self.assertIn("/SMask", stamp)
+        # the saved file still renders in the sandboxed reader, with the marks on it (the Annotations flag)
+        from dai_pdf.reader import Reader
+        reader = Reader(str(out), sandboxed=False, python=fixtures.helper_python())
+        reader.open()
+        png, _, _ = reader.render(0, 300, 200)
+        reader.close()
+        self.assertTrue(png.startswith(b"\x89PNG"))
+        for bad in ({"page": 5, "kind": "note", "rect": [0, 0, 10, 10]}, {"page": 0, "kind": "glitter", "rect": [0, 0, 10, 10]},
+                    {"page": 0, "kind": "highlight", "rect": [0, 0, 0, 10]}, {"page": 0, "kind": "stamp", "rect": [0, 0, 10, 10], "image": 3}):
+            with self.assertRaises(EditError):
+                self.editor.save([str(a)], str(self.dir / "x.pdf"), annotations=[bad], pictures=[str(logo)])
+        self.assertFalse((self.dir / "x.pdf").exists())
+
+    def test_marks_follow_a_turned_page(self):
+        import os as _os
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        turned = fixtures.rotated(self.dir / "r.pdf", 90)  # 300x200 stored, shown as 200 wide x 300 tall
+        out = self.dir / "out.pdf"
+        # the top-left corner of the page as displayed is the bottom-left corner of the stored page
+        self.editor.save([str(turned)], str(out), annotations=[{"page": 0, "kind": "highlight", "rect": [0, 0, 50, 20]}])
+        with pikepdf.open(out) as pdf:
+            rect = [float(v) for v in pdf.pages[0].Annots[0].Rect]
+        self.assertEqual(rect, [0.0, 0.0, 20.0, 50.0])
+        # and a new turn on top (the plan's rotate) is applied after the mark was placed
+        self.editor.save([str(turned)], str(out), pages=[{"source": 0, "index": 0, "rotate": 90}],
+                         annotations=[{"page": 0, "kind": "highlight", "rect": [0, 0, 50, 20]}])
+        with pikepdf.open(out) as pdf:
+            self.assertEqual(int(pdf.pages[0].Rotate), 180)
+            self.assertEqual([float(v) for v in pdf.pages[0].Annots[0].Rect], [0.0, 0.0, 20.0, 50.0])
+
     def test_page_ranges(self):
         self.assertEqual(parse_pages("", 4), [0, 1, 2, 3])
         self.assertEqual(parse_pages("1-2, 4", 4), [0, 1, 3])
@@ -143,6 +203,12 @@ class SandboxedEditTests(unittest.TestCase):
         self.assertEqual(answer["pages"], 3)
         self.assertEqual([f["value"] for f in self.editor.fields(str(out)) if f["name"] == "name"], ["Sandboxed"])
         self.assertEqual([r for _, r in sizes(out)], [0, 90, 0])
+        logo = fixtures.picture(self.dir / "logo.png")
+        stamped = self.dir / "stamped.pdf"
+        answer = self.editor.save([str(a)], str(stamped), annotations=[{"page": 0, "kind": "stamp", "rect": [10, 10, 60, 30], "image": 0},
+                                                                       {"page": 0, "kind": "text", "rect": [10, 50, 200, 30], "text": "בארגז"}],
+                                  pictures=[str(logo)])
+        self.assertEqual(answer["marked"], 2)  # the picture was readable inside bubblewrap, read-only
 
 
 if __name__ == "__main__":

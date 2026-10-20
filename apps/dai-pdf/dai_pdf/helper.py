@@ -213,7 +213,11 @@ class Server:
         if not 0 <= page < self.doc.pageCount():
             return {"ok": False, "error": "no such page"}, b""
         width, height = max(1, min(int(width), MAX_SIDE)), max(1, min(int(height), MAX_SIDE))
-        image = self.doc.render(page, QSize(width, height))
+        from PyQt6.QtPdf import QPdfDocumentRenderOptions
+
+        options = QPdfDocumentRenderOptions()
+        options.setRenderFlags(QPdfDocumentRenderOptions.RenderFlag.Annotations)  # marks made in D.Ai PDF show
+        image = self.doc.render(page, QSize(width, height), options)
         if image.isNull():
             return {"ok": False, "error": "could not draw"}, b""
         buffer = QBuffer()

@@ -5,7 +5,7 @@
 >
 > **Decided (19 October 2026, "from now on you decide"):** the name is D.Ai PDF; qpdfview leaves the image once
 > stage 1 is the default viewer; signatures are verify-only until a signing library is in Debian; Diamond only when
-> asked. **Status: stages 1 and 2a built** (§10, §11). Stage 2b (annotations) and stages 3–4 not started.
+> asked. **Status: stages 1 and 2 built** (§10, §11, §12). Stages 3–4 not started.
 
 ## 10. Stage 1: what was built
 
@@ -53,6 +53,27 @@
   The VM check merges, turns and lists fields from the shell.
 - **Not yet (stage 2b):** annotations (highlight, note, free text, drawing, stamps and signatures as pictures),
   and dragging pages in the thumbnail list (the buttons move them for now).
+
+## 12. Stage 2b: marks (what was built)
+
+- **Tools** above the pages: highlight, underline, strike through, note, text, stamp, and a colour swatch. A
+  drag on a page makes the mark; it is drawn over the page at once and listed in the Marks tab (remove, go to);
+  undo and redo cover it; a mark belongs to its source page, so it follows the page when pages move.
+- **In the file** (`edit.py`, in the sandbox): highlight, underline and strike-through become real annotations
+  (`/Highlight`, `/Underline`, `/StrikeOut` with quad points and a colour), a note becomes a `/Text` annotation
+  with its contents, and every viewer draws them (D.Ai PDF's own helper renders with Qt's Annotations flag now).
+  Free text and stamps are drawn **into the page as pictures**: the text is rendered by Qt at 288 dpi, so Hebrew
+  is shaped and placed right to left in every viewer; the price is that such text is not selectable. A stamp is a
+  PNG or JPEG the person chose (a signature, a logo), decoded by Qt inside the sandbox, bound read-only like the
+  PDFs, with its transparency kept (an SMask).
+- **A page's own /Rotate is honoured:** the mark lands where it was drawn on screen (the inverse of the
+  mapping the helper uses for links), and a new turn from the plan is applied only after the marks are placed.
+- **Tests:** 52 for D.Ai PDF (every kind in the file with its rectangle and colour; the turned page; a stamp
+  inside bubblewrap; bad kinds, pages and pictures refused with nothing written; the window: drawing with a tool,
+  the overlay, the list, marks following a moved page, undo, save and the saved annotations; Raz's audit with
+  the Marks tab in the touch and narrow passes).
+- **Not yet:** freehand drawing and shapes, editing a mark after it is placed (remove and draw again for now),
+  selectable text with an embedded Hebrew font (**requires a check** of font subsetting with pikepdf).
 
 ## 0. Why, and what "native" means here
 

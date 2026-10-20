@@ -256,6 +256,49 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(win.fields, [])
         self.assertIn("No form fields", win.form_widget.findChild(QLabel).text())
 
+    def test_marks_drawn_listed_undone_and_saved(self):
+        import pikepdf
+        from PyQt6.QtCore import QRect
+        win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2))
+        before = win.views[0].pixmap().toImage()
+        win.set_tool("highlight")
+        self.assertTrue(win.tool_buttons["highlight"].isChecked())
+        self.assertIn("Drag", win.status.text())
+        view = win.views[0]
+        win.drawn(0, QRect(view.to_pixels((20.0, 80.0, 1.0, 1.0)).topLeft(), view.to_pixels((170.0, 110.0, 1.0, 1.0)).topLeft()))
+        self.assertEqual(len(win.marks), 1)
+        self.assertEqual((win.marks[0]["kind"], win.marks[0]["source"], win.marks[0]["index"]), ("highlight", 0, 0))
+        self.assertAlmostEqual(win.marks[0]["rect"][0], 20.0, delta=1.5)
+        self.assertTrue(win.modified)
+        win.render_visible()
+        self.assertNotEqual(win.views[0].pixmap().toImage(), before)  # the overlay is on the picture
+        win.tool_color = "#1565C0"
+        win.add_mark("underline", 1, (20.0, 80.0, 100.0, 30.0))
+        win.add_mark("note", 1, (250.0, 10.0, 20.0, 20.0), text="שימו לב")
+        win.add_mark("text", 0, (10.0, 140.0, 200.0, 40.0), text="שלום", size=14)
+        logo = fixtures.picture(self.dir / "logo.png")
+        win.add_mark("stamp", 1, (200.0, 120.0, 80.0, 40.0), image=win.add_picture(str(logo)))
+        self.assertEqual(win.marks_list.count(), 5)
+        self.assertIn("p. 2", win.marks_list.item(1).text())
+        win.move_page(-1, index=1)  # the marks follow their pages
+        self.assertEqual(win.marks_for(0), [m for m in win.marks if m["index"] == 1])
+        self.assertIn("p. 1", win.marks_list.item(1).text())
+        win.undo()
+        win.marks_list.setCurrentRow(4)
+        win.remove_mark()
+        self.assertEqual(len(win.marks), 4)
+        win.undo()
+        self.assertEqual(len(win.marks), 5)
+        out = self.dir / "marked.pdf"
+        self.assertTrue(win.save_to(str(out)))
+        self.assertEqual(win.marks, [])  # the saved file carries them now
+        with pikepdf.open(out) as pdf:
+            self.assertEqual([str(a.Subtype) for a in pdf.pages[0].Annots], ["/Highlight"])
+            self.assertEqual([str(a.Subtype) for a in pdf.pages[1].Annots], ["/Underline", "/Text"])
+            self.assertTrue(any(k.startswith("/DaiImg") for k in pdf.pages[1].Resources.XObject.keys()))
+        win.set_tool("select")
+        self.assertFalse(win.tool_buttons["highlight"].isChecked())
+
     def test_unsaved_changes_ask_before_closing(self):
         asked = []
         win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2), confirm_discard=lambda: asked.append(1) or False)
@@ -279,6 +322,9 @@ class WindowTests(unittest.TestCase):
             assert_accessible(self, win, touch=True)
             form = self.window(fixtures.form(self.dir / f"f-{lang}.pdf"), lang=lang)
             form.side.setCurrentIndex(4)
+            assert_accessible(self, form, touch=True)
+            form.add_mark("note", 0, (10.0, 10.0, 20.0, 20.0), text="x")
+            form.side.setCurrentIndex(5)
             assert_accessible(self, form, touch=True)
             gui = sys.modules["dai_pdf.gui"]
             for dialog in (gui.InfoDialog(win, lang, win.doc, False), gui.LinkDialog(win, lang, "https://x", True),

@@ -5393,3 +5393,93 @@ msgstr "Parar o controlo remoto da TV (servidor web e serviço de controlo remot
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Takes effect when Kodi starts again. The ports open to the local network only."
 msgstr "Aplica-se quando o Kodi arrancar de novo. As portas abrem só para a rede local."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "(page removed)"
+msgstr "(página removida)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A picture to stamp (your signature, a logo)"
+msgstr "Uma imagem para carimbar (a sua assinatura, um logótipo)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Click where the note goes."
+msgstr "Clique onde a nota deve ficar."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Colour of the next mark"
+msgstr "Cor da próxima marca"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag a box for the picture."
+msgstr "Arraste uma caixa para a imagem."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag a box for the text."
+msgstr "Arraste uma caixa para o texto."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to highlight."
+msgstr "Arraste sobre as palavras para realçar."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to strike through."
+msgstr "Arraste sobre as palavras para riscar."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to underline."
+msgstr "Arraste sobre as palavras para sublinhar."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Highlight"
+msgstr "Realçar"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Marks"
+msgstr "Marcas"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Note"
+msgstr "Nota"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Pictures (*.png *.jpg *.jpeg)"
+msgstr "Imagens (*.png *.jpg *.jpeg)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove this mark"
+msgstr "Remover esta marca"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Stamp"
+msgstr "Carimbo"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Strike through"
+msgstr "Riscar"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Text"
+msgstr "Texto"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The note's text:"
+msgstr "O texto da nota:"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The text to place (Hebrew is fine):"
+msgstr "O texto a colocar (hebraico também):"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Underline"
+msgstr "Sublinhar"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "p. {n}"
+msgstr "p. {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} marks · not saved yet (Ctrl+S)"
+msgstr "{n} marcas · ainda não guardado (Ctrl+S)"

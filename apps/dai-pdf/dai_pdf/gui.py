@@ -147,6 +147,8 @@ class PageView(QLabel):
         self.extra = 0  # the page's own turn, from an edit (docs/PDF.md stage 2)
         self.links: list[dict] | None = None
         self.highlights: list[tuple[float, float, float, float]] = []
+        self.drag_start: QPoint | None = None
+        self.drag_rect: QRect | None = None
         self.rendered_key: tuple | None = None
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setObjectName("Page")
@@ -178,16 +180,19 @@ class PageView(QLabel):
         if self.rotation:
             from PyQt6.QtGui import QTransform
             pixmap = pixmap.transformed(QTransform().rotate(self.rotation))
-        if self.highlights:
-            pixmap = self.with_highlights(pixmap)
+        marks = self.window_.marks_for(self.index)
+        if self.highlights or marks:
+            pixmap = self.with_highlights(pixmap, marks)
         self.setFixedSize(pixmap.size())
         self.setStyleSheet(f"border: 1px solid {BORDER};")
         self.setPixmap(pixmap)
-        self.rendered_key = (self.window_.scale, self.window_.rotation, tuple(self.highlights))
+        self.rendered_key = self.window_.render_key(self)
 
-    def with_highlights(self, pixmap: QPixmap) -> QPixmap:
+    def with_highlights(self, pixmap: QPixmap, marks: list[dict] | None = None) -> QPixmap:
         painted = QPixmap(pixmap)
         painter = QPainter(painted)
+        for mark in marks or ():
+            self.draw_mark(painter, mark)
         painter.setPen(QPen(QColor(ACCENT_2), 2))
         fill = QColor(ACCENT_2)
         fill.setAlpha(70)
@@ -196,6 +201,46 @@ class PageView(QLabel):
             painter.drawRect(self.to_pixels(rect))
         painter.end()
         return painted
+
+    def draw_mark(self, painter: QPainter, mark: dict) -> None:
+        """An unsaved mark (docs/PDF.md stage 2b) drawn over the page the way the saved file will show it."""
+        from PyQt6.QtCore import QRectF
+        from PyQt6.QtGui import QFont, QTextOption
+
+        rect = self.to_pixels(tuple(mark["rect"]))
+        colour = QColor(mark.get("color") or "#FFEB3B")
+        kind = mark["kind"]
+        painter.save()
+        if kind == "highlight":
+            colour.setAlpha(110)
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(colour)
+            painter.drawRect(rect)
+        elif kind in ("underline", "strikeout"):
+            painter.setPen(QPen(colour, max(1, round(2 * self.window_.scale))))
+            y = rect.bottom() if kind == "underline" else rect.center().y()
+            painter.drawLine(rect.left(), y, rect.right(), y)
+        elif kind == "note":
+            size = max(10, round(20 * self.window_.scale))
+            painter.setPen(QPen(QColor("#333333"), 1))
+            painter.setBrush(colour)
+            painter.drawRoundedRect(QRect(rect.x(), rect.y(), size, size), 3, 3)
+        elif kind == "text":
+            painter.setPen(QColor(mark.get("color") or "#111111"))
+            font = QFont("Noto Sans")
+            font.setPixelSize(max(4, round(float(mark.get("size", 12)) * self.window_.scale)))
+            painter.setFont(font)
+            text = str(mark.get("text", ""))
+            rtl = any("\u0590" <= ch <= "\u08ff" for ch in text)
+            option = QTextOption(Qt.AlignmentFlag.AlignTop | (Qt.AlignmentFlag.AlignRight if rtl else Qt.AlignmentFlag.AlignLeft))
+            option.setWrapMode(QTextOption.WrapMode.WordWrap)
+            option.setTextDirection(Qt.LayoutDirection.RightToLeft if rtl else Qt.LayoutDirection.LeftToRight)
+            painter.drawText(QRectF(rect), text, option)
+        elif kind == "stamp":
+            picture = self.window_.picture(mark.get("image", -1))
+            if picture is not None and not picture.isNull():
+                painter.drawPixmap(rect, picture)
+        painter.restore()
 
     def to_pixels(self, rect: tuple[float, float, float, float]) -> QRect:
         """A rectangle in page points (top-left origin, unrotated) on this rotated, scaled picture."""
@@ -236,15 +281,49 @@ class PageView(QLabel):
         return None
 
     def mouseMoveEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        if self.drag_start is not None:
+            self.drag_rect = QRect(self.drag_start, event.pos()).normalized()
+            self.update()
+            return
+        if self.window_.tool != "select":
+            self.setCursor(Qt.CursorShape.CrossCursor)
+            return
         self.setCursor(Qt.CursorShape.PointingHandCursor if self.link_at(event.pos()) else Qt.CursorShape.ArrowCursor)
 
     def mousePressEvent(self, event) -> None:  # noqa: N802 - Qt's name
         if event.button() == Qt.MouseButton.LeftButton:
+            if self.window_.tool != "select":
+                self.drag_start = event.pos()
+                self.drag_rect = QRect(self.drag_start, self.drag_start)
+                return
             link = self.link_at(event.pos())
             if link is not None:
                 self.window_.follow_link(link)
                 return
         super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        if self.drag_start is not None and event.button() == Qt.MouseButton.LeftButton:
+            rect, self.drag_start, self.drag_rect = QRect(self.drag_start, event.pos()).normalized(), None, None
+            self.update()
+            self.window_.drawn(self.index, rect)
+            return
+        super().mouseReleaseEvent(event)
+
+    def paintEvent(self, event) -> None:  # noqa: N802 - Qt's name
+        super().paintEvent(event)
+        if self.drag_rect is not None:
+            painter = QPainter(self)
+            painter.setPen(QPen(QColor(ACCENT_2), 1, Qt.PenStyle.DashLine))
+            painter.drawRect(self.drag_rect)
+            painter.end()
+
+    def rect_points(self, rect: QRect) -> tuple[float, float, float, float]:
+        """A pixel rectangle on this picture as (left, top, width, height) in points on the unrotated page."""
+        x1, y1 = self.to_points(rect.topLeft())
+        x2, y2 = self.to_points(rect.bottomRight())
+        left, top = min(x1, x2), min(y1, y2)
+        return round(left, 2), round(top, 2), round(abs(x2 - x1), 2), round(abs(y2 - y1), 2)
 
 
 class PasswordDialog(QDialog):
@@ -387,11 +466,17 @@ class PdfWindow(QWidget):
         # is written until "Save": the sandboxed editor builds the file the plan describes.
         self.sources: list[Reader] = []
         self.plan: list[dict] = []
-        self.undo_stack: list[tuple[list[dict], dict]] = []
-        self.redo_stack: list[tuple[list[dict], dict]] = []
+        self.undo_stack: list[tuple[list[dict], dict, list[dict]]] = []
+        self.redo_stack: list[tuple[list[dict], dict, list[dict]]] = []
         self.fields: list[dict] = []
         self.field_values: dict[str, object] = {}
         self.field_widgets: dict[str, QWidget] = {}
+        # Marks (docs/PDF.md stage 2b): each belongs to a source page, so it follows the page when pages move.
+        self.marks: list[dict] = []
+        self.pictures: list[str] = []          # stamp images, by index
+        self.picture_cache: dict[int, QPixmap] = {}
+        self.tool = "select"
+        self.tool_color = "#FFEB3B"
         self.modified = False
         self.thumb_cache: dict[tuple, QIcon] = {}
         self.views: list[PageView] = []
@@ -486,6 +571,19 @@ class PdfWindow(QWidget):
         self.save_button = self._button(say(self.lang, "Save as…", "שמירה בשם…"), say(self.lang, "Save the edited file", "שמירת הקובץ הערוך"),
                                         self.save_as, top, primary=True)
         outer.addLayout(top)
+        tools = WrapRow()
+        self.tool_buttons: dict[str, QPushButton] = {}
+        for tool, text, name_en, name_he in (("select", "↖", "Select and follow links", "בחירה ומעקב אחר קישורים"),
+                                             ("highlight", "▆", "Highlight", "הדגשה"), ("underline", "U̲", "Underline", "קו תחתון"),
+                                             ("strikeout", "S̶", "Strike through", "קו חוצה"), ("note", "✎", "Note", "הערה"),
+                                             ("text", "T", "Text (Hebrew too)", "טקסט (גם עברית)"), ("stamp", "🖼", "Stamp a picture or a signature", "חותמת תמונה או חתימה")):
+            button = self._button(text, say(self.lang, name_en, name_he), lambda _c=False, t=tool: self.set_tool(t), tools)
+            button.setCheckable(True)
+            self.tool_buttons[tool] = button
+        self.tool_buttons["select"].setChecked(True)
+        self.color_button = self._button("", say(self.lang, "Colour of the next mark", "צבע הסימון הבא"), self.choose_color, tools)
+        self._show_color()
+        outer.addLayout(tools)
 
         self.banner = QFrame()
         self.banner.setObjectName("Banner")
@@ -544,6 +642,17 @@ class PdfWindow(QWidget):
         self.form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapAllRows)
         self.form_scroll.setWidget(self.form_widget)
         self.side.addTab(self.form_scroll, say(self.lang, "Form", "טופס"))
+        marks_tab = QWidget()
+        marks_layout = QVBoxLayout(marks_tab)
+        marks_layout.setContentsMargins(0, 0, 0, 0)
+        self.marks_list = QListWidget()
+        self.marks_list.setAccessibleName(say(self.lang, "Marks", "סימונים"))
+        self.marks_list.itemActivated.connect(lambda item: self.go_to(int(item.data(Qt.ItemDataRole.UserRole + 1))))
+        marks_layout.addWidget(self.marks_list, 1)
+        marks_row = WrapRow()
+        self.remove_mark_button = self._button("✕", say(self.lang, "Remove this mark", "הסרת הסימון הזה"), self.remove_mark, marks_row)
+        marks_layout.addLayout(marks_row)
+        self.side.addTab(marks_tab, say(self.lang, "Marks", "סימונים"))
         self.side.currentChanged.connect(lambda i: self._thumbnails_start() if i == 0 else None)
         self.splitter.addWidget(self.side)
 
@@ -653,8 +762,10 @@ class PdfWindow(QWidget):
         self.plan = [{"source": 0, "index": i, "rotate": 0} for i in range(doc.count)]
         self.undo_stack, self.redo_stack = [], []
         self.field_values = {}
+        self.marks, self.pictures, self.picture_cache = [], [], {}
         self.thumb_cache.clear()
         self.modified = False
+        self._fill_marks()
         self._load_fields()
         self._title()
         self._fill_side()
@@ -686,7 +797,9 @@ class PdfWindow(QWidget):
             self.reader.close()
         self.reader, self.doc = None, None
         self.sources, self.plan, self.fields, self.field_values = [], [], [], {}
+        self.marks, self.pictures, self.picture_cache = [], [], {}
         self.undo_stack, self.redo_stack = [], []
+        self.marks_list.clear()
         self.modified = False
         self.thumb_cache.clear()
         self._fill_form_tab()
@@ -883,7 +996,7 @@ class PdfWindow(QWidget):
             return
         for index in self._visible_pages():
             view = self.views[index]
-            if view.rendered_key == (self.scale, self.rotation, tuple(view.highlights)):
+            if view.rendered_key == self.render_key(view):
                 continue
             w, h = view.points
             image = self._render_image(index, QSize(max(1, round(w * self.scale)), max(1, round(h * self.scale))))
@@ -1130,9 +1243,26 @@ class PdfWindow(QWidget):
     # --- editing (docs/PDF.md stage 2) -------------------------------------------------------------------------
 
     def _snapshot(self) -> None:
-        self.undo_stack.append(([dict(e) for e in self.plan], dict(self.field_values)))
+        self.undo_stack.append(([dict(e) for e in self.plan], dict(self.field_values), [dict(m) for m in self.marks]))
         del self.undo_stack[:-100]
         self.redo_stack.clear()
+
+    def render_key(self, view: PageView) -> tuple:
+        return (self.scale, self.rotation, tuple(view.highlights), tuple(repr(m) for m in self.marks_for(view.index)))
+
+    def marks_for(self, index: int) -> list[dict]:
+        """The marks on the source page shown at position index."""
+        if not self.plan or index >= len(self.plan):
+            return []
+        entry = self.plan[index]
+        return [m for m in self.marks if m["source"] == entry["source"] and m["index"] == entry["index"]]
+
+    def picture(self, number: int) -> QPixmap | None:
+        if not 0 <= number < len(self.pictures):
+            return None
+        if number not in self.picture_cache:
+            self.picture_cache[number] = QPixmap(self.pictures[number])
+        return self.picture_cache[number]
 
     def _apply_plan(self, current: int) -> None:
         """The views, thumbnails and counters follow the plan; the file itself is untouched until Save."""
@@ -1146,6 +1276,7 @@ class PdfWindow(QWidget):
         self.views = []
         self.thumb_timer.stop()
         self._fill_side()
+        self._fill_marks()
         if self.plan:
             self._build_pages()
             self._relayout()
@@ -1226,18 +1357,149 @@ class PdfWindow(QWidget):
     def undo(self) -> None:
         if not self.undo_stack:
             return
-        self.redo_stack.append(([dict(e) for e in self.plan], dict(self.field_values)))
-        self.plan, self.field_values = self.undo_stack.pop()
+        self.redo_stack.append(([dict(e) for e in self.plan], dict(self.field_values), [dict(m) for m in self.marks]))
+        self.plan, self.field_values, self.marks = self.undo_stack.pop()
         self._apply_plan(self.current_page)
         self._fill_form_tab()
+        self._fill_marks()
 
     def redo(self) -> None:
         if not self.redo_stack:
             return
-        self.undo_stack.append(([dict(e) for e in self.plan], dict(self.field_values)))
-        self.plan, self.field_values = self.redo_stack.pop()
+        self.undo_stack.append(([dict(e) for e in self.plan], dict(self.field_values), [dict(m) for m in self.marks]))
+        self.plan, self.field_values, self.marks = self.redo_stack.pop()
         self._apply_plan(self.current_page)
         self._fill_form_tab()
+        self._fill_marks()
+
+    # --- marks (docs/PDF.md stage 2b) --------------------------------------------------------------------------
+
+    def set_tool(self, tool: str) -> None:
+        if tool == "stamp" and self.tool != "stamp":
+            path, _ = QFileDialog.getOpenFileName(self, say(self.lang, "A picture to stamp (your signature, a logo)", "תמונה לחותמת (החתימה שלכם, לוגו)"),
+                                                  "", say(self.lang, "Pictures (*.png *.jpg *.jpeg)", "תמונות (*.png *.jpg *.jpeg)"))
+            if not path:
+                tool = "select"
+            else:
+                self.stamp_path = path
+        self.tool = tool
+        for name, button in self.tool_buttons.items():
+            button.setChecked(name == tool)
+        self.status.setText({
+            "highlight": say(self.lang, "Drag over the words to highlight.", "גררו על המילים להדגשה."),
+            "underline": say(self.lang, "Drag over the words to underline.", "גררו על המילים לקו תחתון."),
+            "strikeout": say(self.lang, "Drag over the words to strike through.", "גררו על המילים לקו חוצה."),
+            "note": say(self.lang, "Click where the note goes.", "לחצו היכן שההערה תהיה."),
+            "text": say(self.lang, "Drag a box for the text.", "גררו תיבה לטקסט."),
+            "stamp": say(self.lang, "Drag a box for the picture.", "גררו תיבה לתמונה."),
+        }.get(tool, ""))
+
+    def choose_color(self) -> None:
+        from PyQt6.QtWidgets import QColorDialog
+        colour = QColorDialog.getColor(QColor(self.tool_color), self, say(self.lang, "Colour of the next mark", "צבע הסימון הבא"))
+        if colour.isValid():
+            self.tool_color = colour.name()
+            self._show_color()
+
+    def _show_color(self) -> None:
+        """The colour as a swatch icon (never as text colour: a yellow letter fails contrast on any theme)."""
+        swatch = QPixmap(18, 18)
+        swatch.fill(QColor(self.tool_color))
+        self.color_button.setIcon(QIcon(swatch))
+        self.color_button.setToolTip(self.tool_color)
+
+    def drawn(self, index: int, rect: QRect) -> None:
+        """A drag on page `index` with the current tool."""
+        if self.tool == "select" or index >= len(self.views):
+            return
+        view = self.views[index]
+        if self.tool == "note":
+            x, y = view.to_points(rect.topLeft())
+            points = (round(x, 2), round(y, 2), 20.0, 20.0)
+        else:
+            points = view.rect_points(rect)
+            if points[2] < 2 or points[3] < 2:
+                return
+        kind = self.tool
+        if kind == "text" or kind == "note":
+            text = self.ask_text(kind)
+            if text is None:
+                return
+            self.add_mark(kind, index, points, text=text)
+        elif kind == "stamp":
+            picture = self.add_picture(getattr(self, "stamp_path", ""))
+            if picture < 0:
+                return
+            self.add_mark(kind, index, points, image=picture)
+        else:
+            self.add_mark(kind, index, points)
+
+    def ask_text(self, kind: str) -> str | None:
+        from PyQt6.QtWidgets import QInputDialog
+        text, ok = QInputDialog.getMultiLineText(self, say(self.lang, "Text", "טקסט"),
+                                                  say(self.lang, "The note's text:", "הטקסט של ההערה:") if kind == "note"
+                                                  else say(self.lang, "The text to place (Hebrew is fine):", "הטקסט למיקום (גם עברית):"))
+        return text if ok and text.strip() else None
+
+    def add_picture(self, path: str) -> int:
+        if not path or not Path(path).is_file():
+            return -1
+        if path in self.pictures:
+            return self.pictures.index(path)
+        self.pictures.append(path)
+        return len(self.pictures) - 1
+
+    def add_mark(self, kind: str, index: int, rect: tuple[float, float, float, float], text: str = "", image: int = -1,
+                 size: float = 12.0) -> dict:
+        """A mark on the source page at position index; shown at once, written by the sandbox on save."""
+        entry = self.plan[index]
+        mark = {"source": entry["source"], "index": entry["index"], "kind": kind, "rect": [float(v) for v in rect],
+                "color": self.tool_color if kind not in ("text",) else "#111111", "text": text, "image": image, "size": size}
+        self._snapshot()
+        self.marks.append(mark)
+        self._marks_changed(index)
+        return mark
+
+    def remove_mark(self) -> None:
+        item = self.marks_list.currentItem()
+        if item is None:
+            return
+        number = int(item.data(Qt.ItemDataRole.UserRole))
+        if 0 <= number < len(self.marks):
+            self._snapshot()
+            del self.marks[number]
+            self._marks_changed(self.current_page)
+
+    def _marks_changed(self, index: int) -> None:
+        for view in self.views:
+            view.rendered_key = None
+        self.modified = True
+        self._title()
+        self._fill_marks()
+        self.render_timer.start()
+        self.status.setText(say(self.lang, "{n} marks · not saved yet (Ctrl+S)", "{n} סימונים · עדיין לא נשמר (Ctrl+S)", n=len(self.marks)))
+
+    def _fill_marks(self) -> None:
+        self.marks_list.clear()
+        names = {"highlight": say(self.lang, "Highlight", "הדגשה"), "underline": say(self.lang, "Underline", "קו תחתון"),
+                 "strikeout": say(self.lang, "Strike through", "קו חוצה"), "note": say(self.lang, "Note", "הערה"),
+                 "text": say(self.lang, "Text", "טקסט"), "stamp": say(self.lang, "Stamp", "חותמת")}
+        for number, mark in enumerate(self.marks):
+            position = next((i for i, e in enumerate(self.plan) if e["source"] == mark["source"] and e["index"] == mark["index"]), -1)
+            where = say(self.lang, "p. {n}", "עמ׳ {n}", n=position + 1) if position >= 0 else say(self.lang, "(page removed)", "(העמוד הוסר)")
+            item = QListWidgetItem(f"{names.get(mark['kind'], mark['kind'])} · {where}" + (f" · {mark['text'][:40]}" if mark.get("text") else ""))
+            item.setData(Qt.ItemDataRole.UserRole, number)
+            item.setData(Qt.ItemDataRole.UserRole + 1, max(0, position))
+            self.marks_list.addItem(item)
+
+    def _marks_for_save(self) -> list[dict]:
+        out = []
+        for position, entry in enumerate(self.plan):
+            for mark in self.marks:
+                if mark["source"] == entry["source"] and mark["index"] == entry["index"]:
+                    out.append({"page": position, "kind": mark["kind"], "rect": mark["rect"], "color": mark["color"],
+                                "text": mark.get("text", ""), "image": mark.get("image", -1), "size": mark.get("size", 12)})
+        return out
 
     # --- forms -------------------------------------------------------------------------------------------------
 
@@ -1345,7 +1607,8 @@ class PdfWindow(QWidget):
         try:
             answer = self.editor.save([s.path for s in self.sources], path, pages=[dict(e) for e in self.plan],
                                       fields=dict(self.field_values), flatten=flatten,
-                                      passwords=[s.password for s in self.sources])
+                                      passwords=[s.password for s in self.sources], annotations=self._marks_for_save(),
+                                      pictures=list(self.pictures))
         except EditError as exc:
             self.status.setText(self._edit_error_text(exc))
             return False

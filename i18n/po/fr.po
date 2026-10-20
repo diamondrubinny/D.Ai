@@ -5393,3 +5393,93 @@ msgstr "Arrêter la télécommande de la TV (serveur web et service de télécom
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Takes effect when Kodi starts again. The ports open to the local network only."
 msgstr "Prend effet au redémarrage de Kodi. Les ports s'ouvrent uniquement au réseau local."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "(page removed)"
+msgstr "(page retirée)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A picture to stamp (your signature, a logo)"
+msgstr "Une image à apposer (votre signature, un logo)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Click where the note goes."
+msgstr "Cliquez là où va la note."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Colour of the next mark"
+msgstr "Couleur de la prochaine marque"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag a box for the picture."
+msgstr "Tracez un cadre pour l'image."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag a box for the text."
+msgstr "Tracez un cadre pour le texte."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to highlight."
+msgstr "Glissez sur les mots à surligner."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to strike through."
+msgstr "Glissez sur les mots à barrer."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to underline."
+msgstr "Glissez sur les mots à souligner."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Highlight"
+msgstr "Surligner"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Marks"
+msgstr "Marques"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Note"
+msgstr "Note"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Pictures (*.png *.jpg *.jpeg)"
+msgstr "Images (*.png *.jpg *.jpeg)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove this mark"
+msgstr "Retirer cette marque"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Stamp"
+msgstr "Tampon"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Strike through"
+msgstr "Barrer"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Text"
+msgstr "Texte"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The note's text:"
+msgstr "Le texte de la note :"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The text to place (Hebrew is fine):"
+msgstr "Le texte à placer (l'hébreu convient) :"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Underline"
+msgstr "Souligner"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "p. {n}"
+msgstr "p. {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} marks · not saved yet (Ctrl+S)"
+msgstr "{n} marques · pas encore enregistré (Ctrl+S)"

@@ -5393,3 +5393,93 @@ msgstr "Отключить удалённое управление телеви�
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Takes effect when Kodi starts again. The ports open to the local network only."
 msgstr "Вступит в силу при следующем запуске Kodi. Порты открываются только для локальной сети."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "(page removed)"
+msgstr "(страница удалена)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A picture to stamp (your signature, a logo)"
+msgstr "Картинка для штампа (ваша подпись, логотип)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Click where the note goes."
+msgstr "Нажмите там, где будет заметка."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Colour of the next mark"
+msgstr "Цвет следующей пометки"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag a box for the picture."
+msgstr "Растяните рамку для картинки."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag a box for the text."
+msgstr "Растяните рамку для текста."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to highlight."
+msgstr "Проведите по словам, чтобы выделить."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to strike through."
+msgstr "Проведите по словам, чтобы зачеркнуть."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over the words to underline."
+msgstr "Проведите по словам, чтобы подчеркнуть."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Highlight"
+msgstr "Выделение"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Marks"
+msgstr "Пометки"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Note"
+msgstr "Заметка"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Pictures (*.png *.jpg *.jpeg)"
+msgstr "Картинки (*.png *.jpg *.jpeg)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove this mark"
+msgstr "Убрать эту пометку"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Stamp"
+msgstr "Штамп"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Strike through"
+msgstr "Зачёркивание"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Text"
+msgstr "Текст"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The note's text:"
+msgstr "Текст заметки:"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "The text to place (Hebrew is fine):"
+msgstr "Текст для размещения (иврит подойдёт):"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Underline"
+msgstr "Подчёркивание"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "p. {n}"
+msgstr "с. {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} marks · not saved yet (Ctrl+S)"
+msgstr "Пометок: {n} · ещё не сохранено (Ctrl+S)"

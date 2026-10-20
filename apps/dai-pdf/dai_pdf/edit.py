@@ -12,7 +12,18 @@ stdin, one JSON answer leaves on stdout, and the result lands in that folder. No
                other inputs (insert, merge); rotate is added to the page's own rotation
        fields: {"name": "text" | true | false | "Choice"}         values to fill into input 0's form
        flatten: true bakes the form and the annotations into the pages (no longer editable)
+       annotations: [{"page": P, "kind": "highlight"|"underline"|"strikeout"|"note"|"text"|"stamp",
+                      "rect": [left, top, width, height], "color": "#RRGGBB", "text": "...", "size": 12,
+                      "image": I}]   P is a position in the new order; rect is in points, top-left origin, on
+               the page as it is displayed (crop box, /Rotate applied), like the links the helper reports;
+               image is an index into the extra inputs (pictures bound read-only after the PDFs)
+       pdf_inputs: how many of the inputs are PDFs (the rest are pictures for stamps)
        -> {"ok": true, "pages": N, "bytes": B}  and the file at OUT/result.pdf
+
+Markup (highlight, underline, strikeout, note) becomes a real annotation that any viewer draws. Free text and
+stamps are drawn into the page as a picture (text is rendered by Qt, so Hebrew and right-to-left come out right
+in every viewer; the price is that the text is not selectable). A page's own /Rotate is honoured, so what was
+drawn on the screen lands where it was drawn.
 
 Editor (outside the sandbox) runs the helper and moves the result where the person asked.
 """
@@ -32,6 +43,9 @@ RESULT = "result.pdf"
 EDIT_TIMEOUT = 180.0
 MAX_PAGES = 20_000
 MAX_SOURCES = 64
+MAX_ANNOTATIONS = 5_000
+MARKUP = {"highlight": "/Highlight", "underline": "/Underline", "strikeout": "/StrikeOut"}
+TEXT_SCALE = 4  # pixels per point when text is drawn as a picture (288 dpi)
 
 
 class EditError(Exception):
@@ -225,11 +239,201 @@ def fill_fields(pdf, values: dict) -> int:
     return done
 
 
+# --- annotations --------------------------------------------------------------------------------------------------
+
+def _display_box(page) -> tuple[float, float, float, float, int]:
+    """x0, y0 (PDF coordinates of the box's bottom-left), width, height of the page as displayed, and /Rotate."""
+    try:
+        box = [float(v) for v in page.cropbox]
+    except Exception:  # noqa: BLE001 - no usable crop box: the media box
+        box = [float(v) for v in page.mediabox]
+    x0, y0, x1, y1 = min(box[0], box[2]), min(box[1], box[3]), max(box[0], box[2]), max(box[1], box[3])
+    return x0, y0, x1 - x0, y1 - y0, int(page.obj.get("/Rotate", 0) or 0) % 360
+
+
+def unrotated_rect(page, rect: list[float]) -> tuple[float, float, float, float]:
+    """A rectangle on the displayed page (top-left origin) as (x, y, w, h) in PDF coordinates (bottom-left origin)
+    of the unrotated page: the inverse of what the helper does for links."""
+    x0, y0, width, height, rotate = _display_box(page)
+    left, top, w, h = (float(v) for v in rect)
+    if rotate == 90:
+        left, top, w, h = top, height - left - w, h, w
+    elif rotate == 180:
+        left, top = width - left - w, height - top - h
+    elif rotate == 270:
+        left, top, w, h = width - top - h, left, h, w
+    return x0 + left, y0 + height - top - h, w, h
+
+
+def _colour(value: str) -> list[float]:
+    value = (value or "#FFEB3B").lstrip("#")
+    if len(value) != 6:
+        value = "FFEB3B"
+    return [round(int(value[i:i + 2], 16) / 255, 4) for i in (0, 2, 4)]
+
+
+_APP = None
+
+
+def _gui():
+    """Qt's application object for drawing text and reading pictures, kept alive for the helper's lifetime."""
+    global _APP
+    from PyQt6.QtGui import QGuiApplication
+
+    if QGuiApplication.instance() is None:
+        _APP = QGuiApplication(["dai-pdf-edit"])
+    return QGuiApplication.instance()
+
+
+def _render_text(text: str, w_pt: float, h_pt: float, size_pt: float, colour: str) -> tuple[bytes, bytes, int, int]:
+    """Text drawn by Qt into a picture: RGB bytes, alpha bytes, width, height. Hebrew is shaped and placed
+    right to left; nothing here reaches the file's own content."""
+    from PyQt6.QtCore import QRectF, Qt
+    from PyQt6.QtGui import QColor, QFont, QImage, QPainter, QTextOption
+
+    _gui()
+    w, h = max(1, round(w_pt * TEXT_SCALE)), max(1, round(h_pt * TEXT_SCALE))
+    image = QImage(w, h, QImage.Format.Format_ARGB32)
+    image.fill(0)
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+    font = QFont("Noto Sans")
+    font.setPixelSize(max(4, round(size_pt * TEXT_SCALE)))
+    painter.setFont(font)
+    painter.setPen(QColor("#" + (colour or "#111111").lstrip("#")))
+    rtl = any("\u0590" <= ch <= "\u08ff" for ch in text)
+    option = QTextOption(Qt.AlignmentFlag.AlignTop | (Qt.AlignmentFlag.AlignRight if rtl else Qt.AlignmentFlag.AlignLeft))
+    option.setWrapMode(QTextOption.WrapMode.WordWrap)
+    option.setTextDirection(Qt.LayoutDirection.RightToLeft if rtl else Qt.LayoutDirection.LeftToRight)
+    painter.drawText(QRectF(0, 0, w, h), text, option)
+    painter.end()
+    return _split_rgba(image)
+
+
+def _split_rgba(image) -> tuple[bytes, bytes, int, int]:
+    from PyQt6.QtGui import QImage
+
+    image = image.convertToFormat(QImage.Format.Format_RGBA8888)
+    w, h = image.width(), image.height()
+    raw = bytes(image.constBits().asarray(w * h * 4)) if hasattr(image.constBits(), "asarray") else bytes(image.constBits())
+    if len(raw) < w * h * 4:  # a row-padded layout: take it line by line
+        rows = []
+        for y in range(h):
+            line = image.constScanLine(y)
+            rows.append(bytes(line.asarray(w * 4)) if hasattr(line, "asarray") else bytes(line)[:w * 4])
+        raw = b"".join(rows)
+    rgb = bytearray(w * h * 3)
+    alpha = bytearray(w * h)
+    rgb[0::3], rgb[1::3], rgb[2::3], alpha[:] = raw[0::4], raw[1::4], raw[2::4], raw[3::4]
+    return bytes(rgb), bytes(alpha), w, h
+
+
+def _load_picture(path: str) -> tuple[bytes, bytes, int, int]:
+    """A PNG or JPEG from the person, decoded by Qt (never by the PDF side), at most 4000 px a side."""
+    from PyQt6.QtGui import QImageReader
+
+    _gui()
+    reader = QImageReader(path)
+    reader.setAutoTransform(True)
+    if reader.format().data() not in (b"png", b"jpeg", b"jpg"):
+        raise EditError("bad request", "a stamp is a PNG or JPEG picture")
+    size = reader.size()
+    if size.width() > 4000 or size.height() > 4000:
+        reader.setScaledSize(size.scaled(4000, 4000, 1))  # Qt.AspectRatioMode.KeepAspectRatio
+    image = reader.read()
+    if image.isNull():
+        raise EditError("bad request", "the picture could not be read")
+    return _split_rgba(image)
+
+
+def _image_xobject(pdf, rgb: bytes, alpha: bytes, w: int, h: int):
+    import zlib
+    import pikepdf
+
+    smask = pdf.make_stream(zlib.compress(alpha), Type=pikepdf.Name.XObject, Subtype=pikepdf.Name.Image, Width=w, Height=h,
+                            ColorSpace=pikepdf.Name.DeviceGray, BitsPerComponent=8, Filter=pikepdf.Name.FlateDecode)
+    return pdf.make_stream(zlib.compress(rgb), Type=pikepdf.Name.XObject, Subtype=pikepdf.Name.Image, Width=w, Height=h,
+                           ColorSpace=pikepdf.Name.DeviceRGB, BitsPerComponent=8, Filter=pikepdf.Name.FlateDecode, SMask=smask)
+
+
+def _place(page, rect: list[float]) -> str:
+    """The cm operator that puts a unit-square picture on the displayed rectangle, upright on screen, whatever
+    the page's own /Rotate."""
+    x, y, w, h = unrotated_rect(page, rect)
+    rotate = _display_box(page)[4]
+    dw, dh = float(rect[2]), float(rect[3])  # the picture's size as displayed
+    if rotate == 90:
+        a, b, c, d, e, f = 0, dw, -dh, 0, x + w, y
+    elif rotate == 180:
+        a, b, c, d, e, f = -dw, 0, 0, -dh, x + w, y + h
+    elif rotate == 270:
+        a, b, c, d, e, f = 0, -dw, dh, 0, x, y + h
+    else:
+        a, b, c, d, e, f = dw, 0, 0, dh, x, y
+    return " ".join(f"{v:.4f}" for v in (a, b, c, d, e, f)) + " cm"
+
+
+def add_annotations(pdf, annotations: list[dict], pictures: list[str]) -> int:
+    """Markup as annotations; text and stamps drawn into the page. Returns how many were added."""
+    import pikepdf
+
+    if len(annotations) > MAX_ANNOTATIONS:
+        raise EditError("bad request", "annotations")
+    done = 0
+    for entry in annotations:
+        index = int(entry.get("page", -1))
+        if not 0 <= index < len(pdf.pages):
+            raise EditError("bad request", f"annotation page {index}")
+        page = pdf.pages[index]
+        kind = str(entry.get("kind", ""))
+        rect = [float(v) for v in entry.get("rect", [0, 0, 0, 0])]
+        if len(rect) != 4 or rect[2] <= 0 or rect[3] <= 0:
+            raise EditError("bad request", "annotation rect")
+        x, y, w, h = unrotated_rect(page, rect)
+        colour = _colour(str(entry.get("color", "")))
+        if kind in MARKUP:
+            annot = pdf.make_indirect(pikepdf.Dictionary(
+                Type=pikepdf.Name.Annot, Subtype=pikepdf.Name(MARKUP[kind]), Rect=[x, y, x + w, y + h],
+                QuadPoints=[x, y + h, x + w, y + h, x, y, x + w, y], C=colour, CA=1, F=4,
+                Contents=pikepdf.String(str(entry.get("text", ""))[:2000]), T=pikepdf.String("D.Ai PDF")))
+        elif kind == "note":
+            annot = pdf.make_indirect(pikepdf.Dictionary(
+                Type=pikepdf.Name.Annot, Subtype=pikepdf.Name.Text, Rect=[x, y, x + 20, y + 20], Name=pikepdf.Name.Note,
+                C=colour, F=28, Contents=pikepdf.String(str(entry.get("text", ""))[:4000]), T=pikepdf.String("D.Ai PDF"),
+                Open=False))
+        elif kind in ("text", "stamp"):
+            if kind == "text":
+                rgb, alpha, iw, ih = _render_text(str(entry.get("text", ""))[:4000], rect[2], rect[3],
+                                                  float(entry.get("size", 12) or 12), str(entry.get("color", "#111111")))
+            else:
+                picture = int(entry.get("image", -1))
+                if not 0 <= picture < len(pictures):
+                    raise EditError("bad request", "stamp picture")
+                rgb, alpha, iw, ih = _load_picture(pictures[picture])
+            xobj = _image_xobject(pdf, rgb, alpha, iw, ih)
+            name = page.add_resource(xobj, pikepdf.Name.XObject, prefix="DaiImg")
+            page.contents_add(pdf.make_stream(f"q {_place(page, rect)} {name} Do Q".encode("ascii")), prepend=False)
+            done += 1
+            continue
+        else:
+            raise EditError("bad request", f"annotation kind {kind}")
+        annots = page.obj.get("/Annots")
+        if not isinstance(annots, pikepdf.Array):
+            page.obj.Annots = pikepdf.Array([annot])
+        else:
+            annots.append(annot)
+        done += 1
+    return done
+
+
 def build(inputs: list[str], spec: dict, output: str) -> dict:
     """Make the file the spec describes from the inputs and write it to output."""
     import pikepdf
 
     passwords = list(spec.get("passwords") or [])
+    count = int(spec.get("pdf_inputs") or len(inputs))
+    pictures = inputs[count:]
+    inputs = inputs[:count]
     if not inputs or len(inputs) > MAX_SOURCES:
         raise EditError("bad request", "inputs")
     pdfs = [_open(path, passwords[i] if i < len(passwords) else "") for i, path in enumerate(inputs)]
@@ -246,11 +450,17 @@ def build(inputs: list[str], spec: dict, output: str) -> dict:
                 raise EditError("bad request", f"page {source}:{index}")
             chosen.append((pdfs[source].pages[index], int(entry.get("rotate", 0)) % 360))
         del main.pages[:]
+        turns = []
         for page, rotate in chosen:
             main.pages.append(page)
-            page = main.pages[-1]
+            turns.append(rotate)
+        # Annotations are placed on the pages as they were drawn on screen, before any new turn is applied.
+        marked = add_annotations(main, list(spec.get("annotations") or []), pictures)
+        for page, rotate in zip(main.pages, turns):
             if rotate:
                 page.Rotate = (int(page.obj.get("/Rotate", 0)) + rotate) % 360
+    else:
+        marked = add_annotations(main, list(spec.get("annotations") or []), pictures)
     if spec.get("flatten"):
         try:
             main.flatten_annotations("all")
@@ -260,7 +470,8 @@ def build(inputs: list[str], spec: dict, output: str) -> dict:
     main.save(output)
     for pdf in pdfs:
         pdf.close()
-    return {"ok": True, "pages": len(pikepdf.open(output).pages), "bytes": os.path.getsize(output), "filled": done}
+    return {"ok": True, "pages": len(pikepdf.open(output).pages), "bytes": os.path.getsize(output), "filled": done,
+            "marked": marked}
 
 
 def main() -> int:
@@ -345,11 +556,13 @@ class Editor:
         return [dict(f) for f in answer.get("fields", [])]
 
     def save(self, inputs: list[str], destination: str, pages: list[dict] | None = None, fields: dict | None = None,
-             flatten: bool = False, passwords: list[str] | None = None) -> dict:
-        """Write the described file to destination (replacing it only after the sandbox finished cleanly)."""
+             flatten: bool = False, passwords: list[str] | None = None, annotations: list[dict] | None = None,
+             pictures: list[str] | None = None) -> dict:
+        """Write the described file to destination (replacing it only after the sandbox finished cleanly).
+        `pictures` are stamp images, bound read-only after the PDFs."""
         request = {"op": "save", "pages": pages, "fields": fields or {}, "flatten": bool(flatten),
-                   "passwords": passwords or []}
-        answer, result = self._run(inputs, request)
+                   "passwords": passwords or [], "annotations": annotations or [], "pdf_inputs": len(inputs)}
+        answer, result = self._run([*inputs, *(pictures or [])], request)
         assert result is not None
         target = Path(destination)
         try:

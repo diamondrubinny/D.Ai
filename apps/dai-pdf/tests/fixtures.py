@@ -127,6 +127,29 @@ def form(path: Path) -> Path:
     return path
 
 
+def rotated(path: Path, degrees: int = 90) -> Path:
+    """A landscape page stored with /Rotate, as scanners and phones make them."""
+    pdf = pikepdf.new()
+    page = _page(pdf, "Turned page", width=300, height=200)
+    page.Rotate = degrees
+    pdf.save(path)
+    return path
+
+
+def picture(path: Path, width: int = 120, height: int = 60) -> Path:
+    """A small PNG with a transparent corner, for stamps."""
+    from PyQt6.QtGui import QColor, QImage, QPainter
+
+    image = QImage(width, height, QImage.Format.Format_ARGB32)
+    image.fill(0)
+    painter = QPainter(image)
+    painter.fillRect(0, 0, width // 2, height, QColor("#1565C0"))
+    painter.fillRect(width // 2, 0, width // 2, height // 2, QColor("#C62828"))
+    painter.end()
+    image.save(str(path), "PNG")
+    return path
+
+
 def locked(path: Path, password: str = "secret") -> Path:
     pdf = pikepdf.new()
     _page(pdf, "Locked page")

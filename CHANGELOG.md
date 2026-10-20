@@ -16,6 +16,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   (text, check boxes, radio groups, drop-downs) and flattened; undo and redo; every save built by a one-shot
   sandboxed editor that sees only the inputs read-only and an empty output folder. `dai-pdf merge|split|rotate|
   delete|fields|fill` on the command line.
+- D.Ai PDF, marks: highlight, underline, strike through, notes, text (Hebrew drawn right) and stamped pictures
+  (a signature), placed with a drag, listed, undone, written by the sandboxed editor into the saved file.
 - D.Ai VM: Windows in a window with the person's own media and key. A hardware check that says plainly when a
   computer cannot (no VT-x/AMD-V, too little memory); machines under qemu:///session with UEFI Secure Boot,
   TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded
