@@ -787,14 +787,18 @@ def main() -> int:
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",
          ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
-         "grep -h Session= /etc/sddm.conf /etc/sddm.conf.d/*.conf; pgrep -af 'kodi' | grep -c -v grep; "
+         "grep -h Session= /etc/sddm.conf /etc/sddm.conf.d/*.conf; pgrep -af 'kodi' | grep -c -v grep | sed 's/^/KODI_PROCS=/'; "
          "pgrep -x lxqt-session >/dev/null && echo LXQT_RUNNING || echo NO_LXQT; kodi --version | head -n 1; "
-         "grep -c 'services.webserver\">false' ~/.kodi/userdata/guisettings.xml; "
-         "grep -c 'resource.language.he_il' ~/.kodi/userdata/guisettings.xml; test -d ~/.kodi/addons/resource.language.he_il && echo HE_PACK; "
-         "command -v cec-client >/dev/null && echo CEC_TOOL; ss -ltn | tail -n +2 | wc -l | sed 's/^/LISTENING=/'; fi",
-         True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
-             "dai-tv.desktop", "NO_LXQT", "HE_PACK", "CEC_TOOL", "LISTENING=0")) and "LXQT_RUNNING" not in o
-         and any(line.strip() not in ("0", "") and line.strip().isdigit() for line in o.splitlines()), 90),
+         # Kodi rewrites guisettings.xml with a default="..." attribute, so the patterns allow attributes.
+         "grep -cE 'id=.services.webserver.[^>]*>false' ~/.kodi/userdata/guisettings.xml | sed 's/^/WEBSERVER_OFF=/'; "
+         "grep -cE 'id=.locale.language.[^>]*>resource.language.he_il' ~/.kodi/userdata/guisettings.xml | sed 's/^/HEBREW=/'; "
+         "test -d ~/.kodi/addons/resource.language.he_il && echo HE_PACK; command -v cec-client >/dev/null && echo CEC_TOOL; "
+         # Nothing reachable from the network: loopback listeners (the local print service) do not count.
+         "ss -ltnH | awk '{print $4}' | grep -vE '^(127[.]|[[]::1[]])' | sed 's/^/OPEN=/'; echo LISTENERS_CHECKED; "
+         "grep -iE 'Loaded language|windowing|Running on' ~/.kodi/temp/kodi.log 2>/dev/null | head -n 4; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or (all(mark in o for mark in (
+             "dai-tv.desktop", "NO_LXQT", "HE_PACK", "CEC_TOOL", "LISTENERS_CHECKED", "WEBSERVER_OFF=1", "HEBREW=1"))
+             and "LXQT_RUNNING" not in o and "OPEN=" not in o and "KODI_PROCS=0" not in o), 90),
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
         ("vm: the stack, the honest check, a definition libvirt accepts",
