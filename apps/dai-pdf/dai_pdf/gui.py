@@ -25,7 +25,7 @@ from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
 from dai_style.panes import Panes, WrapRow, touch_scrolling
 
-from .edit import EditError, Editor, ocr_langs
+from .edit import EditError, Editor, human_size, ocr_langs
 from .reader import Document, PdfError, Reader
 from .text import find_all
 
@@ -686,6 +686,20 @@ class PdfWindow(QWidget):
         redact_hint.setObjectName("FormHint")
         redact_hint.setWordWrap(True)
         clean_layout.addWidget(redact_hint)
+        size_label = QLabel(say(self.lang, "Smaller file", "קובץ קטן יותר"))
+        size_label.setObjectName("FormHint")
+        clean_layout.addWidget(size_label)
+        self.compress_choice = QComboBox()
+        self.compress_choice.addItem(say(self.lang, "As it is", "כמו שהוא"), "")
+        self.compress_choice.addItem(say(self.lang, "Smaller: pictures at most 2000 pixels wide", "קטן יותר: תמונות ברוחב עד 2000 פיקסלים"), "light")
+        self.compress_choice.addItem(say(self.lang, "Much smaller: 1200 pixels, for e-mail", "קטן בהרבה: 1200 פיקסלים, לדוא\"ל"), "strong")
+        self.compress_choice.setAccessibleName(say(self.lang, "Smaller file", "קובץ קטן יותר"))
+        self.compress_choice.currentIndexChanged.connect(lambda _i: self._clean_changed())
+        size_label.setBuddy(self.compress_choice)
+        clean_layout.addWidget(self.compress_choice)
+        self.size_button = self._button(say(self.lang, "Check the size", "בדיקת הגודל"),
+                                        say(self.lang, "What the saved file would weigh, without writing it", "כמה ישקול הקובץ השמור, בלי לכתוב אותו"),
+                                        self.check_size, clean_layout)
         self.export_button = self._button(say(self.lang, "Export pages as pictures…", "ייצוא עמודים כתמונות…"),
                                           say(self.lang, "Every page as a PNG picture", "כל עמוד כתמונת PNG"), self.export_dialog, clean_layout)
         clean_layout.addStretch(1)
@@ -1554,6 +1568,31 @@ class PdfWindow(QWidget):
             self.modified = True
             self._title()
 
+    def _save_options(self) -> dict:
+        """Everything the Clean tab and the marks add to a save (or a measurement)."""
+        return {"annotations": self._marks_for_save(), "pictures": list(self.pictures), "redactions": self._redactions_for_save(),
+                "ocr": {"pages": "all" if self.ocr_all_box.isChecked() else "scans", "langs": ocr_langs(self.lang)}
+                if self.ocr_box.isChecked() else None, "strip_metadata": self.strip_box.isChecked(),
+                "compress": str(self.compress_choice.currentData() or "")}
+
+    def check_size(self) -> int:
+        """Runs the save in the sandbox without keeping it, and says what the file would weigh. Returns the bytes."""
+        if not self.doc:
+            return 0
+        self.status.setText(say(self.lang, "Measuring in the sandbox…", "מודד בארגז החול…"))
+        QApplication.processEvents()
+        try:
+            answer = self.editor.measure([s.path for s in self.sources], pages=[dict(e) for e in self.plan],
+                                         fields=dict(self.field_values), passwords=[s.password for s in self.sources],
+                                         **self._save_options())
+        except EditError as exc:
+            self.status.setText(self._edit_error_text(exc))
+            return 0
+        self.status.setText(say(self.lang, "Now {before}; after saving {after} ({n} pictures made smaller)",
+                                "עכשיו {before}; אחרי השמירה {after} ({n} תמונות הוקטנו)",
+                                before=human_size(answer.get("before", 0)), after=human_size(answer.get("bytes", 0)), n=answer.get("compressed", 0)))
+        return int(answer.get("bytes", 0))
+
     def export_dialog(self) -> None:
         if not self.doc:
             return
@@ -1681,10 +1720,7 @@ class PdfWindow(QWidget):
         try:
             answer = self.editor.save([s.path for s in self.sources], path, pages=[dict(e) for e in self.plan],
                                       fields=dict(self.field_values), flatten=flatten,
-                                      passwords=[s.password for s in self.sources], annotations=self._marks_for_save(),
-                                      pictures=list(self.pictures), redactions=self._redactions_for_save(),
-                                      ocr={"pages": "all" if self.ocr_all_box.isChecked() else "scans", "langs": ocr_langs(self.lang)}
-                                      if self.ocr_box.isChecked() else None, strip_metadata=self.strip_box.isChecked())
+                                      passwords=[s.password for s in self.sources], **self._save_options())
         except EditError as exc:
             self.status.setText(self._edit_error_text(exc))
             return False

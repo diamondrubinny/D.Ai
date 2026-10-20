@@ -259,6 +259,56 @@ class DirectEditTests(unittest.TestCase):
         self.assertEqual((first.width(), first.height()), (200, 300))  # turned
         self.assertEqual(oct(Path(files[0]).stat().st_mode & 0o777), "0o600")
 
+    def test_compression_shrinks_the_pictures_and_never_grows_the_file(self):
+        import os as _os
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        a = fixtures.photos(self.dir / "a.pdf")
+        original = a.stat().st_size
+        light = self.dir / "light.pdf"
+        answer = self.editor.save([str(a)], str(light), compress="light")
+        self.assertEqual(answer["before"], original)
+        self.assertEqual(answer["compressed"], 3)  # the colour picture (once, shared by both pages), the grey, the tiny
+        self.assertLess(answer["bytes"], original // 2)
+        with pikepdf.open(light) as pdf:
+            big = pdf.pages[0].Resources.XObject["/Big"]
+            self.assertEqual((int(big.Width), int(big.Height)), (1600, 1200))  # under 2000 px: only re-encoded
+            self.assertEqual(big.Filter, pikepdf.Name.DCTDecode)
+            self.assertEqual((int(big.SMask.Width), int(big.SMask.Height)), (1600, 1200))
+            grey = pdf.pages[1].Resources.XObject["/Grey"]
+            self.assertEqual(grey.ColorSpace, pikepdf.Name.DeviceGray)
+            tiny = pdf.pages[0].Resources.XObject["/Tiny"]
+            self.assertEqual((int(tiny.Width), int(tiny.Height)), (40, 30))  # small pictures are never scaled
+            self.assertLess(len(tiny.read_raw_bytes()), 40 * 30 * 3)  # but stored smaller when that helps
+            self.assertEqual(pdf.docinfo["/Title"], "Photos")  # compression alone keeps the metadata
+        strong = self.dir / "strong.pdf"
+        answer = self.editor.save([str(a)], str(strong), compress="strong")
+        self.assertLess(answer["bytes"], light.stat().st_size)
+        with pikepdf.open(strong) as pdf:
+            big = pdf.pages[0].Resources.XObject["/Big"]
+            self.assertEqual((int(big.Width), int(big.Height)), (1200, 900))  # scaled to the longest side
+            self.assertEqual((int(big.SMask.Width), int(big.SMask.Height)), (1200, 900))  # the mask follows
+            self.assertEqual(big.BitsPerComponent, 8)
+        # A file without pictures is never made bigger by asking.
+        plain = fixtures.plain(self.dir / "p.pdf", pages=2)
+        answer = self.editor.save([str(plain)], str(self.dir / "p2.pdf"), compress="strong")
+        self.assertEqual(answer["compressed"], 0)
+        self.assertLessEqual(answer["bytes"], plain.stat().st_size + 200)
+        with self.assertRaises(EditError):
+            self.editor.save([str(plain)], str(self.dir / "p3.pdf"), compress="huge")
+
+    def test_measure_says_the_size_without_writing(self):
+        import os as _os
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        a = fixtures.photos(self.dir / "a.pdf", width=800, height=600)
+        before = set(os.listdir(self.dir))
+        answer = self.editor.measure([str(a)], compress="light", strip_metadata=True)
+        self.assertEqual(answer["before"], a.stat().st_size)
+        self.assertLess(answer["bytes"], answer["before"])
+        self.assertEqual(set(os.listdir(self.dir)), before)  # nothing new on disk
+        self.assertEqual(edit.human_size(answer["before"])[-2:], "MB")
+        self.assertEqual(edit.human_size(1536), "1 KB")
+        self.assertEqual(edit.human_size(12), "12 B")
+
     def test_page_ranges(self):
         self.assertEqual(parse_pages("", 4), [0, 1, 2, 3])
         self.assertEqual(parse_pages("1-2, 4", 4), [0, 1, 3])
@@ -302,6 +352,11 @@ class SandboxedEditTests(unittest.TestCase):
                                                                        {"page": 0, "kind": "text", "rect": [10, 50, 200, 30], "text": "בארגז"}],
                                   pictures=[str(logo)])
         self.assertEqual(answer["marked"], 2)  # the picture was readable inside bubblewrap, read-only
+        photos = fixtures.photos(self.dir / "photos.pdf", width=800, height=600)
+        small = self.dir / "small.pdf"
+        answer = self.editor.save([str(photos)], str(small), compress="light")
+        self.assertEqual(answer["compressed"], 3)  # Qt's JPEG writer is reachable inside bubblewrap
+        self.assertLess(small.stat().st_size, photos.stat().st_size // 2)
 
 
 if __name__ == "__main__":

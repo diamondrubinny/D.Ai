@@ -18,6 +18,8 @@
   dai-pdf redact FILE --page N --box LEFT,TOP,WIDTH,HEIGHT ... -o OUT   black boxes; the page becomes a
                                    picture, so what was under a box is truly gone
   dai-pdf export FILE --dir FOLDER [--dpi 150] [--pages 1-3]   every page as a PNG picture
+  dai-pdf compress FILE -o OUT [--strong] [--check]   a smaller file: pictures at most 2000 px (1200 with --strong);
+                                   --check only says what the size would be, and writes nothing
   dai-pdf --version | --help
 
 Everything runs on this computer, inside bubblewrap. Nothing in the file is executed, followed or opened.
@@ -214,7 +216,7 @@ def edit(args: list[str], lang: str) -> int:
     if not inputs:
         print(say(lang, "Which file? dai-pdf {command} FILE", "איזה קובץ? dai-pdf {command} FILE", command=command), file=sys.stderr)
         return 2
-    if command not in ("fields", "export") and not out:
+    if command not in ("fields", "export") and not out and not (command == "compress" and "--check" in args):
         print(say(lang, "Where to? add -o OUT.pdf", "לאן? הוסיפו -o OUT.pdf"), file=sys.stderr)
         return 2
     editor = _editor()
@@ -276,6 +278,15 @@ def edit(args: list[str], lang: str) -> int:
         elif command == "strip":
             answer = editor.save(inputs[:1], out, strip_metadata=True, passwords=[password])
             print(say(lang, "Metadata removed.", "המטא-דאטה הוסר."))
+        elif command == "compress":
+            from .edit import human_size
+            level = "strong" if "--strong" in args else "light"
+            if "--check" in args:
+                answer = editor.measure(inputs[:1], compress=level, passwords=[password])
+            else:
+                answer = editor.save(inputs[:1], out, compress=level, passwords=[password])
+            print(say(lang, "{before} → {after} ({n} pictures made smaller)", "{before} ← {after} ({n} תמונות הוקטנו)",
+                      before=human_size(answer.get("before", 0)), after=human_size(answer.get("bytes", 0)), n=answer.get("compressed", 0)))
         elif command == "redact":
             boxes, page = [], None
             for i, arg in enumerate(args):
@@ -330,7 +341,8 @@ def edit(args: list[str], lang: str) -> int:
             return 2
     except EditError as exc:
         return _edit_error(exc, lang)
-    print(say(lang, "{out}: {n} pages", "{out}: {n} עמודים", out=out, n=answer.get("pages", 0)))
+    if out:
+        print(say(lang, "{out}: {n} pages", "{out}: {n} עמודים", out=out, n=answer.get("pages", 0)))
     return 0
 
 
@@ -346,7 +358,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args and args[0] in ("info", "text", "check"):
         return {"info": info, "text": text, "check": check}[args[0]](args, lang)
-    if args and args[0] in ("merge", "split", "rotate", "delete", "fields", "fill", "ocr", "strip", "redact", "export"):
+    if args and args[0] in ("merge", "split", "rotate", "delete", "fields", "fill", "ocr", "strip", "redact", "export", "compress"):
         return edit(args, lang)
     from .gui import main as window
 

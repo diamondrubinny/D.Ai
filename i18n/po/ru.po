@@ -5647,3 +5647,41 @@ msgstr "Закрашено страниц: {n}; каждая стала карт
 #, python-brace-format
 msgid "{n} pictures written to {folder}"
 msgstr "Записано картинок в {folder}: {n}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "As it is"
+msgstr "Как есть"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Check the size"
+msgstr "Проверить размер"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Measuring in the sandbox…"
+msgstr "Измерение в песочнице…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Much smaller: 1200 pixels, for e-mail"
+msgstr "Намного меньше: 1200 пикселей, для почты"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Now {before}; after saving {after} ({n} pictures made smaller)"
+msgstr "Сейчас {before}; после сохранения {after} (уменьшено картинок: {n})"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Smaller file"
+msgstr "Файл меньше"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Smaller: pictures at most 2000 pixels wide"
+msgstr "Меньше: картинки не шире 2000 пикселей"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What the saved file would weigh, without writing it"
+msgstr "Сколько будет весить сохранённый файл, без записи"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{before} → {after} ({n} pictures made smaller)"
+msgstr "{before} → {after} (уменьшено картинок: {n})"

@@ -597,6 +597,114 @@ def strip_metadata(pdf) -> None:
                 del page.obj[key]
 
 
+COMPRESS_LEVELS = {"light": (2000, 85), "strong": (1200, 70)}  # longest side in pixels, JPEG quality
+
+
+def _image_pixels(xobj):
+    """The samples of a page picture as a QImage, for the kinds this editor re-encodes: 8-bit RGB or grey, stored
+    plain, Flate or JPEG. Anything else (indexed, CMYK, 1-bit scans, JPX, CCITT, JBIG2, masks) returns None and
+    is left exactly as it is."""
+    import pikepdf
+    from PyQt6.QtGui import QImage
+
+    if xobj.get("/ImageMask", False) or "/Decode" in xobj or int(xobj.get("/BitsPerComponent", 0)) != 8:
+        return None
+    space = xobj.get("/ColorSpace")
+    if space == pikepdf.Name.DeviceRGB:
+        fmt, parts = QImage.Format.Format_RGB888, 3
+    elif space == pikepdf.Name.DeviceGray:
+        fmt, parts = QImage.Format.Format_Grayscale8, 1
+    else:
+        return None
+    filters = xobj.get("/Filter")
+    names = [str(f) for f in (filters if isinstance(filters, pikepdf.Array) else [filters] if filters is not None else [])]
+    w, h = int(xobj.Width), int(xobj.Height)
+    if names == ["/DCTDecode"]:
+        image = QImage.fromData(xobj.read_raw_bytes(), "JPEG")
+        if image.isNull() or image.width() != w or image.height() != h:
+            return None
+        return image.convertToFormat(fmt)
+    if names and names != ["/FlateDecode"]:
+        return None
+    try:
+        raw = xobj.read_bytes()
+    except pikepdf.PdfError:
+        return None
+    if len(raw) < w * h * parts:
+        return None
+    return QImage(bytes(raw), w, h, w * parts, fmt).copy()
+
+
+def _encodings(image, quality: int) -> list[tuple[bytes, object]]:
+    """The same picture as JPEG and as Flate; the caller keeps the smaller one."""
+    import zlib
+    import pikepdf
+    from PyQt6.QtCore import QBuffer, QIODevice
+
+    buffer = QBuffer()
+    buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+    image.save(buffer, "JPEG", quality)
+    parts = 1 if image.format() == image.Format.Format_Grayscale8 else 3
+    rows = b"".join(image.constScanLine(y).asstring(image.width() * parts) for y in range(image.height()))
+    return [(bytes(buffer.data()), pikepdf.Name.DCTDecode), (zlib.compress(rows, 9), pikepdf.Name.FlateDecode)]
+
+
+def compress_images(pdf, level: str) -> tuple[int, int]:
+    """Make the pictures on the pages smaller: longer than the level's side → scaled down (smoothly), then stored
+    as JPEG or Flate, whichever is smaller, and only if that is smaller than what the file had. A picture's soft
+    mask is scaled with it. Returns (pictures made smaller, pictures seen)."""
+    import zlib
+    import pikepdf
+    from PyQt6.QtCore import Qt
+    from PyQt6.QtGui import QImage
+
+    if level not in COMPRESS_LEVELS:
+        raise EditError("bad request", "compress")
+    side, quality = COMPRESS_LEVELS[level]
+    _gui()
+    seen: set = set()
+    changed = 0
+    for page in pdf.pages:
+        for _name, xobj in page.images.items():
+            if xobj.objgen in seen or xobj.objgen == (0, 0):
+                continue
+            seen.add(xobj.objgen)
+            image = _image_pixels(xobj)
+            if image is None:
+                continue
+            mask = xobj.get("/SMask")
+            mask_image = None
+            if mask is not None:
+                mask_image = _image_pixels(mask) if mask.get("/ColorSpace") == pikepdf.Name.DeviceGray else None
+                if mask_image is None:
+                    continue  # a transparency this editor cannot keep exactly: leave the picture alone
+            if max(image.width(), image.height()) > side:
+                image = image.scaled(side, side, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                if mask_image is not None:
+                    mask_image = mask_image.scaled(image.width(), image.height(), Qt.AspectRatioMode.IgnoreAspectRatio,
+                                                   Qt.TransformationMode.SmoothTransformation)
+            data, codec = min(_encodings(image, quality), key=lambda e: len(e[0]))
+            before = len(xobj.read_raw_bytes()) + (len(mask.read_raw_bytes()) if mask is not None else 0)
+            if mask_image is not None:
+                mask_data = zlib.compress(b"".join(mask_image.constScanLine(y).asstring(mask_image.width())
+                                                   for y in range(mask_image.height())), 9)
+            if len(data) + (len(mask_data) if mask_image is not None else 0) >= before:
+                continue
+            xobj.write(data, filter=codec)
+            xobj.Width, xobj.Height, xobj.BitsPerComponent = image.width(), image.height(), 8
+            xobj.ColorSpace = pikepdf.Name.DeviceGray if image.format() == QImage.Format.Format_Grayscale8 else pikepdf.Name.DeviceRGB
+            for key in ("/DecodeParms", "/Interpolate"):
+                if key in xobj:
+                    del xobj[key]
+            if mask_image is not None:
+                mask.write(mask_data, filter=pikepdf.Name.FlateDecode)
+                mask.Width, mask.Height, mask.BitsPerComponent = mask_image.width(), mask_image.height(), 8
+                if "/DecodeParms" in mask:
+                    del mask["/DecodeParms"]
+            changed += 1
+    return changed, len(seen)
+
+
 def export_pages(inputs: list[str], spec: dict, out_dir: str) -> dict:
     """Every page of the plan as a PNG in out_dir."""
     passwords = list(spec.get("passwords") or [])
@@ -665,12 +773,18 @@ def build(inputs: list[str], spec: dict, output: str) -> dict:
             main.flatten_annotations("all")
         except Exception as exc:  # noqa: BLE001
             raise EditError("broken", f"flatten: {type(exc).__name__}") from exc
+    level = str(spec.get("compress") or "")
+    smaller = compress_images(main, level)[0] if level else 0
     main.remove_unreferenced_resources()
-    main.save(output)
+    if level:
+        main.save(output, compress_streams=True, recompress_flate=True, object_stream_mode=pikepdf.ObjectStreamMode.generate)
+    else:
+        main.save(output)
     for pdf in pdfs:
         pdf.close()
     return {"ok": True, "pages": len(pikepdf.open(output).pages), "bytes": os.path.getsize(output), "filled": done,
-            "marked": marked, "redacted": redacted, "ocr": recognised}
+            "marked": marked, "redacted": redacted, "ocr": recognised, "compressed": smaller,
+            "before": sum(os.path.getsize(p) for p in inputs)}
 
 
 def main() -> int:
@@ -765,15 +879,36 @@ class Editor:
         answer, _ = self._run([path], {"op": "fields", "passwords": [password]})
         return [dict(f) for f in answer.get("fields", [])]
 
+    @staticmethod
+    def _request(inputs: list[str], pages, fields, flatten, passwords, annotations, redactions, ocr, strip_metadata,
+                 compress) -> dict:
+        if compress and compress not in COMPRESS_LEVELS:
+            raise EditError("bad request", "compress")
+        return {"op": "save", "pages": pages, "fields": fields or {}, "flatten": bool(flatten),
+                "passwords": passwords or [], "annotations": annotations or [], "pdf_inputs": len(inputs),
+                "redactions": redactions or [], "ocr": ocr or {}, "strip_metadata": bool(strip_metadata),
+                "compress": compress or ""}
+
+    def measure(self, inputs: list[str], pages: list[dict] | None = None, fields: dict | None = None,
+                flatten: bool = False, passwords: list[str] | None = None, annotations: list[dict] | None = None,
+                pictures: list[str] | None = None, redactions: list[dict] | None = None, ocr: dict | None = None,
+                strip_metadata: bool = False, compress: str = "") -> dict:
+        """The same work as save, but nothing is written: the answer's "before" and "bytes" say what the saved
+        file would weigh."""
+        request = self._request(inputs, pages, fields, flatten, passwords, annotations, redactions, ocr, strip_metadata, compress)
+        answer, result = self._run([*inputs, *(pictures or [])], request)
+        if result is not None and result.exists():
+            result.unlink()
+        return answer
+
     def save(self, inputs: list[str], destination: str, pages: list[dict] | None = None, fields: dict | None = None,
              flatten: bool = False, passwords: list[str] | None = None, annotations: list[dict] | None = None,
              pictures: list[str] | None = None, redactions: list[dict] | None = None, ocr: dict | None = None,
-             strip_metadata: bool = False) -> dict:
+             strip_metadata: bool = False, compress: str = "") -> dict:
         """Write the described file to destination (replacing it only after the sandbox finished cleanly).
-        `pictures` are stamp images, bound read-only after the PDFs."""
-        request = {"op": "save", "pages": pages, "fields": fields or {}, "flatten": bool(flatten),
-                   "passwords": passwords or [], "annotations": annotations or [], "pdf_inputs": len(inputs),
-                   "redactions": redactions or [], "ocr": ocr or {}, "strip_metadata": bool(strip_metadata)}
+        `pictures` are stamp images, bound read-only after the PDFs; `compress` is "" (as it is), "light" or
+        "strong" (COMPRESS_LEVELS)."""
+        request = self._request(inputs, pages, fields, flatten, passwords, annotations, redactions, ocr, strip_metadata, compress)
         answer, result = self._run([*inputs, *(pictures or [])], request)
         assert result is not None
         target = Path(destination)
@@ -793,6 +928,16 @@ class Editor:
         request = {"op": "export", "pages": pages, "dpi": int(dpi), "passwords": passwords or [], "pdf_inputs": len(inputs)}
         answer, _ = self._run(inputs, request, keep_dir=folder)
         return list(answer.get("files", []))
+
+
+def human_size(n: int) -> str:
+    """1.2 MB, 340 KB, 12 B: enough precision to compare before and after."""
+    n = int(n)
+    if n >= 1024 * 1024:
+        return f"{n / (1024 * 1024):.1f} MB"
+    if n >= 1024:
+        return f"{n // 1024} KB"
+    return f"{n} B"
 
 
 def ocr_langs(ui: str, extra: str = "") -> str:

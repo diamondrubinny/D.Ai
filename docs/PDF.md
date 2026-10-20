@@ -5,7 +5,7 @@
 >
 > **Decided (19 October 2026, "from now on you decide"):** the name is D.Ai PDF; qpdfview leaves the image once
 > stage 1 is the default viewer; signatures are verify-only until a signing library is in Debian; Diamond only when
-> asked. **Status: stages 1, 2 and 3a built** (§10–§13). Compression (3b) and stage 4 not started.
+> asked. **Status: stages 1, 2 and 3 built** (§10–§14). Stage 4 (trust) not started.
 
 ## 10. Stage 1: what was built
 
@@ -93,7 +93,28 @@
   OCRs and exports with the real tools on the image.
 - **A lesson:** Qt draws a PDF page over nothing; a picture of a page needs white paper under it first, or it
   comes out black (and Tesseract reads nothing).
-- **Not yet:** compression with a size preview (3b), PDF/A.
+- **Not yet:** compression with a size preview (3b, see §14), PDF/A.
+
+## 14. Stage 3b: a smaller file (what was built)
+
+- **Two levels, chosen in the Clean tab:** "Smaller" (pictures at most 2000 pixels on their longer side, JPEG
+  quality 85) and "Much smaller: for e-mail" (1200 pixels, quality 70). The pictures on the pages are decoded
+  by Qt inside the sandbox, scaled down smoothly when larger than the level's side, and stored again as JPEG or
+  Flate, whichever is smaller; a picture is replaced only when the result is smaller than what the file had, so a
+  file never grows by asking. A picture's soft mask (transparency) is scaled with it; kinds this editor cannot
+  re-encode exactly (indexed, CMYK, 1-bit scans, JPX, CCITT, JBIG2, image masks, pictures with a /Decode array)
+  are left as they are. The whole file is then written with object streams and re-compressed Flate streams.
+- **A size preview that writes nothing:** "Check the size" runs the same save in the sandbox and throws the
+  result away, saying "Now 4.2 MB; after saving 1.1 MB (12 pictures made smaller)" in the status line; it counts
+  everything else chosen (marks, black boxes, OCR, metadata) so the number is the real one.
+- **Command line:** `compress FILE -o OUT [--strong] [--check]` (`--check` prints the sizes and writes nothing).
+- **Tests:** a file of noise photographs (colour with a soft mask, grey, tiny; the colour one shared by two
+  pages) halves at the light level and shrinks again at the strong one, with the sizes, filters, colour spaces
+  and the mask's size checked; a file without pictures is not made bigger; an unknown level is refused;
+  `measure` leaves nothing on disk; the window's choice marks the file changed, the preview matches the saved
+  size to the byte; the command and its `--check`. The VM check compresses the redacted file on the image after
+  a size check.
+- **Not yet:** PDF/A (needs Ghostscript or ocrmypdf, which this app avoids on purpose).
 
 ## 0. Why, and what "native" means here
 

@@ -5647,3 +5647,41 @@ msgstr "سُوِّدت {n} صفحات؛ أصبحت كل واحدة صورة، ف
 #, python-brace-format
 msgid "{n} pictures written to {folder}"
 msgstr "كُتبت {n} صور إلى {folder}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "As it is"
+msgstr "كما هو"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Check the size"
+msgstr "فحص الحجم"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Measuring in the sandbox…"
+msgstr "جارٍ القياس في بيئة العزل…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Much smaller: 1200 pixels, for e-mail"
+msgstr "أصغر بكثير: 1200 بكسل، للبريد الإلكتروني"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Now {before}; after saving {after} ({n} pictures made smaller)"
+msgstr "الآن {before}؛ بعد الحفظ {after} (صُغِّرت {n} صور)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Smaller file"
+msgstr "ملف أصغر"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Smaller: pictures at most 2000 pixels wide"
+msgstr "أصغر: الصور بعرض 2000 بكسل على الأكثر"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What the saved file would weigh, without writing it"
+msgstr "كم سيزن الملف المحفوظ، دون كتابته"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{before} → {after} ({n} pictures made smaller)"
+msgstr "{before} ← {after} (صُغِّرت {n} صور)"

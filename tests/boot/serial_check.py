@@ -826,10 +826,14 @@ def main() -> int:
          "dai-pdf redact /tmp/wants.pdf --page 1 --box 10,80,280,40 -o /tmp/black.pdf >/dev/null; echo REDACT_RC=$?; "
          "dai-pdf text /tmp/black.pdf | grep -c sandbox | sed 's/^/WORDS_LEFT=/'; dai-pdf strip /tmp/wants.pdf -o /tmp/clean.pdf >/dev/null; "
          "dai-pdf info /tmp/clean.pdf | grep -c '^Title' | sed 's/^/TITLE_LEFT=/'; "
-         "dai-pdf ocr /tmp/black.pdf -o /tmp/ocr.pdf; echo OCR_RC=$?; dai-pdf export /tmp/wants.pdf --dir /tmp/pics --dpi 72 | wc -l | sed 's/^/PICS=/'",
+         "dai-pdf ocr /tmp/black.pdf -o /tmp/ocr.pdf; echo OCR_RC=$?; dai-pdf export /tmp/wants.pdf --dir /tmp/pics --dpi 72 | wc -l | sed 's/^/PICS=/'; "
+         # Stage 3b: the redacted file (a 300 dpi picture page) made smaller, after a size check that writes nothing.
+         "dai-pdf compress /tmp/black.pdf --check | head -c 60; echo; dai-pdf compress /tmp/black.pdf --strong -o /tmp/small.pdf >/dev/null; "
+         "echo COMPRESS_RC=$?; [ $(stat -c%s /tmp/small.pdf) -lt $(stat -c%s /tmp/black.pdf) ] && echo SMALLER=yes",
          True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
          and "dai-pdf.desktop" in o and "EDIT_RC=0" in o and "Pages: 2" in o and "-rw-------" in o
-         and "REDACT_RC=0" in o and "WORDS_LEFT=0" in o and "TITLE_LEFT=0" in o and "OCR_RC=0" in o and "PICS=1" in o, 420),
+         and "REDACT_RC=0" in o and "WORDS_LEFT=0" in o and "TITLE_LEFT=0" in o and "OCR_RC=0" in o and "PICS=1" in o
+         and "pictures made smaller" in o and "COMPRESS_RC=0" in o and "SMALLER=yes" in o, 480),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",

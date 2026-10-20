@@ -5647,3 +5647,41 @@ msgstr "{n} páginas ocultadas; cada uma tornou-se uma imagem, nada fica por bai
 #, python-brace-format
 msgid "{n} pictures written to {folder}"
 msgstr "{n} imagens escritas em {folder}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "As it is"
+msgstr "Como está"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Check the size"
+msgstr "Verificar o tamanho"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Measuring in the sandbox…"
+msgstr "A medir na sandbox…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Much smaller: 1200 pixels, for e-mail"
+msgstr "Muito mais pequeno: 1200 píxeis, para e-mail"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Now {before}; after saving {after} ({n} pictures made smaller)"
+msgstr "Agora {before}; depois de guardar {after} ({n} imagens reduzidas)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Smaller file"
+msgstr "Ficheiro mais pequeno"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Smaller: pictures at most 2000 pixels wide"
+msgstr "Mais pequeno: imagens com no máximo 2000 píxeis"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "What the saved file would weigh, without writing it"
+msgstr "Quanto pesaria o ficheiro guardado, sem o escrever"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{before} → {after} ({n} pictures made smaller)"
+msgstr "{before} → {after} ({n} imagens reduzidas)"

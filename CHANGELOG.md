@@ -20,6 +20,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   (a signature), placed with a drag, listed, undone, written by the sandboxed editor into the saved file.
 - D.Ai PDF, clean and search: redaction that truly removes (the page becomes a picture), a text layer for
   scans from Tesseract in the sandbox, metadata removed before sharing, pages exported as pictures.
+- D.Ai PDF, a smaller file: pictures scaled down and re-encoded in the sandbox (two levels, a picture is
+  replaced only when that makes it smaller), a size preview that writes nothing, `dai-pdf compress` (docs/PDF.md §14).
 - D.Ai VM: Windows in a window with the person's own media and key. A hardware check that says plainly when a
   computer cannot (no VT-x/AMD-V, too little memory); machines under qemu:///session with UEFI Secure Boot,
   TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded

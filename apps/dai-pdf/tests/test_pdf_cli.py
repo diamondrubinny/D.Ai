@@ -131,6 +131,20 @@ class CliTests(unittest.TestCase):
             self.assertEqual(code, 0, text)
             self.assertIn("1 pages got a text layer", text)
 
+    def test_compress_and_its_size_check(self):
+        import os as _os
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        a = fixtures.photos(self.dir / "a.pdf", width=800, height=600)
+        code, text, _ = self.run_cli("compress", str(a), "--check")
+        self.assertEqual(code, 0, text)
+        self.assertIn("3 pictures made smaller", text)
+        self.assertNotIn("pages", text)  # no file was written, so none is named
+        self.assertFalse(any(p.suffix == ".pdf" and p.name != "a.pdf" for p in self.dir.iterdir()))  # nothing written
+        code, text, _ = self.run_cli("compress", str(a), "--strong", "-o", str(self.dir / "c.pdf"))
+        self.assertEqual(code, 0, text)
+        self.assertLess((self.dir / "c.pdf").stat().st_size, a.stat().st_size // 2)
+        self.assertEqual(self.run_cli("compress", str(a))[0], 2)  # no -o and no --check
+
     def test_fields_and_fill(self):
         form = fixtures.form(self.dir / "f.pdf")
         code, text, _ = self.run_cli("fields", str(form))

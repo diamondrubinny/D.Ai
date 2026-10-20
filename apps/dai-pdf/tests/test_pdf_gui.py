@@ -324,6 +324,20 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(len(files), 2)
         self.assertIn("2 pictures", win.status.text())
 
+    def test_a_smaller_file_from_the_clean_tab(self):
+        win = self.window(fixtures.photos(self.dir / "photos.pdf", width=800, height=600))
+        self.assertEqual(win.compress_choice.currentData(), "")
+        win.compress_choice.setCurrentIndex(2)
+        self.assertTrue(win.modified)
+        measured = win.check_size()
+        self.assertIn("pictures made smaller", win.status.text())
+        self.assertIn("MB; after saving", win.status.text())
+        self.assertFalse((self.dir / "small.pdf").exists())
+        out = self.dir / "small.pdf"
+        self.assertTrue(win.save_to(str(out)))
+        self.assertEqual(out.stat().st_size, measured)
+        self.assertLess(measured, (self.dir / "photos.pdf").stat().st_size // 2)
+
     def test_unsaved_changes_ask_before_closing(self):
         asked = []
         win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2), confirm_discard=lambda: asked.append(1) or False)

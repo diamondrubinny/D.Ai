@@ -150,6 +150,37 @@ def picture(path: Path, width: int = 120, height: int = 60) -> Path:
     return path
 
 
+def photos(path: Path, width: int = 1600, height: int = 1200) -> Path:
+    """A PDF whose pages carry pictures: a colour one with a soft mask (noise, so Flate cannot shrink it), a grey
+    one, and a small one that compression must leave alone; the same colour picture is used on both pages."""
+    import random
+    import zlib
+
+    import pikepdf
+
+    rng = random.Random(7)
+    pdf = pikepdf.new()
+    big = pdf.make_stream(zlib.compress(rng.randbytes(width * height * 3)), Type=pikepdf.Name.XObject, Subtype=pikepdf.Name.Image,
+                          Width=width, Height=height, ColorSpace=pikepdf.Name.DeviceRGB, BitsPerComponent=8, Filter=pikepdf.Name.FlateDecode)
+    mask = pdf.make_stream(zlib.compress(bytes((x * 255 // width) for _y in range(height) for x in range(width))),
+                           Type=pikepdf.Name.XObject, Subtype=pikepdf.Name.Image, Width=width, Height=height,
+                           ColorSpace=pikepdf.Name.DeviceGray, BitsPerComponent=8, Filter=pikepdf.Name.FlateDecode)
+    big.SMask = mask
+    grey = pdf.make_stream(zlib.compress(rng.randbytes(width * height)), Type=pikepdf.Name.XObject, Subtype=pikepdf.Name.Image,
+                           Width=width, Height=height, ColorSpace=pikepdf.Name.DeviceGray, BitsPerComponent=8, Filter=pikepdf.Name.FlateDecode)
+    tiny = pdf.make_stream(zlib.compress(rng.randbytes(40 * 30 * 3)), Type=pikepdf.Name.XObject, Subtype=pikepdf.Name.Image,
+                           Width=40, Height=30, ColorSpace=pikepdf.Name.DeviceRGB, BitsPerComponent=8, Filter=pikepdf.Name.FlateDecode)
+    for pictures in (("/Big", "/Tiny"), ("/Big", "/Grey")):
+        content = b"".join(b"q 280 0 0 180 10 %d cm %s Do Q\n" % (y, name.encode()) for y, name in zip((400, 100), pictures))
+        page = pikepdf.Dictionary(Type=pikepdf.Name.Page, MediaBox=[0, 0, 300, 600],
+                                  Resources=pikepdf.Dictionary(XObject=pikepdf.Dictionary(Big=big, Tiny=tiny, Grey=grey)),
+                                  Contents=pdf.make_stream(content))
+        pdf.pages.append(pikepdf.Page(page))
+    pdf.docinfo["/Title"] = "Photos"
+    pdf.save(path)
+    return path
+
+
 def locked(path: Path, password: str = "secret") -> Path:
     pdf = pikepdf.new()
     _page(pdf, "Locked page")
