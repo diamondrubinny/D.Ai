@@ -79,6 +79,17 @@ def _expand(request: Request, ctx: Context) -> list[Request]:
         return expanded
     if request.action == "preset.privacy":
         return [Request("device.block", {"kind": "camera"}, src), Request("device.block", {"kind": "bluetooth"}, src)]
+    if request.action == "tv.remote_control":
+        from .catalog import KODI_REMOTE_PORTS
+
+        rules = {(r.get("port"), r.get("proto")) for r in load_firewall_rules(ctx)}
+        expanded = [request]
+        for port, proto in KODI_REMOTE_PORTS:
+            if request.params.get("enabled") and (port, proto) not in rules:
+                expanded.append(Request("firewall.open_port", {"port": port, "proto": proto, "source": "lan"}, src))
+            elif not request.params.get("enabled") and (port, proto) in rules:
+                expanded.append(Request("firewall.close_port", {"port": port, "proto": proto}, src))
+        return expanded
     if request.action == "service.ssh":
         rules = {(r.get("port"), r.get("proto")) for r in load_firewall_rules(ctx)}
         if request.params.get("enabled") is True:

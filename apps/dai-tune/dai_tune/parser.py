@@ -54,6 +54,9 @@ ANYWHERE = r"(?:anywhere|any network|internet|everyone|world|public|מכל מק�
 
 UPDATES = r"(?:auto(?:matic)?[- ]?updates?|security updates|unattended|עדכונים אוטומטיים|עדכון אוטומטי|עדכוני אבטחה)"
 VIRTUALIZATION = r"(?:virtual ?machines?|virtuali[sz]ation|\bkvm\b|מכונות וירטואליות|מכונה וירטואלית|וירטואליזציה)"
+# D.Ai TV (docs/TV.md stage 2): the phone as the remote; Kodi's services stay off until this is said.
+TV_REMOTE = r"(?:\b(?:remote control|control (?:the |my )?tv|tv remote|kodi remote|phone as (?:a |the )?remote)\b|"\
+            r"שלט מהטלפון|שליטה מרחוק בטלוויזיה|שלט לטלוויזיה|שלט רחוק|לשלוט בטלוויזיה)"
 
 INSTALL = r"^(?:please\s+)?(?:install|add app|התקן|תתקין|להתקין|התקנת)\s+(.+)$"
 REMOVE = r"^(?:please\s+)?(?:remove|uninstall|delete app|הסר|תסיר|להסיר|הסרת|מחק את|תמחק את)\s+(.+)$"
@@ -261,6 +264,11 @@ def parse_clause(clause: str) -> list[Request]:
 
         return [Request("vm.kvm_access", {"user": getpass.getuser(), "enabled": not _has(OFF, c)}, clause)]
 
+    # D.Ai TV: remote control from the phone.
+    if _has(TV_REMOTE, c):
+        # "בטלוויזיה" (in the TV) contains "בטל" (cancel): the word is set aside before looking for an "off".
+        return [Request("tv.remote_control", {"enabled": not _has(OFF, re.sub(r"בטלוויזיה", "", c))}, clause)]
+
     # Screen lock.
     if _has(LOCK, c):
         if m := re.search(MINUTES, c, re.IGNORECASE):
@@ -339,6 +347,7 @@ _TOPICS = {
     "lock": (LOCK, ("session.lock",)),
     "port": (PORT, ("firewall.",)),
     "vm": (VIRTUALIZATION, ("vm.",)),
+    "tv": (TV_REMOTE, ("tv.",)),
     "touch": (TOUCH_WORD, ("appearance.touch",)),
 }
 
@@ -412,6 +421,7 @@ EXAMPLES = {
         "מצב ציבורי",
         "מצב פרטיות",
         "מצב מגע",
+        "שלט מהטלפון",
         "פנה מקום בדיסק",
         "מצב חיסכון בסוללה",
         "הפעל צילום מצב לפני כל עדכון",
@@ -434,6 +444,7 @@ EXAMPLES = {
         "public mode",
         "privacy mode",
         "touch mode",
+        "remote control from the phone",
         "free up disk space",
         "battery saver mode",
         "snapshots before updates",

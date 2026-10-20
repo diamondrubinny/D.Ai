@@ -5380,3 +5380,16 @@ msgstr "{name} verá {path} (só leitura, salvo se permitir escrita) no próximo
 #, python-brace-format
 msgid "{name}: clipboard {clip} · folder {folder}{mode}. Takes effect at the next start."
 msgstr "{name}: área de transferência {clip} · pasta {folder}{mode}. Aplica-se no próximo arranque."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Let the phone control the TV (Kodi's web server and remote-control service; user kodi, password {pw})"
+msgstr "Deixar o telemóvel controlar a TV (servidor web e serviço de controlo remoto do Kodi; utilizador kodi, palavra-passe {pw})"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Stop remote control of the TV (Kodi's web server and remote-control service off)"
+msgstr "Parar o controlo remoto da TV (servidor web e serviço de controlo remoto do Kodi desligados)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Takes effect when Kodi starts again. The ports open to the local network only."
+msgstr "Aplica-se quando o Kodi arrancar de novo. As portas abrem só para a rede local."

@@ -833,6 +833,20 @@ def main() -> int:
              "dai-tv.desktop", "NO_LXQT", "HE_PACK", "CEC_TOOL", "LISTENERS_CHECKED", "HEBREW=1"))
           and re.search(r"WEBSERVER_OFF=[1-9]", o)
              and "LXQT_RUNNING" not in o and "OPEN=" not in o and "KODI_PROCS=0" not in o), 90),
+        # D.Ai TV stage 2 (docs/TV.md §8): "remote control from the phone" turns Kodi's services on and opens the
+        # three ports to the local network only; undo closes them and puts Kodi's settings back.
+        ("tv: remote control from the phone, with undo",
+         ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
+         "cp ~/.kodi/userdata/guisettings.xml /tmp/gui-before.xml; echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'שלט מהטלפון' >/tmp/tune-tv.txt 2>&1; echo TUNE_RC=$?; "
+         "grep -cE 'id=.services.webserver.>true' ~/.kodi/userdata/guisettings.xml | sed 's/^/WEB_ON=/'; "
+         "grep -cE 'id=.services.esallinterfaces.>true' ~/.kodi/userdata/guisettings.xml | sed 's/^/ES_ON=/'; "
+         "sudo nft list chain inet dai_filter input | grep -cE 'dport (8080|9090|9777)' | sed 's/^/PORTS=/'; "
+         "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; "
+         "sudo nft list chain inet dai_filter input | grep -cE 'dport (8080|9090|9777)' | sed 's/^/PORTS_AFTER=/'; "
+         "cmp -s /tmp/gui-before.xml ~/.kodi/userdata/guisettings.xml && echo SETTINGS_RESTORED || diff /tmp/gui-before.xml ~/.kodi/userdata/guisettings.xml | head -n 6; "
+         "tail -n 3 /tmp/tune-tv.txt; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
+             "TUNE_RC=0", "WEB_ON=1", "ES_ON=1", "PORTS=3", "PORTS_AFTER=0", "SETTINGS_RESTORED")), 120),
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
         ("vm: the stack, the honest check, a definition libvirt accepts",

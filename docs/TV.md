@@ -115,3 +115,18 @@ build/live-build/editions/tv/
   stage 1; stage 3 (IPTV) brings them back and seeds Kodi's add-on database (`Addons33.db`, `installed` table)
   at the first start so nothing asks.
 - **Not yet:** the measurement on the weak profile, stages 2–5.
+
+## 8. Stage 2a: the first D.Ai sentence for the TV (what was built)
+
+- **"שלט מהטלפון" / "remote control from the phone"** in D.Ai Tune: `tv.remote_control` turns on Kodi's web server
+  (user `kodi`, a password made for the person and shown in the plan), the JSON-RPC and event services on all
+  interfaces, and opens 8080/tcp, 9090/tcp and 9777/udp **to the local network only**; the plan is marked as
+  weakening, so it is confirmed, and undo closes the ports and puts `guisettings.xml` back as it was. "כבה שלט
+  מהטלפון" turns it off and closes the ports. Kodi takes the change when it starts again. The phone side is any
+  Kodi remote app (Kore, GPL) until stage 4 brings D.Ai's own.
+- **A lesson:** the Hebrew for "in the TV" (בטלוויזיה) contains the word for "cancel" (בטל); the sentence is
+  checked for an "off" with that word set aside.
+- **VM check** (tv edition): the sentence applied through the real helper, the settings and the three nft rules
+  checked, then undone and compared with the file as it was.
+- **Not yet:** Diamond and Voice on the remote's microphone, "children's profile" and "night mode", the Living
+  Diamond on the TV, "what this add-on sends" before an install (stage 2b).

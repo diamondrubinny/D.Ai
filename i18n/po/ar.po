@@ -5380,3 +5380,16 @@ msgstr "سيرى {name} المجلد {path} (للقراءة فقط ما لم ت�
 #, python-brace-format
 msgid "{name}: clipboard {clip} · folder {folder}{mode}. Takes effect at the next start."
 msgstr "{name}: الحافظة {clip} · المجلد {folder}{mode}. يسري عند التشغيل التالي."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Let the phone control the TV (Kodi's web server and remote-control service; user kodi, password {pw})"
+msgstr "السماح للهاتف بالتحكم في التلفاز (خادم الويب وخدمة التحكم عن بُعد في Kodi؛ المستخدم kodi، كلمة المرور {pw})"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Stop remote control of the TV (Kodi's web server and remote-control service off)"
+msgstr "إيقاف التحكم عن بُعد في التلفاز (خادم الويب وخدمة التحكم عن بُعد في Kodi متوقفان)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Takes effect when Kodi starts again. The ports open to the local network only."
+msgstr "يسري عند إعادة تشغيل Kodi. تُفتح المنافذ للشبكة المحلية فقط."

@@ -752,6 +752,51 @@ class LanguageTests(TuneTestCase):
         with self.assertRaises(catalog.ValidationError):
             catalog.CATALOG["appearance.touch"].validate({"mode": "sometimes"}, self.ctx)
 
+    def test_tv_remote_control_sentences_and_ports(self):
+        for sentence in ("remote control from the phone", "let the phone control the tv", "שלט מהטלפון", "אפשר שליטה מרחוק בטלוויזיה"):
+            plan = self.plan(sentence)
+            self.assertTrue(plan.ok, (sentence, plan.errors + plan.unknown))
+            self.assertEqual([(s.action, s.params.get("port"), s.params.get("source")) for s in plan.steps],
+                             [("tv.remote_control", None, None), ("firewall.open_port", 8080, "lan"),
+                              ("firewall.open_port", 9090, "lan"), ("firewall.open_port", 9777, "lan")], sentence)
+            self.assertTrue(plan.weakens)
+        plan = self.plan("turn off remote control")
+        self.assertEqual([(s.action, s.params.get("enabled")) for s in plan.steps], [("tv.remote_control", False)])
+        self.assertFalse(plan.weakens)
+        self.assertNotIn("tv.remote_control", [r.action for r in parser.parse("remote desktop").requests])
+
+    def test_tv_remote_control_edits_kodi_settings_and_undoes(self):
+        settings = self.home / ".kodi/userdata/guisettings.xml"
+        settings.parent.mkdir(parents=True)
+        settings.write_text('<settings version="2">\n  <setting id="services.webserver" default="true">false</setting>\n'
+                            '  <setting id="locale.language">resource.language.he_il</setting>\n</settings>\n')
+        plan = self.plan("remote control from the phone")
+        journal = executor.Journal.for_user(self.ctx)
+        entry = executor.apply_steps(plan.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        text = settings.read_text()
+        self.assertIn('<setting id="services.webserver">true</setting>', text)
+        self.assertNotIn('default="true"', text)
+        self.assertIn('<setting id="services.esallinterfaces">true</setting>', text)
+        self.assertIn('<setting id="services.webserverauthentication">true</setting>', text)
+        self.assertIn("resource.language.he_il", text)  # everything else kept
+        password = plan.steps[0].params["password"]
+        self.assertRegex(password, r"^[A-Za-z0-9_-]{8,}$")
+        self.assertIn(f'<setting id="services.webserverpassword">{password}</setting>', text)
+        self.assertIn(password, catalog.CATALOG["tv.remote_control"].summary(plan.steps[0].params, "en"))
+        self.assertEqual(oct(settings.stat().st_mode & 0o777), "0o600")
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertIn('default="true">false', settings.read_text())  # the original file is back
+        self.assertNotIn("webserverpassword", settings.read_text())
+        off = self.plan("turn off remote control")
+        executor.apply_steps(off.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertIn('<setting id="services.esenabled">false</setting>', settings.read_text())
+        with self.assertRaises(catalog.ValidationError):
+            catalog.CATALOG["tv.remote_control"].validate({"enabled": True, "password": "has space"}, self.ctx)
+        broken = self.home / ".kodi/userdata/guisettings.xml"
+        broken.write_text("<not xml")
+        catalog.CATALOG["tv.remote_control"].apply({"enabled": True, "password": "abc"}, self.ctx)
+        self.assertIn('<settings version="2">', broken.read_text())
+
     def test_sound_sentences(self):
         cases = {"turn off system sounds": "off", "mute sounds": "off", "השתק צלילי מערכת": "off", "בלי צלילים": "off",
                  "quiet sounds": "quiet", "צלילים שקטים": "quiet", "turn on sounds": "on", "הפעל צלילים": "on"}

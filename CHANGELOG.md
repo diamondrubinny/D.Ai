@@ -27,6 +27,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai TV, the television edition (`build-iso.sh tv`): Kodi 21 full screen on labwc, autologin, the bundled
   Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC tools; "Exit" in Kodi turns the
   session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.
+- D.Ai TV: "remote control from the phone" in D.Ai Tune turns Kodi's remote services on with a password and
+  opens their ports to the local network only, with undo.
 - Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
   is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick
   and Welcome for finger-sized targets; the login screen's buttons grew to 44 px.

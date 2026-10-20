@@ -837,6 +837,75 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# D.Ai TV (docs/TV.md stage 2): Kodi's remote-control services, off by default
+# --------------------------------------------------------------------------
+
+KODI_SETTINGS = ".kodi/userdata/guisettings.xml"
+# What the phone needs (Kore and the like): the web server with a password, JSON-RPC over TCP, the event server.
+KODI_REMOTE_PORTS = ((8080, "tcp"), (9090, "tcp"), (9777, "udp"))
+
+
+def _kodi_settings_set(path: Path, values: dict[str, str]) -> None:
+    """Set settings in Kodi's guisettings.xml, keeping everything else; the file is made when missing."""
+    import xml.etree.ElementTree as ET
+
+    try:
+        root = ET.fromstring(read_text(path))
+        if root.tag != "settings":
+            raise ValueError("not a settings file")
+    except (ET.ParseError, ValueError):
+        root = ET.Element("settings", version="2")
+    for key, value in values.items():
+        element = next((e for e in root.iter("setting") if e.get("id") == key), None)
+        if element is None:
+            element = ET.SubElement(root, "setting", id=key)
+        element.text = value
+        element.attrib.pop("default", None)  # Kodi marks untouched settings as default; this one is chosen
+    ET.indent(root)
+    write_file(path, ET.tostring(root, encoding="unicode") + "\n", mode=0o600)
+
+
+def _tv_remote_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"enabled", "password"})
+    enabled = _bool(params.get("enabled"))
+    password = str(params.get("password") or "")
+    if enabled and not password:
+        import secrets
+        password = secrets.token_urlsafe(9)  # the phone app asks for it once; it is in Kodi's settings afterwards
+    if not re.fullmatch(r"[A-Za-z0-9_-]{0,64}", password):
+        raise ValidationError("the password is letters, digits, dashes and underscores")
+    return {"enabled": enabled, "password": password}
+
+
+def _tv_remote_apply(params: Params, ctx: Context) -> None:
+    on = params["enabled"]
+    values = {"services.webserver": "true" if on else "false", "services.webserverport": "8080",
+              "services.webserverauthentication": "true", "services.webserverusername": "kodi",
+              "services.esenabled": "true" if on else "false", "services.esallinterfaces": "true" if on else "false"}
+    if on:
+        values["services.webserverpassword"] = params["password"]
+    _kodi_settings_set(ctx.user_path(KODI_SETTINGS), values)
+
+
+register(ActionSpec(
+    id="tv.remote_control",
+    scope="user",
+    validate=_tv_remote_validate,
+    apply=_tv_remote_apply,
+    risk=lambda p: "medium" if p["enabled"] else "low",
+    effect=lambda p: "weakens" if p["enabled"] else "hardens",
+    summary=lambda p, lang: (_t(lang, "Let the phone control the TV (Kodi's web server and remote-control service; user kodi, password {pw})",
+                                "לאפשר לטלפון לשלוט בטלוויזיה (שרת האינטרנט ושירות השלט של Kodi; משתמש kodi, סיסמה {pw})", pw=p["password"])
+                             if p["enabled"] else
+                             _t(lang, "Stop remote control of the TV (Kodi's web server and remote-control service off)",
+                                "ביטול השליטה מרחוק בטלוויזיה (שרת האינטרנט ושירות השלט של Kodi כבויים)")),
+    files=lambda p, c: [c.user_path(KODI_SETTINGS)],
+    note=lambda p, lang: _t(lang, "Takes effect when Kodi starts again. The ports open to the local network only.",
+                            "נכנס לתוקף כש-Kodi יופעל מחדש. הפורטים נפתחים לרשת המקומית בלבד.") if p["enabled"] else "",
+))
+
+
+# --------------------------------------------------------------------------
 # D.Ai's system sounds (docs/SOUNDS.md), read by dai-sound
 # --------------------------------------------------------------------------
 

@@ -129,7 +129,7 @@ msgid " (writable)"
 msgstr ""
 
 #. he:  (בסשן שלך)
-#: apps/dai-tune/dai_tune/catalog.py:996
+#: apps/dai-tune/dai_tune/catalog.py:1065
 msgid " (your session)"
 msgstr ""
 
@@ -370,7 +370,7 @@ msgid "Add or build anything, e.g. +install antivirus · +build an app for…"
 msgstr ""
 
 #. he: הוספת חנות האפליקציות Flathub
-#: apps/dai-tune/dai_tune/catalog.py:1106
+#: apps/dai-tune/dai_tune/catalog.py:1175
 msgid "Add the Flathub app store"
 msgstr ""
 
@@ -481,7 +481,7 @@ msgid "Apps, commands, math…    ? ask    + add / build    > terminal"
 msgstr ""
 
 #. he: ערבית
-#: apps/dai-tune/dai_tune/catalog.py:874
+#: apps/dai-tune/dai_tune/catalog.py:943
 msgid "Arabic"
 msgstr ""
 
@@ -622,7 +622,7 @@ msgid "Backup is not set up yet: dai-backup setup"
 msgstr ""
 
 #. he: מצב צריכת חשמל מאוזן
-#: apps/dai-tune/dai_tune/catalog.py:1342
+#: apps/dai-tune/dai_tune/catalog.py:1411
 msgid "Balanced power mode"
 msgstr ""
 
@@ -643,7 +643,7 @@ msgid "Battery saver"
 msgstr ""
 
 #. he: מצב חיסכון בסוללה (סוללה ארוכה יותר, קצת יותר איטי)
-#: apps/dai-tune/dai_tune/catalog.py:1340
+#: apps/dai-tune/dai_tune/catalog.py:1409
 msgid "Battery saver mode (longer battery life, a bit slower)"
 msgstr ""
 
@@ -762,7 +762,7 @@ msgid "Cancelled: the computer starts as before."
 msgstr ""
 
 #. he: אי אפשר לבטל, אבל שום דבר שאתם משתמשים בו לא נמחק (רק יומנים מעבר ל־{JOURNAL_KEEP}).
-#: apps/dai-tune/dai_tune/catalog.py:1301
+#: apps/dai-tune/dai_tune/catalog.py:1370
 #, python-brace-format
 msgid "Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only)."
 msgstr ""
@@ -1227,7 +1227,7 @@ msgid "D.Ai's files are as installed"
 msgstr ""
 
 #. he: צלילי המערכת של D.Ai: {mode}
-#: apps/dai-tune/dai_tune/catalog.py:859
+#: apps/dai-tune/dai_tune/catalog.py:928
 #, python-brace-format
 msgid "D.Ai's system sounds: {mode}"
 msgstr ""
@@ -1593,7 +1593,7 @@ msgid "Encryption password again"
 msgstr ""
 
 #. he: אנגלית
-#: apps/dai-tune/dai_tune/catalog.py:874
+#: apps/dai-tune/dai_tune/catalog.py:943
 msgid "English"
 msgstr ""
 
@@ -1784,7 +1784,7 @@ msgid "Fixed: {text}"
 msgstr ""
 
 #. he: אפליקציות Flathub רצות בארגז חול ומתעדכנות דרך Flatpak.
-#: apps/dai-tune/dai_tune/catalog.py:1109
+#: apps/dai-tune/dai_tune/catalog.py:1178
 msgid "Flathub apps run sandboxed and update through Flatpak."
 msgstr ""
 
@@ -1848,7 +1848,7 @@ msgid "Found: {host} (secure connection)"
 msgstr ""
 
 #. he: פינוי מקום: קבצי התקנה שהורדו ויומני מערכת ישנים
-#: apps/dai-tune/dai_tune/catalog.py:1298
+#: apps/dai-tune/dai_tune/catalog.py:1367
 msgid "Free disk space: downloaded package files and old system logs"
 msgstr ""
 
@@ -1858,7 +1858,7 @@ msgid "Free this space (administrator)"
 msgstr ""
 
 #. he: צרפתית
-#: apps/dai-tune/dai_tune/catalog.py:875
+#: apps/dai-tune/dai_tune/catalog.py:944
 msgid "French"
 msgstr ""
 
@@ -1891,7 +1891,7 @@ msgid "From: {sender}"
 msgstr ""
 
 #. he: גרמנית
-#: apps/dai-tune/dai_tune/catalog.py:876
+#: apps/dai-tune/dai_tune/catalog.py:945
 msgid "German"
 msgstr ""
 
@@ -1948,7 +1948,7 @@ msgid "Hardware virtualization is on ({kind}) and usable."
 msgstr ""
 
 #. he: עברית
-#: apps/dai-tune/dai_tune/catalog.py:874
+#: apps/dai-tune/dai_tune/catalog.py:943
 msgid "Hebrew"
 msgstr ""
 
@@ -2074,7 +2074,7 @@ msgid "Install Diamond (the local AI) so it can write one: dai-models install qw
 msgstr ""
 
 #. he: התקנה מ־Flathub: 
-#: apps/dai-tune/dai_tune/catalog.py:1147
+#: apps/dai-tune/dai_tune/catalog.py:1216
 msgid "Install from Flathub: "
 msgstr ""
 
@@ -2231,6 +2231,12 @@ msgstr ""
 msgid "Left to right"
 msgstr ""
 
+#. he: לאפשר לטלפון לשלוט בטלוויזיה (שרת האינטרנט ושירות השלט של Kodi; משתמש kodi, סיסמה {pw})
+#: apps/dai-tune/dai_tune/catalog.py:897
+#, python-brace-format
+msgid "Let the phone control the TV (Kodi's web server and remote-control service; user kodi, password {pw})"
+msgstr ""
+
 #. he: לאפשר ל-{user} להריץ מכונות וירטואליות (KVM)
 #: apps/dai-tune/dai_tune/catalog.py:284
 #, python-brace-format
@@ -2335,7 +2341,7 @@ msgid "Mail files"
 msgstr ""
 
 #. he: הוספת {name} למחשב ({locale})
-#: apps/dai-tune/dai_tune/catalog.py:911
+#: apps/dai-tune/dai_tune/catalog.py:980
 #, python-brace-format
 msgid "Make {name} available on this computer ({locale})"
 msgstr ""
@@ -2435,7 +2441,7 @@ msgid "Name: {name}\nUser: {user} (administrator)\nComputer: {host}\n{luks}\n\nA
 msgstr ""
 
 #. he: דורש דיסק מערכת מסוג Btrfs. הקבצים האישיים (/home) לא חלק מזה. נשמרות עד 10 תמונות מצב.
-#: apps/dai-tune/dai_tune/catalog.py:1373
+#: apps/dai-tune/dai_tune/catalog.py:1442
 msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it. Up to 10 snapshots are kept."
 msgstr ""
 
@@ -3178,7 +3184,7 @@ msgid "Performance"
 msgstr ""
 
 #. he: מצב ביצועים (מהיר יותר, צורך יותר חשמל)
-#: apps/dai-tune/dai_tune/catalog.py:1343
+#: apps/dai-tune/dai_tune/catalog.py:1412
 msgid "Performance mode (faster, uses more power)"
 msgstr ""
 
@@ -3203,7 +3209,7 @@ msgid "Port"
 msgstr ""
 
 #. he: פורטוגזית
-#: apps/dai-tune/dai_tune/catalog.py:876
+#: apps/dai-tune/dai_tune/catalog.py:945
 msgid "Portuguese"
 msgstr ""
 
@@ -3281,7 +3287,7 @@ msgid "Put the old settings back"
 msgstr ""
 
 #. he: הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}
-#: apps/dai-tune/dai_tune/catalog.py:1272
+#: apps/dai-tune/dai_tune/catalog.py:1341
 #, python-brace-format
 msgid "Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}"
 msgstr ""
@@ -3431,7 +3437,7 @@ msgid "Remove"
 msgstr ""
 
 #. he: הסרת אפליקציות Flatpak: 
-#: apps/dai-tune/dai_tune/catalog.py:1159
+#: apps/dai-tune/dai_tune/catalog.py:1228
 msgid "Remove Flatpak apps: "
 msgstr ""
 
@@ -3478,7 +3484,7 @@ msgid "Restart"
 msgstr ""
 
 #. he: אחר כך מפעילים מחדש. הקבצים האישיים לא משתנים. לפני כן נשמרת תמונת מצב של עכשיו, כך שאפשר לבטל גם את זה.
-#: apps/dai-tune/dai_tune/catalog.py:1404
+#: apps/dai-tune/dai_tune/catalog.py:1473
 msgid "Restart afterwards. Personal files are not touched. A snapshot of now is taken first, so this can be undone too."
 msgstr ""
 
@@ -3488,7 +3494,7 @@ msgid "Restart it (administrator password)"
 msgstr ""
 
 #. he: הפעלה מחדש של השירות {unit}
-#: apps/dai-tune/dai_tune/catalog.py:1034
+#: apps/dai-tune/dai_tune/catalog.py:1103
 #, python-brace-format
 msgid "Restart the service {unit}"
 msgstr ""
@@ -3572,7 +3578,7 @@ msgid "Runs {when}"
 msgstr ""
 
 #. he: רוסית
-#: apps/dai-tune/dai_tune/catalog.py:875
+#: apps/dai-tune/dai_tune/catalog.py:944
 msgid "Russian"
 msgstr ""
 
@@ -3655,7 +3661,7 @@ msgid "Say what to look for: a type, a time, a folder or part of the name."
 msgstr ""
 
 #. he: סריקת וירוסים ל־/home ({daily}) והעברת קבצים נגועים להסגר
-#: apps/dai-tune/dai_tune/catalog.py:1263
+#: apps/dai-tune/dai_tune/catalog.py:1332
 #, python-brace-format
 msgid "Scan /home for viruses ({frequency}) and quarantine infected files"
 msgstr ""
@@ -3880,7 +3886,7 @@ msgid "Shared folder: {path}"
 msgstr ""
 
 #. he: ‏D.Ai ב{name} מהכניסה הבאה
-#: apps/dai-tune/dai_tune/catalog.py:932
+#: apps/dai-tune/dai_tune/catalog.py:1001
 #, python-brace-format
 msgid "Show D.Ai in {name} from the next login"
 msgstr ""
@@ -4032,7 +4038,7 @@ msgid "Spam"
 msgstr ""
 
 #. he: ספרדית
-#: apps/dai-tune/dai_tune/catalog.py:875
+#: apps/dai-tune/dai_tune/catalog.py:944
 msgid "Spanish"
 msgstr ""
 
@@ -4049,7 +4055,7 @@ msgid "Start"
 msgstr ""
 
 #. he: הפעלת השירות {unit}
-#: apps/dai-tune/dai_tune/catalog.py:998
+#: apps/dai-tune/dai_tune/catalog.py:1067
 #, python-brace-format
 msgid "Start and enable {unit}"
 msgstr ""
@@ -4099,13 +4105,18 @@ msgid "Stop"
 msgstr ""
 
 #. he: כיבוי השירות {unit}
-#: apps/dai-tune/dai_tune/catalog.py:999
+#: apps/dai-tune/dai_tune/catalog.py:1068
 #, python-brace-format
 msgid "Stop and disable {unit}"
 msgstr ""
 
+#. he: ביטול השליטה מרחוק בטלוויזיה (שרת האינטרנט ושירות השלט של Kodi כבויים)
+#: apps/dai-tune/dai_tune/catalog.py:900
+msgid "Stop remote control of the TV (Kodi's web server and remote-control service off)"
+msgstr ""
+
 #. he: הפסקת סריקות וירוסים מתוזמנות
-#: apps/dai-tune/dai_tune/catalog.py:1267
+#: apps/dai-tune/dai_tune/catalog.py:1336
 msgid "Stop scheduled virus scans"
 msgstr ""
 
@@ -4180,7 +4191,7 @@ msgid "Take a snapshot"
 msgstr ""
 
 #. he: צילום מצב של המערכת לפני כל עדכון תוכנה
-#: apps/dai-tune/dai_tune/catalog.py:1369
+#: apps/dai-tune/dai_tune/catalog.py:1438
 msgid "Take a snapshot of the system before every software update"
 msgstr ""
 
@@ -4197,6 +4208,11 @@ msgstr ""
 #. he: נכנס לתוקף בכניסה הבאה.
 #: apps/dai-tune/dai_tune/catalog.py:289
 msgid "Takes effect at the next login."
+msgstr ""
+
+#. he: נכנס לתוקף כש-Kodi יופעל מחדש. הפורטים נפתחים לרשת המקומית בלבד.
+#: apps/dai-tune/dai_tune/catalog.py:903
+msgid "Takes effect when Kodi starts again. The ports open to the local network only."
 msgstr ""
 
 #. he: התוספים של שורת המשימות נטענו
@@ -4842,7 +4858,7 @@ msgid "Undo it now? [y/N] "
 msgstr ""
 
 #. he: ביטול העדכון האחרון (קבצי המערכת חוזרים למצב שלפניו)
-#: apps/dai-tune/dai_tune/catalog.py:1400
+#: apps/dai-tune/dai_tune/catalog.py:1469
 msgid "Undo the last software update (system files go back to before it)"
 msgstr ""
 
@@ -5660,7 +5676,7 @@ msgstr ""
 #. he: כבוי
 #: apps/dai-quick/dai_quick/gui.py:33
 #: apps/dai-tune/dai_tune/catalog.py:815
-#: apps/dai-tune/dai_tune/catalog.py:844
+#: apps/dai-tune/dai_tune/catalog.py:913
 #: apps/dai-vm/dai_vm/cli.py:215
 #: apps/dai-vm/dai_vm/gui.py:82
 msgid "off"
@@ -5669,7 +5685,7 @@ msgstr ""
 #. he: פועל
 #: apps/dai-quick/dai_quick/gui.py:32
 #: apps/dai-tune/dai_tune/catalog.py:815
-#: apps/dai-tune/dai_tune/catalog.py:844
+#: apps/dai-tune/dai_tune/catalog.py:913
 #: apps/dai-vm/dai_vm/cli.py:215
 msgid "on"
 msgstr ""
@@ -5706,7 +5722,7 @@ msgid "privacy log (30 days, on this computer)"
 msgstr ""
 
 #. he: שקטים
-#: apps/dai-tune/dai_tune/catalog.py:844
+#: apps/dai-tune/dai_tune/catalog.py:913
 msgid "quiet"
 msgstr ""
 
