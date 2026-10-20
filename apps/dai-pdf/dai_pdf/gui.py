@@ -106,6 +106,49 @@ def human_size(size: int) -> str:
     return f"{size:.1f} GB"
 
 
+def signature_sentences(doc: Document, lang: str, only_problems: bool = False) -> list[str]:
+    """One line per digital signature (docs/PDF.md §15): who, when, and two separate facts, said plainly: the
+    signed bytes are intact or not, and whether anything was added after signing. Never "valid": whether the
+    signer's certificate is trustworthy is not checked."""
+    lines: list[str] = []
+    for sig in doc.signatures:
+        who = sig.get("signer") or sig.get("name") or say(lang, "an unnamed signer", "חותם ללא שם")
+        when = sig.get("date") or ""
+        head = say(lang, "Signed by {who} on {when}", "נחתם על ידי {who} ב-{when}", who=who, when=when) if when \
+            else say(lang, "Signed by {who}", "נחתם על ידי {who}", who=who)
+        status = sig.get("status")
+        if status == "intact" and sig.get("covers_all"):
+            if only_problems:
+                continue
+            tail = say(lang, "the file is unchanged since the signature.", "הקובץ לא השתנה מאז החתימה.")
+        elif status == "intact":
+            tail = say(lang, "the signed part is intact, but something was added to the file after signing.",
+                       "החלק החתום שלם, אבל משהו נוסף לקובץ אחרי החתימה.")
+        elif status == "broken":
+            tail = say(lang, "the signature does NOT match the file: it was changed, or the signature is not real.",
+                       "החתימה לא תואמת את הקובץ: הוא שונה, או שהחתימה אינה אמיתית.")
+        else:
+            tail = say(lang, "the signature could not be checked ({why}).", "לא ניתן היה לבדוק את החתימה ({why}).",
+                       why=sig.get("why") or "?")
+        lines.append(f"{head}; {tail}")
+    return lines
+
+
+SIGNATURE_NOTE = ("Who the signer really is was not checked against any list of trusted authorities; D.Ai says the name in "
+                  "the signature and whether the file changed, nothing more.",
+                  "זהות החותם לא נבדקה מול רשימת רשויות מהימנות; D.Ai אומר את השם שבחתימה והאם הקובץ השתנה, ותו לא.")
+
+
+def _diamond(question: str) -> str:
+    """Diamond's answer (the local AI); raises when it is not installed or not running."""
+    from dai_ai import client
+
+    return "".join(client.ask(question, max_tokens=400)).strip()
+
+
+MAX_DIAMOND_CONTEXT = 6000
+
+
 def findings_sentences(doc: Document, lang: str) -> list[str]:
     """The file bar's lines: what the file wants, and that none of it is done (docs/PDF.md §0)."""
     f = doc.findings
@@ -443,6 +486,19 @@ class InfoDialog(QDialog):
                 item = QLabel("• " + line)
                 item.setWordWrap(True)
                 layout.addWidget(item)
+        signed = signature_sentences(doc, lang)
+        if signed:
+            title = QLabel(say(lang, "Digital signatures", "חתימות דיגיטליות"))
+            title.setObjectName("Title")
+            layout.addWidget(title)
+            for line in signed:
+                item = QLabel("• " + line)
+                item.setWordWrap(True)
+                layout.addWidget(item)
+            caveat = QLabel(say(lang, *SIGNATURE_NOTE))
+            caveat.setObjectName("Muted")
+            caveat.setWordWrap(True)
+            layout.addWidget(caveat)
         note = QLabel(say(lang, "Nothing about this file leaves this computer.", "שום דבר על הקובץ הזה לא יוצא מהמחשב הזה."))
         note.setObjectName("Muted")
         layout.addWidget(note)
@@ -704,6 +760,41 @@ class PdfWindow(QWidget):
                                           say(self.lang, "Every page as a PNG picture", "כל עמוד כתמונת PNG"), self.export_dialog, clean_layout)
         clean_layout.addStretch(1)
         self.side.addTab(clean_tab, say(self.lang, "Clean", "ניקוי"))
+        diamond_tab = QWidget()
+        diamond_layout = QVBoxLayout(diamond_tab)
+        diamond_hint = QLabel(say(self.lang, "Ask Diamond about the page you are on. Diamond runs on this computer; the page's text "
+                                             "goes to it only when you ask.",
+                                  "שאלו את Diamond על העמוד שבו אתם נמצאים. Diamond רץ במחשב הזה; טקסט העמוד מגיע אליו רק כשאתם שואלים."))
+        diamond_hint.setObjectName("FormHint")
+        diamond_hint.setWordWrap(True)
+        diamond_layout.addWidget(diamond_hint)
+        self.diamond_question = QLineEdit()
+        self.diamond_question.setPlaceholderText(say(self.lang, "Summarize this page / what does this mean?", "סכם את העמוד הזה / מה זה אומר?"))
+        self.diamond_question.setAccessibleName(say(self.lang, "A question for Diamond", "שאלה ל-Diamond"))
+        self.diamond_question.returnPressed.connect(self.ask_diamond)
+        diamond_layout.addWidget(self.diamond_question)
+        diamond_row = WrapRow()
+        self.diamond_ask_button = self._button(say(self.lang, "Ask", "שאל"), say(self.lang, "Ask Diamond", "לשאול את Diamond"), self.ask_diamond, diamond_row)
+        self.diamond_summary_button = self._button(say(self.lang, "Summarize", "סכם"), say(self.lang, "Summarize this page", "לסכם את העמוד הזה"),
+                                                   lambda: self.ask_diamond(say(self.lang, "Summarize this page in a few sentences.",
+                                                                                "סכם את העמוד הזה בכמה משפטים.")), diamond_row)
+        self.diamond_translate_button = self._button(say(self.lang, "Translate", "תרגם"), say(self.lang, "Translate this page", "לתרגם את העמוד הזה"),
+                                                     lambda: self.ask_diamond(say(self.lang, "Translate this page into English.",
+                                                                                  "תרגם את העמוד הזה לעברית.")), diamond_row)
+        diamond_layout.addLayout(diamond_row)
+        self.diamond_answer = QLabel("")
+        self.diamond_answer.setWordWrap(True)
+        self.diamond_answer.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse | Qt.TextInteractionFlag.TextSelectableByKeyboard)
+        self.diamond_answer.setAccessibleName(say(self.lang, "Diamond's answer", "התשובה של Diamond"))
+        self.diamond_answer.setAlignment(Qt.AlignmentFlag.AlignTop)
+        diamond_scroll = QScrollArea()
+        diamond_scroll.setWidgetResizable(True)
+        diamond_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        diamond_scroll.setWidget(self.diamond_answer)
+        diamond_scroll.setStyleSheet("QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; }")
+        diamond_scroll.setAccessibleName(say(self.lang, "Diamond's answer", "התשובה של Diamond"))
+        diamond_layout.addWidget(diamond_scroll, 1)
+        self.side.addTab(diamond_tab, "Diamond")
         self.side.currentChanged.connect(lambda i: self._thumbnails_start() if i == 0 else None)
         self.splitter.addWidget(self.side)
 
@@ -946,7 +1037,7 @@ class PdfWindow(QWidget):
 
     def update_banner(self) -> None:
         assert self.doc is not None
-        lines = findings_sentences(self.doc, self.lang)
+        lines = findings_sentences(self.doc, self.lang) + signature_sentences(self.doc, self.lang, only_problems=True)
         if lines:
             self.banner_text.setText("⚠ " + "  ·  ".join(lines))
             self.banner.show()
@@ -1567,6 +1658,35 @@ class PdfWindow(QWidget):
         if self.doc and not self.modified:
             self.modified = True
             self._title()
+
+    def ask_diamond(self, question: str | None = None) -> str:
+        """The current page's text and the question go to Diamond on this computer; the answer stays in the tab."""
+        if not self.doc or not self.reader:
+            return ""
+        question = (question if isinstance(question, str) else "") or self.diamond_question.text().strip()
+        if not question:
+            self.status.setText(say(self.lang, "Ask something first.", "שאלו משהו קודם."))
+            return ""
+        page = int(self.current_page)
+        reader, src = self._src(page)
+        try:
+            context = reader.text(src)
+        except PdfError:
+            context = ""
+        prompt = say(self.lang, "Page {n} of the PDF \"{title}\" says:\n{text}\n\nQuestion: {q}",
+                     "עמוד {n} של קובץ ה-PDF \"{title}\" אומר:\n{text}\n\nשאלה: {q}",
+                     n=page + 1, title=self.doc.title, text=context[:MAX_DIAMOND_CONTEXT], q=question)
+        self.status.setText(say(self.lang, "Asking Diamond on this computer…", "שואל את Diamond במחשב הזה…"))
+        QApplication.processEvents()
+        try:
+            answer = _diamond(prompt)
+        except ImportError:
+            answer = say(self.lang, "Diamond is not installed on this computer.", "Diamond לא מותקן במחשב הזה.")
+        except Exception as exc:  # noqa: BLE001 - daid down, no model: a sentence, not a crash
+            answer = say(self.lang, "Diamond is not available now ({why}).", "Diamond לא זמין עכשיו ({why}).", why=type(exc).__name__)
+        self.diamond_answer.setText(answer)
+        self.status.setText(say(self.lang, "Diamond answered.", "Diamond ענה."))
+        return answer
 
     def _save_options(self) -> dict:
         """Everything the Clean tab and the marks add to a save (or a measurement)."""

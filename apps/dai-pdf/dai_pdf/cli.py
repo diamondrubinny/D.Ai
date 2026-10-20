@@ -7,6 +7,9 @@
   dai-pdf text FILE [--page N] [--raw]   the text (Hebrew made readable unless --raw); all pages without --page
   dai-pdf check FILE             exit 0: nothing active in the file; 1: scripts, launches, submits, attachments
                                  or an XFA form were found (listed); 2: the file could not be opened
+  dai-pdf signatures FILE        the digital signatures: who, when, intact or not, changed after signing or not
+                                 (exit 0 all intact and covering the file, 1 a problem, 3 unsigned)
+  dai-pdf ask FILE QUESTION [--page N]   ask Diamond (the local AI) about a page's text; nothing leaves the computer
   dai-pdf merge A B ... -o OUT   one file from several, in this order
   dai-pdf split FILE --pages 1-3,7 -o OUT      only those pages (extract); without --pages, one file per page
   dai-pdf rotate FILE --by 90 [--pages 2,4] -o OUT   turn pages (90, 180, 270); all pages without --pages
@@ -102,6 +105,9 @@ def info(args: list[str], lang: str) -> int:
                 print(f"{say(lang, en, he)}: {doc.metadata[key]}")
         for line in findings_sentences(doc, lang):
             print("! " + line)
+        from .gui import signature_sentences
+        for line in signature_sentences(doc, lang):
+            print("✍ " + line)
         if doc.findings.links:
             print(say(lang, "Links to addresses: {n} (opened only when you click and confirm)",
                       "קישורים לכתובות: {n} (נפתחים רק אחרי לחיצה ואישור)", n=doc.findings.links))
@@ -110,6 +116,58 @@ def info(args: list[str], lang: str) -> int:
         return 0
     finally:
         reader.close()
+
+
+def signatures(args: list[str], lang: str) -> int:
+    from .gui import SIGNATURE_NOTE, signature_sentences
+
+    opened = _open(args, lang)
+    if opened is None:
+        return 2
+    reader, doc = opened
+    try:
+        if not doc.signatures:
+            print(say(lang, "No digital signatures.", "אין חתימות דיגיטליות."))
+            return 3
+        for line in signature_sentences(doc, lang):
+            print(line)
+        print(say(lang, *SIGNATURE_NOTE))
+        return 0 if all(s.get("status") == "intact" and s.get("covers_all") for s in doc.signatures) else 1
+    finally:
+        reader.close()
+
+
+def ask(args: list[str], lang: str) -> int:
+    from .gui import MAX_DIAMOND_CONTEXT, _diamond
+
+    question = " ".join(a for a in args[2:] if not a.startswith("--") and not a.isdigit()).strip()
+    if not question:
+        print(say(lang, "Ask what? dai-pdf ask FILE QUESTION", "לשאול מה? dai-pdf ask FILE QUESTION"), file=sys.stderr)
+        return 2
+    opened = _open(args[:2] + [a for a in args[2:] if a.startswith("--") or a.isdigit()], lang)
+    if opened is None:
+        return 2
+    reader, doc = opened
+    try:
+        try:
+            page = max(1, min(int(_option(args, "--page") or 1), doc.count)) - 1
+        except ValueError:
+            page = 0
+        context = reader.text(page)
+        prompt = say(lang, "Page {n} of the PDF \"{title}\" says:\n{text}\n\nQuestion: {q}",
+                     "עמוד {n} של קובץ ה-PDF \"{title}\" אומר:\n{text}\n\nשאלה: {q}",
+                     n=page + 1, title=doc.title, text=context[:MAX_DIAMOND_CONTEXT], q=question)
+    finally:
+        reader.close()
+    try:
+        print(_diamond(prompt))
+        return 0
+    except ImportError:
+        print(say(lang, "Diamond is not installed on this computer.", "Diamond לא מותקן במחשב הזה."))
+        return 1
+    except Exception as exc:  # noqa: BLE001
+        print(say(lang, "Diamond is not available now ({why}).", "Diamond לא זמין עכשיו ({why}).", why=type(exc).__name__))
+        return 1
 
 
 def text(args: list[str], lang: str) -> int:
@@ -356,8 +414,8 @@ def main(argv: list[str] | None = None) -> int:
         from . import __author__, __version__
         print(f"dai-pdf {__version__} — {__author__}")
         return 0
-    if args and args[0] in ("info", "text", "check"):
-        return {"info": info, "text": text, "check": check}[args[0]](args, lang)
+    if args and args[0] in ("info", "text", "check", "signatures", "ask"):
+        return {"info": info, "text": text, "check": check, "signatures": signatures, "ask": ask}[args[0]](args, lang)
     if args and args[0] in ("merge", "split", "rotate", "delete", "fields", "fill", "ocr", "strip", "redact", "export", "compress"):
         return edit(args, lang)
     from .gui import main as window

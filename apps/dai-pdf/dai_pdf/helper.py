@@ -111,6 +111,18 @@ def _page_index(pdf, target) -> int:
     return -1
 
 
+def _signatures(pdf, path: str) -> list[dict]:
+    """Digital signatures, checked with OpenSSL inside the sandbox (signatures.py); [] when pikepdf could not look."""
+    if pdf is None:
+        return []
+    try:
+        from . import signatures
+
+        return signatures.scan(pdf, path)
+    except Exception:  # noqa: BLE001 - the file still opens; the window says nothing about signatures
+        return []
+
+
 def _links_from_pikepdf(pdf, index: int) -> list[dict]:
     """Link annotations on a page: where they go and their rectangle in points, top-left origin, on the page
     as Qt draws it (the crop box, with /Rotate applied). Qt's own link model is not in every PyQt6 build."""
@@ -205,7 +217,7 @@ class Server:
             labels.append(label if label and label != str(i + 1) else "")
         self.pdf = _open_pikepdf(self.path, self.password)
         return {"ok": True, "pages": pages, "labels": labels, "metadata": _metadata(self.doc), "outline": outline,
-                "findings": _findings(self.pdf)}
+                "findings": _findings(self.pdf), "signatures": _signatures(self.pdf, self.path)}
 
     def render(self, page: int, width: int, height: int) -> tuple[dict, bytes]:
         from PyQt6.QtCore import QBuffer, QIODevice, QSize

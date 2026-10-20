@@ -181,6 +181,73 @@ def photos(path: Path, width: int = 1600, height: int = 1200) -> Path:
     return path
 
 
+def _raw_pdf(objects: list[bytes]) -> bytes:
+    """A PDF written by hand: objects 1..n in order, a correct xref, the catalog is object 1."""
+    out = bytearray(b"%PDF-1.7\n%\xe2\xe3\xcf\xd3\n")
+    offsets = []
+    for i, body in enumerate(objects, start=1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % i + body + b"\nendobj\n"
+    xref = len(out)
+    out += b"xref\n0 %d\n0000000000 65535 f \n" % (len(objects) + 1)
+    for offset in offsets:
+        out += b"%010d 00000 n \n" % offset
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (len(objects) + 1, xref)
+    return bytes(out)
+
+
+def openssl_available() -> bool:
+    import shutil
+
+    return shutil.which("openssl") is not None
+
+
+def signed(path: Path, signer: str = "Dana Test", tamper: bool = False, kind: str = "adbe.pkcs7.detached") -> Path:
+    """A PDF with one digital signature made by OpenSSL (a self-signed certificate for the tests): the field's
+    /ByteRange covers everything but the /Contents hex, which holds the detached CMS signature over those
+    bytes. tamper=True appends bytes after signing (what an incremental update does), so the signature still
+    matches its ranges but no longer covers the whole file."""
+    import subprocess
+
+    work = path.parent / (path.stem + "-keys")
+    work.mkdir(exist_ok=True)
+    key, cert = work / "key.pem", work / "cert.pem"
+    subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", str(key), "-out", str(cert),
+                    "-days", "2", "-subj", f"/CN={signer}/O=D.Ai tests"], check=True, capture_output=True)
+    hole = 8192  # hex characters reserved for the signature
+    content = b"BT /F1 18 Tf 20 150 Td (Signed by hand) Tj ET"
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [5 0 R] /SigFlags 3 >> >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents 4 0 R /Annots [5 0 R] "
+        b"/Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> >>",
+        b"<< /Length %d >>\nstream\n" % len(content) + content + b"\nendstream",
+        b"<< /Type /Annot /Subtype /Widget /FT /Sig /T (Signature1) /Rect [20 20 200 60] /P 3 0 R /F 4 /V 6 0 R >>",
+        (b"<< /Type /Sig /Filter /Adobe.PPKLite /SubFilter /" + kind.encode() + b" /Name (" + signer.encode() + b") "
+         b"/M (D:20261020153000+02'00') /Reason (Approved) /Location (Tel Aviv) "
+         b"/ByteRange [0000000000 0000000000 0000000000 0000000000] /Contents <" + b"0" * hole + b"> >>"),
+    ]
+    data = bytearray(_raw_pdf(objects))
+    start = data.index(b"/Contents <") + len("/Contents ")   # the "<"
+    end = data.index(b">", start) + 1                          # just after ">"
+    ranges = [0, start, end, len(data) - end]
+    placeholder = b"/ByteRange [0000000000 0000000000 0000000000 0000000000]"
+    replacement = b"/ByteRange [" + b" ".join(b"%010d" % v for v in ranges) + b"]"
+    assert len(placeholder) == len(replacement)
+    data[data.index(placeholder):data.index(placeholder) + len(placeholder)] = replacement
+    signed_bytes = bytes(data[:start]) + bytes(data[end:])
+    (work / "signed.bin").write_bytes(signed_bytes)
+    subprocess.run(["openssl", "cms", "-sign", "-binary", "-inkey", str(key), "-signer", str(cert), "-in", str(work / "signed.bin"),
+                    "-outform", "DER", "-out", str(work / "sig.der"), "-md", "sha256"], check=True, capture_output=True)
+    hexsig = (work / "sig.der").read_bytes().hex().encode()
+    assert len(hexsig) <= hole, "the signature does not fit the hole"
+    data[start + 1:start + 1 + len(hexsig)] = hexsig
+    if tamper:
+        data += b"\n% a later change\n"
+    path.write_bytes(bytes(data))
+    return path
+
+
 def locked(path: Path, password: str = "secret") -> Path:
     pdf = pikepdf.new()
     _page(pdf, "Locked page")

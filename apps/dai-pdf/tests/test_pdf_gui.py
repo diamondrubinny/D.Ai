@@ -338,6 +338,40 @@ class WindowTests(unittest.TestCase):
         self.assertEqual(out.stat().st_size, measured)
         self.assertLess(measured, (self.dir / "photos.pdf").stat().st_size // 2)
 
+    @unittest.skipUnless(fixtures.openssl_available(), "openssl is needed to make and check a signature")
+    def test_signatures_in_the_info_and_the_banner(self):
+        gui = sys.modules["dai_pdf.gui"]
+        win = self.window(fixtures.signed(self.dir / "ok.pdf"))
+        self.assertFalse(win.banner.isVisible())  # intact and whole: nothing to warn about
+        dialog = gui.InfoDialog(win, "en", win.doc, False)
+        texts = " ".join(label.text() for label in dialog.findChildren(gui.QLabel))
+        self.assertIn("Signed by Dana Test on 2026-10-20 15:30 +02:00; the file is unchanged since the signature.", texts)
+        self.assertIn("not checked against any list of trusted authorities", texts)
+        later = self.window(fixtures.signed(self.dir / "later.pdf", tamper=True))
+        self.assertTrue(later.banner.isVisible())
+        self.assertIn("something was added to the file after signing", later.banner_text.text())
+        hebrew = self.window(fixtures.signed(self.dir / "he.pdf", tamper=True), lang="he")
+        self.assertIn("נחתם על ידי Dana Test", hebrew.banner_text.text())
+
+    def test_the_diamond_tab(self):
+        from unittest import mock
+
+        win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2))
+        gui = sys.modules["dai_pdf.gui"]
+        self.assertEqual(win.ask_diamond(), "")
+        self.assertIn("Ask something first", win.status.text())
+        win.go_to(1)
+        win.diamond_question.setText("what is this?")
+        with mock.patch.object(gui, "_diamond", side_effect=lambda prompt: "An answer about: " + prompt[-40:]) as asked:
+            answer = win.ask_diamond()
+        self.assertIn("Question: what is this?", answer)
+        self.assertIn("Hello D.Ai page 2", asked.call_args[0][0])  # the page the person is on, nothing more
+        self.assertEqual(win.diamond_answer.text(), answer)
+        with mock.patch.object(gui, "_diamond", side_effect=ConnectionRefusedError()):
+            self.assertIn("not available now", win.ask_diamond("summarize"))
+        with mock.patch.object(gui, "_diamond", side_effect=ImportError()):
+            self.assertIn("not installed", win.ask_diamond("summarize"))
+
     def test_unsaved_changes_ask_before_closing(self):
         asked = []
         win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2), confirm_discard=lambda: asked.append(1) or False)
@@ -366,6 +400,9 @@ class WindowTests(unittest.TestCase):
             form.side.setCurrentIndex(5)
             assert_accessible(self, form, touch=True)
             form.side.setCurrentIndex(6)
+            assert_accessible(self, form, touch=True)
+            form.side.setCurrentIndex(7)
+            form.diamond_answer.setText("An answer " * 30)
             assert_accessible(self, form, touch=True)
             gui = sys.modules["dai_pdf.gui"]
             for dialog in (gui.InfoDialog(win, lang, win.doc, False), gui.LinkDialog(win, lang, "https://x", True),

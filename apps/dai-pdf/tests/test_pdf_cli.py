@@ -145,6 +145,37 @@ class CliTests(unittest.TestCase):
         self.assertLess((self.dir / "c.pdf").stat().st_size, a.stat().st_size // 2)
         self.assertEqual(self.run_cli("compress", str(a))[0], 2)  # no -o and no --check
 
+    @unittest.skipUnless(fixtures.openssl_available(), "openssl is needed to make and check a signature")
+    def test_signatures_and_info(self):
+        ok = fixtures.signed(self.dir / "ok.pdf")
+        code, out, _ = self.run_cli("signatures", str(ok))
+        self.assertEqual(code, 0, out)
+        self.assertIn("Signed by Dana Test on 2026-10-20 15:30 +02:00; the file is unchanged since the signature.", out)
+        self.assertIn("not checked against any list of trusted authorities", out)
+        code, out, _ = self.run_cli("signatures", str(fixtures.signed(self.dir / "later.pdf", tamper=True)))
+        self.assertEqual(code, 1)
+        self.assertIn("something was added to the file after signing", out)
+        code, out, _ = self.run_cli("signatures", str(fixtures.plain(self.dir / "p.pdf")))
+        self.assertEqual((code, out.strip()), (3, "No digital signatures."))
+        code, out, _ = self.run_cli("info", str(ok))
+        self.assertIn("✍ Signed by Dana Test", out)
+
+    def test_ask_diamond(self):
+        from unittest import mock
+
+        from dai_pdf import gui
+        a = fixtures.plain(self.dir / "a.pdf", pages=2)
+        with mock.patch.object(gui, "_diamond", side_effect=lambda prompt: "PROMPT:" + prompt) as asked:
+            code, out, _ = self.run_cli("ask", str(a), "what", "is", "this", "--page", "2")
+        self.assertEqual(code, 0, out)
+        self.assertIn("Question: what is this", out)
+        self.assertIn("Page 2 of the PDF", out)
+        self.assertIn("Hello D.Ai page 2", asked.call_args[0][0])
+        with mock.patch.object(gui, "_diamond", side_effect=ImportError("no dai_ai")):
+            code, out, _ = self.run_cli("ask", str(a), "hi")
+        self.assertEqual((code, out.strip()), (1, "Diamond is not installed on this computer."))
+        self.assertEqual(self.run_cli("ask", str(a))[0], 2)
+
     def test_fields_and_fill(self):
         form = fixtures.form(self.dir / "f.pdf")
         code, text, _ = self.run_cli("fields", str(form))

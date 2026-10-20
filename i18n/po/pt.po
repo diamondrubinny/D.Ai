@@ -5846,3 +5846,111 @@ msgstr "Entra em vigor quando o Kodi arrancar de novo. Anote o PIN: é o que dei
 #: apps/dai-tv/dai_tv/cli.py
 msgid "The children's profile no longer starts on its own; the parents' PIN is removed"
 msgstr "O perfil infantil já não arranca sozinho; o PIN dos pais é removido"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A question for Diamond"
+msgstr "Uma pergunta para o Diamond"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask"
+msgstr "Perguntar"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask Diamond about the page you are on. Diamond runs on this computer; the page's text goes to it only when you ask."
+msgstr "Pergunte ao Diamond sobre a página em que está. O Diamond corre neste computador; o texto da página só lhe chega quando pergunta."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask something first."
+msgstr "Pergunte algo primeiro."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask what? dai-pdf ask FILE QUESTION"
+msgstr "Perguntar o quê? dai-pdf ask FILE QUESTION"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Asking Diamond on this computer…"
+msgstr "A perguntar ao Diamond neste computador…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Diamond answered."
+msgstr "O Diamond respondeu."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Diamond is not installed on this computer."
+msgstr "O Diamond não está instalado neste computador."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Diamond's answer"
+msgstr "A resposta do Diamond"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Digital signatures"
+msgstr "Assinaturas digitais"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No digital signatures."
+msgstr "Sem assinaturas digitais."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Page {n} of the PDF \"{title}\" says:\n{text}\n\nQuestion: {q}"
+msgstr "A página {n} do PDF \"{title}\" diz:\n{text}\n\nPergunta: {q}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Signed by {who}"
+msgstr "Assinado por {who}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Signed by {who} on {when}"
+msgstr "Assinado por {who} em {when}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize"
+msgstr "Resumir"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize this page"
+msgstr "Resumir esta página"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize this page / what does this mean?"
+msgstr "Resume esta página / o que significa isto?"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize this page in a few sentences."
+msgstr "Resume esta página em poucas frases."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Translate"
+msgstr "Traduzir"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Translate this page"
+msgstr "Traduzir esta página"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Translate this page into English."
+msgstr "Traduz esta página para português."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "an unnamed signer"
+msgstr "um signatário sem nome"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "the file is unchanged since the signature."
+msgstr "o ficheiro não mudou desde a assinatura."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "the signature could not be checked ({why})."
+msgstr "não foi possível verificar a assinatura ({why})."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "the signature does NOT match the file: it was changed, or the signature is not real."
+msgstr "a assinatura NÃO corresponde ao ficheiro: foi alterado, ou a assinatura não é real."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "the signed part is intact, but something was added to the file after signing."
+msgstr "a parte assinada está intacta, mas algo foi acrescentado ao ficheiro depois da assinatura."

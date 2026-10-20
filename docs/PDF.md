@@ -5,7 +5,7 @@
 >
 > **Decided (19 October 2026, "from now on you decide"):** the name is D.Ai PDF; qpdfview leaves the image once
 > stage 1 is the default viewer; signatures are verify-only until a signing library is in Debian; Diamond only when
-> asked. **Status: stages 1, 2 and 3 built** (§10–§14). Stage 4 (trust) not started.
+> asked. **Status: stages 1, 2, 3 and 4a built** (§10–§15). Signing (4b) waits on a library in Debian (§5).
 
 ## 10. Stage 1: what was built
 
@@ -115,6 +115,38 @@
   size to the byte; the command and its `--check`. The VM check compresses the redacted file on the image after
   a size check.
 - **Not yet:** PDF/A (needs Ghostscript or ocrmypdf, which this app avoids on purpose).
+
+## 15. Stage 4a: trust, said plainly (what was built)
+
+- **Digital signatures, checked and never blurred into "valid":** at open, inside the viewing sandbox, every
+  signature field with a value is read (`signatures.py`): the signed byte ranges are taken from the file and the
+  detached CMS/PKCS#7 signature (`adbe.pkcs7.detached`, `ETSI.CAdES.detached`) is checked against them with
+  OpenSSL on this computer (`openssl cms -verify -noverify`: the mathematics only). Two facts come out
+  separately and are said separately: **intact** (the signed bytes match the signature) and **covers the whole
+  file** (nothing was added after signing; an incremental update, which is how a second signature, a filled
+  field or a change is appended, makes this false). The signer's name comes from the certificate's subject
+  inside the signature (or the field's /Name), with the date, reason and location the field gives.
+- **What is not claimed:** whether the signer's certificate is trustworthy (a chain to a trusted authority,
+  revocation, a qualified signature under any law) is **not checked**; the window and the command line say so
+  in one sentence under every signature. Saying "valid" would need a trust store policy and a legal review
+  (**requires legal review** before any such word appears). The older `adbe.pkcs7.sha1` kind is reported as
+  "not checked here".
+- **Where it shows:** "About this PDF" lists every signature ("Signed by Dana Test on 2026-10-20 15:30 +02:00;
+  the file is unchanged since the signature."); the file bar at the top warns only when something is wrong
+  (added after signing, or the signature does not match). `dai-pdf signatures FILE` prints the same (exit 0
+  all intact and whole, 1 a problem, 3 unsigned); `dai-pdf info` includes them.
+- **Diamond on a page, only when asked:** a "Diamond" tab with a question, "Summarize" and "Translate"; the
+  text of the page the person is on (at most 6000 characters) and the question go to Diamond, the local model,
+  and nowhere else; the answer stays in the tab. Without Diamond installed or running, one sentence says so.
+  `dai-pdf ask FILE QUESTION [--page N]` does the same from the shell.
+- **Tests:** a PDF signed by OpenSSL with a self-signed certificate (made by the test, `fixtures.signed`: the
+  file is written by hand so the byte ranges are exact) is intact and whole; the same file with bytes appended
+  is intact but not whole; a byte changed inside the signed range is broken; the SHA-1 kind is unchecked; an
+  unsigned file has none; the sentences in the info dialog, the banner (only for problems, Hebrew too) and
+  the command line with its exit codes; Diamond asked with the right page's text, absent, and down (all
+  skipped where OpenSSL is missing; the CI runner and the image have it). The VM check runs `signatures` on
+  an unsigned file and `ask` without Diamond.
+- **Not yet (4b):** signing with the person's own certificate (pyHanko is not in Debian 13; §5 decision 3).
 
 ## 0. Why, and what "native" means here
 

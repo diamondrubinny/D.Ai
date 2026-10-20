@@ -41,6 +41,7 @@ class Document:
     outline: list[dict]                          # {"title", "page", "level"}
     findings: Findings
     inspected: bool = True                       # False when pikepdf could not look at the file
+    signatures: list[dict] = field(default_factory=list)   # signatures.py: signer, date, status, covers_all
     texts: dict[int, str] = field(default_factory=dict)
 
     @property
@@ -209,6 +210,7 @@ class Reader:
             outline=[dict(x) for x in answer.get("outline", [])],
             findings=Findings.from_dict(raw),
             inspected=not raw.get("unknown", False),
+            signatures=[dict(x) for x in answer.get("signatures", [])],
         )
         return self.document
 

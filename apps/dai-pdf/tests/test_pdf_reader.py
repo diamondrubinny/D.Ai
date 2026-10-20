@@ -64,6 +64,29 @@ class DirectReaderTests(unittest.TestCase):
         self.assertEqual((plain.metadata["title"], plain.metadata["author"]), ("A plain file", "Dana"))
         self.assertEqual(plain.title, "A plain file")
 
+    @unittest.skipUnless(fixtures.openssl_available(), "openssl is needed to make and check a signature")
+    def test_digital_signatures_are_checked_not_trusted(self):
+        """docs/PDF.md §15: intact and covering the file; intact but something added after; a kind not checked."""
+        _, doc = self.open(fixtures.signed(self.dir / "ok.pdf"))
+        self.assertEqual(len(doc.signatures), 1)
+        sig = doc.signatures[0]
+        self.assertEqual((sig["signer"], sig["status"], sig["covers_all"]), ("Dana Test", "intact", True))
+        self.assertEqual((sig["date"], sig["reason"], sig["location"]), ("2026-10-20 15:30 +02:00", "Approved", "Tel Aviv"))
+        _, doc = self.open(fixtures.signed(self.dir / "later.pdf", tamper=True))
+        self.assertEqual((doc.signatures[0]["status"], doc.signatures[0]["covers_all"]), ("intact", False))
+        _, doc = self.open(fixtures.signed(self.dir / "old.pdf", kind="adbe.pkcs7.sha1"))
+        self.assertEqual(doc.signatures[0]["status"], "unchecked")
+        self.assertIn("not checked here", doc.signatures[0]["why"])
+        # A signature whose bytes were altered after signing (inside the signed range) is broken, not intact.
+        broken = self.dir / "broken.pdf"
+        data = bytearray(fixtures.signed(self.dir / "b.pdf").read_bytes())
+        data[data.index(b"Signed by hand"):data.index(b"Signed by hand") + 6] = b"Forged"
+        broken.write_bytes(bytes(data))
+        _, doc = self.open(broken)
+        self.assertEqual(doc.signatures[0]["status"], "broken")
+        _, doc = self.open(fixtures.plain(self.dir / "p.pdf"))
+        self.assertEqual(doc.signatures, [])
+
     def test_a_bad_page_number_is_an_error_not_a_crash(self):
         r, _ = self.open(fixtures.plain(self.dir / "p.pdf"))
         with self.assertRaises(PdfError) as caught:

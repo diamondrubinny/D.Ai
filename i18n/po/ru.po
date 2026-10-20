@@ -5846,3 +5846,111 @@ msgstr "Вступит в силу при следующем запуске Kodi
 #: apps/dai-tv/dai_tv/cli.py
 msgid "The children's profile no longer starts on its own; the parents' PIN is removed"
 msgstr "Детский профиль больше не запускается сам; PIN родителей снят"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A question for Diamond"
+msgstr "Вопрос для Diamond"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask"
+msgstr "Спросить"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask Diamond about the page you are on. Diamond runs on this computer; the page's text goes to it only when you ask."
+msgstr "Спросите Diamond о странице, на которой вы находитесь. Diamond работает на этом компьютере; текст страницы попадает к нему только когда вы спрашиваете."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask something first."
+msgstr "Сначала задайте вопрос."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Ask what? dai-pdf ask FILE QUESTION"
+msgstr "Спросить что? dai-pdf ask FILE QUESTION"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Asking Diamond on this computer…"
+msgstr "Спрашиваю Diamond на этом компьютере…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Diamond answered."
+msgstr "Diamond ответил."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Diamond is not installed on this computer."
+msgstr "Diamond не установлен на этом компьютере."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Diamond's answer"
+msgstr "Ответ Diamond"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Digital signatures"
+msgstr "Цифровые подписи"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "No digital signatures."
+msgstr "Цифровых подписей нет."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Page {n} of the PDF \"{title}\" says:\n{text}\n\nQuestion: {q}"
+msgstr "Страница {n} PDF «{title}» гласит:\n{text}\n\nВопрос: {q}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Signed by {who}"
+msgstr "Подписано: {who}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Signed by {who} on {when}"
+msgstr "Подписано: {who}, {when}"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize"
+msgstr "Кратко"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize this page"
+msgstr "Кратко изложить эту страницу"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize this page / what does this mean?"
+msgstr "Кратко изложи страницу / что это значит?"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Summarize this page in a few sentences."
+msgstr "Кратко изложи эту страницу в нескольких предложениях."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Translate"
+msgstr "Перевести"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Translate this page"
+msgstr "Перевести эту страницу"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Translate this page into English."
+msgstr "Переведи эту страницу на русский."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "an unnamed signer"
+msgstr "неназванный подписант"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "the file is unchanged since the signature."
+msgstr "файл не менялся с момента подписания."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "the signature could not be checked ({why})."
+msgstr "подпись не удалось проверить ({why})."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "the signature does NOT match the file: it was changed, or the signature is not real."
+msgstr "подпись НЕ соответствует файлу: он был изменён, или подпись не настоящая."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "the signed part is intact, but something was added to the file after signing."
+msgstr "подписанная часть цела, но после подписания в файл что-то добавили."

@@ -22,6 +22,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   scans from Tesseract in the sandbox, metadata removed before sharing, pages exported as pictures.
 - D.Ai PDF, a smaller file: pictures scaled down and re-encoded in the sandbox (two levels, a picture is
   replaced only when that makes it smaller), a size preview that writes nothing, `dai-pdf compress` (docs/PDF.md §14).
+- D.Ai PDF, trust: digital signatures checked with OpenSSL in the sandbox and said plainly (intact or not,
+  whole or changed after signing; never "valid"); Diamond on the page you are on, only when asked (docs/PDF.md §15).
 - D.Ai VM: Windows in a window with the person's own media and key. A hardware check that says plainly when a
   computer cannot (no VT-x/AMD-V, too little memory); machines under qemu:///session with UEFI Secure Boot,
   TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded

@@ -838,11 +838,14 @@ def main() -> int:
          "dai-pdf ocr /tmp/black.pdf -o /tmp/ocr.pdf; echo OCR_RC=$?; dai-pdf export /tmp/wants.pdf --dir /tmp/pics --dpi 72 | wc -l | sed 's/^/PICS=/'; "
          # Stage 3b: the redacted file (a 300 dpi picture page) made smaller, after a size check that writes nothing.
          "dai-pdf compress /tmp/black.pdf --check | head -c 60; echo; dai-pdf compress /tmp/black.pdf --strong -o /tmp/small.pdf >/dev/null; "
-         "echo COMPRESS_RC=$?; [ $(stat -c%s /tmp/small.pdf) -lt $(stat -c%s /tmp/black.pdf) ] && echo SMALLER=yes",
+         "echo COMPRESS_RC=$?; [ $(stat -c%s /tmp/small.pdf) -lt $(stat -c%s /tmp/black.pdf) ] && echo SMALLER=yes; "
+         # Stage 4a: signatures read inside the sandbox (none here), Diamond asked without a model (a sentence, no crash).
+         "dai-pdf signatures /tmp/wants.pdf; echo SIG_RC=$?; dai-pdf ask /tmp/wants.pdf 'מה זה' | head -c 120; echo; echo ASK_PDF_RC=$?",
          True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
          and "dai-pdf.desktop" in o and "EDIT_RC=0" in o and "Pages: 2" in o and "-rw-------" in o
          and "REDACT_RC=0" in o and "WORDS_LEFT=0" in o and "TITLE_LEFT=0" in o and "OCR_RC=0" in o and "PICS=1" in o
-         and "pictures made smaller" in o and "COMPRESS_RC=0" in o and "SMALLER=yes" in o, 480),
+         and "pictures made smaller" in o and "COMPRESS_RC=0" in o and "SMALLER=yes" in o and "SIG_RC=3" in o
+         and ("ASK_PDF_RC=0" in o or "ASK_PDF_RC=1" in o), 480),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",
