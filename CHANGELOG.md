@@ -18,7 +18,7 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   once with a pinned SHA-256; no clipboard, folder or USB sharing until asked; "allow virtual machines" in
   D.Ai Tune adds the person to the kvm group, with undo. User and dev editions.
 - D.Ai TV, the television edition (`build-iso.sh tv`): Kodi 21 full screen on labwc, autologin, the bundled
-  Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC; "Exit" in Kodi turns the
+  Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC tools; "Exit" in Kodi turns the
   session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.
 - Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
   is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick

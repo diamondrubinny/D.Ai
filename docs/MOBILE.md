@@ -75,7 +75,7 @@
 
 ## 5. Status
 
-### A1 — the touch profile (built; VM check pending)
+### A1 — the touch profile (built and verified in CI, run 39381912535)
 
 - **`dai_style.touch()`** decides the profile: `~/.config/dai/touch` (`on`, `off`, `auto`) or `DAI_TOUCH` for one
   app; `auto` means a direct-touch input device is attached (the kernel's `INPUT_PROP_DIRECT` bit under

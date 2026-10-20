@@ -194,12 +194,17 @@ monitor "screendump $ARTIFACT_DIR/desktop.png -f png" || log "warning: screensho
 
 log "running in-guest system checks over the serial console"
 checks_ok=1
-python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" --launch-apps || checks_ok=0
+if [[ "$(basename "$ISO")" == dai-os-tv-* ]]; then
+  # Kodi owns the screen on the TV edition (docs/TV.md §5): no desktop demo apps over it.
+  python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" || checks_ok=0
+else
+  python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" --launch-apps || checks_ok=0
 
-log "waiting ${APPS_WAIT}s for demo apps, then capturing a second screenshot"
-sleep "$APPS_WAIT"
-monitor "screendump $ARTIFACT_DIR/apps.png -f png" || log "warning: screenshot failed"
-[[ -s "$ARTIFACT_DIR/apps.png" ]] && log "screenshot: $ARTIFACT_DIR/apps.png"
+  log "waiting ${APPS_WAIT}s for demo apps, then capturing a second screenshot"
+  sleep "$APPS_WAIT"
+  monitor "screendump $ARTIFACT_DIR/apps.png -f png" || log "warning: screenshot failed"
+  [[ -s "$ARTIFACT_DIR/apps.png" ]] && log "screenshot: $ARTIFACT_DIR/apps.png"
+fi
 
 # The TV edition boots into Kodi, not the desktop: the desktop's interactive checks and screenshots below do
 # not apply to it (docs/TV.md §5); its own checks ran in serial_check.py, and its screenshot is desktop.png.

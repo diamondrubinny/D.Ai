@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Mobile is in
 > `docs/MOBILE.md`. **Decided (under "from now on you decide"):** the editions and stages below; stage 1 begins
-> now. **Status: stage 1 built** (§7); the first CI build of the tv edition is running.
+> now. **Status: stage 1 built and verified in CI** (§7): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening.
 
 ## 0. What a "television version" can honestly be
 
@@ -46,7 +46,7 @@ streaming; the ARM boxes until stage 5.
 
 ```
 build/live-build/editions/tv/
-  package-lists/tv.list.chroot          kodi, kodi-inputstream-adaptive, kodi-pvr-iptvsimple, cec-utils, mpv, fonts
+  package-lists/tv.list.chroot          kodi, cec-utils, mpv, VA-API drivers (the binary add-ons come with stage 3)
   hooks/normal/0150-dai-tv.hook.chroot  the tv session as the default, autologin to it, Kodi's settings (Hebrew, no web server, no UPnP)
   includes.chroot_after_packages/
     usr/share/wayland-sessions/dai-tv.desktop     "D.Ai TV": starts labwc with the TV autostart
@@ -90,8 +90,7 @@ build/live-build/editions/tv/
 
 ## 7. Stage 1: what was built
 
-- `build/live-build/editions/tv/`: the package list (Kodi 21, `kodi-inputstream-adaptive`, `kodi-pvr-iptvsimple`,
-  `cec-utils`, `mpv`, VA-API drivers), `/etc/dai-release` with `EDITION=tv`, the `dai-tv.desktop` Wayland
+- `build/live-build/editions/tv/`: the package list (Kodi 21, `cec-utils`, `mpv`, VA-API drivers), `/etc/dai-release` with `EDITION=tv`, the `dai-tv.desktop` Wayland
   session, `startdai-tv` (labwc with `/etc/dai/tv/labwc/rc.xml`: no decorations, no panel, `Super+Enter` a
   terminal, `Ctrl+Alt+Del` the leave dialog) and `dai-tv-kodi` (Kodi full screen on Wayland; on exit the same
   labwc runs `lxqt-session`, so "Exit" in Kodi's power menu reaches the desktop; Kodi's power-off and reboot
@@ -99,14 +98,20 @@ build/live-build/editions/tv/
   for SDDM, and Kodi's defaults in `/etc/skel/.kodi` (copied once per user).
 - **Hebrew without a download:** Kodi's language packs are add-ons fetched from its repository; the Hebrew one
   (`resource.language.he_il` 11.0.81, GPL-2.0-or-later, Team Kodi) is bundled under `/etc/skel/.kodi/addons`
-  and chosen in `guisettings.xml` (with the "Arial" font so Hebrew letters draw). **Requires verification** on
-  the first screenshot that Kodi enables a pre-placed language add-on at its first start; if it does not, stage
-  1b seeds Kodi's add-on database.
+  and chosen in `guisettings.xml` (with the "Arial" font so Hebrew letters draw). **Verified** on the CI
+  screenshot: Kodi enables the pre-placed language pack at its first start and the whole interface is in Hebrew,
+  right to left.
 - **Privacy defaults:** web server, UPnP (server and renderer), AirPlay, Zeroconf and the event server off;
   unknown add-on sources off; add-on update notifications off. The firewall is D.Ai's default-deny one.
 - **The boot test** reads `/etc/dai-release`; on tv the desktop's checks become information only, the
   desktop's interactive screenshots are skipped, and the TV check must pass (session default, Kodi running,
   no LXQt, the defaults, `cec-client`, nothing listening). CI builds `tv` in the matrix with the others.
-- **Not yet:** a verified Kodi screenshot in Hebrew (this run), the measurement on the weak profile, stages
-  2–5, and `kodi --windowing=wayland` confirmed on Debian's build (**requires verification** in the same run;
-  the fallback is Kodi's GBM mode without labwc).
+- **Verified in CI** (run 39381912535): `kodi --windowing=wayland` works on Debian's build ("using the wayland
+  windowing system" in kodi.log), the session is `dai-tv.desktop`, no LXQt, the web server and the other
+  services off, nothing listening outside loopback, `cec-client` present. The screenshot goes into
+  `docs/screenshots/tv-desktop.png` from the first run without the add-on dialog.
+- **A lesson from the screenshot:** Debian's binary add-ons (`kodi-pvr-iptvsimple`, `kodi-inputstream-adaptive`)
+  are installed disabled, and Kodi's first start asks "enable this add-on?" for each. They were taken out of
+  stage 1; stage 3 (IPTV) brings them back and seeds Kodi's add-on database (`Addons33.db`, `installed` table)
+  at the first start so nothing asks.
+- **Not yet:** the measurement on the weak profile, stages 2–5.
