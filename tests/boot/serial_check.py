@@ -70,13 +70,33 @@ class Serial:
         self.buf = b""
         # The echo splits the marker so the terminal echo of the command
         # line never matches the end pattern.
-        self.send(f"{command} 2>&1; echo {marker[:6]}''{marker[6:]}\n")
+        self.send(f"{as_tty_lines(command)} 2>&1; echo {marker[:6]}''{marker[6:]}\n")
         out = self.expect(re.compile(re.escape(marker.encode()) + rb"\r?\n"), timeout)
         text = out.decode(errors="replace").replace("\r", "")
         # Drop terminal echoes of the command line (which may be wrapped or
         # repeated) and the end marker; all of them contain the marker prefix.
-        body = [line for line in text.split("\n") if MARKER_PREFIX not in line]
+        # A long command travels as chunk lines (as_tty_lines); their echoes go too.
+        body = [line for line in text.split("\n") if MARKER_PREFIX not in line and LONG_FILE not in line]
         return "\n".join(body).strip()
+
+
+# A tty in canonical mode drops a line longer than 4095 bytes (N_TTY_BUF_SIZE): the shell never sees its end
+# and the check times out without a word. Seen with the VM check at 4.7 KB. Everything stays well under.
+TTY_LINE_LIMIT = 3600
+LONG_FILE = "/tmp/dai-long"
+
+
+def as_tty_lines(command: str) -> str:
+    """The command as lines a tty accepts. A command with a line longer than the limit goes over as base64
+    chunks appended to a file on separate lines, decoded and sourced in the same shell (so what the shared
+    shell has, it keeps). The output is the command's own: the chunk lines carry LONG_FILE and are dropped."""
+    if all(len(line.encode("utf-8")) <= TTY_LINE_LIMIT for line in command.split("\n")):
+        return command
+    data = base64.b64encode(command.encode("utf-8")).decode()
+    chunks = [data[i:i + 3000] for i in range(0, len(data), 3000)]
+    lines = [f"rm -f {LONG_FILE}.b64"] + [f"printf '%s' '{chunk}' >> {LONG_FILE}.b64" for chunk in chunks]
+    lines.append(f"base64 -d {LONG_FILE}.b64 > {LONG_FILE}.sh && rm -f {LONG_FILE}.b64 && . {LONG_FILE}.sh")
+    return "\n".join(lines)
 
 
 WAYLAND_ENV = (
