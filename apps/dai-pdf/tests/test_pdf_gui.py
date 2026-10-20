@@ -187,7 +187,7 @@ class WindowTests(unittest.TestCase):
             win = self.window(fixtures.active(self.dir / f"a-{lang}.pdf"), lang=lang)
             win.search_field.setText("wants")
             win.search()
-            assert_accessible(self, win)
+            assert_accessible(self, win, touch=True)
             gui = sys.modules["dai_pdf.gui"]
             for dialog in (gui.InfoDialog(win, lang, win.doc, False), gui.LinkDialog(win, lang, "https://x", True),
                            gui.LinkDialog(win, lang, "file:///x", False), gui.PasswordDialog(win, lang, "a.pdf", True)):

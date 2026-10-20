@@ -391,7 +391,7 @@ class WindowTests(unittest.TestCase):
                                 discover.Server("smtp.example.org", 587, "starttls", "dana"))
         keyring = accounts.Keyring(which=lambda name: None)
         for lang in ("he", "en"):
-            assert_accessible(self, self.window(lang))
+            assert_accessible(self, self.window(lang), touch=True)
             assert_accessible(self, gui.SetupDialog(lang, keyring, gui.Runner(inline=True)))
             assert_accessible(self, gui.ComposeWindow(lang, [account], lambda a: "pw", gui.Runner(inline=True)))
             assert_accessible(self, gui.ImportDialog(lang, [found]))

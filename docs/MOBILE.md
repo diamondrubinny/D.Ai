@@ -97,3 +97,43 @@
   height, not "hidden", and it was corrected. The check `touch: the profile, Tune, the keyboard` covers it.
 - **Not in A1:** showing the keyboard by itself when a text field gets focus (needs the Wayland text-input
   protocol on the compositor side; A3), the taskbar in touch mode (A2), gestures (A3).
+
+### A2 — every window responsive, the taskbar in touch mode (built; VM check pending)
+
+**What "responsive" means for a Qt window here.** Three things, each testable:
+
+1. **Panes stack.** A window with two panes side by side (Chat: people | talk; J: folders | messages | message;
+   PDF: side panel | page; VM: machines | details) shows them one above the other when the window is narrower
+   than **700 px**. `dai_style.panes.Panes` is a `QSplitter` that turns vertical on its own `resizeEvent` under
+   that width and horizontal above it, keeping the sizes of each orientation. The apps replace their `QSplitter`
+   with it; nothing else changes.
+2. **Nothing is cut off.** At a phone-like width (640 × 900) every interactive widget lies inside the window and
+   no label without word wrap is wider than its space. Raz gets two rules for that, `fits` and `clipped`, run
+   in a third pass of `assert_accessible(case, window, touch=True)`: the window is resized to 640 × 900 with the
+   touch stylesheet on. The pane apps, Command, Quick and Welcome are gated by it in CI.
+3. **Fingers scroll.** `dai_style.touch_scrolling(window)` puts a `QScroller` touch gesture on every scroll area's
+   viewport, so a list or a page follows the finger with inertia. Called by the apps' windows; a no-op without
+   touch.
+
+**Fixed widths.** The command bar (720 px) and Quick (420 px) take the screen's width minus a margin when it is
+smaller, so they fit a phone-sized screen.
+
+**The taskbar in touch mode.** The same panel, bigger: `panelSize=72`, `iconSize=36`, task buttons 64 px, the
+island the full width. `dai-panel-touch on|off` rewrites those keys in the person's `panel.conf` (idempotent),
+and `startdai-wayland` calls it at every login with the profile's answer, so turning touch mode on in Tune takes
+effect at the next login, and turning it off restores the desktop sizes. The diamond stays the Start button;
+a separate "home" gesture is A3.
+
+**Not in A2.** Gestures (edge swipes, A3), rotation (A3), the on-screen keyboard appearing by itself (A3).
+
+**A2, what was built.** `dai_style.panes`: `Panes` (the splitter that stacks under 700 px), `WrapRow` (a
+toolbar row that wraps; Qt's flow layout, right-to-left aware), `touch_scrolling()` (QScroller's touch gesture on
+every scroll area) and `fit_width()` (a fixed width no wider than the screen). Chat, J, PDF and VM use `Panes`;
+the PDF toolbar and VM's action row use `WrapRow`; VM's details pane scrolls; the command bar and Quick take
+`fit_width`; the command bar's footer wraps. Raz: `fits` and `clipped`, and the narrow pass in
+`assert_accessible(touch=True)` (a fixed width is lifted for it, so the layout is judged). Those seven windows
+pass the touch and narrow passes in CI. The findings the new rules made before the fixes: the PDF window could not
+go under 1067 px (the toolbar), VM under 722 px (the action row), the command bar's hints were clipped at 640 px,
+and VM's details were squeezed to 7 px lines when stacked (now a scroll area). `dai-panel-touch on|off` and the
+login hook; the VM check `touch: the panel and the responsive pieces`. Not yet: the other windows' narrow pass
+(Forge, Heal, MOM, Clip, Welcome's dialogs; they get it as they are touched), the screenshot of a stacked window.

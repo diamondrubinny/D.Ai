@@ -31,6 +31,7 @@ from PyQt6.QtWidgets import (
 )
 
 from dai_style import color, with_touch
+from dai_style.panes import fit_width
 
 from . import __author__, __version__
 from .core import Action, History, build_actions, load_apps, tr
@@ -198,7 +199,7 @@ class CommandWindow(QWidget):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setStyleSheet(with_touch(STYLE))
-        self.setFixedWidth(720)
+        self.setFixedWidth(fit_width(720))
 
         self.history = History(History.default_path())
         self.apps = load_apps()
@@ -259,8 +260,12 @@ class CommandWindow(QWidget):
         self._thread: QThread | None = None
 
         footer = QHBoxLayout()
-        footer.addWidget(QLabel(tr("hints"), objectName="Hints"), 1)
-        footer.addWidget(QLabel(f"D.Ai Command {__version__} · {__author__}", objectName="Hints"))
+        hints = QLabel(tr("hints"), objectName="Hints")
+        hints.setWordWrap(True)  # a narrow window wraps the hints (docs/MOBILE.md A2)
+        footer.addWidget(hints, 1)
+        credit = QLabel(f"D.Ai Command {__version__} · {__author__}", objectName="Hints")
+        credit.setWordWrap(True)
+        footer.addWidget(credit)
         layout.addLayout(footer)
 
         self.query.textChanged.connect(self.refresh)

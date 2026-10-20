@@ -252,7 +252,7 @@ class WindowTests(unittest.TestCase):
         for lang in ("he", "en"):
             win = self.window(lang=lang)
             self.choose(win)
-            assert_accessible(self, win)
+            assert_accessible(self, win, touch=True)
             gui = load_gui()
             for dialog in (gui.SymbolsDialog(win, lang, "Dana", [0, 1, 2, 3, 4, 5]), gui.AddDialog(win, lang, self.code),
                            gui.NameDialog(win, lang, "Me")):

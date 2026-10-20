@@ -23,6 +23,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
   is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick
   and Welcome for finger-sized targets; the login screen's buttons grew to 44 px.
+- Responsive windows (`docs/MOBILE.md` A2): Chat, J, PDF and VM stack their panes one above the other under
+  700 px, toolbars wrap, lists follow the finger; Raz checks that nothing is cut off at a phone-like width; the
+  taskbar grows for touch at login (`dai-panel-touch`).
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

@@ -172,6 +172,41 @@ class AuditTests(unittest.TestCase):
             restore()
         self.assertLess(grows.height(), 44)
 
+    def test_narrow_windows_cut_nothing_off(self):
+        """docs/MOBILE.md A2: at a phone-like size a widget outside the window and a clipped label are problems."""
+        from PyQt6.QtWidgets import QHBoxLayout
+        root = self.window()
+        row = QHBoxLayout()
+        buttons = [QPushButton(f"Button number {i}") for i in range(6)]
+        for button in buttons:
+            button.setMinimumWidth(180)
+            row.addWidget(button)
+        root.layout().addLayout(row)
+        label = QLabel("A very long line of text that will not fit into a narrow window at all, not even close, " * 2)
+        root.layout().addWidget(label)
+        wrapped = QLabel(label.text())
+        wrapped.setWordWrap(True)
+        root.layout().addWidget(wrapped)
+        root.show()
+        root.resize(*self.a11y.NARROW_SIZE)
+        QApplication.processEvents()
+        self.assertGreater(root.width(), 640)  # Qt keeps the window as wide as the row of buttons
+        self.assertEqual(self.a11y.audit(root), [])  # the desktop rules do not mind
+        found = self.a11y.audit(root, narrow=True)
+        self.assertEqual([i.rule for i in found], ["fits"])
+        self.assertIn("cannot be narrower", found[0].detail)
+        for button in buttons[1:]:
+            button.hide()
+        label.setMaximumWidth(600)  # a label that elides nothing and gets less than it needs
+        root.layout().activate()
+        QApplication.processEvents()
+        root.resize(*self.a11y.NARROW_SIZE)
+        QApplication.processEvents()
+        self.assertEqual(root.width(), 640, root.minimumSizeHint())
+        found = self.a11y.audit(root, narrow=True)
+        self.assertEqual([i.rule for i in found], ["clipped"])  # the wrapped one passes
+        self.assertIn("word wrap", found[0].detail)
+
     def test_every_page_is_audited_and_turned_back(self):
         from PyQt6.QtWidgets import QStackedWidget
         stack = QStackedWidget()

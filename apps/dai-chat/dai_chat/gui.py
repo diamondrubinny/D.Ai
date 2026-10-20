@@ -19,10 +19,11 @@ from typing import Callable
 from PyQt6.QtCore import QSize, Qt, QTimer
 from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QPixmap, QShortcut
 from PyQt6.QtWidgets import (QApplication, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout, QLabel,
-                             QLineEdit, QListWidget, QListWidgetItem, QPushButton, QSplitter, QVBoxLayout, QWidget)
+                             QLineEdit, QListWidget, QListWidgetItem, QPushButton, QVBoxLayout, QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
+from dai_style.panes import Panes, touch_scrolling
 
 from . import invite, pictures, sas, scan
 from .pairing import clean_name
@@ -349,12 +350,13 @@ class ChatWindow(QWidget):
         bottom.addWidget(self.send_button)
         talk_layout.addLayout(bottom)
 
-        split = QSplitter()
+        split = Panes()  # people beside the talk; one above the other when narrow (docs/MOBILE.md A2)
         split.addWidget(side)
         split.addWidget(talk)
         split.setSizes([280, 620])
         split.setChildrenCollapsible(False)
         outer.addWidget(split, 1)
+        touch_scrolling(self)
 
         # the service: a line that says whether messages can go out now
         status = QHBoxLayout()

@@ -64,4 +64,13 @@ if [ ! -e "$panel_conf" ] && [ -f /etc/xdg/lxqt/panel.conf ]; then
 	esac
 fi
 
+# Touch mode (docs/MOBILE.md A2): the panel's sizes follow the touch profile at every login.
+if command -v dai-panel-touch >/dev/null 2>&1; then
+	if python3 -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_style; sys.exit(0 if dai_style.touch() else 1)' 2>/dev/null; then
+		dai-panel-touch on "$panel_conf"
+	else
+		dai-panel-touch off "$panel_conf"
+	fi
+fi
+
 exec labwc -C "$labwc_config" -S lxqt-session

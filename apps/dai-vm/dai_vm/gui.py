@@ -18,10 +18,11 @@ from typing import Callable
 
 from PyQt6.QtCore import Qt, QThread, QTimer, pyqtSignal
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout,
-                             QLabel, QLineEdit, QListWidget, QPushButton, QSpinBox, QSplitter, QVBoxLayout, QWidget)
+                             QLabel, QLineEdit, QListWidget, QPushButton, QScrollArea, QSpinBox, QVBoxLayout, QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
+from dai_style.panes import Panes, WrapRow, touch_scrolling
 
 from . import control, drivers, hardware, iso, machine
 
@@ -287,6 +288,7 @@ class VmWindow(QWidget):
         self.setStyleSheet(STYLE)
         self.resize(980, 640)
         self._build()
+        touch_scrolling(self)
         self.refresh_machines()
         self.timer = QTimer(self)
         self.timer.setInterval(REFRESH_MS)
@@ -319,7 +321,7 @@ class VmWindow(QWidget):
             check_layout.addWidget(label)
         outer.addWidget(self.check_box)
 
-        splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter = Panes()  # machines beside the details; above them when narrow (docs/MOBILE.md A2)
         left = QWidget()
         left_layout = QVBoxLayout(left)
         left_layout.setContentsMargins(0, 0, 0, 0)
@@ -348,7 +350,7 @@ class VmWindow(QWidget):
         self.details.setObjectName("Muted")
         self.details.setWordWrap(True)
         right_layout.addWidget(self.details)
-        buttons = QHBoxLayout()
+        buttons = WrapRow()  # the actions wrap onto more rows when the window is narrow (docs/MOBILE.md A2)
         self.start_button = self._button(say(self.lang, "Start", "הפעלה"), lambda: self.act("start"), buttons, primary=True)
         self.show_button = self._button(say(self.lang, "Show the screen", "הצגת המסך"), lambda: self.act("show"), buttons)
         self.pause_button = self._button(say(self.lang, "Pause", "השהיה"), lambda: self.act("pause"), buttons)
@@ -356,7 +358,6 @@ class VmWindow(QWidget):
         self.stop_button = self._button(say(self.lang, "Shut down", "כיבוי"), lambda: self.act("stop"), buttons)
         self.poweroff_button = self._button(say(self.lang, "Force off", "כיבוי בכוח"), lambda: self.act("poweroff"), buttons)
         self.delete_button = self._button(say(self.lang, "Delete…", "מחיקה…"), self.delete_machine, buttons)
-        buttons.addStretch(1)
         right_layout.addLayout(buttons)
 
         sees = QFrame()
@@ -383,7 +384,12 @@ class VmWindow(QWidget):
         sees_layout.addWidget(note)
         right_layout.addWidget(sees)
         right_layout.addStretch(1)
-        splitter.addWidget(right)
+        scroll = QScrollArea()  # the details scroll when the window is short or narrow (docs/MOBILE.md A2)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setStyleSheet("QScrollArea, QScrollArea > QWidget > QWidget { background: transparent; }")
+        scroll.setWidget(right)
+        splitter.addWidget(scroll)
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
         splitter.setSizes([300, 680])

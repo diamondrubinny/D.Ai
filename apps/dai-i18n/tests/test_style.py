@@ -111,5 +111,46 @@ class TouchTests(unittest.TestCase):
         self.assertNotIn("#", dai_style.TOUCH_SHEET)  # no colors: themed() has nothing to miss
 
 
+try:
+    from PyQt6.QtWidgets import QApplication, QLabel, QListWidget, QWidget
+    HAVE_QT = True
+except ImportError:  # the design system's Qt pieces need PyQt6; the palette does not
+    HAVE_QT = False
+
+
+@unittest.skipUnless(HAVE_QT, "PyQt6 is not installed")
+class PanesTests(unittest.TestCase):
+    """docs/MOBILE.md A2: panes stack under 700 px and come back side by side, keeping their sizes."""
+
+    @classmethod
+    def setUpClass(cls):
+        import os
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        cls.app = QApplication.instance() or QApplication([])
+
+    def test_panes_stack_when_narrow(self):
+        from PyQt6.QtCore import Qt
+        from dai_style.panes import Panes, touch_scrolling
+        panes = Panes()
+        panes.addWidget(QLabel("left"))
+        panes.addWidget(QListWidget())
+        panes.show()
+        panes.resize(1000, 500)
+        panes.setSizes([300, 700])
+        self.app.processEvents()
+        self.assertFalse(panes.stacked())
+        panes.resize(600, 800)
+        self.app.processEvents()
+        self.assertTrue(panes.stacked())
+        self.assertEqual(panes.orientation(), Qt.Orientation.Vertical)
+        panes.resize(1000, 500)
+        self.app.processEvents()
+        self.assertFalse(panes.stacked())
+        self.assertLess(abs(panes.sizes()[0] - 300) + abs(panes.sizes()[1] - 700), 8)  # the handle takes a few px
+        self.assertEqual(touch_scrolling(panes, on=False), 0)
+        self.assertEqual(touch_scrolling(panes, on=True), 1)  # the list's viewport
+        panes.close()
+
+
 if __name__ == "__main__":
     unittest.main()

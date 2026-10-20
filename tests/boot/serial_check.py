@@ -830,6 +830,13 @@ def main() -> int:
          False, lambda o: all(mark in o for mark in ("NO_SCREEN", "AUTO auto OFF", "ENV ON", "SHEET True", "TUNE_RC=0", "FILE=on",
                                                      "NOW ON", "FILE_GONE", "KBD_RUNNING", "KBD_STILL_RUNNING", "KBD_PROCS=1", "AUTOSTART=1"))
          and "HIDDEN_FLAG=0" not in o, 60),
+        # Touch, A2 (docs/MOBILE.md): the panel grows for touch and comes back, and the responsive pieces import.
+        ("touch: the panel and the responsive pieces", "cp ~/.config/lxqt/panel.conf /tmp/panel.conf; dai-panel-touch on /tmp/panel.conf; "
+         "grep -E '^(panelSize|iconSize|width|buttonWidth)=' /tmp/panel.conf | tr '\\n' ' '; echo; dai-panel-touch off /tmp/panel.conf; "
+         "cmp -s /tmp/panel.conf ~/.config/lxqt/panel.conf && echo PANEL_RESTORED; grep -c dai-panel-touch /usr/bin/startdai-wayland | sed 's/^/LOGIN_HOOK=/'; "
+         "QT_QPA_PLATFORM=offscreen python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); from dai_style.panes import Panes, WrapRow, fit_width; print(\"PIECES\", fit_width(720))'",
+         False, lambda o: all(mark in o for mark in ("panelSize=72", "iconSize=36", "width=100", "buttonWidth=64", "PANEL_RESTORED",
+                                                     "LOGIN_HOOK=2", "PIECES 720")), 30),
         # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
         ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
          "dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst", False,

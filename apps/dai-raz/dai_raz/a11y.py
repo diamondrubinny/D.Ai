@@ -19,7 +19,9 @@ rules, for every visible, enabled, interactive widget:
 Disabled widgets are exempt from contrast, as in WCAG. The audit only reads.
 
 With touch=True (docs/MOBILE.md A1) a fourth rule, target: every interactive widget is at least 44 x 44 px
-(WCAG 2.5.5), so a finger lands on it. assert_accessible runs that pass with the touch stylesheet applied.
+(WCAG 2.5.5), so a finger lands on it. assert_accessible runs that pass with the touch stylesheet applied, and
+then a narrow pass (docs/MOBILE.md A2) at a phone-like 640 x 900 with two more rules: fits (every interactive
+widget lies inside the window) and clipped (no label without word wrap is wider than its space).
 """
 from __future__ import annotations
 
@@ -36,6 +38,7 @@ from PyQt6.QtWidgets import (QAbstractButton, QAbstractItemView, QAbstractSlider
 AA_TEXT = 4.5
 AA_LARGE = 3.0
 TARGET = 44  # px, WCAG 2.5.5 (dai_style.TOUCH_TARGET)
+NARROW_SIZE = (640, 900)  # a phone-like window (docs/MOBILE.md A2)
 LETTER = 1.25  # closer than this to the text color: a letter's pixel, not the background
 
 INTERACTIVE = (QAbstractButton, QLineEdit, QComboBox, QAbstractSpinBox, QAbstractSlider, QTextEdit, QPlainTextEdit,
@@ -55,7 +58,7 @@ TEXT_ROLE = {
 
 @dataclass(frozen=True)
 class Issue:
-    rule: str      # "name", "keyboard", "contrast" or "target"
+    rule: str      # "name", "keyboard", "contrast", "target", "fits" or "clipped"
     widget: str    # class and objectName, or the path to it
     detail: str = ""
 
@@ -193,7 +196,7 @@ def _weak_background(fg: QColor, ring: list[QColor]) -> tuple[QColor, float]:
 
 
 def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str], issues: list[Issue],
-           touch: bool = False) -> None:
+           touch: bool = False, narrow: bool = False) -> None:
     # A scroll bar is for the mouse (the keys scroll the view); qt_* parts (a toolbar's overflow arrow, a tab
     # bar's scroll buttons) belong to the widget that owns them.
     interactive = isinstance(widget, INTERACTIVE) and not isinstance(widget, QScrollBar) \
@@ -208,6 +211,18 @@ def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str]
             and (widget.width() < TARGET or widget.height() < TARGET):
         issues.append(Issue("target", describe(widget),
                             f"{widget.width()}x{widget.height()} px, a finger needs {TARGET}x{TARGET} (WCAG 2.5.5)"))
+    if narrow:
+        if interactive and enabled:
+            origin = widget.mapTo(root, QPoint(0, 0))
+            rect = QRect(origin, widget.size())
+            if not root.rect().contains(rect):
+                issues.append(Issue("fits", describe(widget),
+                                    f"at {rect.x()},{rect.y()} {rect.width()}x{rect.height()} px, outside the "
+                                    f"{root.width()}x{root.height()} window"))
+        if isinstance(widget, QLabel) and widget.text().strip() and not widget.wordWrap() \
+                and widget.textFormat() != Qt.TextFormat.RichText and widget.sizeHint().width() > widget.width() + 1:
+            issues.append(Issue("clipped", describe(widget),
+                                f"needs {widget.sizeHint().width()} px, has {widget.width()}: use word wrap or elide"))
     role = _text_role(widget)
     if role is None or not enabled or isinstance(widget, QHeaderView):  # sections: see qss_issues
         return
@@ -239,16 +254,22 @@ def _stacks_to(widget: QWidget, root: QWidget) -> list[tuple[QStackedWidget, QWi
     return chain[::-1]
 
 
-def audit(root: QWidget, touch: bool = False) -> list[Issue]:
+def audit(root: QWidget, touch: bool = False, narrow: bool = False) -> list[Issue]:
     """Every problem in root and its children, on every page; an empty list means the window passes.
 
     The window is shown (offscreen in CI) and painted once per page, so contrast is measured on what is
-    really drawn, style sheets and all. Pages are turned back afterwards. touch adds the target-size rule.
+    really drawn, style sheets and all. Pages are turned back afterwards. touch adds the target-size rule;
+    narrow adds the fits and clipped rules (the caller sizes the window).
     """
     issues: list[Issue] = []
     was_visible = root.isVisible()
     if not was_visible:
         root.show()
+    if narrow and root.isWindow() and root.width() > NARROW_SIZE[0]:
+        # Qt refuses to make a window narrower than its minimum size hint: something inside cannot shrink.
+        issues.append(Issue("fits", describe(root),
+                            f"cannot be narrower than {root.width()} px (wants {NARROW_SIZE[0]}): a row of "
+                            "buttons or a fixed width inside"))
     labels = _buddies(root)
     seen: set[int] = set()
     stacks = [stack for stack in root.findChildren(QStackedWidget) if _shown(stack, root)]
@@ -262,7 +283,7 @@ def audit(root: QWidget, touch: bool = False) -> list[Issue]:
                 continue
             seen.add(id(widget))
             widget.ensurePolished()
-            _check(widget, root, image, labels, issues, touch)
+            _check(widget, root, image, labels, issues, touch, narrow)
 
     paint_and_check()
     for stack in stacks:
@@ -355,8 +376,7 @@ def _with_touch(window: QWidget):
     saved_size = window.size()
     for setter, value in saved[:2]:  # the application's sheet and the window's own; children keep their overrides
         setter(with_touch(value, on=True))
-    window.adjustSize()
-    QApplication.processEvents()
+    QApplication.processEvents()  # at the window's own size: bigger controls must still fit it
 
     def restore() -> None:
         for setter, value in saved:
@@ -386,6 +406,18 @@ def assert_accessible(case, window: QWidget, touch: bool = False) -> None:
         restore = _with_touch(window)
         try:
             issues += [f"[touch] {issue}" for issue in audit(window, touch=True)]
+            fixed = (window.minimumWidth(), window.maximumWidth())
+            if fixed[0] == fixed[1]:  # a fixed width (the command bar, Quick) is chosen from the screen; judge the layout
+                window.setMinimumWidth(0)
+                window.setMaximumWidth(16777215)
+            window.resize(*NARROW_SIZE)
+            QApplication.processEvents()
+            try:
+                issues += [f"[narrow] {issue}" for issue in audit(window, touch=True, narrow=True)]
+            finally:
+                if fixed[0] == fixed[1]:
+                    window.setMinimumWidth(fixed[0])
+                    window.setMaximumWidth(fixed[1])
         finally:
             restore()
     case.assertEqual(issues, [], f"{type(window).__name__} has accessibility problems")

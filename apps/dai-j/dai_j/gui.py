@@ -20,11 +20,12 @@ from PyQt6.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, QUrl, pyqt
 from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QKeySequence, QShortcut, QTextBlockFormat, QTextCursor
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFormLayout, QGroupBox,
                              QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QPushButton,
-                             QSpinBox, QSplitter, QStackedWidget, QTextBrowser, QTextEdit, QToolBar, QTreeWidget,
+                             QSpinBox, QStackedWidget, QTextBrowser, QTextEdit, QToolBar, QTreeWidget,
                              QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, qt_direction, ui_lang
 from dai_style import themed
+from dai_style.panes import Panes, touch_scrolling
 
 from . import __author__, __version__, accounts as acc, compose, discover, engine, localmail, mail, sanitize
 from .text import error, t
@@ -696,7 +697,7 @@ class MainWindow(QMainWindow):
         return page
 
     def _mail_page(self) -> QWidget:
-        splitter = QSplitter()
+        splitter = Panes()  # folders | messages | message; stacked when narrow (docs/MOBILE.md A2)
         self.folders = QTreeWidget()
         self.folders.setHeaderHidden(True)
         self.folders.setAccessibleName(t("folders", self.lang))
@@ -767,6 +768,7 @@ class MainWindow(QMainWindow):
         splitter.addWidget(middle)
         splitter.addWidget(right)
         splitter.setSizes([220, 420, 460])
+        touch_scrolling(splitter)
         self.statusBar().showMessage("")
         return splitter
 

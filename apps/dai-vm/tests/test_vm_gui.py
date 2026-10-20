@@ -161,7 +161,7 @@ class WindowTests(unittest.TestCase):
         for lang in ("en", "he"):
             win = self.window(lang=lang)
             self.create(win, name=f"m-{lang}")
-            assert_accessible(self, win)
+            assert_accessible(self, win, touch=True)
             gui = sys.modules["dai_vm.gui"]
             for dialog in (gui.NewMachineDialog(win, lang, win.report, False, win.open_url),
                            gui.ConfirmDialog(win, lang, "t", "text", "yes")):

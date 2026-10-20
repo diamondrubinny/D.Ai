@@ -235,3 +235,10 @@ Wayland תומך במרווח (layer-shell margin) ובשקיפות עם פינ�
 ---
 
 © 2026 Diamond Rubinny (d.Ai) · D.Ai OS · Apache-2.0
+
+## Touch mode (docs/MOBILE.md A2)
+
+The same bar, bigger: `panelSize=72`, `iconSize=36`, task buttons 64 px, the island the full width.
+`dai-panel-touch on|off` rewrites those keys in the person's `panel.conf`; `startdai-wayland` calls it at every
+login with the touch profile's answer (`dai_style.touch()`), so "touch mode" in D.Ai Tune takes effect at the next
+login and "touch mode off" restores these sizes.

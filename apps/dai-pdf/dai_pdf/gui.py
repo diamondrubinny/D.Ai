@@ -17,11 +17,12 @@ from typing import Callable
 from PyQt6.QtCore import QPoint, QRect, QRectF, QSize, Qt, QTimer
 from PyQt6.QtGui import QColor, QGuiApplication, QIcon, QImage, QKeySequence, QPainter, QPen, QPixmap, QShortcut
 from PyQt6.QtWidgets import (QApplication, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout,
-                             QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QScrollArea, QSplitter,
+                             QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QScrollArea,
                              QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
+from dai_style.panes import Panes, WrapRow, touch_scrolling
 
 from .reader import Document, PdfError, Reader
 from .text import find_all
@@ -378,6 +379,7 @@ class PdfWindow(QWidget):
         self.setStyleSheet(STYLE)
         self.resize(1100, 760)
         self._build()
+        touch_scrolling(self)
         self._shortcuts()
         self.render_timer = QTimer(self)
         self.render_timer.setSingleShot(True)
@@ -406,7 +408,7 @@ class PdfWindow(QWidget):
 
     def _build(self) -> None:
         outer = QVBoxLayout(self)
-        top = QHBoxLayout()
+        top = WrapRow()  # the toolbar wraps onto more rows when the window is narrow (docs/MOBILE.md A2)
         title = QLabel("💎 D.Ai PDF")
         title.setObjectName("AppTitle")
         top.addWidget(title)
@@ -443,7 +445,7 @@ class PdfWindow(QWidget):
         self.search_field.setAccessibleName(say(self.lang, "Search in the file", "חיפוש בקובץ"))
         self.search_field.setMinimumWidth(180)
         self.search_field.returnPressed.connect(self.search)
-        top.addWidget(self.search_field, 1)
+        top.addWidget(self.search_field)
         self.side_button = self._button("☰", say(self.lang, "Show or hide the side panel", "הצגה או הסתרה של לוח הצד"),
                                         self.toggle_side, top)
         self.info_button = self._button("ⓘ", say(self.lang, "About this PDF", "על קובץ ה-PDF הזה"), self.show_info, top)
@@ -461,7 +463,7 @@ class PdfWindow(QWidget):
         self.banner.hide()
         outer.addWidget(self.banner)
 
-        self.splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.splitter = Panes()  # side panel beside the page; above it when narrow (docs/MOBILE.md A2)
         self.side = QTabWidget()
         self.side.setAccessibleName(say(self.lang, "Side panel", "לוח הצד"))
         self.thumbs = QListWidget()

@@ -1,0 +1,24 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# The Diamond Bar in touch mode (docs/MOBILE.md A2): the same panel, bigger, the island the full width.
+#   dai-panel-touch on|off [panel.conf]
+# Rewrites the size keys in the person's panel.conf (idempotent); lxqt-panel reads it at the next login.
+# startdai-wayland calls it at every login with the touch profile's answer (dai_style.touch).
+set -eu
+mode=${1:-}
+conf=${2:-${XDG_CONFIG_HOME:-$HOME/.config}/lxqt/panel.conf}
+case "$mode" in
+	on)  panel=72; icon=36; width=100; button=64 ;;
+	off) panel=56; icon=26; width=80;  button=48 ;;
+	*) echo "usage: dai-panel-touch on|off [panel.conf]" >&2; exit 2 ;;
+esac
+[ -f "$conf" ] || exit 0
+tmp=$(mktemp "${conf}.XXXXXX")
+sed -e "s/^panelSize=.*/panelSize=$panel/" -e "s/^iconSize=.*/iconSize=$icon/" -e "s/^width=.*/width=$width/" \
+	-e "s/^buttonWidth=.*/buttonWidth=$button/" "$conf" >"$tmp"
+if cmp -s "$conf" "$tmp"; then
+	rm -f "$tmp"
+else
+	mv "$tmp" "$conf"
+fi

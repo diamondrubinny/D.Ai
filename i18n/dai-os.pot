@@ -187,13 +187,13 @@ msgid "A fast, private and secure system with a built-in assistant that runs on 
 msgstr ""
 
 #. he: טופס בו היה שולח נתונים לכתובת ({n}). נחסם.
-#: apps/dai-pdf/dai_pdf/gui.py:116
+#: apps/dai-pdf/dai_pdf/gui.py:117
 #, python-brace-format
 msgid "A form in it would send data to an address ({n}). Blocked."
 msgstr ""
 
 #. he: קישור בקובץ ה-PDF
-#: apps/dai-pdf/dai_pdf/gui.py:272
+#: apps/dai-pdf/dai_pdf/gui.py:273
 msgid "A link in this PDF"
 msgstr ""
 
@@ -208,7 +208,7 @@ msgid "A machine cannot run here yet."
 msgstr ""
 
 #. he: הודעה מאת {name} עוכבה כי {why}. אלה סימני אזהרה, לא הוכחה.
-#: apps/dai-chat/dai_chat/gui.py:492
+#: apps/dai-chat/dai_chat/gui.py:494
 #, python-brace-format
 msgid "A message from {name} was held because {why}. These are warning signs, not proof."
 msgstr ""
@@ -220,12 +220,12 @@ msgid "A message from {name} was held: it looks suspicious."
 msgstr ""
 
 #. he: שם: אותיות, ספרות, נקודות, מקפים, קו תחתון.
-#: apps/dai-vm/dai_vm/gui.py:247
+#: apps/dai-vm/dai_vm/gui.py:248
 msgid "A name: letters, digits, dots, dashes, underscores."
 msgstr ""
 
 #. he: מכונה חדשה
-#: apps/dai-vm/dai_vm/gui.py:140
+#: apps/dai-vm/dai_vm/gui.py:141
 msgid "A new machine"
 msgstr ""
 
@@ -261,8 +261,8 @@ msgid "AI-written recipe — review every step carefully:"
 msgstr ""
 
 #. he: על קובץ ה-PDF הזה
-#: apps/dai-pdf/dai_pdf/gui.py:309
-#: apps/dai-pdf/dai_pdf/gui.py:449
+#: apps/dai-pdf/dai_pdf/gui.py:310
+#: apps/dai-pdf/dai_pdf/gui.py:451
 msgid "About this PDF"
 msgstr ""
 
@@ -272,7 +272,7 @@ msgid "About you"
 msgstr ""
 
 #. he: אישור
-#: apps/dai-chat/dai_chat/gui.py:316
+#: apps/dai-chat/dai_chat/gui.py:317
 msgid "Accept"
 msgstr ""
 
@@ -293,13 +293,13 @@ msgid "Active: {when}"
 msgstr ""
 
 #. he: הוספה
-#: apps/dai-chat/dai_chat/gui.py:174
+#: apps/dai-chat/dai_chat/gui.py:175
 msgid "Add"
 msgstr ""
 
 #. he: הוספת איש קשר
-#: apps/dai-chat/dai_chat/gui.py:142
-#: apps/dai-chat/dai_chat/gui.py:280
+#: apps/dai-chat/dai_chat/gui.py:143
+#: apps/dai-chat/dai_chat/gui.py:281
 msgid "Add a contact"
 msgstr ""
 
@@ -385,7 +385,7 @@ msgid "Allow {kind}"
 msgstr ""
 
 #. he: מערכת אחרת
-#: apps/dai-vm/dai_vm/gui.py:182
+#: apps/dai-vm/dai_vm/gui.py:183
 msgid "Another system"
 msgstr ""
 
@@ -487,17 +487,17 @@ msgid "At login"
 msgstr ""
 
 #. he: צירוף דיסק דרייברי VirtIO (התקנת Windows צריכה אותו כדי לראות את הדיסק)
-#: apps/dai-vm/dai_vm/gui.py:203
+#: apps/dai-vm/dai_vm/gui.py:204
 msgid "Attach the VirtIO drivers CD (Windows setup needs it to see the disk)"
 msgstr ""
 
 #. he: קבצים מצורפים
-#: apps/dai-pdf/dai_pdf/gui.py:487
+#: apps/dai-pdf/dai_pdf/gui.py:489
 msgid "Attachments"
 msgstr ""
 
 #. he: קבצים מצורפים (לעולם לא נפתחים)
-#: apps/dai-pdf/dai_pdf/gui.py:486
+#: apps/dai-pdf/dai_pdf/gui.py:488
 msgid "Attachments (never opened)"
 msgstr ""
 
@@ -508,7 +508,7 @@ msgid "Attachments: {names}"
 msgstr ""
 
 #. he: מחבר
-#: apps/dai-pdf/dai_pdf/gui.py:319
+#: apps/dai-pdf/dai_pdf/gui.py:320
 msgid "Author"
 msgstr ""
 
@@ -587,7 +587,7 @@ msgid "Battery is fine"
 msgstr ""
 
 #. he: חיסכון בסוללה
-#: apps/dai-quick/dai_quick/gui.py:29
+#: apps/dai-quick/dai_quick/gui.py:30
 msgid "Battery saver"
 msgstr ""
 
@@ -665,13 +665,13 @@ msgid "CPU"
 msgstr ""
 
 #. he: התקשרו ל־{name} או היפגשו. שניכם אמורים לראות את ששת אלה, בסדר הזה:
-#: apps/dai-chat/dai_chat/gui.py:216
+#: apps/dai-chat/dai_chat/gui.py:217
 #, python-brace-format
 msgid "Call {name} or meet. You should both see these six, in this order:"
 msgstr ""
 
 #. he: השם שבחרו לעצמם: {name}
-#: apps/dai-chat/dai_chat/gui.py:447
+#: apps/dai-chat/dai_chat/gui.py:449
 #, python-brace-format
 msgid "Calls themselves: {name}"
 msgstr ""
@@ -682,11 +682,11 @@ msgid "Camera"
 msgstr ""
 
 #. he: ביטול
-#: apps/dai-chat/dai_chat/gui.py:116
-#: apps/dai-chat/dai_chat/gui.py:179
+#: apps/dai-chat/dai_chat/gui.py:117
+#: apps/dai-chat/dai_chat/gui.py:180
 #: apps/dai-j/dai_j/text.py:80
 #: apps/dai-mom/dai_mom/text.py:86
-#: apps/dai-pdf/dai_pdf/gui.py:255
+#: apps/dai-pdf/dai_pdf/gui.py:256
 msgid "Cancel"
 msgstr ""
 
@@ -732,7 +732,7 @@ msgid "Change it…"
 msgstr ""
 
 #. he: Chat כבוי. הודעות שתכתבו ימתינו במחשב הזה.
-#: apps/dai-chat/dai_chat/gui.py:416
+#: apps/dai-chat/dai_chat/gui.py:418
 msgid "Chat is off. Messages you write wait on this computer."
 msgstr ""
 
@@ -773,13 +773,13 @@ msgid "Checking this computer…"
 msgstr ""
 
 #. he: בחרו איש קשר, או הוסיפו אחד.
-#: apps/dai-chat/dai_chat/gui.py:289
+#: apps/dai-chat/dai_chat/gui.py:290
 msgid "Choose a contact, or add one."
 msgstr ""
 
 #. he: בחרו מכונה, או צרו אחת.
-#: apps/dai-vm/dai_vm/gui.py:344
-#: apps/dai-vm/dai_vm/gui.py:431
+#: apps/dai-vm/dai_vm/gui.py:346
+#: apps/dai-vm/dai_vm/gui.py:437
 msgid "Choose a machine, or make one."
 msgstr ""
 
@@ -789,22 +789,22 @@ msgid "Choose a message to read it."
 msgstr ""
 
 #. he: בחירת קובץ ה-ISO
-#: apps/dai-vm/dai_vm/gui.py:170
+#: apps/dai-vm/dai_vm/gui.py:171
 msgid "Choose the ISO file"
 msgstr ""
 
 #. he: בחרו את ה-ISO של ההתקנה.
-#: apps/dai-vm/dai_vm/gui.py:260
+#: apps/dai-vm/dai_vm/gui.py:261
 msgid "Choose the installation ISO."
 msgstr ""
 
 #. he: בחירת שם
-#: apps/dai-chat/dai_chat/gui.py:406
+#: apps/dai-chat/dai_chat/gui.py:408
 msgid "Choose your name"
 msgstr ""
 
 #. he: בחירה…
-#: apps/dai-vm/dai_vm/gui.py:169
+#: apps/dai-vm/dai_vm/gui.py:170
 msgid "Choose…"
 msgstr ""
 
@@ -825,14 +825,14 @@ msgid "Clipboard history"
 msgstr ""
 
 #. he: לוח: כבוי.
-#: apps/dai-vm/dai_vm/gui.py:371
+#: apps/dai-vm/dai_vm/gui.py:372
 msgid "Clipboard: off."
 msgstr ""
 
 #. he: סגירה
 #: apps/dai-mom/dai_mom/text.py:21
-#: apps/dai-pdf/dai_pdf/gui.py:350
-#: apps/dai-pdf/dai_pdf/gui.py:293
+#: apps/dai-pdf/dai_pdf/gui.py:351
+#: apps/dai-pdf/dai_pdf/gui.py:294
 msgid "Close"
 msgstr ""
 
@@ -886,7 +886,7 @@ msgid "Compare it with the checksum on the page you downloaded from."
 msgstr ""
 
 #. he: השוואת סמלים
-#: apps/dai-chat/dai_chat/gui.py:295
+#: apps/dai-chat/dai_chat/gui.py:296
 msgid "Compare symbols"
 msgstr ""
 
@@ -897,13 +897,13 @@ msgid "Compare the six symbols with {name} first (dai-chat symbols {name}): pict
 msgstr ""
 
 #. he: השוו קודם את הסמלים עם {name}: תמונות מתקבלות רק מאנשי קשר מאומתים.
-#: apps/dai-chat/dai_chat/gui.py:572
+#: apps/dai-chat/dai_chat/gui.py:574
 #, python-brace-format
 msgid "Compare the symbols with {name} first: pictures are only accepted from verified contacts."
 msgstr ""
 
 #. he: השוואה עם {name}
-#: apps/dai-chat/dai_chat/gui.py:213
+#: apps/dai-chat/dai_chat/gui.py:214
 #, python-brace-format
 msgid "Compare with {name}"
 msgstr ""
@@ -950,7 +950,7 @@ msgid "Consider replacing the battery"
 msgstr ""
 
 #. he: אנשי קשר
-#: apps/dai-chat/dai_chat/gui.py:276
+#: apps/dai-chat/dai_chat/gui.py:277
 msgid "Contacts"
 msgstr ""
 
@@ -960,7 +960,7 @@ msgid "Continue? [y/N] "
 msgstr ""
 
 #. he: שיחה
-#: apps/dai-chat/dai_chat/gui.py:328
+#: apps/dai-chat/dai_chat/gui.py:329
 msgid "Conversation"
 msgstr ""
 
@@ -970,7 +970,7 @@ msgid "Copies: "
 msgstr ""
 
 #. he: העתקת הקוד שלי
-#: apps/dai-chat/dai_chat/gui.py:171
+#: apps/dai-chat/dai_chat/gui.py:172
 msgid "Copy my code"
 msgstr ""
 
@@ -1013,7 +1013,7 @@ msgid "Could not read the text: {error}"
 msgstr ""
 
 #. he: יצירת המכונה
-#: apps/dai-vm/dai_vm/gui.py:227
+#: apps/dai-vm/dai_vm/gui.py:228
 msgid "Create the machine"
 msgstr ""
 
@@ -1023,12 +1023,12 @@ msgid "Create ✦"
 msgstr ""
 
 #. he: נוצר
-#: apps/dai-pdf/dai_pdf/gui.py:324
+#: apps/dai-pdf/dai_pdf/gui.py:325
 msgid "Created"
 msgstr ""
 
 #. he: נוצר באמצעות
-#: apps/dai-pdf/dai_pdf/gui.py:322
+#: apps/dai-pdf/dai_pdf/gui.py:323
 msgid "Created with"
 msgstr ""
 
@@ -1083,7 +1083,7 @@ msgid "D.Ai Forge — add capabilities, integrations and apps by writing what yo
 msgstr ""
 
 #. he: D.Ai Heal מצא תקלות ({count})
-#: apps/dai-quick/dai_quick/gui.py:38
+#: apps/dai-quick/dai_quick/gui.py:39
 #, python-brace-format
 msgid "D.Ai Heal found {count} problem(s)"
 msgstr ""
@@ -1139,7 +1139,7 @@ msgid "D.Ai has an idea for you"
 msgstr ""
 
 #. he: D.Ai לעולם לא מוריד Windows. הורידו את ה-ISO מהעמוד של Microsoft, בחרו אותו כאן, והקלידו את המפתח שלכם בהתקנת Windows. האם הרישיון שלכם רשאי לרוץ במכונה וירטואלית נקבע בתנאי Microsoft למהדורה שלו.
-#: apps/dai-vm/dai_vm/gui.py:145
+#: apps/dai-vm/dai_vm/gui.py:146
 msgid "D.Ai never downloads Windows. Download the ISO from Microsoft's page, choose it here, and type your own key into Windows setup. Whether your license may run in a virtual machine is set by Microsoft's terms for its edition."
 msgstr ""
 
@@ -1176,7 +1176,7 @@ msgid "Date"
 msgstr ""
 
 #. he: דחייה וחסימה
-#: apps/dai-chat/dai_chat/gui.py:313
+#: apps/dai-chat/dai_chat/gui.py:314
 msgid "Decline and block"
 msgstr ""
 
@@ -1192,17 +1192,17 @@ msgstr ""
 
 #. he: מחיקה
 #: apps/dai-j/dai_j/text.py:33
-#: apps/dai-vm/dai_vm/gui.py:508
+#: apps/dai-vm/dai_vm/gui.py:514
 msgid "Delete"
 msgstr ""
 
 #. he: מחיקה
-#: apps/dai-chat/dai_chat/gui.py:314
+#: apps/dai-chat/dai_chat/gui.py:315
 msgid "Delete it"
 msgstr ""
 
 #. he: למחוק את {name}?
-#: apps/dai-vm/dai_vm/gui.py:505
+#: apps/dai-vm/dai_vm/gui.py:511
 #, python-brace-format
 msgid "Delete {name}?"
 msgstr ""
@@ -1236,7 +1236,7 @@ msgid "Deleted."
 msgstr ""
 
 #. he: מחיקה…
-#: apps/dai-vm/dai_vm/gui.py:358
+#: apps/dai-vm/dai_vm/gui.py:360
 msgid "Delete…"
 msgstr ""
 
@@ -1345,7 +1345,7 @@ msgid "Diamond, the local AI, and voice"
 msgstr ""
 
 #. he: תמונות דיסק (*.iso);;כל הקבצים (*)
-#: apps/dai-vm/dai_vm/gui.py:237
+#: apps/dai-vm/dai_vm/gui.py:238
 msgid "Disc images (*.iso);;All files (*)"
 msgstr ""
 
@@ -1360,7 +1360,7 @@ msgid "Discard this message?"
 msgstr ""
 
 #. he: דיסק
-#: apps/dai-vm/dai_vm/gui.py:202
+#: apps/dai-vm/dai_vm/gui.py:203
 msgid "Disk"
 msgstr ""
 
@@ -1390,7 +1390,7 @@ msgid "Disk passphrase: "
 msgstr ""
 
 #. he: גודל דיסק (גדל לפי השימוש)
-#: apps/dai-vm/dai_vm/gui.py:201
+#: apps/dai-vm/dai_vm/gui.py:202
 msgid "Disk size (grows as used)"
 msgstr ""
 
@@ -1401,7 +1401,7 @@ msgid "Disk: {free} free of {total}"
 msgstr ""
 
 #. he: לא להפריע
-#: apps/dai-quick/dai_quick/gui.py:28
+#: apps/dai-quick/dai_quick/gui.py:29
 msgid "Do not disturb"
 msgstr ""
 
@@ -1427,7 +1427,7 @@ msgid "Done: {name}"
 msgstr ""
 
 #. he: הורדת דרייברים
-#: apps/dai-vm/dai_vm/gui.py:337
+#: apps/dai-vm/dai_vm/gui.py:339
 msgid "Download drivers"
 msgstr ""
 
@@ -1453,7 +1453,7 @@ msgid "Downloading and verifying the model…"
 msgstr ""
 
 #. he: מוריד את הדרייברים… {pct}%
-#: apps/dai-vm/dai_vm/gui.py:547
+#: apps/dai-vm/dai_vm/gui.py:553
 #, python-brace-format
 msgid "Downloading the drivers… {pct}%"
 msgstr ""
@@ -1485,7 +1485,7 @@ msgid "Drive: "
 msgstr ""
 
 #. he: הדרייברים הורדו ואומתו.
-#: apps/dai-vm/dai_vm/gui.py:555
+#: apps/dai-vm/dai_vm/gui.py:561
 msgid "Drivers downloaded and verified."
 msgstr ""
 
@@ -1515,7 +1515,7 @@ msgid "Encrypt"
 msgstr ""
 
 #. he: מוצפן
-#: apps/dai-pdf/dai_pdf/gui.py:326
+#: apps/dai-pdf/dai_pdf/gui.py:327
 msgid "Encrypted"
 msgstr ""
 
@@ -1561,7 +1561,7 @@ msgid "Enter open  ·  ↑↓ move  ·  Esc close  ·  Alt+Shift language"
 msgstr ""
 
 #. he: Enter או לחיצה כפולה לפתיחה
-#: apps/dai-chat/dai_chat/gui.py:475
+#: apps/dai-chat/dai_chat/gui.py:477
 msgid "Enter or double-click to open"
 msgstr ""
 
@@ -1576,7 +1576,7 @@ msgid "Enter to copy"
 msgstr ""
 
 #. he: כל PDF נפתח בארגז חול: בלי רשת, בלי גישה לקבצים שלכם.
-#: apps/dai-pdf/dai_pdf/gui.py:514
+#: apps/dai-pdf/dai_pdf/gui.py:516
 msgid "Every PDF opens in a sandbox: no network, no access to your files."
 msgstr ""
 
@@ -1602,7 +1602,7 @@ msgid "Everything is set up. You can undo it at any time."
 msgstr ""
 
 #. he: הכל עובד
-#: apps/dai-quick/dai_quick/gui.py:37
+#: apps/dai-quick/dai_quick/gui.py:38
 msgid "Everything works"
 msgstr ""
 
@@ -1623,7 +1623,7 @@ msgid "Fewer apps at login…"
 msgstr ""
 
 #. he: קובץ
-#: apps/dai-pdf/dai_pdf/gui.py:316
+#: apps/dai-pdf/dai_pdf/gui.py:317
 msgid "File"
 msgstr ""
 
@@ -1675,7 +1675,7 @@ msgid "First choose the name your contacts will see (not your user name): dai-ch
 msgstr ""
 
 #. he: לרוחב החלון
-#: apps/dai-pdf/dai_pdf/gui.py:432
+#: apps/dai-pdf/dai_pdf/gui.py:434
 msgid "Fit width"
 msgstr ""
 
@@ -1742,7 +1742,7 @@ msgid "Force close {name}?"
 msgstr ""
 
 #. he: כיבוי בכוח
-#: apps/dai-vm/dai_vm/gui.py:357
+#: apps/dai-vm/dai_vm/gui.py:359
 msgid "Force off"
 msgstr ""
 
@@ -1812,12 +1812,12 @@ msgid "German"
 msgstr ""
 
 #. he: לקבל עזרה
-#: apps/dai-quick/dai_quick/gui.py:39
+#: apps/dai-quick/dai_quick/gui.py:40
 msgid "Get help"
 msgstr ""
 
 #. he: תנו להם גם את הקוד שלכם:
-#: apps/dai-chat/dai_chat/gui.py:158
+#: apps/dai-chat/dai_chat/gui.py:159
 msgid "Give them your code too:"
 msgstr ""
 
@@ -1918,7 +1918,7 @@ msgid "If it keeps happening, report it (nothing is sent without you): https://g
 msgstr ""
 
 #. he: אם הם שונים, ייתכן שמישהו באמצע: אל תאמתו.
-#: apps/dai-chat/dai_chat/gui.py:237
+#: apps/dai-chat/dai_chat/gui.py:238
 msgid "If they are different, someone may be in the middle: do not verify."
 msgstr ""
 
@@ -1944,7 +1944,7 @@ msgid "Importing {name} into J…"
 msgstr ""
 
 #. he: לשפר
-#: apps/dai-quick/dai_quick/gui.py:36
+#: apps/dai-quick/dai_quick/gui.py:37
 msgid "Improve"
 msgstr ""
 
@@ -1979,18 +1979,18 @@ msgid "Install: "
 msgstr ""
 
 #. he: ISO להתקנה
-#: apps/dai-vm/dai_vm/gui.py:173
+#: apps/dai-vm/dai_vm/gui.py:174
 msgid "Installation ISO"
 msgstr ""
 
 #. he: הוא מבקש לפתוח קובץ אחר ({n}). לא נפתח.
-#: apps/dai-pdf/dai_pdf/gui.py:113
+#: apps/dai-pdf/dai_pdf/gui.py:114
 #, python-brace-format
 msgid "It asks to open another file ({n}). Not opened."
 msgstr ""
 
 #. he: הוא מבקש להריץ תוכנית על המחשב הזה ({n}). נדחה.
-#: apps/dai-pdf/dai_pdf/gui.py:110
+#: apps/dai-pdf/dai_pdf/gui.py:111
 #, python-brace-format
 msgid "It asks to run a program on this computer ({n}). Refused."
 msgstr ""
@@ -2086,7 +2086,7 @@ msgid "Keyboard layouts: "
 msgstr ""
 
 #. he: מילות מפתח
-#: apps/dai-pdf/dai_pdf/gui.py:321
+#: apps/dai-pdf/dai_pdf/gui.py:322
 msgid "Keywords"
 msgstr ""
 
@@ -2205,12 +2205,12 @@ msgid "MY APPS"
 msgstr ""
 
 #. he: מכונות
-#: apps/dai-vm/dai_vm/gui.py:327
+#: apps/dai-vm/dai_vm/gui.py:329
 msgid "Machines"
 msgstr ""
 
 #. he: מכונות רצות כמוכם, בתיקיית הבית; שום דבר עליהן לא יוצא מהמחשב הזה.
-#: apps/dai-vm/dai_vm/gui.py:392
+#: apps/dai-vm/dai_vm/gui.py:398
 msgid "Machines run as you, in your home folder; nothing about them leaves this computer."
 msgstr ""
 
@@ -2231,14 +2231,14 @@ msgid "Mark unread"
 msgstr ""
 
 #. he: אני
-#: apps/dai-chat/dai_chat/gui.py:459
+#: apps/dai-chat/dai_chat/gui.py:461
 msgid "Me"
 msgstr ""
 
 #. he: זיכרון
 #: apps/dai-mom/dai_mom/text.py:17
-#: apps/dai-vm/dai_vm/gui.py:190
 #: apps/dai-vm/dai_vm/gui.py:191
+#: apps/dai-vm/dai_vm/gui.py:192
 msgid "Memory"
 msgstr ""
 
@@ -2254,7 +2254,7 @@ msgid "Memory: {used} of {total} in use"
 msgstr ""
 
 #. he: הודעה
-#: apps/dai-chat/dai_chat/gui.py:337
+#: apps/dai-chat/dai_chat/gui.py:338
 #: apps/dai-j/dai_j/text.py:21
 #: apps/dai-j/dai_j/text.py:184
 msgid "Message"
@@ -2277,7 +2277,7 @@ msgid "Models run on this computer: your questions, code and voice never leave i
 msgstr ""
 
 #. he: שונה
-#: apps/dai-pdf/dai_pdf/gui.py:325
+#: apps/dai-pdf/dai_pdf/gui.py:326
 msgid "Modified"
 msgstr ""
 
@@ -2292,14 +2292,14 @@ msgid "Music"
 msgstr ""
 
 #. he: השתקת מיק׳
-#: apps/dai-quick/dai_quick/gui.py:30
+#: apps/dai-quick/dai_quick/gui.py:31
 msgid "Mute mic"
 msgstr ""
 
 #. he: שם
 #: apps/dai-mom/dai_mom/text.py:16
-#: apps/dai-vm/dai_vm/gui.py:161
-#: apps/dai-vm/dai_vm/gui.py:163
+#: apps/dai-vm/dai_vm/gui.py:162
+#: apps/dai-vm/dai_vm/gui.py:164
 msgid "Name"
 msgstr ""
 
@@ -2315,7 +2315,7 @@ msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it
 msgstr ""
 
 #. he: רשת: האינטרנט דרך D.Ai, כלקוח NAT ‏(passt). שום דבר מהרשת המקומית לא נכנס.
-#: apps/dai-vm/dai_vm/gui.py:369
+#: apps/dai-vm/dai_vm/gui.py:370
 msgid "Network: the internet through D.Ai, as a NAT client (passt). Nothing of the local network reaches in."
 msgstr ""
 
@@ -2342,7 +2342,7 @@ msgid "Next"
 msgstr ""
 
 #. he: העמוד הבא
-#: apps/dai-pdf/dai_pdf/gui.py:426
+#: apps/dai-pdf/dai_pdf/gui.py:428
 msgid "Next page"
 msgstr ""
 
@@ -2367,7 +2367,7 @@ msgid "No apps yet. Try: dai-forge \"build an app for a shopping list\""
 msgstr ""
 
 #. he: אין קבצים מצורפים
-#: apps/dai-pdf/dai_pdf/gui.py:657
+#: apps/dai-pdf/dai_pdf/gui.py:659
 msgid "No attached files"
 msgstr ""
 
@@ -2403,7 +2403,7 @@ msgid "No display name yet. Choose one: dai-chat name NAME"
 msgstr ""
 
 #. he: אין קטלוג דרייברים.
-#: apps/dai-vm/dai_vm/gui.py:529
+#: apps/dai-vm/dai_vm/gui.py:535
 msgid "No driver catalog."
 msgstr ""
 
@@ -2554,7 +2554,7 @@ msgstr ""
 
 #. he: לא נוצר: {why}
 #: apps/dai-vm/dai_vm/cli.py:116
-#: apps/dai-vm/dai_vm/gui.py:491
+#: apps/dai-vm/dai_vm/gui.py:497
 #, python-brace-format
 msgid "Not created: {why}"
 msgstr ""
@@ -2652,7 +2652,7 @@ msgid "Notes"
 msgstr ""
 
 #. he: שום דבר על הקובץ הזה לא יוצא מהמחשב הזה.
-#: apps/dai-pdf/dai_pdf/gui.py:347
+#: apps/dai-pdf/dai_pdf/gui.py:348
 msgid "Nothing about this file leaves this computer."
 msgstr ""
 
@@ -2663,7 +2663,7 @@ msgid "Nothing called {name} is running."
 msgstr ""
 
 #. he: לא נמצא דבר עבור “{q}”
-#: apps/dai-pdf/dai_pdf/gui.py:903
+#: apps/dai-pdf/dai_pdf/gui.py:905
 #, python-brace-format
 msgid "Nothing found for “{q}”"
 msgstr ""
@@ -2684,7 +2684,7 @@ msgid "Nothing in this file acts on its own."
 msgstr ""
 
 #. he: שום דבר לא מקליט
-#: apps/dai-quick/dai_quick/gui.py:40
+#: apps/dai-quick/dai_quick/gui.py:41
 msgid "Nothing is recording"
 msgstr ""
 
@@ -2801,7 +2801,7 @@ msgid "On. Suggestions appear in D.Ai Command (Super+Space)."
 msgstr ""
 
 #. he: פועל: הודעות יוצאות ברגע שאנשי הקשר מחוברים.
-#: apps/dai-chat/dai_chat/gui.py:414
+#: apps/dai-chat/dai_chat/gui.py:416
 msgid "On: messages go out as soon as your contacts are online."
 msgstr ""
 
@@ -2842,7 +2842,7 @@ msgid "Only {mem_available} of {mem_total} is free."
 msgstr ""
 
 #. he: פתיחה
-#: apps/dai-pdf/dai_pdf/gui.py:259
+#: apps/dai-pdf/dai_pdf/gui.py:260
 msgid "Open"
 msgstr ""
 
@@ -2852,18 +2852,18 @@ msgid "Open D.Ai Heal (Super+F1)."
 msgstr ""
 
 #. he: פתיחת עמוד ההורדה של Microsoft
-#: apps/dai-vm/dai_vm/gui.py:153
+#: apps/dai-vm/dai_vm/gui.py:154
 msgid "Open Microsoft's download page"
 msgstr ""
 
 #. he: פתיחת PDF
-#: apps/dai-pdf/dai_pdf/gui.py:413
-#: apps/dai-pdf/dai_pdf/gui.py:551
+#: apps/dai-pdf/dai_pdf/gui.py:415
+#: apps/dai-pdf/dai_pdf/gui.py:553
 msgid "Open a PDF"
 msgstr ""
 
 #. he: פתחו קובץ PDF כדי לקרוא אותו כאן, בתוך ארגז החול.
-#: apps/dai-pdf/dai_pdf/gui.py:392
+#: apps/dai-pdf/dai_pdf/gui.py:394
 msgid "Open a PDF to read it here, inside the sandbox."
 msgstr ""
 
@@ -2890,12 +2890,12 @@ msgid "Open the code"
 msgstr ""
 
 #. he: פתיחת הקישור
-#: apps/dai-pdf/dai_pdf/gui.py:298
+#: apps/dai-pdf/dai_pdf/gui.py:299
 msgid "Open the link"
 msgstr ""
 
 #. he: לפתוח את הכתובת הזו בדפדפן?
-#: apps/dai-pdf/dai_pdf/gui.py:277
+#: apps/dai-pdf/dai_pdf/gui.py:278
 msgid "Open this address in the browser?"
 msgstr ""
 
@@ -2905,12 +2905,12 @@ msgid "Opened again. If it crashes again, I will tell you."
 msgstr ""
 
 #. he: נפתח בארגז חול
-#: apps/dai-pdf/dai_pdf/gui.py:327
+#: apps/dai-pdf/dai_pdf/gui.py:328
 msgid "Opened in a sandbox"
 msgstr ""
 
 #. he: פתיחה…
-#: apps/dai-pdf/dai_pdf/gui.py:413
+#: apps/dai-pdf/dai_pdf/gui.py:415
 msgid "Open…"
 msgstr ""
 
@@ -2925,8 +2925,8 @@ msgid "Outgoing (SMTP)"
 msgstr ""
 
 #. he: תוכן העניינים
-#: apps/dai-pdf/dai_pdf/gui.py:477
-#: apps/dai-pdf/dai_pdf/gui.py:480
+#: apps/dai-pdf/dai_pdf/gui.py:479
+#: apps/dai-pdf/dai_pdf/gui.py:482
 msgid "Outline"
 msgstr ""
 
@@ -2936,7 +2936,7 @@ msgid "Outlook files need readpst. Install it from D.Ai Command: !install pst-ut
 msgstr ""
 
 #. he: קובצי PDF (*.pdf);;כל הקבצים (*)
-#: apps/dai-pdf/dai_pdf/gui.py:552
+#: apps/dai-pdf/dai_pdf/gui.py:554
 msgid "PDF files (*.pdf);;All files (*)"
 msgstr ""
 
@@ -2946,27 +2946,27 @@ msgid "Packages come only from the signed Debian/D.Ai repositories."
 msgstr ""
 
 #. he: מספר עמוד
-#: apps/dai-pdf/dai_pdf/gui.py:420
+#: apps/dai-pdf/dai_pdf/gui.py:422
 msgid "Page number"
 msgstr ""
 
 #. he: עמוד {n}
-#: apps/dai-pdf/dai_pdf/gui.py:141
-#: apps/dai-pdf/dai_pdf/gui.py:637
+#: apps/dai-pdf/dai_pdf/gui.py:142
+#: apps/dai-pdf/dai_pdf/gui.py:639
 #, python-brace-format
 msgid "Page {n}"
 msgstr ""
 
 #. he: עמוד {n}: {text}
-#: apps/dai-pdf/dai_pdf/gui.py:812
+#: apps/dai-pdf/dai_pdf/gui.py:814
 #, python-brace-format
 msgid "Page {n}: {text}"
 msgstr ""
 
 #. he: עמודים
-#: apps/dai-pdf/dai_pdf/gui.py:472
 #: apps/dai-pdf/dai_pdf/gui.py:474
-#: apps/dai-pdf/dai_pdf/gui.py:317
+#: apps/dai-pdf/dai_pdf/gui.py:476
+#: apps/dai-pdf/dai_pdf/gui.py:318
 msgid "Pages"
 msgstr ""
 
@@ -2978,7 +2978,7 @@ msgstr ""
 
 #. he: סיסמה
 #: apps/dai-j/dai_j/text.py:56
-#: apps/dai-pdf/dai_pdf/gui.py:250
+#: apps/dai-pdf/dai_pdf/gui.py:251
 msgid "Password"
 msgstr ""
 
@@ -2999,7 +2999,7 @@ msgid "Password for {address}"
 msgstr ""
 
 #. he: השהיה
-#: apps/dai-vm/dai_vm/gui.py:354
+#: apps/dai-vm/dai_vm/gui.py:356
 msgid "Pause"
 msgstr ""
 
@@ -3025,12 +3025,12 @@ msgid "Pictures"
 msgstr ""
 
 #. he: תמונה…
-#: apps/dai-chat/dai_chat/gui.py:341
+#: apps/dai-chat/dai_chat/gui.py:342
 msgid "Picture…"
 msgstr ""
 
 #. he: ההתראות מוסתרות; הקלטה ותקלות עדיין מוצגות על היהלום.
-#: apps/dai-quick/dai_quick/gui.py:43
+#: apps/dai-quick/dai_quick/gui.py:44
 msgid "Pop-ups are hidden; recording and problems still show on the diamond."
 msgstr ""
 
@@ -3050,7 +3050,7 @@ msgid "Prepared: the setup opens at the next start."
 msgstr ""
 
 #. he: העמוד הקודם
-#: apps/dai-pdf/dai_pdf/gui.py:415
+#: apps/dai-pdf/dai_pdf/gui.py:417
 msgid "Previous page"
 msgstr ""
 
@@ -3060,7 +3060,7 @@ msgid "Previous version"
 msgstr ""
 
 #. he: הדפסה
-#: apps/dai-pdf/dai_pdf/gui.py:450
+#: apps/dai-pdf/dai_pdf/gui.py:452
 msgid "Print"
 msgstr ""
 
@@ -3070,7 +3070,7 @@ msgid "Printer"
 msgstr ""
 
 #. he: הדפסה אינה זמינה במחשב הזה.
-#: apps/dai-pdf/dai_pdf/gui.py:962
+#: apps/dai-pdf/dai_pdf/gui.py:964
 msgid "Printing is not available on this computer."
 msgstr ""
 
@@ -3086,8 +3086,8 @@ msgid "Processor: {value}%"
 msgstr ""
 
 #. he: מעבדים
-#: apps/dai-vm/dai_vm/gui.py:195
 #: apps/dai-vm/dai_vm/gui.py:196
+#: apps/dai-vm/dai_vm/gui.py:197
 msgid "Processors"
 msgstr ""
 
@@ -3125,7 +3125,7 @@ msgstr ""
 
 #. he: בתור, בלי המיקום ופרטי המצלמה.
 #: apps/dai-chat/dai_chat/cli.py:303
-#: apps/dai-chat/dai_chat/gui.py:591
+#: apps/dai-chat/dai_chat/gui.py:593
 msgid "Queued, without its location and camera details."
 msgstr ""
 
@@ -3196,12 +3196,12 @@ msgid "Receiving is on. New contacts' messages wait for your OK, and every messa
 msgstr ""
 
 #. he: קבלת הודעות: כבויה
-#: apps/dai-chat/dai_chat/gui.py:410
+#: apps/dai-chat/dai_chat/gui.py:412
 msgid "Receiving: off"
 msgstr ""
 
 #. he: קבלת הודעות: פועלת
-#: apps/dai-chat/dai_chat/gui.py:409
+#: apps/dai-chat/dai_chat/gui.py:411
 msgid "Receiving: on"
 msgstr ""
 
@@ -3226,7 +3226,7 @@ msgid "Recommended, plus blocking USB storage devices and turning Bluetooth off.
 msgstr ""
 
 #. he: מקליט עכשיו: {apps}
-#: apps/dai-quick/dai_quick/gui.py:41
+#: apps/dai-quick/dai_quick/gui.py:42
 #, python-brace-format
 msgid "Recording now: {apps}"
 msgstr ""
@@ -3331,7 +3331,7 @@ msgid "Results"
 msgstr ""
 
 #. he: המשך
-#: apps/dai-vm/dai_vm/gui.py:355
+#: apps/dai-vm/dai_vm/gui.py:357
 msgid "Resume"
 msgstr ""
 
@@ -3346,7 +3346,7 @@ msgid "Right to left"
 msgstr ""
 
 #. he: סיבוב התצוגה
-#: apps/dai-pdf/dai_pdf/gui.py:439
+#: apps/dai-pdf/dai_pdf/gui.py:441
 msgid "Rotate the view"
 msgstr ""
 
@@ -3414,7 +3414,7 @@ msgid "Sat"
 msgstr ""
 
 #. he: שמירה
-#: apps/dai-chat/dai_chat/gui.py:119
+#: apps/dai-chat/dai_chat/gui.py:120
 msgid "Save"
 msgstr ""
 
@@ -3462,13 +3462,13 @@ msgid "Screen locks within 10 minutes"
 msgstr ""
 
 #. he: חיפוש
-#: apps/dai-pdf/dai_pdf/gui.py:484
+#: apps/dai-pdf/dai_pdf/gui.py:486
 msgid "Search"
 msgstr ""
 
 #. he: חיפוש בקובץ
-#: apps/dai-pdf/dai_pdf/gui.py:442
-#: apps/dai-pdf/dai_pdf/gui.py:443
+#: apps/dai-pdf/dai_pdf/gui.py:444
+#: apps/dai-pdf/dai_pdf/gui.py:445
 msgid "Search in the file"
 msgstr ""
 
@@ -3478,7 +3478,7 @@ msgid "Search mail…"
 msgstr ""
 
 #. he: תוצאות חיפוש
-#: apps/dai-pdf/dai_pdf/gui.py:482
+#: apps/dai-pdf/dai_pdf/gui.py:484
 msgid "Search results"
 msgstr ""
 
@@ -3505,7 +3505,7 @@ msgid "Security score now: {score}"
 msgstr ""
 
 #. he: ציון האבטחה לא זמין
-#: apps/dai-quick/dai_quick/gui.py:35
+#: apps/dai-quick/dai_quick/gui.py:36
 msgid "Security score unavailable"
 msgstr ""
 
@@ -3536,7 +3536,7 @@ msgid "Security updates install by themselves"
 msgstr ""
 
 #. he: אבטחה {score}/100
-#: apps/dai-quick/dai_quick/gui.py:34
+#: apps/dai-quick/dai_quick/gui.py:35
 #, python-brace-format
 msgid "Security {score}/100"
 msgstr ""
@@ -3562,15 +3562,15 @@ msgid "Selection is too long"
 msgstr ""
 
 #. he: שליחה
-#: apps/dai-chat/dai_chat/gui.py:345
+#: apps/dai-chat/dai_chat/gui.py:346
 #: apps/dai-heal/dai_heal/text.py:21
 #: apps/dai-j/dai_j/text.py:185
 msgid "Send"
 msgstr ""
 
 #. he: שליחת תמונה
-#: apps/dai-chat/dai_chat/gui.py:342
-#: apps/dai-chat/dai_chat/gui.py:577
+#: apps/dai-chat/dai_chat/gui.py:343
+#: apps/dai-chat/dai_chat/gui.py:579
 msgid "Send a picture"
 msgstr ""
 
@@ -3654,12 +3654,12 @@ msgid "Several Windows users were found; choose one with --user:"
 msgstr ""
 
 #. he: תיקייה משותפת: אין.
-#: apps/dai-vm/dai_vm/gui.py:372
+#: apps/dai-vm/dai_vm/gui.py:373
 msgid "Shared folder: none."
 msgstr ""
 
 #. he: שיתוף הלוח, תיקייה או התקן USB מגיע בשלב הבא, כל אחד עם מתג משלו כאן.
-#: apps/dai-vm/dai_vm/gui.py:379
+#: apps/dai-vm/dai_vm/gui.py:380
 msgid "Sharing the clipboard, a folder or a USB device comes in the next stage, each with its own switch here."
 msgstr ""
 
@@ -3670,7 +3670,7 @@ msgid "Show D.Ai in {name} from the next login"
 msgstr ""
 
 #. he: להציג בכל זאת
-#: apps/dai-chat/dai_chat/gui.py:315
+#: apps/dai-chat/dai_chat/gui.py:316
 msgid "Show it anyway"
 msgstr ""
 
@@ -3680,22 +3680,22 @@ msgid "Show me"
 msgstr ""
 
 #. he: הצגה או הסתרה של לוח הצד
-#: apps/dai-pdf/dai_pdf/gui.py:447
+#: apps/dai-pdf/dai_pdf/gui.py:449
 msgid "Show or hide the side panel"
 msgstr ""
 
 #. he: הצגת המסך
-#: apps/dai-vm/dai_vm/gui.py:353
+#: apps/dai-vm/dai_vm/gui.py:355
 msgid "Show the screen"
 msgstr ""
 
 #. he: כיבוי
-#: apps/dai-vm/dai_vm/gui.py:356
+#: apps/dai-vm/dai_vm/gui.py:358
 msgid "Shut down"
 msgstr ""
 
 #. he: לוח הצד
-#: apps/dai-pdf/dai_pdf/gui.py:466
+#: apps/dai-pdf/dai_pdf/gui.py:468
 msgid "Side panel"
 msgstr ""
 
@@ -3808,7 +3808,7 @@ msgstr ""
 
 #. he: הפעלה
 #: apps/dai-mom/dai_mom/text.py:94
-#: apps/dai-vm/dai_vm/gui.py:352
+#: apps/dai-vm/dai_vm/gui.py:354
 msgid "Start"
 msgstr ""
 
@@ -3881,7 +3881,7 @@ msgstr ""
 #. he: נושא
 #: apps/dai-j/dai_j/text.py:23
 #: apps/dai-j/dai_j/text.py:183
-#: apps/dai-pdf/dai_pdf/gui.py:320
+#: apps/dai-pdf/dai_pdf/gui.py:321
 msgid "Subject"
 msgstr ""
 
@@ -3907,7 +3907,7 @@ msgid "Swap: {used} of {total} in use"
 msgstr ""
 
 #. he: מערכת
-#: apps/dai-vm/dai_vm/gui.py:183
+#: apps/dai-vm/dai_vm/gui.py:184
 msgid "System"
 msgstr ""
 
@@ -3979,7 +3979,7 @@ msgid "Text copied ({count} characters)"
 msgstr ""
 
 #. he: בקוד יש שגיאת הקלדה. בדקו אותו מולם ונסו שוב.
-#: apps/dai-chat/dai_chat/gui.py:193
+#: apps/dai-chat/dai_chat/gui.py:194
 msgid "That code has a typo. Check it with them and try again."
 msgstr ""
 
@@ -3991,7 +3991,7 @@ msgstr ""
 
 #. he: זה לא הצליח: {why}
 #: apps/dai-vm/dai_vm/cli.py:168
-#: apps/dai-vm/dai_vm/gui.py:474
+#: apps/dai-vm/dai_vm/gui.py:480
 #, python-brace-format
 msgid "That did not work: {why}"
 msgstr ""
@@ -4003,18 +4003,18 @@ msgstr ""
 
 #. he: הקובץ אינו תמונת PNG, JPEG או WebP של עד 25MB.
 #: apps/dai-chat/dai_chat/cli.py:298
-#: apps/dai-chat/dai_chat/gui.py:586
+#: apps/dai-chat/dai_chat/gui.py:588
 msgid "That file is not a PNG, JPEG or WebP picture up to 25 MB."
 msgstr ""
 
 #. he: זה הקוד שלכם.
 #: apps/dai-chat/dai_chat/cli.py:168
-#: apps/dai-chat/dai_chat/gui.py:202
+#: apps/dai-chat/dai_chat/gui.py:203
 msgid "That is your own code."
 msgstr ""
 
 #. he: הסיסמה הזו לא פתחה את {name}. נסו שוב.
-#: apps/dai-pdf/dai_pdf/gui.py:243
+#: apps/dai-pdf/dai_pdf/gui.py:244
 #, python-brace-format
 msgid "That password did not open {name}. Try again."
 msgstr ""
@@ -4030,7 +4030,7 @@ msgid "The VirtIO drivers are not downloaded yet (dai-vm drivers --download); Wi
 msgstr ""
 
 #. he: הכתובת
-#: apps/dai-pdf/dai_pdf/gui.py:289
+#: apps/dai-pdf/dai_pdf/gui.py:290
 msgid "The address"
 msgstr ""
 
@@ -4055,8 +4055,8 @@ msgid "The code from Diamond was rejected"
 msgstr ""
 
 #. he: הקוד שקיבלתם מהם
-#: apps/dai-chat/dai_chat/gui.py:149
-#: apps/dai-chat/dai_chat/gui.py:152
+#: apps/dai-chat/dai_chat/gui.py:150
+#: apps/dai-chat/dai_chat/gui.py:153
 msgid "The code they gave you"
 msgstr ""
 
@@ -4071,24 +4071,24 @@ msgid "The disk is encrypted if you chose encryption during installation."
 msgstr ""
 
 #. he: המסמך
-#: apps/dai-pdf/dai_pdf/gui.py:493
+#: apps/dai-pdf/dai_pdf/gui.py:495
 msgid "The document"
 msgstr ""
 
 #. he: ההורדה נכשלה: {why}
 #: apps/dai-vm/dai_vm/cli.py:203
-#: apps/dai-vm/dai_vm/gui.py:560
+#: apps/dai-vm/dai_vm/gui.py:566
 #, python-brace-format
 msgid "The download failed: {why}"
 msgstr ""
 
 #. he: הדרייברים עדיין לא הורדו: השתמשו קודם בכפתור ההורדה בחלון הראשי.
-#: apps/dai-vm/dai_vm/gui.py:211
+#: apps/dai-vm/dai_vm/gui.py:212
 msgid "The drivers are not downloaded yet: use the Download button in the main window first."
 msgstr ""
 
 #. he: הקובץ גדול מאוד; הבדיקה נעצרה מוקדם.
-#: apps/dai-pdf/dai_pdf/gui.py:125
+#: apps/dai-pdf/dai_pdf/gui.py:126
 msgid "The file is very large; the inspection stopped early."
 msgstr ""
 
@@ -4103,8 +4103,8 @@ msgid "The firewall was not changed, so Chat stays on Tor only."
 msgstr ""
 
 #. he: ה-ISO של ההתקנה
-#: apps/dai-vm/dai_vm/gui.py:166
-#: apps/dai-vm/dai_vm/gui.py:236
+#: apps/dai-vm/dai_vm/gui.py:167
+#: apps/dai-vm/dai_vm/gui.py:237
 msgid "The installation ISO"
 msgstr ""
 
@@ -4142,7 +4142,7 @@ msgid "The microphone records only while you press the voice button; a notificat
 msgstr ""
 
 #. he: השם שאנשי הקשר יראו. בחרו כל שם: זה לא שם המשתמש שלכם במחשב, ואפשר לשנות אותו אחר כך.
-#: apps/dai-chat/dai_chat/gui.py:101
+#: apps/dai-chat/dai_chat/gui.py:102
 msgid "The name your contacts will see. Choose any name: it is not your user name on this computer, and you can change it later."
 msgstr ""
 
@@ -4157,7 +4157,7 @@ msgid "The processor is not overloaded"
 msgstr ""
 
 #. he: ארגז החול (bubblewrap) חסר, ולכן {name} לא נפתח. D.Ai PDF לעולם לא פותח קובץ מחוצה לו.
-#: apps/dai-pdf/dai_pdf/gui.py:593
+#: apps/dai-pdf/dai_pdf/gui.py:595
 #, python-brace-format
 msgid "The sandbox (bubblewrap) is missing, so {name} was not opened. D.Ai PDF never opens a file outside it."
 msgstr ""
@@ -4215,7 +4215,7 @@ msgid "The system's (read-only; change them with D.Ai Tune)"
 msgstr ""
 
 #. he: הטקסט של עמוד {n} הועתק ({c} תווים).
-#: apps/dai-pdf/dai_pdf/gui.py:949
+#: apps/dai-pdf/dai_pdf/gui.py:951
 #, python-brace-format
 msgid "The text of page {n} was copied ({c} characters)."
 msgstr ""
@@ -4226,14 +4226,14 @@ msgid "The two passwords are not the same."
 msgstr ""
 
 #. he: השם שלהם
-#: apps/dai-chat/dai_chat/gui.py:147
-#: apps/dai-chat/dai_chat/gui.py:151
+#: apps/dai-chat/dai_chat/gui.py:148
+#: apps/dai-chat/dai_chat/gui.py:152
 msgid "Their name"
 msgstr ""
 
 #. he: אין קובץ בשם {name}.
 #: apps/dai-pdf/dai_pdf/cli.py:64
-#: apps/dai-pdf/dai_pdf/gui.py:591
+#: apps/dai-pdf/dai_pdf/gui.py:593
 #, python-brace-format
 msgid "There is no file called {name}."
 msgstr ""
@@ -4244,12 +4244,12 @@ msgid "There is no ready recipe for this, and Diamond (the local AI) is not inst
 msgstr ""
 
 #. he: הם שונים
-#: apps/dai-chat/dai_chat/gui.py:226
+#: apps/dai-chat/dai_chat/gui.py:227
 msgid "They are different"
 msgstr ""
 
 #. he: הם זהים
-#: apps/dai-chat/dai_chat/gui.py:229
+#: apps/dai-chat/dai_chat/gui.py:230
 msgid "They match"
 msgstr ""
 
@@ -4264,13 +4264,13 @@ msgid "This Outlook file could not be read. It may be damaged or protected with 
 msgstr ""
 
 #. he: קובץ ה-PDF מכיל JavaScript ({n}). הוא לא מופעל.
-#: apps/dai-pdf/dai_pdf/gui.py:107
+#: apps/dai-pdf/dai_pdf/gui.py:108
 #, python-brace-format
 msgid "This PDF contains JavaScript ({n}). It is not run."
 msgstr ""
 
 #. he: קובץ ה-PDF נעול
-#: apps/dai-pdf/dai_pdf/gui.py:237
+#: apps/dai-pdf/dai_pdf/gui.py:238
 msgid "This PDF is locked"
 msgstr ""
 
@@ -4290,7 +4290,7 @@ msgid "This app asks to read and write ~/Documents. Allow? [y/N] "
 msgstr ""
 
 #. he: המחשב הזה עדיין לא יכול להריץ מכונה (ראו בראש החלון).
-#: apps/dai-vm/dai_vm/gui.py:244
+#: apps/dai-vm/dai_vm/gui.py:245
 msgid "This computer cannot run a machine yet (see the top of the window)."
 msgstr ""
 
@@ -4307,7 +4307,7 @@ msgid "This computer: {ram} RAM"
 msgstr ""
 
 #. he: זה מוחק את המכונה ואת הדיסק שלה, עם כל מה שמותקן בה. אין ביטול.
-#: apps/dai-vm/dai_vm/gui.py:506
+#: apps/dai-vm/dai_vm/gui.py:512
 msgid "This deletes the machine and its disk, with everything installed in it. There is no undo."
 msgstr ""
 
@@ -4318,12 +4318,12 @@ msgid "This deletes {name} and its disk for good. Add --yes to confirm."
 msgstr ""
 
 #. he: לא ניתן היה לבדוק בקובץ זה סקריפטים וקבצים מצורפים; הוא עדיין מוצג רק בתוך ארגז החול.
-#: apps/dai-pdf/dai_pdf/gui.py:103
+#: apps/dai-pdf/dai_pdf/gui.py:104
 msgid "This file could not be inspected for scripts and attachments; it is still shown only inside the sandbox."
 msgstr ""
 
 #. he: זהו טופס XFA; מוצג רק הדף הסטטי שלו.
-#: apps/dai-pdf/dai_pdf/gui.py:122
+#: apps/dai-pdf/dai_pdf/gui.py:123
 msgid "This is an XFA form; only its static page is shown."
 msgstr ""
 
@@ -4338,7 +4338,7 @@ msgid "This is not a mail file J knows: mbox, a Maildir folder, or Outlook (.pst
 msgstr ""
 
 #. he: הקישור הזה היה פותח קובץ או תוכנית על המחשב הזה. D.Ai PDF לא עושה את זה.
-#: apps/dai-pdf/dai_pdf/gui.py:279
+#: apps/dai-pdf/dai_pdf/gui.py:280
 msgid "This link would open a file or a program on this computer. D.Ai PDF does not do that."
 msgstr ""
 
@@ -4353,7 +4353,7 @@ msgid "This message is no longer on the server."
 msgstr ""
 
 #. he: לא ניתן היה לצייר את העמוד הזה.
-#: apps/dai-pdf/dai_pdf/gui.py:776
+#: apps/dai-pdf/dai_pdf/gui.py:778
 msgid "This page could not be drawn."
 msgstr ""
 
@@ -4404,7 +4404,7 @@ msgid "Thu"
 msgstr ""
 
 #. he: כותרת
-#: apps/dai-pdf/dai_pdf/gui.py:318
+#: apps/dai-pdf/dai_pdf/gui.py:319
 msgid "Title"
 msgstr ""
 
@@ -4481,7 +4481,7 @@ msgid "Tue"
 msgstr ""
 
 #. he: הפעלת Chat
-#: apps/dai-chat/dai_chat/gui.py:372
+#: apps/dai-chat/dai_chat/gui.py:374
 msgid "Turn Chat on"
 msgstr ""
 
@@ -4506,7 +4506,7 @@ msgid "Type your name."
 msgstr ""
 
 #. he: התקני USB: אין.
-#: apps/dai-vm/dai_vm/gui.py:373
+#: apps/dai-vm/dai_vm/gui.py:374
 msgid "USB devices: none."
 msgstr ""
 
@@ -4617,7 +4617,7 @@ msgid "Videos"
 msgstr ""
 
 #. he: דרייברי VirtIO ל-Windows: לא הורדו ({mb} MB, מ-Fedora, נבדקים מול SHA-256 קבוע).
-#: apps/dai-vm/dai_vm/gui.py:536
+#: apps/dai-vm/dai_vm/gui.py:542
 #, python-brace-format
 msgid "VirtIO drivers for Windows: not downloaded ({mb} MB, from Fedora, checked against a pinned SHA-256)."
 msgstr ""
@@ -4635,7 +4635,7 @@ msgid "VirtIO drivers {version} are present: {path}"
 msgstr ""
 
 #. he: דרייברי VirtIO ‏{v}: מוכנים.
-#: apps/dai-vm/dai_vm/gui.py:533
+#: apps/dai-vm/dai_vm/gui.py:539
 #, python-brace-format
 msgid "VirtIO drivers {v}: ready."
 msgstr ""
@@ -4646,7 +4646,7 @@ msgid "Voice typing — dictate in Hebrew and English (Super+H)"
 msgstr ""
 
 #. he: עוצמת שמע
-#: apps/dai-quick/dai_quick/gui.py:33
+#: apps/dai-quick/dai_quick/gui.py:34
 msgid "Volume"
 msgstr ""
 
@@ -4673,7 +4673,7 @@ msgid "Welcome to D.Ai OS"
 msgstr ""
 
 #. he: מה Windows רואה
-#: apps/dai-vm/dai_vm/gui.py:365
+#: apps/dai-vm/dai_vm/gui.py:366
 msgid "What Windows can see"
 msgstr ""
 
@@ -4688,12 +4688,12 @@ msgid "What should the computer do?"
 msgstr ""
 
 #. he: מה הקובץ הזה רוצה לעשות
-#: apps/dai-pdf/dai_pdf/gui.py:459
+#: apps/dai-pdf/dai_pdf/gui.py:461
 msgid "What this file wants to do"
 msgstr ""
 
 #. he: מה הקובץ הזה רוצה לעשות (ולא מקבל)
-#: apps/dai-pdf/dai_pdf/gui.py:339
+#: apps/dai-pdf/dai_pdf/gui.py:340
 msgid "What this file wants to do (and does not get to)"
 msgstr ""
 
@@ -4741,7 +4741,7 @@ msgid "Which one? "
 msgstr ""
 
 #. he: איזו מערכת
-#: apps/dai-vm/dai_vm/gui.py:179
+#: apps/dai-vm/dai_vm/gui.py:180
 msgid "Which system"
 msgstr ""
 
@@ -4751,12 +4751,12 @@ msgid "Who is it for? Add an address in To."
 msgstr ""
 
 #. he: מי השתמש
-#: apps/dai-quick/dai_quick/gui.py:42
+#: apps/dai-quick/dai_quick/gui.py:43
 msgid "Who used it"
 msgstr ""
 
 #. he: עמוד שלם
-#: apps/dai-pdf/dai_pdf/gui.py:433
+#: apps/dai-pdf/dai_pdf/gui.py:435
 msgid "Whole page"
 msgstr ""
 
@@ -4802,18 +4802,18 @@ msgid "Worth knowing about the code:"
 msgstr ""
 
 #. he: כתבו הודעה…
-#: apps/dai-chat/dai_chat/gui.py:338
+#: apps/dai-chat/dai_chat/gui.py:339
 msgid "Write a message…"
 msgstr ""
 
 #. he: כתבו שם שיש בו אותיות.
 #: apps/dai-chat/dai_chat/cli.py:112
-#: apps/dai-chat/dai_chat/gui.py:132
+#: apps/dai-chat/dai_chat/gui.py:133
 msgid "Write a name with letters in it."
 msgstr ""
 
 #. he: כתבו את השם שלהם.
-#: apps/dai-chat/dai_chat/gui.py:198
+#: apps/dai-chat/dai_chat/gui.py:199
 msgid "Write their name."
 msgstr ""
 
@@ -4850,7 +4850,7 @@ msgid "Your background service {name} failed."
 msgstr ""
 
 #. he: הקוד שלכם
-#: apps/dai-chat/dai_chat/gui.py:164
+#: apps/dai-chat/dai_chat/gui.py:165
 msgid "Your code"
 msgstr ""
 
@@ -4861,8 +4861,8 @@ msgid "Your contacts see you as: {name}"
 msgstr ""
 
 #. he: שם התצוגה שלכם
-#: apps/dai-chat/dai_chat/gui.py:98
-#: apps/dai-chat/dai_chat/gui.py:108
+#: apps/dai-chat/dai_chat/gui.py:99
+#: apps/dai-chat/dai_chat/gui.py:109
 msgid "Your display name"
 msgstr ""
 
@@ -4872,7 +4872,7 @@ msgid "Your files are encrypted. This password is asked every time the computer 
 msgstr ""
 
 #. he: הקבצים שלכם: לא נגישים.
-#: apps/dai-vm/dai_vm/gui.py:374
+#: apps/dai-vm/dai_vm/gui.py:375
 msgid "Your files: not reachable."
 msgstr ""
 
@@ -4892,7 +4892,7 @@ msgid "Your name (what people see)"
 msgstr ""
 
 #. he: השם שלכם: {name}
-#: apps/dai-chat/dai_chat/gui.py:405
+#: apps/dai-chat/dai_chat/gui.py:407
 #, python-brace-format
 msgid "Your name: {name}"
 msgstr ""
@@ -4908,24 +4908,24 @@ msgid "Yours"
 msgstr ""
 
 #. he: הגדלה
-#: apps/dai-pdf/dai_pdf/gui.py:431
+#: apps/dai-pdf/dai_pdf/gui.py:433
 msgid "Zoom"
 msgstr ""
 
 #. he: הגדלה
-#: apps/dai-pdf/dai_pdf/gui.py:438
+#: apps/dai-pdf/dai_pdf/gui.py:440
 msgid "Zoom in"
 msgstr ""
 
 #. he: הקטנה
-#: apps/dai-pdf/dai_pdf/gui.py:429
+#: apps/dai-pdf/dai_pdf/gui.py:431
 msgid "Zoom out"
 msgstr ""
 
 #. he: [תמונה]
 #: apps/dai-chat/dai_chat/cli.py:141
 #: apps/dai-chat/dai_chat/cli.py:331
-#: apps/dai-chat/dai_chat/gui.py:460
+#: apps/dai-chat/dai_chat/gui.py:462
 msgid "[a picture]"
 msgstr ""
 
@@ -5009,7 +5009,7 @@ msgstr ""
 
 #. he: חסום
 #: apps/dai-chat/dai_chat/cli.py:178
-#: apps/dai-chat/dai_chat/gui.py:423
+#: apps/dai-chat/dai_chat/gui.py:425
 msgid "blocked"
 msgstr ""
 
@@ -5040,7 +5040,7 @@ msgid "compiles code at run time"
 msgstr ""
 
 #. he: קרס
-#: apps/dai-vm/dai_vm/gui.py:81
+#: apps/dai-vm/dai_vm/gui.py:82
 msgid "crashed"
 msgstr ""
 
@@ -5060,7 +5060,7 @@ msgid "desktop app"
 msgstr ""
 
 #. he: לא נראה כמו מדיה של Windows
-#: apps/dai-vm/dai_vm/gui.py:255
+#: apps/dai-vm/dai_vm/gui.py:256
 msgid "does not look like Windows media"
 msgstr ""
 
@@ -5177,7 +5177,7 @@ msgid "just now"
 msgstr ""
 
 #. he: תווית {label}, {gb:.1f} GB
-#: apps/dai-vm/dai_vm/gui.py:253
+#: apps/dai-vm/dai_vm/gui.py:254
 #, python-brace-format
 msgid "label {label}, {gb:.1f} GB"
 msgstr ""
@@ -5248,13 +5248,13 @@ msgid "never"
 msgstr ""
 
 #. he: לא
-#: apps/dai-pdf/dai_pdf/gui.py:326
+#: apps/dai-pdf/dai_pdf/gui.py:327
 #: apps/dai-vm/dai_vm/cli.py:223
 msgid "no"
 msgstr ""
 
 #. he: לא (מצב בדיקה)
-#: apps/dai-pdf/dai_pdf/gui.py:328
+#: apps/dai-pdf/dai_pdf/gui.py:329
 msgid "no (test mode)"
 msgstr ""
 
@@ -5279,37 +5279,37 @@ msgid "no such recipe"
 msgstr ""
 
 #. he: אין
-#: apps/dai-vm/dai_vm/gui.py:440
+#: apps/dai-vm/dai_vm/gui.py:446
 msgid "none"
 msgstr ""
 
 #. he: לא מוגדר
-#: apps/dai-vm/dai_vm/gui.py:81
+#: apps/dai-vm/dai_vm/gui.py:82
 msgid "not defined"
 msgstr ""
 
 #. he: לא מאומת: השוו את הסמלים
 #: apps/dai-chat/dai_chat/cli.py:180
-#: apps/dai-chat/dai_chat/gui.py:426
+#: apps/dai-chat/dai_chat/gui.py:428
 msgid "not verified: compare the symbols"
 msgstr ""
 
 #. he: מתוך {n}
-#: apps/dai-pdf/dai_pdf/gui.py:667
+#: apps/dai-pdf/dai_pdf/gui.py:669
 #, python-brace-format
 msgid "of {n}"
 msgstr ""
 
 #. he: כבוי
-#: apps/dai-quick/dai_quick/gui.py:32
+#: apps/dai-quick/dai_quick/gui.py:33
 #: apps/dai-tune/dai_tune/catalog.py:815
 #: apps/dai-tune/dai_tune/catalog.py:844
-#: apps/dai-vm/dai_vm/gui.py:80
+#: apps/dai-vm/dai_vm/gui.py:81
 msgid "off"
 msgstr ""
 
 #. he: פועל
-#: apps/dai-quick/dai_quick/gui.py:31
+#: apps/dai-quick/dai_quick/gui.py:32
 #: apps/dai-tune/dai_tune/catalog.py:815
 #: apps/dai-tune/dai_tune/catalog.py:844
 msgid "on"
@@ -5321,7 +5321,7 @@ msgid "opens terminals"
 msgstr ""
 
 #. he: עמ׳ {n}: …{before}{hit}{after}…
-#: apps/dai-pdf/dai_pdf/gui.py:890
+#: apps/dai-pdf/dai_pdf/gui.py:892
 #, python-brace-format
 msgid "p. {n}: …{before}{hit}{after}…"
 msgstr ""
@@ -5332,7 +5332,7 @@ msgid "part of the session"
 msgstr ""
 
 #. he: מושהה
-#: apps/dai-vm/dai_vm/gui.py:80
+#: apps/dai-vm/dai_vm/gui.py:81
 msgid "paused"
 msgstr ""
 
@@ -5347,13 +5347,13 @@ msgid "quiet"
 msgstr ""
 
 #. he: נדחתה
-#: apps/dai-chat/dai_chat/gui.py:462
+#: apps/dai-chat/dai_chat/gui.py:464
 msgid "refused"
 msgstr ""
 
 #. he: פועל
 #: apps/dai-mom/dai_mom/text.py:98
-#: apps/dai-vm/dai_vm/gui.py:80
+#: apps/dai-vm/dai_vm/gui.py:81
 msgid "running"
 msgstr ""
 
@@ -5384,7 +5384,7 @@ msgid "sends e-mail"
 msgstr ""
 
 #. he: נכבה
-#: apps/dai-vm/dai_vm/gui.py:81
+#: apps/dai-vm/dai_vm/gui.py:82
 msgid "shutting down"
 msgstr ""
 
@@ -5486,7 +5486,7 @@ msgstr ""
 
 #. he: מאומת
 #: apps/dai-chat/dai_chat/cli.py:179
-#: apps/dai-chat/dai_chat/gui.py:425
+#: apps/dai-chat/dai_chat/gui.py:427
 msgid "verified"
 msgstr ""
 
@@ -5537,8 +5537,8 @@ msgid "written by Diamond"
 msgstr ""
 
 #. he: כן
-#: apps/dai-pdf/dai_pdf/gui.py:326
-#: apps/dai-pdf/dai_pdf/gui.py:328
+#: apps/dai-pdf/dai_pdf/gui.py:327
+#: apps/dai-pdf/dai_pdf/gui.py:329
 #: apps/dai-vm/dai_vm/cli.py:223
 msgid "yes"
 msgstr ""
@@ -5657,7 +5657,7 @@ msgid "{icon} {app} is using the {device}"
 msgstr ""
 
 #. he: {mb} MB זיכרון · {cpus} מעבדים · דיסק {gb} GB · Windows {win} · מדיה: {iso}
-#: apps/dai-vm/dai_vm/gui.py:437
+#: apps/dai-vm/dai_vm/gui.py:443
 #, python-brace-format
 msgid "{mb} MB memory · {cpus} processors · {gb} GB disk · Windows {win} · media: {iso}"
 msgstr ""
@@ -5693,7 +5693,7 @@ msgid "{name} belongs to the system; MOM only closes your own apps."
 msgstr ""
 
 #. he: לא ניתן היה לצייר את {name}: העוזר בארגז החול נעצר.
-#: apps/dai-pdf/dai_pdf/gui.py:597
+#: apps/dai-pdf/dai_pdf/gui.py:599
 #, python-brace-format
 msgid "{name} could not be drawn: the sandboxed helper stopped."
 msgstr ""
@@ -5748,7 +5748,7 @@ msgstr ""
 
 #. he: {name} אינו קובץ PDF שניתן לפתוח.
 #: apps/dai-pdf/dai_pdf/cli.py:69
-#: apps/dai-pdf/dai_pdf/gui.py:599
+#: apps/dai-pdf/dai_pdf/gui.py:601
 #, python-brace-format
 msgid "{name} is not a PDF that can be opened."
 msgstr ""
@@ -5784,7 +5784,7 @@ msgid "{name} is paused."
 msgstr ""
 
 #. he: {name} מוכן. הפעילו אותו, והתקנת Windows תתחיל בחלון שלו.
-#: apps/dai-vm/dai_vm/gui.py:493
+#: apps/dai-vm/dai_vm/gui.py:499
 #, python-brace-format
 msgid "{name} is ready. Start it, and Windows setup begins in its window."
 msgstr ""
@@ -5802,7 +5802,7 @@ msgid "{name} is starting."
 msgstr ""
 
 #. he: {name} מופעל. המסך שלו נפתח בחלון משלו.
-#: apps/dai-vm/dai_vm/gui.py:458
+#: apps/dai-vm/dai_vm/gui.py:464
 #, python-brace-format
 msgid "{name} is starting. Its screen opens in its own window."
 msgstr ""
@@ -5826,7 +5826,7 @@ msgid "{name} is working very hard"
 msgstr ""
 
 #. he: {name} דורש סיסמה כדי להיפתח.
-#: apps/dai-pdf/dai_pdf/gui.py:241
+#: apps/dai-pdf/dai_pdf/gui.py:242
 #, python-brace-format
 msgid "{name} needs a password to open."
 msgstr ""
@@ -5838,7 +5838,7 @@ msgid "{name} sent a message. Open Diamond Chat to accept or decline."
 msgstr ""
 
 #. he: ‏{name} שלחו {count} הודעות. הן יוצגו רק אם תאשרו את {name}; כל הודעה נבדקת קודם לפישינג ולנוזקה.
-#: apps/dai-chat/dai_chat/gui.py:487
+#: apps/dai-chat/dai_chat/gui.py:489
 #, python-brace-format
 msgid "{name} sent {count} messages. They are shown only if you accept {name}; every message is checked for phishing and malware first."
 msgstr ""
@@ -5850,13 +5850,13 @@ msgid "{name} should see the same six, in the same order. Then: dai-chat verify 
 msgstr ""
 
 #. he: {name} נשאר סגור.
-#: apps/dai-pdf/dai_pdf/gui.py:571
+#: apps/dai-pdf/dai_pdf/gui.py:573
 #, python-brace-format
 msgid "{name} stays closed."
 msgstr ""
 
 #. he: {name} התבקש להיכבות, כמו ש-Windows אוהב.
-#: apps/dai-vm/dai_vm/gui.py:469
+#: apps/dai-vm/dai_vm/gui.py:475
 #, python-brace-format
 msgid "{name} was asked to shut down, the way Windows likes it."
 msgstr ""
@@ -5869,7 +5869,7 @@ msgstr ""
 
 #. he: {name} נמחק.
 #: apps/dai-vm/dai_vm/cli.py:166
-#: apps/dai-vm/dai_vm/gui.py:522
+#: apps/dai-vm/dai_vm/gui.py:528
 #, python-brace-format
 msgid "{name} was deleted."
 msgstr ""
@@ -5887,13 +5887,13 @@ msgid "{name} was switched off."
 msgstr ""
 
 #. he: {name} · {n} עמודים
-#: apps/dai-pdf/dai_pdf/gui.py:584
+#: apps/dai-pdf/dai_pdf/gui.py:586
 #, python-brace-format
 msgid "{name} · {n} pages"
 msgstr ""
 
 #. he: {name} · {n} עמודים · נפתח בארגז החול
-#: apps/dai-pdf/dai_pdf/gui.py:582
+#: apps/dai-pdf/dai_pdf/gui.py:584
 #, python-brace-format
 msgid "{name} · {n} pages · opened in the sandbox"
 msgstr ""
@@ -5923,7 +5923,7 @@ msgid "{name}, {memory} memory, {cpu} percent CPU"
 msgstr ""
 
 #. he: {n} קבצים מצורפים. הם מופיעים בלוח הצד ולעולם לא נפתחים.
-#: apps/dai-pdf/dai_pdf/gui.py:119
+#: apps/dai-pdf/dai_pdf/gui.py:120
 #, python-brace-format
 msgid "{n} attached files. They are listed in the side panel and never opened."
 msgstr ""
@@ -5953,7 +5953,7 @@ msgid "{n} new"
 msgstr ""
 
 #. he: {n} תוצאות ל-“{q}”
-#: apps/dai-pdf/dai_pdf/gui.py:901
+#: apps/dai-pdf/dai_pdf/gui.py:903
 #, python-brace-format
 msgid "{n} results for “{q}”"
 msgstr ""
@@ -6019,7 +6019,7 @@ msgid "• Failed {failures} times: {title}. {how}"
 msgstr ""
 
 #. he: ⌛  {name} (ממתינים להם)
-#: apps/dai-chat/dai_chat/gui.py:400
+#: apps/dai-chat/dai_chat/gui.py:402
 #, python-brace-format
 msgid "⌛  {name} (waiting for them)"
 msgstr ""
@@ -6235,12 +6235,12 @@ msgid "✗ bubblewrap is missing; apps never run outside the sandbox."
 msgstr ""
 
 #. he: ＋ הוספת איש קשר
-#: apps/dai-chat/dai_chat/gui.py:279
+#: apps/dai-chat/dai_chat/gui.py:280
 msgid "＋ Add a contact"
 msgstr ""
 
 #. he: ＋ מכונה חדשה…
-#: apps/dai-vm/dai_vm/gui.py:330
+#: apps/dai-vm/dai_vm/gui.py:332
 msgid "＋ New machine…"
 msgstr ""
 
