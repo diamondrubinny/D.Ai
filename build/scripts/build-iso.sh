@@ -67,8 +67,9 @@ install_build_deps() {
     isolinux syslinux-common grub-efi-amd64-bin grub-pc-bin python3
   if [[ "$ARCH" == arm64 ]]; then
     # The arm64 chroot runs through qemu-aarch64-static (binfmt_misc on the host must know it: the runner
-    # installs qemu-user-static, which registers the handler with the fix-binary flag).
-    apt-get install -y --no-install-recommends qemu-user-static binfmt-support grub-efi-arm64-bin
+    # installs qemu-user-static, which registers the handler with the fix-binary flag). GRUB for arm64 is an
+    # arm64-only package: live-build installs it inside the chroot for the binary stage, not on this host.
+    apt-get install -y --no-install-recommends qemu-user-static binfmt-support
   fi
 }
 
