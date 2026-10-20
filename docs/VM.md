@@ -6,7 +6,7 @@
 > **Decided (19 October 2026, "from now on you decide"):** the recommendations of §5, all of them: the screen in
 > a `remote-viewer` window managed by D.Ai VM; the key typed into Windows setup only (no answer file in stage 1);
 > the user and dev editions; virtio-win downloaded once with a pinned hash; the name "D.Ai VM".
-> **Status: stage 1 built** (§10). Stages 2–4 not started. The Windows install itself is a manual test on a
+> **Status: stages 1 and 2 built** (§10, §11). Stages 3–4 not started. The Windows install itself is a manual test on a
 > physical computer (§7); it has not been run yet.
 
 ## 10. Stage 1: what was built
@@ -34,6 +34,32 @@
 - **Not yet:** the real Windows 11 install on hardware (the checklist in §7 is the test), USB and clipboard
   switches (stage 2), a udev rule for USB passthrough, Doctor/MOM/Backup integration (stage 3), the memory
   measurement on the standard profile.
+## 11. Stage 2: working together (what was built)
+
+- **Switches per machine, off by default** (`machine.json`): the clipboard (the SPICE agent channel appears in
+  the definition only when on), a shared folder (virtiofs with `memoryBacking` memfd/shared; read-only unless
+  "Windows may also write" is ticked; never the whole home or the disk), and USB devices by id. `machine.update()`
+  rewrites the definition and `virsh define` replaces libvirt's copy; a running machine takes the clipboard and
+  folder at its next start, USB devices go in and out live (`attach-device --live` with a hostdev element).
+- **USB:** `dai_vm.usb` lists the devices from sysfs (hubs left out, nothing opened); the window shows them as
+  check boxes, the command line as `dai-vm usb NAME [attach|detach ID]`. While a machine has a device, D.Ai does
+  not see it; that is said next to the switch.
+- **Snapshots:** internal qcow2 snapshots through `virsh snapshot-create-as` (with memory when the machine runs),
+  listed with their time and the current one marked, reverted after a confirmation, deleted. `dai-vm snapshot
+  NAME take [LABEL] [--note TEXT] | list | revert | delete`. "Before Windows Update" as a Tune sentence is stage 3.
+- **Tests:** 32 for D.Ai VM (the definition with folder, read-only flag, memfd and hostdev; validation of ids and
+  folders; live attach and detach through the fake virsh with no XML left behind; snapshot argv, listing,
+  revert and delete; the three commands; the window's switches, USB ticks, snapshots and Raz's audit with the
+  touch and narrow passes). The VM check defines a machine with all three switches and takes and deletes a
+  snapshot of it (no KVM in CI: define and qemu-img only).
+- **Requires verification on hardware** (§7 checklist): virtiofsd under qemu:///session (libvirt starts it as the
+  user; Windows needs WinFsp and the virtio-win virtiofs service from the drivers CD), SPICE clipboard with
+  the guest agent installed, a USB device claimed by QEMU without a udev rule (session mode needs the device
+  node writable by the user; a udev rule for a `dai-vm` group may be needed and is listed under stage 3),
+  internal snapshots of a running machine with swtpm state.
+- **Not yet:** sound and USB redirection through the SPICE viewer itself (works through `remote-viewer` today
+  by its own menu), suspend to disk at logout, autostart of the guest tools.
+
 > The name "D.Ai VM" is descriptive. "Windows" is Microsoft's trademark and is used here only to name their
 > product, never as part of D.Ai's name or branding (**requires a check** of Microsoft's trademark guidelines
 > before publication).

@@ -213,12 +213,20 @@ def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str]
                             f"{widget.width()}x{widget.height()} px, a finger needs {TARGET}x{TARGET} (WCAG 2.5.5)"))
     if narrow:
         if interactive and enabled:
-            origin = widget.mapTo(root, QPoint(0, 0))
-            rect = QRect(origin, widget.size())
-            if not root.rect().contains(rect):
-                issues.append(Issue("fits", describe(widget),
-                                    f"at {rect.x()},{rect.y()} {rect.width()}x{rect.height()} px, outside the "
-                                    f"{root.width()}x{root.height()} window"))
+            area = _scroll_area_of(widget, root)
+            if area is not None:  # inside a scroll area: scrolling reaches it, only the width must fit
+                origin = widget.mapTo(area.viewport(), QPoint(0, 0))
+                if origin.x() < 0 or origin.x() + widget.width() > area.viewport().width():
+                    issues.append(Issue("fits", describe(widget),
+                                        f"{widget.width()} px wide at x={origin.x()}, wider than the scroll area's "
+                                        f"{area.viewport().width()} px: it would need sideways scrolling"))
+            else:
+                origin = widget.mapTo(root, QPoint(0, 0))
+                rect = QRect(origin, widget.size())
+                if not root.rect().contains(rect):
+                    issues.append(Issue("fits", describe(widget),
+                                        f"at {rect.x()},{rect.y()} {rect.width()}x{rect.height()} px, outside the "
+                                        f"{root.width()}x{root.height()} window"))
         if isinstance(widget, QLabel) and widget.text().strip() and not widget.wordWrap() \
                 and widget.textFormat() != Qt.TextFormat.RichText and widget.sizeHint().width() > widget.width() + 1:
             issues.append(Issue("clipped", describe(widget),
@@ -241,6 +249,18 @@ def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str]
     if ratio < needed:
         issues.append(Issue("contrast", describe(widget),
                             f"{fg.name()} on {bg.name()} is {ratio:.2f}:1, needs {needed}:1" + (f" ({kind})" if kind else "")))
+
+
+def _scroll_area_of(widget: QWidget, root: QWidget):
+    """The scroll area whose viewport holds the widget (not a view the widget is itself), or None."""
+    from PyQt6.QtWidgets import QAbstractScrollArea
+
+    parent = widget.parentWidget()
+    while parent is not None and parent is not root:
+        if isinstance(parent, QAbstractScrollArea) and not isinstance(parent, QAbstractItemView):
+            return parent
+        parent = parent.parentWidget()
+    return None
 
 
 def _stacks_to(widget: QWidget, root: QWidget) -> list[tuple[QStackedWidget, QWidget]]:

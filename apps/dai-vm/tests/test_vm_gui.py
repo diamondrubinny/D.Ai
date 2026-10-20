@@ -155,6 +155,60 @@ class WindowTests(unittest.TestCase):
         self.assertIn("ready", win.drivers_label.text())
         self.assertIn("verified", win.status.text())
 
+    def test_sharing_usb_and_snapshots_in_the_window(self):
+        from PyQt6.QtCore import Qt
+        from dai_vm import machine, usb
+        with mock.patch.object(usb, "SYS_USB", fakes.fake_usb(self.home / "sys")):
+            win = self.window()
+            self.assertFalse(win.clipboard_box.isEnabled())  # nothing chosen yet
+            self.create(win, name="w")
+            self.assertTrue(win.clipboard_box.isEnabled())
+            self.assertEqual(win.usb_list.count(), 2)
+            win.clipboard_box.setChecked(True)
+            self.assertTrue(machine.load("w", self.home).clipboard)
+            self.assertIn("next start", win.status.text())
+            share = self.home / "Shared"
+            share.mkdir()
+            win.set_folder(str(share))
+            self.assertEqual(machine.load("w", self.home).shared_folder, str(share))
+            self.assertIn(str(share), win.folder_label.text())
+            self.assertTrue(win.writable_box.isEnabled())
+            win.writable_box.setChecked(True)
+            self.assertFalse(machine.load("w", self.home).shared_readonly)
+            win.set_folder(None)
+            self.assertIsNone(machine.load("w", self.home).shared_folder)
+            self.assertFalse(win.writable_box.isEnabled())
+            win.act("start")
+            stick = win.usb_list.item(1)
+            self.assertEqual(stick.data(Qt.ItemDataRole.UserRole), "0781:5583")
+            stick.setCheckState(Qt.CheckState.Checked)
+            self.assertEqual(self.run.attached["dai-w"], ["0781:5583"])
+            self.assertEqual(machine.load("w", self.home).usb, ["0781:5583"])
+            self.assertIn("belongs to w", win.status.text())
+            win.refresh_usb()
+            self.assertEqual(win.usb_list.item(1).checkState(), Qt.CheckState.Checked)
+            win.usb_list.item(1).setCheckState(Qt.CheckState.Unchecked)
+            self.assertEqual(self.run.attached["dai-w"], [])
+            self.assertFalse(win.revert_button.isEnabled())
+            win.take_snapshot("before-update")
+            self.assertEqual(win.snapshot_list.count(), 1)
+            self.assertIn("★ before-update", win.snapshot_list.item(0).text())
+            win.take_snapshot("bad name")
+            self.assertIn("letters, digits", win.status.text())
+            win.snapshot_list.setCurrentRow(0)
+            self.assertTrue(win.revert_button.isEnabled())
+            gui = sys.modules["dai_vm.gui"]
+            with mock.patch.object(gui.ConfirmDialog, "exec", return_value=QDialog.DialogCode.Rejected):
+                win.revert_snapshot()
+            self.assertEqual(self.virsh.state("w"), "running")
+            with mock.patch.object(gui.ConfirmDialog, "exec", return_value=QDialog.DialogCode.Accepted):
+                win.revert_snapshot()
+            self.assertEqual(self.virsh.state("w"), "shut off")
+            self.assertIn("back at before-update", win.status.text())
+            win.snapshot_list.setCurrentRow(0)
+            win.delete_snapshot()
+            self.assertEqual(win.snapshot_list.count(), 0)
+
     def test_accessible_in_both_languages_and_every_theme(self):
         from dai_raz.a11y import assert_accessible
 

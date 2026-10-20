@@ -811,7 +811,8 @@ def main() -> int:
          "if ! command -v virsh >/dev/null; then echo VM_NOT_IN_THIS_EDITION; else dai-vm check; echo CHECK_RC=$?; "
          f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py; fi",
          True, lambda o: "VM_NOT_IN_THIS_EDITION" in o or all(mark in o for mark in (
-             "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "UNDEFINED missing")), 180),
+             "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "SHARED_DEFINED shut off True",
+             "UNDEFINED missing")), 240),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

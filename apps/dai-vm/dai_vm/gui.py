@@ -18,13 +18,14 @@ from typing import Callable
 
 from PyQt6.QtCore import Qt, QThread, QTimer, pyqtSignal
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame, QHBoxLayout,
-                             QLabel, QLineEdit, QListWidget, QPushButton, QScrollArea, QSpinBox, QVBoxLayout, QWidget)
+                             QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QScrollArea, QSpinBox, QVBoxLayout,
+                             QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
 from dai_style.panes import Panes, WrapRow, touch_scrolling
 
-from . import control, drivers, hardware, iso, machine
+from . import control, drivers, hardware, iso, machine, usb
 
 APP_ID = "dai-vm"
 REFRESH_MS = 3000
@@ -369,21 +370,64 @@ class VmWindow(QWidget):
         self.sees_labels = []
         for text in (say(self.lang, "Network: the internet through D.Ai, as a NAT client (passt). Nothing of the local "
                                     "network reaches in.", "רשת: האינטרנט דרך D.Ai, כלקוח NAT ‏(passt). שום דבר מהרשת המקומית לא נכנס."),
-                     say(self.lang, "Clipboard: off.", "לוח: כבוי."),
-                     say(self.lang, "Shared folder: none.", "תיקייה משותפת: אין."),
-                     say(self.lang, "USB devices: none.", "התקני USB: אין."),
-                     say(self.lang, "Your files: not reachable.", "הקבצים שלכם: לא נגישים.")):
+                     say(self.lang, "Your files: only what you share below.", "הקבצים שלכם: רק מה שתשתפו למטה.")):
             label = QLabel("• " + text)
             label.setWordWrap(True)
             sees_layout.addWidget(label)
             self.sees_labels.append(label)
-        note = QLabel(say(self.lang, "Sharing the clipboard, a folder or a USB device comes in the next stage, each with its "
-                                     "own switch here.", "שיתוף הלוח, תיקייה או התקן USB מגיע בשלב הבא, כל אחד עם מתג משלו כאן."))
-        note.setObjectName("Muted")
-        note.setWordWrap(True)
-        sees_layout.addWidget(note)
+        # Stage 2 (docs/VM.md): each thing Windows may see is a switch, off by default, saved per machine.
+        self.clipboard_box = QCheckBox(say(self.lang, "Share the clipboard (both directions; takes effect at the next start)",
+                                           "שיתוף הלוח (לשני הכיוונים; נכנס לתוקף בהפעלה הבאה)"))
+        self.clipboard_box.setAccessibleName(say(self.lang, "Share the clipboard", "שיתוף הלוח"))
+        self.clipboard_box.toggled.connect(self._clipboard_toggled)
+        sees_layout.addWidget(self.clipboard_box)
+        folder_row = WrapRow()
+        self.folder_label = QLabel(say(self.lang, "Shared folder: none.", "תיקייה משותפת: אין."))
+        self.folder_label.setWordWrap(True)
+        folder_row.addWidget(self.folder_label)
+        self.folder_button = self._button(say(self.lang, "Choose a folder…", "בחירת תיקייה…"), self.choose_folder, folder_row)
+        self.unshare_button = self._button(say(self.lang, "Stop sharing", "הפסקת השיתוף"), lambda: self.set_folder(None), folder_row)
+        sees_layout.addLayout(folder_row)
+        self.writable_box = QCheckBox(say(self.lang, "Windows may also write into the folder", "Windows רשאי גם לכתוב לתיקייה"))
+        self.writable_box.setAccessibleName(self.writable_box.text())
+        self.writable_box.toggled.connect(self._writable_toggled)
+        sees_layout.addWidget(self.writable_box)
+        usb_title = QLabel(say(self.lang, "USB devices (tick one to give it to the machine; D.Ai loses it meanwhile)",
+                               "התקני USB (סמנו כדי לתת למכונה; D.Ai מאבד אותו בינתיים)"))
+        usb_title.setWordWrap(True)
+        sees_layout.addWidget(usb_title)
+        self.usb_list = QListWidget()
+        self.usb_list.setAccessibleName(say(self.lang, "USB devices", "התקני USB"))
+        self.usb_list.setMaximumHeight(140)
+        self.usb_list.itemChanged.connect(self._usb_toggled)
+        sees_layout.addWidget(self.usb_list)
+        self.usb_refresh_button = self._button(say(self.lang, "Look again", "בדיקה מחדש"), self.refresh_usb, sees_layout)
         right_layout.addWidget(sees)
+
+        snaps = QFrame()
+        snaps.setObjectName("Panel")
+        snaps_layout = QVBoxLayout(snaps)
+        snaps_title = QLabel(say(self.lang, "Snapshots", "תמונות מצב"))
+        snaps_title.setObjectName("Title")
+        snaps_layout.addWidget(snaps_title)
+        snaps_hint = QLabel(say(self.lang, "A snapshot keeps the whole machine as it is now; go back to it after a bad update.",
+                                "תמונת מצב שומרת את המכונה כולה כמו שהיא עכשיו; חוזרים אליה אחרי עדכון גרוע."))
+        snaps_hint.setObjectName("Muted")
+        snaps_hint.setWordWrap(True)
+        snaps_layout.addWidget(snaps_hint)
+        self.snapshot_list = QListWidget()
+        self.snapshot_list.setAccessibleName(say(self.lang, "Snapshots", "תמונות מצב"))
+        self.snapshot_list.setMaximumHeight(140)
+        self.snapshot_list.currentRowChanged.connect(lambda _r: self._snapshot_buttons())
+        snaps_layout.addWidget(self.snapshot_list)
+        snap_row = WrapRow()
+        self.snapshot_button = self._button(say(self.lang, "Take a snapshot", "צילום מצב"), self.take_snapshot, snap_row, primary=True)
+        self.revert_button = self._button(say(self.lang, "Go back to it", "חזרה אליה"), self.revert_snapshot, snap_row)
+        self.snapshot_delete_button = self._button(say(self.lang, "Delete it", "מחיקתה"), self.delete_snapshot, snap_row)
+        snaps_layout.addLayout(snap_row)
+        right_layout.addWidget(snaps)
         right_layout.addStretch(1)
+        self._syncing = False
         scroll = QScrollArea()  # the details scroll when the window is short or narrow (docs/MOBILE.md A2)
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -444,6 +488,7 @@ class VmWindow(QWidget):
                                      "{mb} MB זיכרון · {cpus} מעבדים · דיסק {gb} GB · Windows {win} · מדיה: {iso}",
                                      mb=m.memory_mb, cpus=m.cpus, gb=m.disk_gb, win=m.windows,
                                      iso=Path(m.iso).name if m.iso else say(self.lang, "none", "אין")))
+        self._fill_sharing(m, running or paused)
         self.start_button.setEnabled(m is not None and not running and not paused)
         self.show_button.setEnabled(running or paused)
         self.pause_button.setEnabled(running)
@@ -479,6 +524,189 @@ class VmWindow(QWidget):
         except control.VmError as exc:
             self.status.setText(say(self.lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc))
         self.refresh_states()
+
+    # --- sharing, USB, snapshots (stage 2) ---------------------------------------------------------------------
+
+    def _fill_sharing(self, m: machine.Machine | None, live: bool) -> None:
+        self._syncing = True
+        try:
+            has = m is not None
+            for widget in (self.clipboard_box, self.folder_button, self.unshare_button, self.writable_box, self.usb_list,
+                           self.usb_refresh_button, self.snapshot_list, self.snapshot_button):
+                widget.setEnabled(has)
+            self.clipboard_box.setChecked(bool(m and m.clipboard))
+            if m and m.shared_folder:
+                self.folder_label.setText(say(self.lang, "Shared folder: {path}", "תיקייה משותפת: {path}", path=m.shared_folder))
+                self.writable_box.setChecked(not m.shared_readonly)
+                self.writable_box.setEnabled(True)
+                self.unshare_button.setEnabled(True)
+            else:
+                self.folder_label.setText(say(self.lang, "Shared folder: none.", "תיקייה משותפת: אין."))
+                self.writable_box.setChecked(False)
+                self.writable_box.setEnabled(False)
+                self.unshare_button.setEnabled(False)
+            self.refresh_usb(m)
+            self.refresh_snapshots(m)
+        finally:
+            self._syncing = False
+
+    def refresh_usb(self, m: machine.Machine | None = None) -> None:
+        m = self.current() if m is None else m
+        self._syncing = True
+        try:
+            self.usb_list.clear()
+            for device in usb.list_devices():
+                item = QListWidgetItem(device.label)
+                item.setData(Qt.ItemDataRole.UserRole, device.usb_id)
+                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                item.setCheckState(Qt.CheckState.Checked if m and device.usb_id in m.usb else Qt.CheckState.Unchecked)
+                self.usb_list.addItem(item)
+            if self.usb_list.count() == 0:
+                self.usb_list.addItem(say(self.lang, "No USB devices plugged in (hubs are not listed).", "אין התקני USB מחוברים (רכזות לא מוצגות)."))
+        finally:
+            self._syncing = False
+
+    def _save_sharing(self, m: machine.Machine, done: str) -> None:
+        try:
+            definition = machine.update(m, self.home)
+            if self.virsh.available() and self.virsh.state(m.name) != "missing":
+                self.virsh.redefine(definition)
+        except (machine.MachineError, control.VmError) as exc:
+            self.status.setText(say(self.lang, "Not changed: {why}", "לא שונה: {why}", why=exc))
+            self.refresh_machines()
+            return
+        self.status.setText(done)
+        self.refresh_machines()
+
+    def _clipboard_toggled(self, on: bool) -> None:
+        m = self.current()
+        if self._syncing or m is None:
+            return
+        m.clipboard = bool(on)
+        self._save_sharing(m, say(self.lang, "Clipboard {state} for {name}; takes effect at the next start.",
+                                  "הלוח {state} עבור {name}; נכנס לתוקף בהפעלה הבאה.", name=m.name,
+                                  state=say(self.lang, "shared", "משותף") if on else say(self.lang, "not shared", "לא משותף")))
+
+    def choose_folder(self) -> None:
+        if self.current() is None:
+            return
+        path = QFileDialog.getExistingDirectory(self, say(self.lang, "A folder Windows may see", "תיקייה ש-Windows יראה"),
+                                                str(self.home or Path.home()))
+        if path:
+            self.set_folder(path)
+
+    def set_folder(self, path: str | None) -> None:
+        m = self.current()
+        if m is None:
+            return
+        m.shared_folder = path
+        self._save_sharing(m, say(self.lang, "{name} will see {path} (read-only unless you allow writing) at its next start.",
+                                  "{name} יראה את {path} (לקריאה בלבד, אלא אם תאפשרו כתיבה) בהפעלה הבאה.", name=m.name, path=path)
+                           if path else say(self.lang, "{name} sees no folder of yours.", "{name} לא רואה שום תיקייה שלכם.", name=m.name))
+
+    def _writable_toggled(self, on: bool) -> None:
+        m = self.current()
+        if self._syncing or m is None or not m.shared_folder:
+            return
+        m.shared_readonly = not on
+        self._save_sharing(m, say(self.lang, "Windows may write into the folder.", "Windows רשאי לכתוב לתיקייה.") if on
+                           else say(self.lang, "The folder is read-only for Windows.", "התיקייה לקריאה בלבד עבור Windows."))
+
+    def _usb_toggled(self, item: QListWidgetItem) -> None:
+        m = self.current()
+        usb_id = item.data(Qt.ItemDataRole.UserRole)
+        if self._syncing or m is None or not usb_id:
+            return
+        give = item.checkState() == Qt.CheckState.Checked
+        if give and usb_id not in m.usb:
+            m.usb.append(usb_id)
+        if not give:
+            m.usb = [x for x in m.usb if x != usb_id]
+        try:
+            definition = machine.update(m, self.home)
+            if self.virsh.available() and self.virsh.state(m.name) != "missing":
+                self.virsh.redefine(definition)
+                if self.virsh.state(m.name) == "running":
+                    (self.virsh.attach_usb if give else self.virsh.detach_usb)(m.name, usb_id)
+        except (machine.MachineError, control.VmError) as exc:
+            self.status.setText(say(self.lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc))
+            return
+        self.status.setText(say(self.lang, "{id} now belongs to {name}. D.Ai does not see it while the machine has it.",
+                                "{id} שייך עכשיו ל-{name}. D.Ai לא רואה אותו כל עוד המכונה מחזיקה בו.", id=usb_id, name=m.name) if give
+                            else say(self.lang, "{id} is back with D.Ai.", "{id} חזר ל-D.Ai.", id=usb_id))
+
+    def refresh_snapshots(self, m: machine.Machine | None = None) -> None:
+        m = self.current() if m is None else m
+        self.snapshot_list.clear()
+        if m is not None and self.virsh.available():
+            for snap in self.virsh.snapshots(m.name):
+                item = QListWidgetItem(("★ " if snap["current"] else "") + f"{snap['label']} · {snap['when']}")
+                item.setData(Qt.ItemDataRole.UserRole, snap["label"])
+                self.snapshot_list.addItem(item)
+        self._snapshot_buttons()
+
+    def _snapshot_buttons(self) -> None:
+        chosen = self.snapshot_list.currentItem()
+        has = chosen is not None and bool(chosen.data(Qt.ItemDataRole.UserRole))
+        self.revert_button.setEnabled(has)
+        self.snapshot_delete_button.setEnabled(has)
+
+    def take_snapshot(self, label: str | None = None) -> None:
+        m = self.current()
+        if m is None:
+            return
+        if label is None:
+            from PyQt6.QtWidgets import QInputDialog
+            label, ok = QInputDialog.getText(self, say(self.lang, "Take a snapshot", "צילום מצב"),
+                                             say(self.lang, "A name for it (letters, digits, dots, dashes):", "שם (אותיות, ספרות, נקודות, מקפים):"),
+                                             text=datetime.datetime.now().strftime("%Y-%m-%d-%H%M"))
+            if not ok:
+                return
+        if not machine.NAME_RE.match(label or ""):
+            self.status.setText(say(self.lang, "A snapshot name is letters, digits, dots, dashes and underscores.",
+                                    "שם תמונת מצב הוא אותיות, ספרות, נקודות, מקפים וקווים תחתונים."))
+            return
+        try:
+            self.virsh.snapshot_take(m.name, label)
+        except control.VmError as exc:
+            self.status.setText(say(self.lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc))
+            return
+        self.status.setText(say(self.lang, "Snapshot {label} of {name} taken.", "תמונת המצב {label} של {name} נשמרה.", label=label, name=m.name))
+        self.refresh_snapshots(m)
+
+    def _chosen_snapshot(self) -> str | None:
+        item = self.snapshot_list.currentItem()
+        return item.data(Qt.ItemDataRole.UserRole) if item is not None else None
+
+    def revert_snapshot(self) -> None:
+        m, label = self.current(), self._chosen_snapshot()
+        if m is None or not label:
+            return
+        dialog = ConfirmDialog(self, self.lang, say(self.lang, "Go back to {label}?", "לחזור ל-{label}?", label=label),
+                               say(self.lang, "Everything done in the machine since then is lost, unless it is in a later snapshot.",
+                                   "כל מה שנעשה במכונה מאז יאבד, אלא אם הוא בתמונת מצב מאוחרת יותר."),
+                               say(self.lang, "Go back", "חזרה"))
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        try:
+            self.virsh.snapshot_revert(m.name, label)
+        except control.VmError as exc:
+            self.status.setText(say(self.lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc))
+            return
+        self.status.setText(say(self.lang, "{name} is back at {label}.", "{name} חזר ל-{label}.", name=m.name, label=label))
+        self.refresh_states()
+
+    def delete_snapshot(self) -> None:
+        m, label = self.current(), self._chosen_snapshot()
+        if m is None or not label:
+            return
+        try:
+            self.virsh.snapshot_delete(m.name, label)
+        except control.VmError as exc:
+            self.status.setText(say(self.lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc))
+            return
+        self.status.setText(say(self.lang, "Snapshot {label} deleted.", "תמונת המצב {label} נמחקה.", label=label))
+        self.refresh_snapshots(m)
 
     def new_machine(self) -> None:
         ready = bool(self.entry and drivers.present(self.entry, self.home))

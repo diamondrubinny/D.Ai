@@ -233,6 +233,67 @@ class MachineTests(unittest.TestCase):
 
 
 class VirshTests(unittest.TestCase):
+    def test_sharing_usb_and_snapshots(self):
+        """docs/VM.md stage 2: a folder (read-only unless asked), USB devices in the definition and live, snapshots."""
+        from dai_vm import usb
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        home = Path(tmp.name)
+        share = home / "share"
+        share.mkdir()
+        m = machine.Machine(name="w", memory_mb=4096, cpus=2, disk_gb=64, shared_folder=str(share), usb=["0781:5583"])
+        xml = machine.domain_xml(m, home)
+        self.assertIn('<memoryBacking>', xml)
+        self.assertIn('<access mode="shared" />', xml)
+        self.assertIn('<filesystem type="mount" accessmode="passthrough">', xml)
+        self.assertIn("<readonly />", xml)
+        self.assertIn('<vendor id="0x0781" />', xml)
+        self.assertIn('<product id="0x5583" />', xml)
+        m.shared_readonly = False
+        self.assertNotIn("<readonly />", machine.domain_xml(m, home))
+        with self.assertRaises(machine.MachineError):
+            machine.Machine(name="w", memory_mb=4096, cpus=2, disk_gb=64, usb=["nope"]).validate()
+        with self.assertRaises(machine.MachineError):
+            machine.Machine(name="w", memory_mb=4096, cpus=2, disk_gb=64, shared_folder="/").validate()
+        with self.assertRaises(machine.MachineError):
+            machine.Machine(name="w", memory_mb=4096, cpus=2, disk_gb=64, shared_folder=str(home / "missing")).validate()
+        run = fakes.FakeRun()
+        machine.create(machine.Machine(name="w", memory_mb=4096, cpus=2, disk_gb=64), home, run)
+        loaded = machine.load("w", home)
+        loaded.clipboard, loaded.shared_folder = True, str(share)
+        definition = machine.update(loaded, home)
+        self.assertIn("com.redhat.spice.0", definition.read_text())
+        self.assertEqual(machine.load("w", home).shared_folder, str(share))
+        v = control.Virsh(run)
+        v.define(definition)
+        v.start("w")
+        v.attach_usb("w", "046d:c31c")
+        self.assertEqual(run.attached["dai-w"], ["046d:c31c"])
+        self.assertEqual(run.calls[-1][3:5], ["attach-device", "dai-w"])
+        self.assertIn("--live", run.calls[-1])
+        v.detach_usb("w", "046d:c31c")
+        self.assertEqual(run.attached["dai-w"], [])
+        with self.assertRaises(control.VmError):
+            v.detach_usb("w", "046d:c31c")
+        self.assertEqual(sorted(Path(tempfile.gettempdir()).glob("dai-vm-usb-*")), [])  # no XML left behind
+        v.snapshot_take("w", "before-update", "Before Windows Update")
+        self.assertEqual(run.calls[-1][3:], ["snapshot-create-as", "dai-w", "--name", "before-update", "--description", "Before Windows Update"])
+        v.snapshot_take("w", "clean")
+        listed = v.snapshots("w")
+        self.assertEqual([(x["label"], x["current"]) for x in listed], [("before-update", False), ("clean", True)])
+        self.assertEqual(listed[0]["when"], "2026-10-20 12:00:00 +0000")
+        v.snapshot_revert("w", "before-update")
+        self.assertEqual(v.state("w"), "shut off")
+        v.snapshot_delete("w", "clean")
+        self.assertEqual([x["label"] for x in v.snapshots("w")], ["before-update"])
+        with self.assertRaises(control.VmError):
+            v.snapshot_revert("w", "gone")
+        devices = usb.list_devices(fakes.fake_usb(home / "sys"))
+        self.assertEqual([(d.usb_id, d.name, d.bus) for d in devices],
+                         [("046d:c31c", "Logitech USB Keyboard", "1-2"), ("0781:5583", "SanDisk Ultra Fit", "1-3")])
+        self.assertEqual(devices[1].label, "SanDisk Ultra Fit (0781:5583)")
+        self.assertEqual(usb.list_devices(home / "nowhere"), [])
+
     def test_the_lifecycle_through_fixed_argv(self):
         run = fakes.FakeRun()
         v = control.Virsh(run)

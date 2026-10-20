@@ -7,6 +7,11 @@
   dai-vm list                         the machines and their state
   dai-vm create NAME --iso FILE [--windows 11|10|other] [--memory MB] [--cpus N] [--disk GB] [--no-drivers]
   dai-vm start|stop|poweroff|pause|resume|show|delete NAME     (delete asks; --yes skips the question)
+  dai-vm share NAME [--clipboard on|off] [--folder PATH|none] [--writable|--read-only]
+                                      what the machine may see; takes effect at its next start
+  dai-vm usb NAME                     the USB devices plugged into this computer, and which the machine has
+  dai-vm usb NAME attach|detach ID    give a device (vendor:product) to the machine, or take it back
+  dai-vm snapshot NAME take [LABEL] [--note TEXT] | list | revert LABEL | delete LABEL
   dai-vm drivers [--download]         the VirtIO drivers for Windows: present or not; --download fetches them
   dai-vm iso FILE                     what the media says about itself, and its SHA-256
   dai-vm --version | --help
@@ -170,6 +175,138 @@ def cmd_machine(args: list[str], lang: str, home: Path | None, virsh: control.Vi
     return 0
 
 
+def _load(name: str, lang: str, home: Path | None) -> machine.Machine | None:
+    try:
+        return machine.load(name, home)
+    except machine.MachineError:
+        print(say(lang, "No machine called {name}.", "אין מכונה בשם {name}.", name=name), file=sys.stderr)
+        return None
+
+
+def cmd_share(args: list[str], lang: str, home: Path | None, virsh: control.Virsh) -> int:
+    names = _positional(args[1:], {"--clipboard", "--folder"})
+    if not names:
+        print(say(lang, "Which machine? dai-vm share NAME", "איזו מכונה? dai-vm share NAME"), file=sys.stderr)
+        return 2
+    m = _load(names[0], lang, home)
+    if m is None:
+        return 2
+    clipboard, folder = _option(args, "--clipboard"), _option(args, "--folder")
+    if clipboard is not None:
+        if clipboard not in ("on", "off"):
+            print(say(lang, "--clipboard takes on or off.", "‏--clipboard מקבל on או off."), file=sys.stderr)
+            return 2
+        m.clipboard = clipboard == "on"
+    if folder is not None:
+        m.shared_folder = None if folder == "none" else str(Path(folder).expanduser().resolve())
+    if "--writable" in args:
+        m.shared_readonly = False
+    if "--read-only" in args:
+        m.shared_readonly = True
+    try:
+        definition = machine.update(m, home)
+        if virsh.available() and virsh.state(m.name) != "missing":
+            virsh.redefine(definition)
+    except (machine.MachineError, control.VmError) as exc:
+        print(say(lang, "Not changed: {why}", "לא שונה: {why}", why=exc), file=sys.stderr)
+        return 1
+    print(say(lang, "{name}: clipboard {clip} · folder {folder}{mode}. Takes effect at the next start.",
+              "{name}: לוח {clip} · תיקייה {folder}{mode}. ייכנס לתוקף בהפעלה הבאה.", name=m.name,
+              clip=say(lang, "on", "פועל") if m.clipboard else say(lang, "off", "כבוי"),
+              folder=m.shared_folder or say(lang, "none", "אין"),
+              mode=("" if not m.shared_folder else (say(lang, " (read-only)", " (לקריאה בלבד)") if m.shared_readonly
+                                                    else say(lang, " (writable)", " (לכתיבה)")))))
+    return 0
+
+
+def cmd_usb(args: list[str], lang: str, home: Path | None, virsh: control.Virsh) -> int:
+    from . import usb
+
+    names = _positional(args[1:], set())
+    if not names:
+        print(say(lang, "Which machine? dai-vm usb NAME", "איזו מכונה? dai-vm usb NAME"), file=sys.stderr)
+        return 2
+    m = _load(names[0], lang, home)
+    if m is None:
+        return 2
+    verb = names[1] if len(names) > 1 else "list"
+    if verb == "list":
+        devices = usb.list_devices()
+        if not devices:
+            print(say(lang, "No USB devices plugged in (hubs are not listed).", "אין התקני USB מחוברים (רכזות לא מוצגות)."))
+        for device in devices:
+            mark = "✓" if device.usb_id in m.usb else " "
+            print(f"{mark} {device.usb_id}  {device.name}  ({device.bus})")
+        if m.usb:
+            print(say(lang, "The machine has: {ids}", "למכונה יש: {ids}", ids=", ".join(m.usb)))
+        return 0
+    if verb not in ("attach", "detach") or len(names) < 3:
+        print(say(lang, "dai-vm usb NAME attach|detach ID", "dai-vm usb NAME attach|detach ID"), file=sys.stderr)
+        return 2
+    usb_id = names[2].lower()
+    try:
+        if verb == "attach":
+            if usb_id not in m.usb:
+                m.usb.append(usb_id)
+        else:
+            m.usb = [x for x in m.usb if x != usb_id]
+        definition = machine.update(m, home)
+        if virsh.available() and virsh.state(m.name) != "missing":
+            virsh.redefine(definition)
+            if virsh.state(m.name) == "running":
+                (virsh.attach_usb if verb == "attach" else virsh.detach_usb)(m.name, usb_id)
+    except (machine.MachineError, control.VmError) as exc:
+        print(say(lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc), file=sys.stderr)
+        return 1
+    print(say(lang, "{id} now belongs to {name}. D.Ai does not see it while the machine has it.",
+              "{id} שייך עכשיו ל-{name}. D.Ai לא רואה אותו כל עוד המכונה מחזיקה בו.", id=usb_id, name=m.name) if verb == "attach"
+          else say(lang, "{id} is back with D.Ai.", "{id} חזר ל-D.Ai.", id=usb_id))
+    return 0
+
+
+def cmd_snapshot(args: list[str], lang: str, home: Path | None, virsh: control.Virsh) -> int:
+    names = _positional(args[1:], {"--note"})
+    if not names:
+        print(say(lang, "Which machine? dai-vm snapshot NAME take|list|revert|delete", "איזו מכונה? dai-vm snapshot NAME take|list|revert|delete"),
+              file=sys.stderr)
+        return 2
+    m = _load(names[0], lang, home)
+    if m is None:
+        return 2
+    verb = names[1] if len(names) > 1 else "list"
+    try:
+        if verb == "list":
+            found = virsh.snapshots(m.name)
+            if not found:
+                print(say(lang, "No snapshots of {name}.", "אין תמונות מצב של {name}.", name=m.name))
+            for snap in found:
+                print(f"{'* ' if snap['current'] else '  '}{snap['label']}  {snap['when']}  {snap['state']}")
+            return 0
+        if verb == "take":
+            label = names[2] if len(names) > 2 else datetime.datetime.now().strftime("%Y-%m-%d-%H%M")
+            if not machine.NAME_RE.match(label):
+                print(say(lang, "A snapshot name is letters, digits, dots, dashes and underscores.",
+                          "שם תמונת מצב הוא אותיות, ספרות, נקודות, מקפים וקווים תחתונים."), file=sys.stderr)
+                return 2
+            virsh.snapshot_take(m.name, label, _option(args, "--note") or "")
+            print(say(lang, "Snapshot {label} of {name} taken.", "תמונת המצב {label} של {name} נשמרה.", label=label, name=m.name))
+            return 0
+        if verb in ("revert", "delete") and len(names) > 2:
+            if verb == "revert":
+                virsh.snapshot_revert(m.name, names[2])
+                print(say(lang, "{name} is back at {label}.", "{name} חזר ל-{label}.", name=m.name, label=names[2]))
+            else:
+                virsh.snapshot_delete(m.name, names[2])
+                print(say(lang, "Snapshot {label} deleted.", "תמונת המצב {label} נמחקה.", label=names[2]))
+            return 0
+    except control.VmError as exc:
+        print(say(lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc), file=sys.stderr)
+        return 1
+    print(say(lang, "dai-vm snapshot NAME take [LABEL] | list | revert LABEL | delete LABEL",
+              "dai-vm snapshot NAME take [LABEL] | list | revert LABEL | delete LABEL"), file=sys.stderr)
+    return 2
+
+
 def cmd_drivers(args: list[str], lang: str, home: Path | None) -> int:
     entry = drivers.catalog().get("virtio-win")
     if entry is None:
@@ -251,6 +388,12 @@ def main(argv: list[str] | None = None, home: Path | None = None, virsh: control
         return cmd_create(args, lang, home, virsh, run)
     if verb in ("start", "stop", "poweroff", "pause", "resume", "show", "delete"):
         return cmd_machine(args, lang, home, virsh, spawn)
+    if verb == "share":
+        return cmd_share(args, lang, home, virsh)
+    if verb == "usb":
+        return cmd_usb(args, lang, home, virsh)
+    if verb == "snapshot":
+        return cmd_snapshot(args, lang, home, virsh)
     if verb == "drivers":
         return cmd_drivers(args, lang, home)
     if verb == "iso":

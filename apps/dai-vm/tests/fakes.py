@@ -62,6 +62,8 @@ class FakeRun:
         self.calls: list[list[str]] = []
         self.states: dict[str, str] = {}
         self.fail: set[str] = set()
+        self.snapshots: dict[str, list[str]] = {}
+        self.attached: dict[str, list[str]] = {}
 
     def __call__(self, argv, **kwargs):
         argv = list(argv)
@@ -76,7 +78,7 @@ class FakeRun:
             return subprocess.CompletedProcess(argv, 1, "", f"error: {verb} refused")
         if verb == "define":
             name = Path(rest[0]).parent.name
-            self.states[f"dai-{name}"] = "shut off"
+            self.states.setdefault(f"dai-{name}", "shut off")
             return subprocess.CompletedProcess(argv, 0, "Domain defined\n", "")
         if verb == "list":
             return subprocess.CompletedProcess(argv, 0, "\n".join(self.states) + "\n", "")
@@ -97,6 +99,37 @@ class FakeRun:
             return subprocess.CompletedProcess(argv, 0, f"spice+unix:///run/user/1000/libvirt/{name}.sock\n", "")
         elif verb == "undefine":
             del self.states[name]
+        elif verb in ("attach-device", "detach-device"):
+            xml = Path(rest[1]).read_text()
+            usb_id = xml.split('vendor id="0x')[1][:4] + ":" + xml.split('product id="0x')[1][:4]
+            held = self.attached.setdefault(name, [])
+            if verb == "attach-device":
+                held.append(usb_id)
+            elif usb_id in held:
+                held.remove(usb_id)
+            else:
+                return subprocess.CompletedProcess(argv, 1, "", "error: device not found")
+        elif verb == "snapshot-create-as":
+            self.snapshots.setdefault(name, []).append(rest[rest.index("--name") + 1])
+        elif verb == "snapshot-list":
+            return subprocess.CompletedProcess(argv, 0, "\n".join(self.snapshots.get(name, [])) + "\n", "")
+        elif verb == "snapshot-info":
+            label = rest[rest.index("--snapshotname") + 1]
+            if label not in self.snapshots.get(name, []):
+                return subprocess.CompletedProcess(argv, 1, "", "error: no snapshot")
+            current = "yes" if label == self.snapshots[name][-1] else "no"
+            return subprocess.CompletedProcess(argv, 0, f"Name:           {label}\nDomain:         {name}\nCurrent:        {current}\n"
+                                                        f"State:          shutoff\nCreation Time:  2026-10-20 12:00:00 +0000\n", "")
+        elif verb == "snapshot-revert":
+            label = rest[rest.index("--snapshotname") + 1]
+            if label not in self.snapshots.get(name, []):
+                return subprocess.CompletedProcess(argv, 1, "", "error: no snapshot")
+            self.states[name] = "shut off"
+        elif verb == "snapshot-delete":
+            label = rest[rest.index("--snapshotname") + 1]
+            if label not in self.snapshots.get(name, []):
+                return subprocess.CompletedProcess(argv, 1, "", "error: no snapshot")
+            self.snapshots[name].remove(label)
         return subprocess.CompletedProcess(argv, 0, "", "")
 
 
@@ -104,6 +137,21 @@ def virsh_with(run: FakeRun) -> control.Virsh:
     v = control.Virsh(run)
     v.available = lambda: True  # type: ignore[method-assign]
     return v
+
+
+def fake_usb(root: Path) -> Path:
+    """A sysfs with a root hub, a keyboard, a stick and an interface entry (skipped)."""
+    for name, fields in {
+        "usb1": {"idVendor": "1d6b", "idProduct": "0002", "bDeviceClass": "09", "product": "xHCI Host Controller"},
+        "1-2": {"idVendor": "046d", "idProduct": "c31c", "bDeviceClass": "00", "manufacturer": "Logitech", "product": "USB Keyboard"},
+        "1-3": {"idVendor": "0781", "idProduct": "5583", "bDeviceClass": "00", "manufacturer": "SanDisk", "product": "Ultra Fit"},
+        "1-3:1.0": {"bInterfaceClass": "08"},
+    }.items():
+        folder = root / name
+        folder.mkdir(parents=True, exist_ok=True)
+        for key, value in fields.items():
+            (folder / key).write_text(value + "\n")
+    return root
 
 
 class FakeFetch:

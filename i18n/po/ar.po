@@ -4625,10 +4625,6 @@ msgid "Choose…"
 msgstr "اختيار…"
 
 #: apps/dai-vm/dai_vm/gui.py
-msgid "Clipboard: off."
-msgstr "الحافظة: مطفأة."
-
-#: apps/dai-vm/dai_vm/gui.py
 msgid "Compare it with the checksum on the page you downloaded from."
 msgstr "قارنه بمجموع التحقق في الصفحة التي نزّلت منها."
 
@@ -4772,10 +4768,6 @@ msgid "Shared folder: none."
 msgstr "المجلد المشترك: لا شيء."
 
 #: apps/dai-vm/dai_vm/gui.py
-msgid "Sharing the clipboard, a folder or a USB device comes in the next stage, each with its own switch here."
-msgstr "مشاركة الحافظة أو مجلد أو جهاز USB تأتي في المرحلة التالية، لكل منها مفتاحه هنا."
-
-#: apps/dai-vm/dai_vm/gui.py
 msgid "Show the screen"
 msgstr "عرض الشاشة"
 
@@ -4868,10 +4860,6 @@ msgid "This user may not use KVM yet. Say \"allow virtual machines\" to D.Ai Tun
 msgstr "لا يُسمح لهذا المستخدم باستخدام KVM بعد. قل \"allow virtual machines\" لـ D.Ai Tune (يضيفك إلى مجموعة kvm؛ سجّل الخروج والدخول مجددًا)."
 
 #: apps/dai-vm/dai_vm/gui.py
-msgid "USB devices: none."
-msgstr "أجهزة USB: لا شيء."
-
-#: apps/dai-vm/dai_vm/gui.py
 #, python-brace-format
 msgid "Unknown command: {verb}. dai-vm --help"
 msgstr "أمر غير معروف: {verb}. dai-vm --help"
@@ -4916,10 +4904,6 @@ msgstr "أي اسم؟ dai-vm create NAME --iso FILE"
 #: apps/dai-vm/dai_vm/gui.py
 msgid "Which system"
 msgstr "أي نظام"
-
-#: apps/dai-vm/dai_vm/gui.py
-msgid "Your files: not reachable."
-msgstr "ملفاتك: غير قابلة للوصول."
 
 #: apps/dai-vm/dai_vm/gui.py
 msgid "crashed"
@@ -5210,3 +5194,189 @@ msgstr "{n} صفحات · لم يُحفظ بعد (Ctrl+S)"
 #, python-brace-format
 msgid "{out}: {n} pages"
 msgstr "{out}: {n} صفحات"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid " (read-only)"
+msgstr " (للقراءة فقط)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid " (writable)"
+msgstr " (قابل للكتابة)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "--clipboard takes on or off."
+msgstr "‏--clipboard يقبل on أو off."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A folder Windows may see"
+msgstr "مجلد يمكن لـ Windows رؤيته"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A name for it (letters, digits, dots, dashes):"
+msgstr "اسم لها (حروف، أرقام، نقاط، شرطات):"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A snapshot keeps the whole machine as it is now; go back to it after a bad update."
+msgstr "اللقطة تحفظ الجهاز كله كما هو الآن؛ عُد إليها بعد تحديث سيئ."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A snapshot name is letters, digits, dots, dashes and underscores."
+msgstr "اسم اللقطة حروف وأرقام ونقاط وشرطات وشرطات سفلية."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Choose a folder…"
+msgstr "اختيار مجلد…"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Clipboard {state} for {name}; takes effect at the next start."
+msgstr "الحافظة {state} لـ {name}؛ يسري عند التشغيل التالي."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Everything done in the machine since then is lost, unless it is in a later snapshot."
+msgstr "كل ما جرى في الجهاز منذ ذلك الحين يُفقد، ما لم يكن في لقطة لاحقة."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Go back"
+msgstr "العودة"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Go back to it"
+msgstr "العودة إليها"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Go back to {label}?"
+msgstr "العودة إلى {label}؟"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Look again"
+msgstr "إعادة الفحص"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "No USB devices plugged in (hubs are not listed)."
+msgstr "لا توجد أجهزة USB موصولة (الموزعات غير مدرجة)."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "No snapshots of {name}."
+msgstr "لا توجد لقطات لـ {name}."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Not changed: {why}"
+msgstr "لم يتغير: {why}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Share the clipboard"
+msgstr "مشاركة الحافظة"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Share the clipboard (both directions; takes effect at the next start)"
+msgstr "مشاركة الحافظة (في الاتجاهين؛ يسري عند التشغيل التالي)"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Shared folder: {path}"
+msgstr "المجلد المشترك: {path}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Snapshot {label} deleted."
+msgstr "حُذفت اللقطة {label}."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Snapshot {label} of {name} taken."
+msgstr "أُخذت اللقطة {label} لـ {name}."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Snapshots"
+msgstr "اللقطات"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Stop sharing"
+msgstr "إيقاف المشاركة"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Take a snapshot"
+msgstr "أخذ لقطة"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The folder is read-only for Windows."
+msgstr "المجلد للقراءة فقط بالنسبة لـ Windows."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "The machine has: {ids}"
+msgstr "لدى الجهاز: {ids}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "USB devices"
+msgstr "أجهزة USB"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "USB devices (tick one to give it to the machine; D.Ai loses it meanwhile)"
+msgstr "أجهزة USB (علّم واحدًا لإعطائه للجهاز؛ يفقده D.Ai في هذه الأثناء)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which machine? dai-vm share NAME"
+msgstr "أي جهاز؟ dai-vm share NAME"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which machine? dai-vm snapshot NAME take|list|revert|delete"
+msgstr "أي جهاز؟ dai-vm snapshot NAME take|list|revert|delete"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which machine? dai-vm usb NAME"
+msgstr "أي جهاز؟ dai-vm usb NAME"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Windows may also write into the folder"
+msgstr "يمكن لـ Windows أيضًا الكتابة في المجلد"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Windows may write into the folder."
+msgstr "يمكن لـ Windows الكتابة في المجلد."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Your files: only what you share below."
+msgstr "ملفاتك: فقط ما تشاركه أدناه."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "not shared"
+msgstr "غير مشتركة"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "shared"
+msgstr "مشتركة"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{id} is back with D.Ai."
+msgstr "{id} عاد إلى D.Ai."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{id} now belongs to {name}. D.Ai does not see it while the machine has it."
+msgstr "{id} يخص الآن {name}. لا يراه D.Ai ما دام الجهاز يحتفظ به."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is back at {label}."
+msgstr "{name} عاد إلى {label}."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} sees no folder of yours."
+msgstr "{name} لا يرى أي مجلد من مجلداتك."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} will see {path} (read-only unless you allow writing) at its next start."
+msgstr "سيرى {name} المجلد {path} (للقراءة فقط ما لم تسمح بالكتابة) عند تشغيله التالي."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name}: clipboard {clip} · folder {folder}{mode}. Takes effect at the next start."
+msgstr "{name}: الحافظة {clip} · المجلد {folder}{mode}. يسري عند التشغيل التالي."

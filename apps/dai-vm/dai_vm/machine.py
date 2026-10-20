@@ -11,7 +11,9 @@ disk):
 The definition for Windows 11: q35, UEFI with Secure Boot (libvirt picks Debian's OVMF with Microsoft's keys),
 a TPM 2.0 from swtpm, a VirtIO disk, VirtIO network through passt (the person's own session, no bridge), QXL
 graphics on SPICE over a local socket, a USB tablet, sound, a balloon, a random-number source, and the VirtIO
-drivers ISO as a second CD. Clipboard sharing and shared folders are off unless turned on (stage 2).
+drivers ISO as a second CD. Clipboard sharing, a shared folder and USB devices are off unless turned on (stage 2):
+each is a switch in the saved choices, the definition is rewritten from them, and a running machine takes a
+clipboard or folder change at its next start (USB devices go in and out live).
 """
 from __future__ import annotations
 
@@ -25,6 +27,7 @@ from typing import Callable
 from .hardware import MAX_GUEST_MB, MIN_GUEST_MB
 
 NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,39}$")
+USB_ID_RE = re.compile(r"^[0-9a-f]{4}:[0-9a-f]{4}$")
 WINDOWS_KINDS = ("11", "10", "other")
 MIN_DISK_GB, MAX_DISK_GB = 32, 2048
 
@@ -44,6 +47,8 @@ class Machine:
     windows: str = "11"               # "11", "10" or "other"
     clipboard: bool = False
     shared_folder: str | None = None
+    shared_readonly: bool = True       # Windows reads the folder; writing is a second choice
+    usb: list[str] = field(default_factory=list)  # "vendor:product" ids given to the machine at start
     created: str = ""
 
     def validate(self) -> "Machine":
@@ -60,6 +65,15 @@ class Machine:
         for path in (self.iso, self.drivers_iso):
             if path is not None and not Path(path).is_file():
                 raise MachineError(f"no such file: {path}")
+        if self.shared_folder is not None:
+            folder = Path(self.shared_folder)
+            if not folder.is_absolute() or not folder.is_dir():
+                raise MachineError(f"not a folder: {self.shared_folder}")
+            if folder.resolve() == Path.home().resolve() or folder.resolve() == Path("/"):
+                raise MachineError("share a folder inside your home, not the whole home or the whole disk")
+        for usb_id in self.usb:
+            if not USB_ID_RE.match(usb_id):
+                raise MachineError(f"a USB id looks like 1234:abcd, not {usb_id}")
         return self
 
     def to_dict(self) -> dict:
@@ -128,6 +142,10 @@ def domain_xml(machine: Machine, home: Path | None = None) -> str:
     _sub(domain, "memory", str(int(machine.memory_mb)), unit="MiB")
     _sub(domain, "currentMemory", str(int(machine.memory_mb)), unit="MiB")
     _sub(domain, "vcpu", str(int(machine.cpus)), placement="static")
+    if machine.shared_folder:  # virtiofs needs the guest's memory shared with virtiofsd
+        backing = _sub(domain, "memoryBacking")
+        _sub(backing, "source", type="memfd")
+        _sub(backing, "access", mode="shared")
 
     os_ = _sub(domain, "os", firmware="efi")
     _sub(os_, "type", "hvm", arch="x86_64", machine="q35")
@@ -198,8 +216,30 @@ def domain_xml(machine: Machine, home: Path | None = None) -> str:
         _sub(fs, "driver", type="virtiofs")
         _sub(fs, "source", dir=str(machine.shared_folder))
         _sub(fs, "target", dir="dai-shared")
+        if machine.shared_readonly:
+            _sub(fs, "readonly")
+    for usb_id in machine.usb:
+        devices.append(ET.fromstring(usb_hostdev_xml(usb_id)))
     ET.indent(domain)
     return ET.tostring(domain, encoding="unicode") + "\n"
+
+
+def usb_hostdev_xml(usb_id: str) -> str:
+    """The hostdev element for one USB device (vendor:product), for the definition and for live attach."""
+    if not USB_ID_RE.match(usb_id):
+        raise MachineError(f"a USB id looks like 1234:abcd, not {usb_id}")
+    vendor, product = usb_id.split(":")
+    return (f'<hostdev mode="subsystem" type="usb" managed="yes"><source><vendor id="0x{vendor}"/>'
+            f'<product id="0x{product}"/></source></hostdev>')
+
+
+def update(machine: Machine, home: Path | None = None) -> Path:
+    """Save changed choices and rewrite the definition; returns the definition's path (libvirt redefines it)."""
+    machine.validate()
+    save(machine, home)
+    definition = machine_dir(machine.name, home) / "domain.xml"
+    definition.write_text(domain_xml(machine, home), encoding="utf-8")
+    return definition
 
 
 Run = Callable[..., object]

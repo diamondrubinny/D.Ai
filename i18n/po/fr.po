@@ -4625,10 +4625,6 @@ msgid "Choose…"
 msgstr "Choisir…"
 
 #: apps/dai-vm/dai_vm/gui.py
-msgid "Clipboard: off."
-msgstr "Presse-papiers : désactivé."
-
-#: apps/dai-vm/dai_vm/gui.py
 msgid "Compare it with the checksum on the page you downloaded from."
 msgstr "Comparez-la avec la somme de contrôle de la page de téléchargement."
 
@@ -4772,10 +4768,6 @@ msgid "Shared folder: none."
 msgstr "Dossier partagé : aucun."
 
 #: apps/dai-vm/dai_vm/gui.py
-msgid "Sharing the clipboard, a folder or a USB device comes in the next stage, each with its own switch here."
-msgstr "Le partage du presse-papiers, d'un dossier ou d'un périphérique USB arrive à l'étape suivante, chacun avec son interrupteur ici."
-
-#: apps/dai-vm/dai_vm/gui.py
 msgid "Show the screen"
 msgstr "Afficher l'écran"
 
@@ -4868,10 +4860,6 @@ msgid "This user may not use KVM yet. Say \"allow virtual machines\" to D.Ai Tun
 msgstr "Cet utilisateur ne peut pas encore utiliser KVM. Dites « allow virtual machines » à D.Ai Tune (il vous ajoute au groupe kvm ; déconnectez-vous puis reconnectez-vous)."
 
 #: apps/dai-vm/dai_vm/gui.py
-msgid "USB devices: none."
-msgstr "Périphériques USB : aucun."
-
-#: apps/dai-vm/dai_vm/gui.py
 #, python-brace-format
 msgid "Unknown command: {verb}. dai-vm --help"
 msgstr "Commande inconnue : {verb}. dai-vm --help"
@@ -4916,10 +4904,6 @@ msgstr "Quel nom ? dai-vm create NAME --iso FILE"
 #: apps/dai-vm/dai_vm/gui.py
 msgid "Which system"
 msgstr "Quel système"
-
-#: apps/dai-vm/dai_vm/gui.py
-msgid "Your files: not reachable."
-msgstr "Vos fichiers : inaccessibles."
 
 #: apps/dai-vm/dai_vm/gui.py
 msgid "crashed"
@@ -5210,3 +5194,189 @@ msgstr "{n} pages · pas encore enregistré (Ctrl+S)"
 #, python-brace-format
 msgid "{out}: {n} pages"
 msgstr "{out} : {n} pages"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid " (read-only)"
+msgstr " (lecture seule)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid " (writable)"
+msgstr " (écriture autorisée)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "--clipboard takes on or off."
+msgstr "--clipboard accepte on ou off."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A folder Windows may see"
+msgstr "Un dossier que Windows pourra voir"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A name for it (letters, digits, dots, dashes):"
+msgstr "Un nom (lettres, chiffres, points, tirets) :"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A snapshot keeps the whole machine as it is now; go back to it after a bad update."
+msgstr "Un instantané garde toute la machine telle qu'elle est maintenant ; revenez-y après une mauvaise mise à jour."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "A snapshot name is letters, digits, dots, dashes and underscores."
+msgstr "Un nom d'instantané est fait de lettres, chiffres, points, tirets et tirets bas."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Choose a folder…"
+msgstr "Choisir un dossier…"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Clipboard {state} for {name}; takes effect at the next start."
+msgstr "Presse-papiers {state} pour {name} ; prend effet au prochain démarrage."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Everything done in the machine since then is lost, unless it is in a later snapshot."
+msgstr "Tout ce qui a été fait dans la machine depuis est perdu, sauf si c'est dans un instantané ultérieur."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Go back"
+msgstr "Revenir"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Go back to it"
+msgstr "Y revenir"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Go back to {label}?"
+msgstr "Revenir à {label} ?"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Look again"
+msgstr "Revérifier"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "No USB devices plugged in (hubs are not listed)."
+msgstr "Aucun périphérique USB branché (les hubs ne sont pas listés)."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "No snapshots of {name}."
+msgstr "Aucun instantané de {name}."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Not changed: {why}"
+msgstr "Non modifié : {why}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Share the clipboard"
+msgstr "Partager le presse-papiers"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Share the clipboard (both directions; takes effect at the next start)"
+msgstr "Partager le presse-papiers (dans les deux sens ; prend effet au prochain démarrage)"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Shared folder: {path}"
+msgstr "Dossier partagé : {path}"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Snapshot {label} deleted."
+msgstr "Instantané {label} supprimé."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "Snapshot {label} of {name} taken."
+msgstr "Instantané {label} de {name} pris."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Snapshots"
+msgstr "Instantanés"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Stop sharing"
+msgstr "Arrêter le partage"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Take a snapshot"
+msgstr "Prendre un instantané"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "The folder is read-only for Windows."
+msgstr "Le dossier est en lecture seule pour Windows."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "The machine has: {ids}"
+msgstr "La machine a : {ids}"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "USB devices"
+msgstr "Périphériques USB"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "USB devices (tick one to give it to the machine; D.Ai loses it meanwhile)"
+msgstr "Périphériques USB (cochez-en un pour le donner à la machine ; D.Ai le perd entre-temps)"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which machine? dai-vm share NAME"
+msgstr "Quelle machine ? dai-vm share NAME"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which machine? dai-vm snapshot NAME take|list|revert|delete"
+msgstr "Quelle machine ? dai-vm snapshot NAME take|list|revert|delete"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Which machine? dai-vm usb NAME"
+msgstr "Quelle machine ? dai-vm usb NAME"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Windows may also write into the folder"
+msgstr "Windows peut aussi écrire dans le dossier"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Windows may write into the folder."
+msgstr "Windows peut écrire dans le dossier."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "Your files: only what you share below."
+msgstr "Vos fichiers : seulement ce que vous partagez ci-dessous."
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "not shared"
+msgstr "non partagé"
+
+#: apps/dai-vm/dai_vm/gui.py
+msgid "shared"
+msgstr "partagé"
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{id} is back with D.Ai."
+msgstr "{id} est de retour chez D.Ai."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{id} now belongs to {name}. D.Ai does not see it while the machine has it."
+msgstr "{id} appartient maintenant à {name}. D.Ai ne le voit pas tant que la machine l'a."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} is back at {label}."
+msgstr "{name} est revenu à {label}."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} sees no folder of yours."
+msgstr "{name} ne voit aucun de vos dossiers."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name} will see {path} (read-only unless you allow writing) at its next start."
+msgstr "{name} verra {path} (lecture seule sauf si vous autorisez l'écriture) à son prochain démarrage."
+
+#: apps/dai-vm/dai_vm/gui.py
+#, python-brace-format
+msgid "{name}: clipboard {clip} · folder {folder}{mode}. Takes effect at the next start."
+msgstr "{name} : presse-papiers {clip} · dossier {folder}{mode}. Prend effet au prochain démarrage."

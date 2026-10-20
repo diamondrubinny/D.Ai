@@ -21,6 +21,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   TPM 2.0, VirtIO disk and network through passt, SPICE over a local socket; the VirtIO drivers ISO downloaded
   once with a pinned SHA-256; no clipboard, folder or USB sharing until asked; "allow virtual machines" in
   D.Ai Tune adds the person to the kvm group, with undo. User and dev editions.
+- D.Ai VM, working together: the clipboard, a shared folder (read-only unless allowed) and USB devices as
+  switches per machine, off by default, applied through libvirt; USB devices in and out while the machine runs;
+  snapshots taken, listed, reverted and deleted, in the window and on the command line.
 - D.Ai TV, the television edition (`build-iso.sh tv`): Kodi 21 full screen on labwc, autologin, the bundled
   Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC tools; "Exit" in Kodi turns the
   session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.
