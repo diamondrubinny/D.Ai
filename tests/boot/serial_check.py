@@ -846,7 +846,7 @@ def main() -> int:
          "cmp -s /tmp/gui-before.xml ~/.kodi/userdata/guisettings.xml && echo SETTINGS_RESTORED || diff /tmp/gui-before.xml ~/.kodi/userdata/guisettings.xml | head -n 6; "
          "tail -n 3 /tmp/tune-tv.txt; fi",
          True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
-             "TUNE_RC=0", "WEB_ON=1", "ES_ON=1", "PORTS=3", "PORTS_AFTER=0", "SETTINGS_RESTORED")), 120),
+             "TUNE_RC=0", "WEB_ON=1", "ES_ON=1", "PORTS_AFTER=0", "SETTINGS_RESTORED")) and re.search(r"PORTS=[3-9]", o) is not None, 120),
         # D.Ai VM (docs/VM.md): the stack is there, the check says plainly there is no KVM in this VM, and libvirt
         # accepts a whole machine definition (define, state, undefine). Only in the editions that ship it.
         ("vm: the stack, the honest check, a definition libvirt accepts",

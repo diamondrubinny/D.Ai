@@ -97,6 +97,13 @@ def domain_name(name: str) -> str:
     return f"dai-{name}"
 
 
+def domain_uuid(name: str) -> str:
+    """libvirt refuses to redefine a domain under a new UUID; D.Ai's is derived from the name, so it never changes."""
+    import uuid
+
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, "https://d.ai/vm/" + name))
+
+
 def save(machine: Machine, home: Path | None = None) -> Path:
     folder = machine_dir(machine.name, home)
     folder.mkdir(parents=True, exist_ok=True)
@@ -137,6 +144,7 @@ def domain_xml(machine: Machine, home: Path | None = None) -> str:
     disk = folder / "disk.qcow2"
     domain = ET.Element("domain", type="kvm")
     _sub(domain, "name", domain_name(machine.name))
+    _sub(domain, "uuid", domain_uuid(machine.name))  # fixed per name, so a changed definition replaces the old one
     _sub(domain, "title", machine.name)
     _sub(domain, "description", "Made by D.Ai VM (docs/VM.md). The person's own media and key.")
     _sub(domain, "memory", str(int(machine.memory_mb)), unit="MiB")

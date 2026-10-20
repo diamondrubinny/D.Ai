@@ -263,6 +263,9 @@ class VirshTests(unittest.TestCase):
         loaded.clipboard, loaded.shared_folder = True, str(share)
         definition = machine.update(loaded, home)
         self.assertIn("com.redhat.spice.0", definition.read_text())
+        self.assertIn(f"<uuid>{machine.domain_uuid('w')}</uuid>", definition.read_text())  # the same UUID as at create
+        self.assertEqual(machine.domain_uuid("w"), machine.domain_uuid("w"))
+        self.assertNotEqual(machine.domain_uuid("w"), machine.domain_uuid("w2"))
         self.assertEqual(machine.load("w", home).shared_folder, str(share))
         v = control.Virsh(run)
         v.define(definition)
