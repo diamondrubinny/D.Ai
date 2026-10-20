@@ -6,7 +6,7 @@
   dai-vm check                        can this computer run a machine? (exit 0 yes, 1 no)
   dai-vm list                         the machines and their state
   dai-vm create NAME --iso FILE [--windows 11|10|other] [--memory MB] [--cpus N] [--disk GB] [--no-drivers]
-  dai-vm start|stop|poweroff|pause|resume|show|delete NAME     (delete asks; --yes skips the question)
+  dai-vm start [--show]|stop|poweroff|pause|resume|show|delete NAME   (delete asks; --yes skips the question)
   dai-vm share NAME [--clipboard on|off] [--folder PATH|none] [--writable|--read-only]
                                       what the machine may see; takes effect at its next start
   dai-vm usb NAME                     the USB devices plugged into this computer, and which the machine has
@@ -22,7 +22,6 @@ as you (qemu:///session), in your home folder, with no shared folder and no clip
 from __future__ import annotations
 
 import datetime
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -144,6 +143,8 @@ def cmd_machine(args: list[str], lang: str, home: Path | None, virsh: control.Vi
                 virsh.define(machine.machine_dir(name, home) / "domain.xml")
             virsh.start(name)
             print(say(lang, "{name} is starting.", "{name} מופעל.", name=name))
+            if "--show" in args:
+                spawn(control.viewer_argv(f"{m.name} · D.Ai VM", virsh.display(name)))
         elif verb == "stop":
             virsh.shutdown(name)
             print(say(lang, "{name} was asked to shut down.", "{name} התבקש להיכבות.", name=name))
@@ -167,7 +168,7 @@ def cmd_machine(args: list[str], lang: str, home: Path | None, virsh: control.Vi
             if virsh.state(name) == "running":
                 virsh.poweroff(name)
             virsh.undefine(name)
-            shutil.rmtree(machine.machine_dir(name, home), ignore_errors=True)
+            machine.remove_files(name, home)
             print(say(lang, "{name} was deleted.", "{name} נמחק.", name=name))
     except control.VmError as exc:
         print(say(lang, "That did not work: {why}", "זה לא הצליח: {why}", why=exc), file=sys.stderr)

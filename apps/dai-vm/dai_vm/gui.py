@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import datetime
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -752,7 +751,7 @@ class VmWindow(QWidget):
                 self.virsh.undefine(m.name)
         except control.VmError:
             pass
-        shutil.rmtree(machine.machine_dir(m.name, self.home), ignore_errors=True)
+        machine.remove_files(m.name, self.home)
         self.status.setText(say(self.lang, "{name} was deleted.", "{name} נמחק.", name=m.name))
         self.refresh_machines()
 

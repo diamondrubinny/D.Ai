@@ -246,12 +246,13 @@ def update(facts: Facts, lang: str) -> list[Finding]:
                                       "מה השתנה: /var/log/apt/history.log, ודווחו ב־GitHub"))])]
 
 
-TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware, "update": update}
 
 QUESTIONS = {
     # First: "the printer doesn't work since the update" is about the update.
     "update": (r"(?:(?:since|after) (?:the |an |last |latest )?update|update (?:broke|ruined)|broke after|"
                r"(?:מאז|אחרי|לאחר) (?:ה)?עדכון|העדכון (?:שבר|הרס|קלקל|דפק))"),
+    # "Windows is slow" is about the machine (docs/VM.md §13), before "slow" claims it.
+    "machine": r"(?:\bwindows\b|virtual machine|\bvm\b|dai-vm|ווינדוס|וינדוס|חלונות|מכונה וירטואלית|המכונה הווירטואלית)",
     "slow": r"(?:\bslow\b|\bsluggish\b|\blag(?:gy|ging)?\b|\bfreez(?:e|es|ing)\b|\bhang(?:s|ing)?\b|"
             r"איטי|איטית|נתקע|תקוע|מאט|כבד|לאט)",
     "disk": r"(?:disk space|storage|\bdisk\b.*\bfull\b|running out of space|what(?:'s| is) taking|free space|"
@@ -269,6 +270,65 @@ CUES = (r"(?:\bwhy\b|\bwhat\b|\bhow\b|\bcomputer\b|\bpc\b|\blaptop\b|\bsystem\b|
 
 
 LANG_DIR = Path(__file__).parent / "lang"  # keyword packs for the six other languages (docs/I18N.md §10)
+
+
+def machine(facts: Facts, lang: str) -> list[Finding]:
+    """Why Windows (a D.Ai VM machine) is slow: no KVM, too much of the memory given away, Windows itself busy,
+    little room left for the disk to grow (docs/VM.md §13)."""
+    findings = []
+    if not facts.machines:
+        findings.append(Finding("machine", "ok", _t(lang, "No Windows machine yet", "עדיין אין מכונת Windows"),
+                                _t(lang, "D.Ai VM makes one from your own installation media: dai-vm create NAME --iso FILE",
+                                   "D.Ai VM יוצר אחת ממדיית ההתקנה שלכם: dai-vm create NAME --iso FILE")))
+        return findings
+    running = [p for p in facts.processes if p.name.startswith("qemu-system")]
+    if facts.kvm is False:
+        findings.append(Finding("kvm", "bad", _t(lang, "Windows runs without hardware acceleration", "Windows רץ בלי האצת חומרה"),
+                                _t(lang, "Virtualization (VT-x or AMD-V) is off in the computer's firmware, or /dev/kvm is not "
+                                         "yours to use; everything inside the machine is many times slower.",
+                                   "וירטואליזציה (VT-x או AMD-V) כבויה בקושחה של המחשב, או ש-/dev/kvm לא זמין לכם; הכול בתוך "
+                                   "המכונה איטי פי כמה."),
+                                [Fix("advice", _t(lang, "Turn on virtualization in the firmware settings (BIOS/UEFI), then restart",
+                                                  "הפעילו וירטואליזציה בהגדרות הקושחה (BIOS/UEFI) ואז הפעילו מחדש"))]))
+    if facts.mem_total:
+        for name, memory_mb, _cpus in facts.machines:
+            given = memory_mb * 2**20
+            if given >= facts.mem_total * 0.6:
+                findings.append(Finding("machine-memory", "warn", _t(lang, "{name} takes most of the memory", "{name} לוקח את רוב הזיכרון", name=name),
+                                        _t(lang, "It was given {given} of the computer's {total}; D.Ai and Windows then squeeze each other.",
+                                           "ניתנו לו {given} מתוך {total} של המחשב; D.Ai ו-Windows נדחקים זה בזה.",
+                                           given=size(given), total=size(facts.mem_total)),
+                                        [Fix("advice", _t(lang, "In D.Ai VM, give {name} less memory (half of the computer's is plenty)",
+                                                          "ב-D.Ai VM תנו ל-{name} פחות זיכרון (חצי מזיכרון המחשב מספיק בהחלט)", name=name))]))
+    busy = [p for p in running if p.cpu >= 50]
+    if busy:
+        findings.append(Finding("machine-busy", "warn", _t(lang, "Windows itself is busy", "Windows עצמו עסוק"),
+                                _t(lang, "The machine uses {cpu:.0f}% of the processor: Windows Update or an installer is working inside it.",
+                                   "המכונה משתמשת ב-{cpu:.0f}% מהמעבד: Windows Update או תוכנת התקנה עובדים בתוכה.", cpu=busy[0].cpu),
+                                [Fix("advice", _t(lang, "Wait for Windows to finish, or pause the machine in D.Ai VM",
+                                                  "חכו ש-Windows יסיים, או השהו את המכונה ב-D.Ai VM"))]))
+    if running and facts.mem_total and facts.mem_available / facts.mem_total < 0.15:
+        findings.append(Finding("machine-squeeze", "warn", _t(lang, "Little memory is left while Windows runs", "נשאר מעט זיכרון בזמן ש-Windows רץ"),
+                                _t(lang, "Only {mem_available} is free for D.Ai.", "רק {mem_available} פנויים ל-D.Ai.",
+                                   mem_available=size(facts.mem_available)),
+                                [Fix("advice", _t(lang, "Close apps you are not using, or give the machine less memory",
+                                                  "סגרו אפליקציות שלא בשימוש, או תנו למכונה פחות זיכרון"))]))
+    if 0 < facts.machines_free < 8 * 2**30:
+        findings.append(Finding("machine-disk", "warn", _t(lang, "Little room for the machine's disk to grow", "נשאר מעט מקום לדיסק של המכונה לגדול"),
+                                _t(lang, "{free} free where the machines live; Windows stops when its disk cannot grow.",
+                                   "{free} פנויים היכן שהמכונות נמצאות; Windows נעצר כשהדיסק שלו לא יכול לגדול.",
+                                   free=size(facts.machines_free)),
+                                [Fix("advice", _t(lang, "Free space (dai-doctor disk) or delete a machine you no longer use",
+                                                  "פנו מקום (dai-doctor disk) או מחקו מכונה שכבר לא בשימוש"))]))
+    if not findings:
+        names = ", ".join(f"{n} ({m // 1024} GB, {c} CPU)" for n, m, c in facts.machines)
+        findings.append(Finding("machine", "ok", _t(lang, "Windows has what it needs", "ל-Windows יש מה שהוא צריך"),
+                                _t(lang, "{names}; hardware acceleration is on.", "{names}; האצת חומרה פועלת.", names=names)
+                                if facts.kvm else names))
+    return findings
+
+
+TOPICS = {"slow": slow, "disk": disk, "battery": power, "hardware": hardware, "update": update, "machine": machine}
 
 
 def _topic(lowered: str) -> str | None:

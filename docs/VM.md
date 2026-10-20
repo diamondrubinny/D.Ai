@@ -6,7 +6,7 @@
 > **Decided (19 October 2026, "from now on you decide"):** the recommendations of §5, all of them: the screen in
 > a `remote-viewer` window managed by D.Ai VM; the key typed into Windows setup only (no answer file in stage 1);
 > the user and dev editions; virtio-win downloaded once with a pinned hash; the name "D.Ai VM".
-> **Status: stages 1 and 2 built** (§10, §11). Stages 3–4 not started. The Windows install itself is a manual test on a
+> **Status: stages 1, 2 and 3 built** (§10–§13). Stage 4 not started. The Windows install itself is a manual test on a
 > physical computer (§7); it has not been run yet.
 
 ## 10. Stage 1: what was built
@@ -68,8 +68,42 @@
   machine it is meant, with several Tune lists them and asks. Everything goes through `dai-vm` as the person
   (user scope, no root); undo shuts down what was started, starts what was stopped, deletes the snapshot.
 - **VM check:** the sentence applied on the CI machine and undone, the snapshot seen and gone.
-- **Not yet (stage 3b):** the taskbar entry and MOM's cost line for a running machine, Doctor's "Windows is slow
-  because…", Backup's choice to include or skip the disks, Find skipping the disks.
+- **Not yet (stage 3b, see §13):** the taskbar entry and MOM's cost line for a running machine, Doctor's
+  "Windows is slow because…", Backup's choice to include or skip the disks, Find skipping the disks.
+
+## 13. Stage 3b: a machine like an app (what was built)
+
+- **Its own entry in the menu and the taskbar:** `dai-vm create` writes `~/.local/share/applications/dai-vm-NAME.desktop`
+  (name, "Windows 11 in D.Ai VM", the D.Ai VM icon, `Exec=dai-vm start NAME --show`, so one click starts the
+  machine and opens its screen); `dai-vm delete` and the window's delete remove it with the machine. The entry
+  carries `X-DAi-Machine=NAME` and `StartupWMClass=remote-viewer` (**requires a check** on the image that the
+  viewer's Wayland app id is `remote-viewer`, so the taskbar groups its window under the entry).
+- **MOM:** a running machine is one app, named after its launcher (or after the machine when there is none):
+  QEMU, its TPM and the rest of its tree are counted together, with their memory and CPU, like any app; the
+  D.Ai VM manager window stays its own app (a machine launcher's `dai-vm` command never captures it).
+- **Doctor:** "why is Windows slow?" / "למה ווינדוס איטי?" (and in the six other languages) is the `machine`
+  topic: no hardware acceleration (/dev/kvm not usable: virtualization off in the firmware) is the first and
+  worst reason; a machine given 60% or more of the memory; Windows itself busy (QEMU at 50% or more: an
+  update or an installer inside); little memory left while it runs; less than 8 GB where the disks live. Facts
+  are read from D.Ai VM's own files, so Doctor needs nothing from `dai-vm`. All advice, no fix is applied.
+- **Backup:** the machines' disks are left out unless asked (`dai-backup machines on`; the status shows the
+  choice); when included, the machines folder is copied with the rest (restic deduplicates, but the first copy
+  is tens of GB and takes a while, said plainly).
+- **Find:** a machine's disk is never a search result (the machines folder is hidden under `~/.local`; a disk
+  image the person keeps among their own files is still theirs to find).
+- **USB passthrough without root:** `/etc/udev/rules.d/70-dai-vm-usb.rules` tags every non-hub USB device
+  `uaccess`, so the person at the seat owns the device node while logged in and QEMU, running as them, can
+  claim it. The trade-off is written in the rule: any program of the logged-in user may then talk to a
+  plugged-in USB device directly (**requires a check** on real hardware, and a security review before release).
+- **Tests:** the launcher written and removed with the machine, `start --show`; MOM's grouping (QEMU and its
+  TPM under the launcher, a launcher-less machine named after itself, the manager window separate); Doctor's
+  five reasons with levels, the healthy and the no-machine answers, Hebrew, facts from the files (a broken
+  file skipped), the questions in English, Hebrew, Russian and German; Backup leaving the disk out, then
+  copying it after `machines on`; Find. The VM check on the image: the launcher exists and is gone with the
+  machine, `dai-doctor machine` answers (and sees that the CI machine has no acceleration), `udevadm verify`
+  accepts the rule.
+- **Not yet (stage 4):** Diamond's help inside the machine, a second machine kind (another Linux), the
+  Tune posture sentence "Windows cannot see my files".
 
 > The name "D.Ai VM" is descriptive. "Windows" is Microsoft's trademark and is used here only to name their
 > product, never as part of D.Ai's name or branding (**requires a check** of Microsoft's trademark guidelines

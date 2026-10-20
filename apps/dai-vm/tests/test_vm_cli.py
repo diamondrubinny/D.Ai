@@ -50,6 +50,13 @@ class CliTests(unittest.TestCase):
         self.assertEqual((code, "win11 is ready" in out), (0, True), err)
         self.assertIn("drivers are not downloaded", err)
         self.assertEqual(self.virsh.state("win11"), "shut off")
+        launcher = self.home / ".local/share/applications/dai-vm-win11.desktop"
+        self.assertIn("Exec=dai-vm start win11 --show\n", launcher.read_text())  # its own menu and taskbar entry
+        self.assertIn("X-DAi-Machine=win11\n", launcher.read_text())
+        self.assertIn("Comment=Windows 11 in D.Ai VM\n", launcher.read_text())
+        code, out, _ = self.cli("start", "win11", "--show")
+        self.assertEqual((code, self.spawned[-1][:2]), (0, ["remote-viewer", "--title"]))
+        self.assertEqual(self.cli("stop", "win11")[0], 0)
         code, out, _ = self.cli("list")
         self.assertIn("win11\tshut off\t4096 MB · 2 CPU · 64 GB · Windows 11", out)
         self.assertEqual(self.cli("start", "win11")[0], 0)
@@ -65,6 +72,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual((code, "Add --yes" in err), (1, True))
         self.assertEqual(self.cli("delete", "win11", "--yes")[0], 0)
         self.assertEqual(self.virsh.state("win11"), "missing")
+        self.assertFalse(launcher.exists())  # gone with the machine
         self.assertEqual(self.cli("list")[1].strip(), "No machines yet. dai-vm create NAME --iso FILE")
         code, _, err = self.cli("start", "win11")
         self.assertEqual((code, "No machine called win11" in err), (2, True))

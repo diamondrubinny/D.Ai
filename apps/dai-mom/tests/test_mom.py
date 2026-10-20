@@ -146,7 +146,26 @@ class GroupTests(Base):
         self.assertEqual(sandbox.name, "python3")
         self.assertFalse(found["dai-command"].sandboxed)  # what started the sandbox is not inside it
 
-    def test_a_shell_that_mentions_dai_is_not_a_dai_service(self):
+    def test_a_windows_machine_is_one_app(self):
+        """docs/VM.md §13: QEMU runs under the machine's launcher; the dai-vm window stays D.Ai VM's own."""
+        desktop(self.dirs[0], "dai-vm", "Name=D.Ai VM\nExec=dai-vm\nIcon=dai-vm\nStartupWMClass=dai-vm\n")
+        desktop(self.dirs[0], "dai-vm-office", "Name=office\nComment=Windows 11 in D.Ai VM\nExec=dai-vm start office --show\n"
+                                              "Icon=dai-vm\nX-DAi-Machine=office\n")
+        f = self.fake
+        f.add(1300, 1, "python3", ["python3", "-I", "-c", "from dai_vm.gui import main; main()"], pss_kb=50_000)
+        f.add(1301, 1, "qemu-system-x86", ["/usr/bin/qemu-system-x86_64", "-name", "guest=dai-office,debug-threads=on",
+                                           "-S", "-machine", "pc-q35-9.2"], pss_kb=2_000_000, stat_name="qemu-system-x86")
+        f.add(1302, 1, "qemu-system-x86", ["/usr/bin/qemu-system-x86_64", "-name", "guest=dai-lab"], pss_kb=1000)
+        f.add(1303, 1301, "swtpm", ["swtpm", "socket"], pss_kb=300)
+        found = {a.key: a for a in self.grouped()}
+        office = found["dai-vm-office"]
+        self.assertEqual((office.name, office.comment, office.icon), ("office", "Windows 11 in D.Ai VM", "dai-vm"))
+        self.assertEqual(sorted(p.pid for p in office.processes), [1301, 1303])  # the TPM belongs to its machine
+        self.assertEqual(found["dai-vm-lab"].name, "lab")  # no launcher: still one app, named after the machine
+        self.assertEqual(found["dai-vm"].name, "D.Ai VM")  # the manager window is not a machine
+        self.assertEqual([p.pid for p in found["dai-vm"].processes], [1300])
+
+
         # bash -c "… python3 -m dai_mom …" must not pull everything it starts into "D.Ai Mom"
         self.fake.add(1300, 600, "bash", ["bash", "-c", "python3 -m dai_mom guard; sleep 1"])
         self.fake.add(1301, 1300, "dai-burn", ["/tmp/dai-burn", "-c", "while True: pass"])

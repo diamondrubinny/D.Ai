@@ -29,6 +29,8 @@
   "kamera": "camera",
   "treiber": "drivers",
   "seit dem update": "since the update",
-  "nach dem update": "after the update"
+  "nach dem update": "after the update",
+  "virtuelle": "virtual",
+  "maschine": "machine"
  }
 }

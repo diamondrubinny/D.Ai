@@ -142,7 +142,9 @@ def load_desktop_apps(dirs: list[Path], lang: str) -> dict[str, DesktopApp]:
             app.keys = exec_keys(entry.get("Exec", "")) | exec_keys(entry.get("TryExec", ""))
             if entry.get("StartupWMClass"):
                 app.keys.add(entry["StartupWMClass"].lower())
-            if path.stem.startswith("dai-"):
+            if entry.get("X-DAi-Machine"):
+                app.keys = {path.stem}  # a D.Ai VM machine: its QEMU is matched by name, never the dai-vm command
+            elif path.stem.startswith("dai-"):
                 app.keys.add(path.stem)  # matched through DAI_MODULE
             for key in app.keys:
                 by_key.setdefault(key, app)
@@ -187,6 +189,28 @@ def _dai_service(process: Process) -> DesktopApp | None:
     return DesktopApp(id=f"dai-{module}", name=name, icon="dai-logo")
 
 
+MACHINE_NAME = re.compile(r"^guest=dai-([A-Za-z0-9._-]+)")
+
+
+def machine_of(process: Process) -> str | None:
+    """The D.Ai VM machine a QEMU process runs ("-name guest=dai-office,debug-threads=on" → "office")."""
+    if not process.name.startswith("qemu-system"):
+        return None
+    for i, arg in enumerate(process.cmdline[:-1]):
+        if arg == "-name":
+            found = MACHINE_NAME.match(process.cmdline[i + 1])
+            return found.group(1) if found else None
+    return None
+
+
+def _machine(process: Process, desktop: dict[str, DesktopApp]) -> DesktopApp | None:
+    """A running machine is one app: its launcher when it has one, otherwise named after the machine."""
+    name = machine_of(process)
+    if name is None:
+        return None
+    return desktop.get(f"dai-vm-{name}") or DesktopApp(id=f"dai-vm-{name}", name=name, comment="D.Ai VM", icon="dai-vm")
+
+
 def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = None,
           recording: list[str] | None = None) -> list[App]:
     """This user's processes as apps (biggest first). Other users' processes are not included."""
@@ -197,7 +221,8 @@ def group(snapshot: Snapshot, desktop: dict[str, DesktopApp], uid: int | None = 
     def match(process: Process) -> DesktopApp | None:
         if process.name in SESSION:
             return None
-        return next((desktop[k] for k in program_keys(process) if k in desktop), None) or _dai_service(process)
+        return (next((desktop[k] for k in program_keys(process) if k in desktop), None) or _dai_service(process)
+                or _machine(process, desktop))
 
     owner: dict[int, str] = {}
     apps: dict[str, App] = {}

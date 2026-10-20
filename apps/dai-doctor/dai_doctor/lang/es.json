@@ -32,6 +32,8 @@
   "controlador": "driver",
   "después de la actualización": "after the update",
   "desde la actualización": "since the update",
-  "la actualización rompió": "update broke"
+  "la actualización rompió": "update broke",
+  "máquina": "machine",
+  "virtual": "virtual"
  }
 }

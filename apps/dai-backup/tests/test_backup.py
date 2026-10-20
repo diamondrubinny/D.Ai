@@ -140,7 +140,24 @@ class RealResticTests(BackupTestCase):
         code, out = self.cli("check")
         self.assertEqual(code, 0, out)
         status = json.loads(self.cli("status", "--json")[1])
-        self.assertEqual((status["drive_connected"], status["copies"]), (True, 2))
+        self.assertEqual((status["drive_connected"], status["copies"], status["machines"]), (True, 2, False))
+
+        # docs/VM.md §13: a Windows machine's disk is left out unless asked for, then copied too.
+        disk = self.home / ".local/share/dai/vm/machines/office/disk.qcow2"
+        disk.parent.mkdir(parents=True)
+        disk.write_bytes(b"QFI\xfb" + b"\0" * 4096)
+        self.assertEqual(self.cli("now")[0], 0)
+        self.cli("restore", str(disk), "--from", "latest")
+        self.assertFalse(list((self.home / "Restored").rglob("disk.qcow2")))
+        self.assertEqual(self.cli("machines", "maybe")[0], 2)
+        code, out = self.cli("machines", "on")
+        self.assertEqual((code, "tens of GB" in out), (0, True), out)
+        self.assertTrue(json.loads(self.cli("status", "--json")[1])["machines"])
+        self.assertEqual(self.cli("now")[0], 0)
+        code, out = self.cli("restore", str(disk), "--from", "latest")
+        self.assertEqual(code, 0, out)
+        self.assertEqual([p.read_bytes()[:4] for p in (self.home / "Restored").rglob("disk.qcow2")], [b"QFI\xfb"])
+        self.assertEqual(self.cli("machines", "off")[0], 0)
 
         key_path(self.home).write_text("0000-0000-0000-0000-0000-0000-0000-0000\n")
         self.assertEqual(self.cli("now")[0], 1)  # a wrong key cannot read or write the backup

@@ -1,0 +1,7 @@
+# D.Ai VM (docs/VM.md §13): a USB device given to a Windows machine is opened by QEMU as the person, in their
+# own session (qemu:///session, no root). The device node must therefore be theirs: the "uaccess" tag gives the
+# user at the seat an ACL on it while they are logged in, and takes it away when they log out (systemd-logind).
+# Hubs (device class 09) are left alone. This is the same mechanism distributions use for cameras and
+# scanners; it means any program of the logged-in user may talk to a plugged-in USB device directly
+# (the person's own devices, in their own session). Requires a check on real hardware before release.
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{bDeviceClass}!="09", TAG+="uaccess"

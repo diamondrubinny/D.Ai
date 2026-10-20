@@ -93,6 +93,35 @@ class DiagnoseTests(FakeSystem):
         cpu = next(f for f in findings if f.key == "cpu")
         self.assertNotIn("labwc", cpu.detail)  # the desktop itself is never blamed
 
+    def test_windows_machine_reasons(self):
+        """docs/VM.md §13: no KVM, too much memory given away, Windows busy, little room for the disk."""
+        facts = self.facts(machines=[("office", 6144, 4)], kvm=False, machines_free=3 * GB, mem_available=int(0.8 * GB),
+                           processes=[Proc(20, "qemu-system-x86", 80.0, 5 * GB)])
+        findings = diagnose(facts, ("machine",))
+        self.assertEqual(self.keys(findings), ["kvm", "machine-memory", "machine-busy", "machine-squeeze", "machine-disk"])
+        self.assertEqual(findings[0].level, "bad")
+        self.assertIn("BIOS/UEFI", findings[0].fixes[0].label)
+        self.assertIn("6.0 GB of the computer's 8.0 GB", findings[1].detail)
+        fine = diagnose(self.facts(machines=[("office", 4096, 2)], kvm=True, machines_free=50 * GB), ("machine",))
+        self.assertEqual([(f.key, f.level) for f in fine], [("machine", "ok")])
+        self.assertIn("office (4 GB, 2 CPU); hardware acceleration is on.", fine[0].detail)
+        none = diagnose(self.facts(), ("machine",))
+        self.assertEqual((none[0].level, "dai-vm create" in none[0].detail), ("ok", True))
+        hebrew = diagnose(facts, ("machine",), "he")
+        self.assertIn("האצת חומרה", hebrew[0].title)
+
+    def test_machine_facts_come_from_dai_vm_files(self):
+        folder = self.home / ".local/share/dai/vm/machines/office"
+        folder.mkdir(parents=True)
+        (folder / "machine.json").write_text('{"name": "office", "memory_mb": 4096, "cpus": 2, "disk_gb": 64}')
+        (self.home / ".local/share/dai/vm/machines/broken").mkdir()
+        (self.home / ".local/share/dai/vm/machines/broken/machine.json").write_text("{")
+        facts = collect(self.root, self.home, runner=quiet, topics=("machine",))
+        self.assertEqual(facts.machines, [("office", 4096, 2)])
+        self.assertFalse(facts.kvm)  # no /dev/kvm in the fake root
+        self.assertGreater(facts.machines_free, 0)
+        self.assertTrue(any(p.name == "firefox-esr" for p in facts.processes))
+
     def test_disk_findings_and_fixes(self):
         facts = self.facts(disks={"/": (100 * GB, int(1.5 * GB))},
                            caches={"apt": 600 * MB, "journal": 900 * MB, "trash": 300 * MB, "thumbnails": 20 * MB},
@@ -125,7 +154,9 @@ class DiagnoseTests(FakeSystem):
     def test_questions(self):
         for text, topic in [("why is my computer slow", "slow"), ("למה המחשב איטי?", "slow"),
                             ("מה תופס את הדיסק", "disk"), ("what's taking my disk space", "disk"),
-                            ("כמה סוללה נשארה?", "battery"), ("slow motion.mp4", None), ("firefox", None)]:
+                            ("כמה סוללה נשארה?", "battery"), ("slow motion.mp4", None), ("firefox", None),
+                            ("why is windows so slow?", "machine"), ("למה ווינדוס איטי?", "machine"),
+                            ("why is my computer slow", "slow")]:
             self.assertEqual(topic_for(text), topic, text)
 
 
@@ -298,7 +329,8 @@ class LanguageTests(unittest.TestCase):
                             ("mon imprimante ne marche pas depuis la mise à jour", "update"),
                             ("was belegt meinen Speicherplatz", "disk"), ("por que meu computador está lento", "slow"),
                             ("لماذا حاسوبي بطيء", "slow"), ("batería de mi portátil", "battery"),
-                            ("installiere vlc", None), ("why is my computer slow", "slow")):
+                            ("installiere vlc", None), ("why is my computer slow", "slow"),
+                            ("почему виндовс тормозит?", "machine"), ("warum ist die virtuelle maschine langsam", "machine")):
             with self.subTest(text):
                 self.assertEqual(topic_for(text), topic)
 

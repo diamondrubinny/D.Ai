@@ -237,6 +237,14 @@ except control.VmError as exc:
     v.define(definition)
     print("DEFINED_ON_RETRY")
 print("DEFINED", v.state("citest"))
+# Stage 3b: the machine's own launcher (menu and taskbar), MOM's name for it, Doctor's answer, the USB rule.
+launcher = machine.launcher_path("citest", home)
+print("LAUNCHER", launcher.is_file() and "X-DAi-Machine=citest" in launcher.read_text())
+import subprocess
+doctor = subprocess.run(["dai-doctor", "machine"], capture_output=True, text=True, timeout=120)
+print("DOCTOR_RC", doctor.returncode, "DOCTOR_KVM", "hardware acceleration" in doctor.stdout, doctor.stdout.strip().splitlines()[:2])
+udev = subprocess.run(["udevadm", "verify", "/etc/udev/rules.d/70-dai-vm-usb.rules"], capture_output=True, text=True, timeout=60)
+print("UDEV_RC", udev.returncode, (udev.stdout + udev.stderr).strip().splitlines()[-1:])
 # Stage 2: a shared folder, the clipboard and a USB device in the definition; libvirt must accept it too.
 share = home / "dai-vm-share"
 share.mkdir(exist_ok=True)
@@ -260,7 +268,8 @@ print("TUNE_SNAP", [s["label"] for s in v.snapshots("citest")])
 undo = subprocess.run(["dai-tune", "undo"], capture_output=True, text=True, timeout=300)
 print("UNDO_RC", undo.returncode, "TUNE_SNAP_AFTER", [s["label"] for s in v.snapshots("citest")])
 v.undefine("citest")
-print("UNDEFINED", v.state("citest"))
+machine.remove_files("citest", home)
+print("UNDEFINED", v.state("citest"), "LAUNCHER_GONE", not launcher.exists())
 '''
 VM_CHECK_B64 = base64.b64encode(VM_CHECK.encode()).decode()
 
@@ -881,7 +890,8 @@ def main() -> int:
          f"echo {VM_CHECK_B64} | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py; fi",
          True, lambda o: "VM_NOT_IN_THIS_EDITION" in o or all(mark in o for mark in (
              "CHECK_RC=1", "✗", "FIRMWARE TOOLS_OK", "DEFINED shut off", "SHARED_DEFINED shut off True",
-             "TUNE_RC 0", "UNDO_RC 0", "UNDEFINED missing")), 300),
+             "TUNE_RC 0", "UNDO_RC 0", "LAUNCHER True", "DOCTOR_RC 0", "DOCTOR_KVM True", "UDEV_RC 0",
+             "UNDEFINED missing LAUNCHER_GONE True")), 300),
         # OS basics, stage 2 (docs/BASICS.md §2): optional packages, so a WARN (not a FAIL) when Debian lacks one.
         ("os: firmware, codecs, printers", "command -v fwupdmgr && echo FWUPD; "
          "ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\\.so'; "

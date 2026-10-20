@@ -6,6 +6,7 @@
   dai-backup now | status [--json] | list
   dai-backup restore PATH [--from SNAPSHOT]                  into ~/Restored/<date>/
   dai-backup check | disable
+  dai-backup machines on|off      also copy the Windows machines' disks (D.Ai VM); off by default, they are big
 """
 
 from __future__ import annotations
@@ -160,7 +161,7 @@ def main(argv: list[str] | None = None, restic_runner=None) -> int:
             return 0
         return run_backup(settings, home, restic, quiet=True)
     if command == "status":
-        info = {"repo": settings.repo, "drive_connected": present, "folders": settings.folders,
+        info = {"repo": settings.repo, "drive_connected": present, "folders": settings.folders, "machines": settings.machines,
                 "last_backup": settings.last_backup, "copies": len(restic.snapshots()) if present else None,
                 "history": settings.history[-5:]}
         if "--json" in rest:
@@ -171,6 +172,19 @@ def main(argv: list[str] | None = None, restic_runner=None) -> int:
         if present:
             print(_l("Copies: ", "עותקים: ") + str(info["copies"]))
         print(_l("Folders: ", "תיקיות: ") + ", ".join(f"~/{f}" for f in settings.folders))
+        print(_l("Windows machines (D.Ai VM): ", "מכונות Windows ‏(D.Ai VM): ")
+              + (_l("included", "כלולות") if settings.machines else _l("not included (dai-backup machines on)", "לא כלולות (dai-backup machines on)")))
+        return 0
+    if command == "machines":
+        if rest[:1] not in (["on"], ["off"]):
+            print(_l("dai-backup machines on|off", "dai-backup machines on|off"), file=sys.stderr)
+            return 2
+        settings.machines = rest[0] == "on"
+        save(settings, home)
+        print(_l("The Windows machines' disks are copied too, from the next backup on (tens of GB; the first copy takes a while).",
+                 "הדיסקים של מכונות Windows יגובו גם הם, מהגיבוי הבא (עשרות GB; העותק הראשון לוקח זמן).")
+              if settings.machines else
+              _l("The Windows machines' disks are left out of the backup.", "הדיסקים של מכונות Windows נשארים מחוץ לגיבוי."))
         return 0
     if command == "disable":
         systemctl("disable", "--now", "dai-backup.timer")

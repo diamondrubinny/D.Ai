@@ -65,6 +65,9 @@ class Facts:
     root_fs: str = ""                 # file system of /, for snapshots (docs/SNAPSHOTS.md)
     snapshots: bool = False           # snapper takes snapshots before updates
     last_update: tuple[str, int] | None = None   # (date, packages) of the last apt run
+    machines: list[tuple[str, int, int]] = field(default_factory=list)  # D.Ai VM machines: (name, memory MB, CPUs)
+    kvm: bool | None = None           # /dev/kvm usable by this user (None: not looked at)
+    machines_free: int = 0            # bytes free where the machines' disks live
 
 
 def _read(path: Path) -> str:
@@ -190,6 +193,20 @@ def last_apt_run(root: Path) -> tuple[str, int] | None:
     return (date, count) if date else None
 
 
+def vm_machines(home: Path) -> list[tuple[str, int, int]]:
+    """D.Ai VM's machines (docs/VM.md), read from their own files so Doctor needs nothing from dai-vm."""
+    import json
+
+    found = []
+    for path in sorted((home / ".local/share/dai/vm/machines").glob("*/machine.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            found.append((str(data["name"]), int(data["memory_mb"]), int(data["cpus"])))
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return found
+
+
 def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = run, sample: float = 0.5,
             topics: tuple[str, ...] = ("slow", "disk", "battery", "hardware", "update"), budget: float = 3.0) -> Facts:
     home = home or Path.home()
@@ -233,6 +250,15 @@ def collect(root: Path = Path("/"), home: Path | None = None, runner: Runner = r
         facts.root_fs = root_filesystem(root)
         facts.snapshots = (root / "etc/snapper/configs/root").exists()
         facts.last_update = last_apt_run(root)
+    if "machine" in topics:
+        facts.processes = facts.processes or processes(root, sample)
+        facts.kvm = os.access(root / "dev/kvm", os.R_OK | os.W_OK)
+        facts.machines = vm_machines(home)
+        try:
+            facts.machines_free = shutil.disk_usage(home / ".local/share/dai/vm" if (home / ".local/share/dai/vm").is_dir()
+                                                    else home).free
+        except OSError:
+            facts.machines_free = 0
     if "battery" in topics:
         facts.battery = battery(root)
         if facts.battery is not None:

@@ -32,6 +32,8 @@
   "pilotes": "drivers",
   "pilote": "driver",
   "depuis la mise à jour": "since the update",
-  "après la mise à jour": "after the update"
+  "après la mise à jour": "after the update",
+  "machine": "machine",
+  "virtuelle": "virtual"
  }
 }

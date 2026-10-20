@@ -108,6 +108,15 @@ class SearchTests(unittest.TestCase):
         (self.home / "link").symlink_to(outside.name)
         self.assertEqual(search(parse("find pdf"), self.home), [])
 
+    def test_windows_machines_disks_are_never_searched(self):
+        """docs/VM.md §13: a machine's disk is tens of GB of Windows, not the person's files."""
+        self.make(".local/share/dai/vm/machines/office/disk.qcow2", 1)
+        self.make(".local/share/dai/vm/machines/office/machine.json", 1)
+        self.make("Documents/office.qcow2", 1)  # a disk image the person keeps among their files is theirs to find
+        hits = search(parse("find office"), self.home)
+        self.assertEqual([h.path.name for h in hits], ["office.qcow2"])
+        self.assertEqual(hits[0].path.parent.name, "Documents")
+
     def test_unspecific_returns_nothing(self):
         self.make("a.txt", 0)
         self.assertEqual(search(parse("find"), self.home), [])

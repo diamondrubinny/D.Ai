@@ -120,6 +120,41 @@ def load(name: str, home: Path | None = None) -> Machine:
         raise MachineError(f"no machine called {name}") from exc
 
 
+def launcher_path(name: str, home: Path | None = None) -> Path:
+    """The machine's own menu and taskbar entry (a .desktop file in the person's applications folder)."""
+    return (home or Path.home()) / ".local" / "share" / "applications" / f"dai-vm-{name}.desktop"
+
+
+def launcher_text(machine: Machine) -> str:
+    """A launcher that starts the machine and shows its screen; MOM groups the machine's QEMU under it
+    (X-DAi-Machine). "Windows" names Microsoft's product only."""
+    kind = {"11": "Windows 11", "10": "Windows 10"}.get(machine.windows, "a virtual machine")
+    kind_he = {"11": "Windows 11", "10": "Windows 10"}.get(machine.windows, "מכונה וירטואלית")
+    return (
+        "[Desktop Entry]\nType=Application\n"
+        f"Name={machine.name}\nName[he]={machine.name}\n"
+        f"Comment={kind} in D.Ai VM\nComment[he]={kind_he} ב-D.Ai VM\n"
+        f"Exec=dai-vm start {machine.name} --show\nTryExec=dai-vm\nIcon=dai-vm\nTerminal=false\n"
+        "Categories=System;Emulator;\nKeywords=windows;virtual machine;vm;מכונה וירטואלית;\n"
+        f"StartupWMClass=remote-viewer\nX-DAi-Machine={machine.name}\n"
+    )
+
+
+def write_launcher(machine: Machine, home: Path | None = None) -> Path:
+    path = launcher_path(machine.name, home)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(launcher_text(machine), encoding="utf-8")
+    return path
+
+
+def remove_files(name: str, home: Path | None = None) -> None:
+    """The machine's folder (disk, definition, firmware variables) and its launcher, gone."""
+    import shutil
+
+    shutil.rmtree(machine_dir(name, home), ignore_errors=True)
+    launcher_path(name, home).unlink(missing_ok=True)
+
+
 def list_machines(home: Path | None = None) -> list[Machine]:
     out = []
     for folder in sorted(machines_dir(home).glob("*")):
@@ -272,4 +307,5 @@ def create(machine: Machine, home: Path | None = None, run: Run | None = None) -
     save(machine, home)
     definition = folder / "domain.xml"
     definition.write_text(domain_xml(machine, home), encoding="utf-8")
+    write_launcher(machine, home)
     return definition

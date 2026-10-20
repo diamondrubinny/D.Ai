@@ -38,6 +38,9 @@
   "драйверы": "drivers",
   "после обновления": "after the update",
   "с обновления": "since the update",
-  "обновление сломало": "update broke"
+  "обновление сломало": "update broke",
+  "виндовс": "windows",
+  "виртуальная": "virtual",
+  "машина": "machine"
  }
 }

@@ -13,6 +13,7 @@ from pathlib import Path
 REPO_DIR = "D.Ai-Backup"
 DEFAULT_FOLDERS = ("Documents", "Pictures", "Desktop", "Music", "Videos")
 EXCLUDES = ("**/.cache", "**/node_modules", "**/__pycache__", "**/.Trash-*", "**/*.part", "**/.venv", "**/venv")
+MACHINES = ".local/share/dai/vm/machines"   # where D.Ai VM keeps the disks (docs/VM.md)
 
 
 def config_dir(home: Path | None = None) -> Path:
@@ -29,6 +30,7 @@ class Settings:
     last_maintenance: float = 0.0
     last_reminder: float = 0.0
     history: list[dict] = field(default_factory=list)   # recent runs: time, ok, detail
+    machines: bool = False                              # D.Ai VM disks too (docs/VM.md §13): big, so a choice
 
     @property
     def repo_path(self) -> Path:

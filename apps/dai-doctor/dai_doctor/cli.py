@@ -4,6 +4,7 @@
 
   dai-doctor               everything
   dai-doctor slow | disk | battery | hardware   ("will my Wi-Fi/printer work?", also in the live session)
+  dai-doctor machine                            why Windows (a D.Ai VM machine) is slow
   dai-doctor --json        for scripts
   Fixes are offered one by one: system changes go through D.Ai Tune (undo),
   the trash and picture previews are emptied only after you confirm.

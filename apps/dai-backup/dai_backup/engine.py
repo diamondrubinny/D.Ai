@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 from typing import Callable, Sequence
 
-from .config import EXCLUDES, Settings, key_path
+from .config import EXCLUDES, MACHINES, Settings, key_path
 
 Runner = Callable[[Sequence[str]], subprocess.CompletedProcess]
 KEEP = ("--keep-daily", "7", "--keep-weekly", "4", "--keep-monthly", "12")
@@ -56,9 +56,13 @@ class Restic:
 
     def backup(self) -> dict:
         folders = [str(self.home / f) for f in self.settings.folders if (self.home / f).is_dir()]
+        if self.settings.machines and (self.home / MACHINES).is_dir():
+            folders.append(str(self.home / MACHINES))  # the machines' disks, only when asked (dai-backup machines on)
         if not folders:
             raise BackupError("none of the chosen folders exist")
         excludes = [arg for pattern in EXCLUDES for arg in ("--exclude", pattern)]
+        if not self.settings.machines:
+            excludes += ["--exclude", str(self.home / MACHINES)]
         out = self._run("backup", "--json", "--tag", TAG, "--exclude-caches", *excludes, *folders)
         summary = {}
         for line in out.splitlines():

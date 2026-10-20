@@ -5685,3 +5685,106 @@ msgstr "Quanto pesaria o ficheiro guardado, sem o escrever"
 #, python-brace-format
 msgid "{before} → {after} ({n} pictures made smaller)"
 msgstr "{before} → {after} ({n} imagens reduzidas)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Close apps you are not using, or give the machine less memory"
+msgstr "Feche as aplicações que não usa, ou dê menos memória à máquina"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "D.Ai VM makes one from your own installation media: dai-vm create NAME --iso FILE"
+msgstr "O D.Ai VM cria uma a partir do seu próprio suporte de instalação: dai-vm create NAME --iso FILE"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Free space (dai-doctor disk) or delete a machine you no longer use"
+msgstr "Liberte espaço (dai-doctor disk) ou apague uma máquina que já não usa"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "In D.Ai VM, give {name} less memory (half of the computer's is plenty)"
+msgstr "No D.Ai VM, dê menos memória a {name} (metade da do computador chega bem)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "It was given {given} of the computer's {total}; D.Ai and Windows then squeeze each other."
+msgstr "Recebeu {given} dos {total} do computador; o D.Ai e o Windows ficam então apertados."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Little memory is left while Windows runs"
+msgstr "Resta pouca memória enquanto o Windows corre"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Little room for the machine's disk to grow"
+msgstr "Pouco espaço para o disco da máquina crescer"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "No Windows machine yet"
+msgstr "Ainda não há uma máquina Windows"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "Only {mem_available} is free for D.Ai."
+msgstr "Só {mem_available} estão livres para o D.Ai."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "The Windows machines' disks are copied too, from the next backup on (tens of GB; the first copy takes a while)."
+msgstr "Os discos das máquinas Windows também são copiados, a partir da próxima cópia (dezenas de GB; a primeira demora)."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "The Windows machines' disks are left out of the backup."
+msgstr "Os discos das máquinas Windows ficam fora da cópia de segurança."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "The machine uses {cpu:.0f}% of the processor: Windows Update or an installer is working inside it."
+msgstr "A máquina usa {cpu:.0f}% do processador: o Windows Update ou um instalador está a trabalhar lá dentro."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Turn on virtualization in the firmware settings (BIOS/UEFI), then restart"
+msgstr "Ative a virtualização nas definições do firmware (BIOS/UEFI) e reinicie"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Virtualization (VT-x or AMD-V) is off in the computer's firmware, or /dev/kvm is not yours to use; everything inside the machine is many times slower."
+msgstr "A virtualização (VT-x ou AMD-V) está desligada no firmware do computador, ou /dev/kvm não está ao seu dispor; tudo dentro da máquina é muitas vezes mais lento."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Wait for Windows to finish, or pause the machine in D.Ai VM"
+msgstr "Espere que o Windows termine, ou pause a máquina no D.Ai VM"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Windows has what it needs"
+msgstr "O Windows tem o que precisa"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Windows itself is busy"
+msgstr "O próprio Windows está ocupado"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Windows machines (D.Ai VM): "
+msgstr "Máquinas Windows (D.Ai VM): "
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "Windows runs without hardware acceleration"
+msgstr "O Windows corre sem aceleração por hardware"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "included"
+msgstr "incluídas"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+msgid "not included (dai-backup machines on)"
+msgstr "não incluídas (dai-backup machines on)"
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{free} free where the machines live; Windows stops when its disk cannot grow."
+msgstr "{free} livres onde vivem as máquinas; o Windows para quando o disco não pode crescer."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{names}; hardware acceleration is on."
+msgstr "{names}; a aceleração por hardware está ligada."
+
+#: apps/dai-doctor/dai_doctor/diagnose.py
+#, python-brace-format
+msgid "{name} takes most of the memory"
+msgstr "{name} fica com a maior parte da memória"
