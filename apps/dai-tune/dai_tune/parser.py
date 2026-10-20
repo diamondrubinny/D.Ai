@@ -96,6 +96,16 @@ THEMES = [
     ("night", r"(?:\b(?:dark|night) (?:theme|design)\b|\bdark mode\b|ערכת נושא כהה|ערכת צבעים כהה|מצב כהה|עיצוב כהה)"),
 ]
 
+# The touch profile (docs/MOBILE.md A1). "off" and "auto" are tried before "on", which is the bare phrase.
+TOUCH_WORD = r"(?:\btouch(?:[ -]screen)? mode\b|\btouch (?:screen )?(?:profile|layout)\b|מצב מגע|מצב מסך מגע)"
+TOUCH = [
+    ("auto", r"(?:\bauto(?:matic)?\b.*" + TOUCH_WORD + r"|" + TOUCH_WORD + r".*\bauto(?:matic)?\b|"
+             r"אוטומטי.*" + TOUCH_WORD + r"|" + TOUCH_WORD + r".*אוטומטי)"),
+    ("off", r"(?:\b(?:no|disable|turn off|switch off|stop|without)\b.*" + TOUCH_WORD + r"|" + TOUCH_WORD + r" off\b|"
+            r"(?:כבה|בטל|תכבה|תבטל|ללא|בלי) (?:את )?(?:ה)?" + TOUCH_WORD + r")"),
+    ("on", TOUCH_WORD),
+]
+
 KEYBOARD = r"(?:keyboard|layouts?|מקלדת|שפות מקלדת|שפות הקלדה)"
 LANGUAGES = [
     ("il", r"(?:hebrew|עברית)"), ("us", r"(?:english|אנגלית)"), ("ru", r"(?:russian|רוסית)"),
@@ -268,6 +278,11 @@ def parse_clause(clause: str) -> list[Request]:
         if re.search(pattern, c, re.IGNORECASE):
             return [Request("appearance.theme", {"theme": theme}, clause)]
 
+    # The touch profile.
+    for mode, pattern in TOUCH:
+        if re.search(pattern, c, re.IGNORECASE):
+            return [Request("appearance.touch", {"mode": mode}, clause)]
+
     # Keyboard layouts (in the order they were mentioned).
     if _has(KEYBOARD, c):
         found = sorted(
@@ -324,6 +339,7 @@ _TOPICS = {
     "lock": (LOCK, ("session.lock",)),
     "port": (PORT, ("firewall.",)),
     "vm": (VIRTUALIZATION, ("vm.",)),
+    "touch": (TOUCH_WORD, ("appearance.touch",)),
 }
 
 
@@ -395,6 +411,7 @@ EXAMPLES = {
         "שנה שם מחשב ל office-pc",
         "מצב ציבורי",
         "מצב פרטיות",
+        "מצב מגע",
         "פנה מקום בדיסק",
         "מצב חיסכון בסוללה",
         "הפעל צילום מצב לפני כל עדכון",
@@ -416,6 +433,7 @@ EXAMPLES = {
         "rename computer to office-pc",
         "public mode",
         "privacy mode",
+        "touch mode",
         "free up disk space",
         "battery saver mode",
         "snapshots before updates",

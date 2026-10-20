@@ -17,6 +17,9 @@ rules, for every visible, enabled, interactive widget:
   the palette).
 
 Disabled widgets are exempt from contrast, as in WCAG. The audit only reads.
+
+With touch=True (docs/MOBILE.md A1) a fourth rule, target: every interactive widget is at least 44 x 44 px
+(WCAG 2.5.5), so a finger lands on it. assert_accessible runs that pass with the touch stylesheet applied.
 """
 from __future__ import annotations
 
@@ -32,6 +35,7 @@ from PyQt6.QtWidgets import (QAbstractButton, QAbstractItemView, QAbstractSlider
 
 AA_TEXT = 4.5
 AA_LARGE = 3.0
+TARGET = 44  # px, WCAG 2.5.5 (dai_style.TOUCH_TARGET)
 LETTER = 1.25  # closer than this to the text color: a letter's pixel, not the background
 
 INTERACTIVE = (QAbstractButton, QLineEdit, QComboBox, QAbstractSpinBox, QAbstractSlider, QTextEdit, QPlainTextEdit,
@@ -51,7 +55,7 @@ TEXT_ROLE = {
 
 @dataclass(frozen=True)
 class Issue:
-    rule: str      # "name", "keyboard" or "contrast"
+    rule: str      # "name", "keyboard", "contrast" or "target"
     widget: str    # class and objectName, or the path to it
     detail: str = ""
 
@@ -188,7 +192,8 @@ def _weak_background(fg: QColor, ring: list[QColor]) -> tuple[QColor, float]:
     return QColor(name), ratio
 
 
-def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str], issues: list[Issue]) -> None:
+def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str], issues: list[Issue],
+           touch: bool = False) -> None:
     # A scroll bar is for the mouse (the keys scroll the view); qt_* parts (a toolbar's overflow arrow, a tab
     # bar's scroll buttons) belong to the widget that owns them.
     interactive = isinstance(widget, INTERACTIVE) and not isinstance(widget, QScrollBar) \
@@ -199,6 +204,10 @@ def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str]
             issues.append(Issue("name", describe(widget)))
         if not _tab_reachable(widget) and not isinstance(widget, QTabBar):
             issues.append(Issue("keyboard", describe(widget), "Tab cannot reach it"))
+    if touch and interactive and enabled and not isinstance(widget, (QAbstractItemView, QTabBar)) \
+            and (widget.width() < TARGET or widget.height() < TARGET):
+        issues.append(Issue("target", describe(widget),
+                            f"{widget.width()}x{widget.height()} px, a finger needs {TARGET}x{TARGET} (WCAG 2.5.5)"))
     role = _text_role(widget)
     if role is None or not enabled or isinstance(widget, QHeaderView):  # sections: see qss_issues
         return
@@ -230,11 +239,11 @@ def _stacks_to(widget: QWidget, root: QWidget) -> list[tuple[QStackedWidget, QWi
     return chain[::-1]
 
 
-def audit(root: QWidget) -> list[Issue]:
+def audit(root: QWidget, touch: bool = False) -> list[Issue]:
     """Every problem in root and its children, on every page; an empty list means the window passes.
 
     The window is shown (offscreen in CI) and painted once per page, so contrast is measured on what is
-    really drawn, style sheets and all. Pages are turned back afterwards.
+    really drawn, style sheets and all. Pages are turned back afterwards. touch adds the target-size rule.
     """
     issues: list[Issue] = []
     was_visible = root.isVisible()
@@ -253,7 +262,7 @@ def audit(root: QWidget) -> list[Issue]:
                 continue
             seen.add(id(widget))
             widget.ensurePolished()
-            _check(widget, root, image, labels, issues)
+            _check(widget, root, image, labels, issues, touch)
 
     paint_and_check()
     for stack in stacks:
@@ -334,8 +343,34 @@ def _in_theme(window: QWidget, theme: str):
     return restore
 
 
-def assert_accessible(case, window: QWidget) -> None:
-    """For the apps' own tests: fail with every problem listed, in one message, in every D.Ai theme."""
+def _with_touch(window: QWidget):
+    """Show the window with the touch stylesheet (docs/MOBILE.md A1); returns how to put it back."""
+    from dai_style import with_touch
+
+    app = QApplication.instance()
+    saved: list[tuple] = [(app.setStyleSheet, app.styleSheet())]
+    for widget in [window, *window.findChildren(QWidget)]:
+        if widget.styleSheet():
+            saved.append((widget.setStyleSheet, widget.styleSheet()))
+    saved_size = window.size()
+    for setter, value in saved[:2]:  # the application's sheet and the window's own; children keep their overrides
+        setter(with_touch(value, on=True))
+    window.adjustSize()
+    QApplication.processEvents()
+
+    def restore() -> None:
+        for setter, value in saved:
+            setter(value)
+        window.resize(saved_size)
+        QApplication.processEvents()
+    return restore
+
+
+def assert_accessible(case, window: QWidget, touch: bool = False) -> None:
+    """For the apps' own tests: fail with every problem listed, in one message, in every D.Ai theme.
+
+    touch=True also audits the window laid out for fingers (the touch stylesheet on, every target 44 px).
+    """
     issues = [str(issue) for issue in audit(window)]
     try:
         import dai_style
@@ -345,6 +380,12 @@ def assert_accessible(case, window: QWidget) -> None:
         restore = _in_theme(window, theme)
         try:
             issues += [f"[{theme}] {issue}" for issue in audit(window)]
+        finally:
+            restore()
+    if touch and dai_style:
+        restore = _with_touch(window)
+        try:
+            issues += [f"[touch] {issue}" for issue in audit(window, touch=True)]
         finally:
             restore()
     case.assertEqual(issues, [], f"{type(window).__name__} has accessibility problems")

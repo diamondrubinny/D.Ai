@@ -5033,3 +5033,16 @@ msgstr "{name} выключена."
 #: apps/dai-vm/dai_vm/gui.py
 msgid "＋ New machine…"
 msgstr "＋ Новая машина…"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Touch mode (big targets, on-screen keyboard): {name}"
+msgstr "Сенсорный режим (крупные элементы, экранная клавиатура): {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "automatic: on when a touch screen is attached"
+msgstr "автоматически: включён, когда подключён сенсорный экран"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
+msgstr "Каждое окно D.Ai применит это при следующем открытии; клавиатура — при следующем входе."

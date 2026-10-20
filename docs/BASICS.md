@@ -38,7 +38,7 @@
    - **Video and audio codecs:** GStreamer, including `libav`.
    - **Printers:** most work with no driver (IPP Everywhere): `ipp-usb`, `cups-browsed`, `avahi-daemon`. For the rest: `printer-driver-gutenprint`, `printer-driver-brlaser`, `hplip`.
    - **Night light:** Super+Alt+N (`dai-nightlight`, ‏wlsunset, 19:00-07:00).
-   - **On-screen keyboard:** Super+Alt+K (`dai-keyboard`, ‏wvkbd).
+   - **On-screen keyboard:** Super+Alt+K (`dai-keyboard`, ‏wvkbd). In touch mode ([MOBILE.md](MOBILE.md) A1) it starts hidden at login and the key shows and hides it.
    - **Screen magnifier:** labwc's own. Super+= closer, Super+- back, Super+Alt+M on and off. **Requires verification** that the labwc version in Debian 13 supports these actions.
    - **Checks on the VM:** `os: night light and on-screen keyboard` ✅ (labwc 0.8.3, wlsunset runs, wvkbd installed). `os: firmware, codecs, printers`: the first run showed fwupd and hplip installed. The check itself was wrong (`fwupdmgr --version` does not print "fwupd"), and it was fixed.
 3. **Hibernation with LUKS:** swap or a swapfile.

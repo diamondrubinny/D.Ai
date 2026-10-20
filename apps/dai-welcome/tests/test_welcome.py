@@ -269,8 +269,8 @@ class WindowTests(WelcomeTestCase):
     def test_every_page_is_accessible(self):
         from dai_raz.a11y import assert_accessible
         for lang in ("he", "en"):
-            assert_accessible(self, self.window(lang))
-            assert_accessible(self, self.window(lang, admin=False))
+            assert_accessible(self, self.window(lang), touch=True)
+            assert_accessible(self, self.window(lang, admin=False), touch=True)
 
     def test_hebrew_and_accessible_names(self):
         win = self.window(lang="he")

@@ -67,5 +67,49 @@ class ThemedTests(unittest.TestCase):
                 dai_style.save("pink", home)
 
 
+class TouchTests(unittest.TestCase):
+    """docs/MOBILE.md A1: the touch profile is chosen from the hardware, the file or the environment."""
+
+    def fake_input(self, root: Path, properties: str) -> Path:
+        device = root / "event3" / "device"
+        device.mkdir(parents=True)
+        (device / "properties").write_text(properties)
+        return root
+
+    def test_a_touch_screen_is_the_direct_property_bit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertFalse(dai_style.touchscreen_present(Path(tmp) / "missing"))
+            self.assertFalse(dai_style.touchscreen_present(self.fake_input(Path(tmp) / "mouse", "0\n")))
+            self.assertFalse(dai_style.touchscreen_present(self.fake_input(Path(tmp) / "touchpad", "5\n")))  # pointer+buttonpad
+            self.assertTrue(dai_style.touchscreen_present(self.fake_input(Path(tmp) / "screen", "2\n")))
+            self.assertTrue(dai_style.touchscreen_present(self.fake_input(Path(tmp) / "two", "0 2\n")))  # two words on big kernels
+            self.assertFalse(dai_style.touchscreen_present(self.fake_input(Path(tmp) / "junk", "zz\n")))
+
+    def test_the_choice_wins_over_the_hardware(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home, screen = Path(tmp), self.fake_input(Path(tmp) / "screen", "2\n")
+            none = Path(tmp) / "nothing"
+            self.assertEqual(dai_style.touch_mode({}, home), "auto")
+            self.assertTrue(dai_style.touch({}, home, screen))
+            self.assertFalse(dai_style.touch({}, home, none))
+            dai_style.save_touch("off", home)
+            self.assertEqual(dai_style.touch_mode({}, home), "off")
+            self.assertFalse(dai_style.touch({}, home, screen))
+            dai_style.save_touch("on", home)
+            self.assertTrue(dai_style.touch({}, home, none))
+            self.assertFalse(dai_style.touch({"DAI_TOUCH": "0"}, home, screen))
+            self.assertTrue(dai_style.touch({"DAI_TOUCH": "1"}, home, none))
+            self.assertEqual(dai_style.touch_mode({"DAI_TOUCH": "maybe"}, home), "auto")
+            with self.assertRaises(ValueError):
+                dai_style.save_touch("sometimes", home)
+
+    def test_the_touch_sheet_is_appended_only_when_on(self):
+        self.assertEqual(dai_style.with_touch("a {}", on=False), "a {}")
+        self.assertTrue(dai_style.with_touch("a {}", on=True).startswith("a {}\n"))
+        self.assertIn(f"min-height: {dai_style.TOUCH_TARGET}px", dai_style.TOUCH_SHEET)
+        self.assertGreaterEqual(dai_style.TOUCH_TARGET, 44)  # WCAG 2.5.5
+        self.assertNotIn("#", dai_style.TOUCH_SHEET)  # no colors: themed() has nothing to miss
+
+
 if __name__ == "__main__":
     unittest.main()

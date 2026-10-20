@@ -30,7 +30,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from dai_style import color
+from dai_style import color, with_touch
 
 from . import __author__, __version__
 from .core import Action, History, build_actions, load_apps, tr
@@ -197,7 +197,7 @@ class CommandWindow(QWidget):
         self.setWindowTitle("D.Ai Command")
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setStyleSheet(STYLE)
+        self.setStyleSheet(with_touch(STYLE))
         self.setFixedWidth(720)
 
         self.history = History(History.default_path())

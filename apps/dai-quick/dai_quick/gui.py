@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout, QLa
                              QToolButton, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, is_rtl, pick, qt_direction, text, ui_lang
-from dai_style import themed
+from dai_style import themed, with_touch
 
 from . import __author__, __version__
 from .controls import TOGGLES, Controls
@@ -85,7 +85,7 @@ class QuickWindow(QWidget):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setLayoutDirection(qt_direction(self.lang))
-        self.setStyleSheet(STYLE)
+        self.setStyleSheet(with_touch(STYLE))
         self.setFixedWidth(420)
 
         card = QFrame(self, objectName="Quick")  # a child paints its rounded background; a translucent window does not

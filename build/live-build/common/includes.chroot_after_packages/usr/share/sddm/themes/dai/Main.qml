@@ -391,7 +391,7 @@ Rectangle {
         }
         Rectangle {  // show / hide the password
             visible: field.secret
-            width: 38 * root.unit
+            width: 44 * root.unit  // a finger target (WCAG 2.5.5, docs/MOBILE.md A1)
             height: width
             radius: width / 2
             anchors.right: parent.right
@@ -426,7 +426,7 @@ Rectangle {
         property string glyph: ""
         property string label: ""
         signal clicked()
-        width: 36 * root.unit
+        width: 44 * root.unit  // a finger target (WCAG 2.5.5)
         height: width
         radius: width / 2
         color: area.containsMouse || activeFocus ? root.surface : "transparent"
@@ -449,7 +449,7 @@ Rectangle {
         property string caption: ""
         property string label: ""
         signal clicked()
-        height: 42 * root.unit
+        height: 44 * root.unit  // a finger target (WCAG 2.5.5)
         width: row.width + 30 * root.unit
         radius: height / 2
         color: area.containsMouse || activeFocus ? "#E61C2547" : "#B3141B33"

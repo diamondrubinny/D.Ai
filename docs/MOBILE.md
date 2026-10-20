@@ -72,3 +72,28 @@
 3. The Companion app is open source, Apache-2.0, in this repository under `apps/dai-companion`, with the Chat
    protocol as its only wire format.
 4. No phone image is published until a physical reference device has run it and the legal review is done.
+
+## 5. Status
+
+### A1 — the touch profile (built; VM check pending)
+
+- **`dai_style.touch()`** decides the profile: `~/.config/dai/touch` (`on`, `off`, `auto`) or `DAI_TOUCH` for one
+  app; `auto` means a direct-touch input device is attached (the kernel's `INPUT_PROP_DIRECT` bit under
+  `/sys/class/input`, so a pen tablet counts and a touchpad does not). `with_touch(sheet)` appends the touch
+  rules: every control at least 44 px (WCAG 2.5.5), bigger check boxes, scroll bars and slider handles, 12 pt text.
+  No colors in those rules, so the three themes are untouched.
+- **D.Ai Tune:** `appearance.touch` — "מצב מגע" / "touch mode", "כבה מצב מגע" / "touch mode off", "מצב מגע
+  אוטומטי" / "automatic touch mode"; user scope, with undo; translated in the six other languages.
+- **Raz:** a fourth audit rule, `target` (44 × 44 px), and `assert_accessible(case, window, touch=True)` runs
+  the audit again with the touch stylesheet on. The command bar, Quick and Welcome pass it in CI; Quick's
+  slider needed the rule (it was 15 px tall).
+- **The login screen:** the round buttons (session, language, power) and the pill button grew from 36–42 px to
+  44 px; the show-password eye too.
+- **On-screen keyboard:** `wvkbd` (it is a wlroots layer-shell client and already ran under labwc in the VM
+  check `os: night light and on-screen keyboard`). `squeekboard` needs Phosh's text-input integration and is
+  left for track C. In touch mode labwc's autostart starts `wvkbd-mobintl -L 260 -H` (hidden) and
+  `dai-keyboard` (Super+Alt+K) toggles it with SIGRTMIN. **Requires verification in the VM:** that Debian 13's
+  wvkbd has `-H` and the toggle signal (the check `touch: the profile, Tune, the keyboard` prints
+  `HIDDEN_FLAG` and `KBD_STILL_RUNNING`).
+- **Not in A1:** showing the keyboard by itself when a text field gets focus (needs the Wayland text-input
+  protocol on the compositor side; A3), the taskbar in touch mode (A2), gestures (A3).

@@ -29,7 +29,7 @@ from dai_tune.cli import describe
 from dai_tune.context import Context, detect_lang
 
 from dai_i18n import NATIVE_NAMES, SUPPORTED, is_rtl, pick, qt_direction
-from dai_style import color
+from dai_style import color, with_touch
 
 from . import __author__, __version__, core
 
@@ -567,7 +567,7 @@ def main(argv: list[str] | None = None) -> int:
     app.setLayoutDirection(qt_direction(lang))
     if "Noto Sans" in QFontDatabase.families():
         app.setFont(QFont("Noto Sans", 11))
-    app.setStyleSheet(STYLE)
+    app.setStyleSheet(with_touch(STYLE))
     window = WelcomeWindow(lang, Context(lang=lang))
     window.show()
     return app.exec()

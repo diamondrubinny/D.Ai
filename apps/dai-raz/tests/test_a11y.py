@@ -150,6 +150,28 @@ class AuditTests(unittest.TestCase):
         bar.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.assertEqual(self.a11y.audit(self.window(keyed, bar)), [])
 
+    def test_touch_targets_are_44_px(self):
+        """docs/MOBILE.md A1: with touch on, a small button is a problem; the touch stylesheet makes it pass."""
+        small = QPushButton("Go")
+        small.setFixedSize(28, 22)
+        big = QPushButton("Go on")
+        big.setMinimumSize(44, 44)
+        root = self.window(small, big)
+        self.assertEqual(self.a11y.audit(root), [])  # the mouse profile does not mind
+        found = self.a11y.audit(root, touch=True)
+        self.assertEqual([(i.rule, i.widget.split(" < ")[0]) for i in found], [("target", "QPushButton")])
+        self.assertIn("28x22 px", found[0].detail)
+        grows = QPushButton("Grows")  # no size of its own: the touch sheet's min-height lifts it to 44
+        root = self.window(grows)
+        root.show()
+        restore = self.a11y._with_touch(root)
+        try:
+            self.assertGreaterEqual(grows.height(), 44)
+            self.assertEqual(self.a11y.audit(root, touch=True), [])
+        finally:
+            restore()
+        self.assertLess(grows.height(), 44)
+
     def test_every_page_is_audited_and_turned_back(self):
         from PyQt6.QtWidgets import QStackedWidget
         stack = QStackedWidget()

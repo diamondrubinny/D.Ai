@@ -817,6 +817,18 @@ def main() -> int:
          "timeout 3 wlsunset -t 4000 -T 6500 -S 07:00 -s 19:00 >/dev/null 2>&1; echo SUNSET_RC=$?; "
          "command -v wvkbd-mobintl && echo WVKBD; test -x /usr/bin/dai-nightlight && test -x /usr/bin/dai-keyboard && echo SCRIPTS",
          False, lambda o: "SUNSET_RC=124" in o and "WVKBD" in o and "SCRIPTS" in o, 30),
+        # Touch (docs/MOBILE.md A1): the profile reads the hardware (no touch screen in QEMU), the environment and
+        # D.Ai Tune's file, with undo; wvkbd can start hidden (-H) and dai-keyboard toggles it with SIGRTMIN.
+        ("touch: the profile, Tune, the keyboard", WAYLAND_ENV + "echo CmltcG9ydCBzeXMKc3lzLnBhdGguaW5zZXJ0KDAsICIvdXNyL2xpYi9kYWkiKQppbXBvcnQgZGFpX3N0eWxlCnByaW50KCJTQ1JFRU4iIGlmIGRhaV9zdHlsZS50b3VjaHNjcmVlbl9wcmVzZW50KCkgZWxzZSAiTk9fU0NSRUVOIikKcHJpbnQoIkFVVE8iLCBkYWlfc3R5bGUudG91Y2hfbW9kZSgpLCAiT04iIGlmIGRhaV9zdHlsZS50b3VjaCgpIGVsc2UgIk9GRiIpCnByaW50KCJFTlYiLCAiT04iIGlmIGRhaV9zdHlsZS50b3VjaCh7IkRBSV9UT1VDSCI6ICIxIn0pIGVsc2UgIk9GRiIpCnByaW50KCJTSEVFVCIsIGxlbihkYWlfc3R5bGUud2l0aF90b3VjaCgiIiwgb249VHJ1ZSkpID4gMTAwKQo= | base64 -d > /tmp/touch-check.py && python3 -I /tmp/touch-check.py; "
+         "dai-tune --yes 'מצב מגע' >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/touch | sed 's/^/FILE=/'; "
+         "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_style; print(\"NOW\", \"ON\" if dai_style.touch() else \"OFF\")'; "
+         "dai-tune undo >/dev/null 2>&1; test -f ~/.config/dai/touch && echo FILE_LEFT || echo FILE_GONE; "
+         "wvkbd-mobintl -h 2>&1 | grep -c -- '-H' | sed 's/^/HIDDEN_FLAG=/'; wvkbd-mobintl -L 260 -H >/dev/null 2>&1 & sleep 2; "
+         "pgrep -x wvkbd-mobintl >/dev/null && echo KBD_RUNNING; dai-keyboard; sleep 1; pgrep -x wvkbd-mobintl >/dev/null && echo KBD_STILL_RUNNING; "
+         "pkill -x wvkbd-mobintl; grep -c 'wvkbd-mobintl -L 260 -H' ~/.config/labwc/autostart | sed 's/^/AUTOSTART=/'",
+         False, lambda o: all(mark in o for mark in ("NO_SCREEN", "AUTO auto OFF", "ENV ON", "SHEET True", "TUNE_RC=0", "FILE=on",
+                                                     "NOW ON", "FILE_GONE", "KBD_RUNNING", "KBD_STILL_RUNNING", "AUTOSTART=1"))
+         and "HIDDEN_FLAG=0" not in o, 60),
         # J (docs/MAIL.md §11): readpst is on the image for Outlook files, and a file that is not one is refused.
         ("j: outlook files", "command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; "
          "dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst", False,

@@ -20,6 +20,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai TV, the television edition (`build-iso.sh tv`): Kodi 21 full screen on labwc, autologin, the bundled
   Hebrew language pack, no web server, UPnP, AirPlay or Zeroconf, hardware decoding, CEC; "Exit" in Kodi turns the
   session into the desktop. Plans for phones and tablets in `docs/MOBILE.md`.
+- Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
+  is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick
+  and Welcome for finger-sized targets; the login screen's buttons grew to 44 px.
 - Live ISO for amd64 (BIOS and UEFI), D.Ai Night design, diamond Start button, Hebrew/English (RTL) throughout.
 - D.Ai Command: search, commands, calculator and wrong-layout fixer in one bar; command field in the panel.
 - D.Ai Tune: change system settings in plain Hebrew or English, with a visible plan, security score and undo.

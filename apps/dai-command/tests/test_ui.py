@@ -26,7 +26,7 @@ class WindowTests(unittest.TestCase):
             with mock.patch.dict(os.environ, {"LANG": lang}), mock.patch.object(ui, "load_apps", return_value=[]):
                 window = ui.CommandWindow()
             self.addCleanup(window.close)
-            assert_accessible(self, window)
+            assert_accessible(self, window, touch=True)
 
 
 if __name__ == "__main__":

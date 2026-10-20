@@ -5033,3 +5033,16 @@ msgstr "{name} se apagó."
 #: apps/dai-vm/dai_vm/gui.py
 msgid "＋ New machine…"
 msgstr "＋ Máquina nueva…"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Touch mode (big targets, on-screen keyboard): {name}"
+msgstr "Modo táctil (objetivos grandes, teclado en pantalla): {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "automatic: on when a touch screen is attached"
+msgstr "automático: activado cuando hay una pantalla táctil"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
+msgstr "Cada ventana de D.Ai lo aplica la próxima vez que se abra; el teclado, en el próximo inicio de sesión."

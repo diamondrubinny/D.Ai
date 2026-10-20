@@ -5033,3 +5033,16 @@ msgstr "أُطفئت {name}."
 #: apps/dai-vm/dai_vm/gui.py
 msgid "＋ New machine…"
 msgstr "＋ آلة جديدة…"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Touch mode (big targets, on-screen keyboard): {name}"
+msgstr "وضع اللمس (أهداف كبيرة، لوحة مفاتيح على الشاشة): {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "automatic: on when a touch screen is attached"
+msgstr "تلقائي: يعمل عند توصيل شاشة لمس"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
+msgstr "كل نافذة من D.Ai تأخذه عند فتحها في المرة القادمة؛ ولوحة المفاتيح عند تسجيل الدخول القادم."

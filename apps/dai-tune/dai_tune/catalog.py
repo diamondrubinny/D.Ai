@@ -810,6 +810,32 @@ register(ActionSpec(
 ))
 
 
+# The touch profile (docs/MOBILE.md A1), read by dai_style.touch(): on, off, or auto (a touch screen decides).
+TOUCH_FILE = ".config/dai/touch"
+TOUCH_NAMES = {"on": ("on", "פועל"), "off": ("off", "כבוי"), "auto": ("automatic: on when a touch screen is attached",
+                                                                      "אוטומטי: פועל כשמחובר מסך מגע")}
+
+
+def _touch_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"mode"})
+    return {"mode": _choice(params.get("mode"), tuple(TOUCH_NAMES), "mode")}
+
+
+register(ActionSpec(
+    id="appearance.touch",
+    scope="user",
+    validate=_touch_validate,
+    apply=lambda p, c: write_file(c.user_path(TOUCH_FILE), p["mode"] + "\n", mode=0o600),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Touch mode (big targets, on-screen keyboard): {name}",
+                               "מצב מגע (יעדים גדולים, מקלדת על המסך): {name}", name=pick(lang, *TOUCH_NAMES[p["mode"]])),
+    files=lambda p, c: [c.user_path(TOUCH_FILE)],
+    note=lambda p, lang: _t(lang, "Each D.Ai window takes it the next time it opens; the keyboard at the next login.",
+                            "כל חלון של D.Ai יקבל אותו בפעם הבאה שייפתח; המקלדת בכניסה הבאה."),
+))
+
+
 # --------------------------------------------------------------------------
 # D.Ai's system sounds (docs/SOUNDS.md), read by dai-sound
 # --------------------------------------------------------------------------

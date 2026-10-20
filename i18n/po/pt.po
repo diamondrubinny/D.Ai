@@ -5033,3 +5033,16 @@ msgstr "{name} foi desligada."
 #: apps/dai-vm/dai_vm/gui.py
 msgid "＋ New machine…"
 msgstr "＋ Nova máquina…"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Touch mode (big targets, on-screen keyboard): {name}"
+msgstr "Modo de toque (alvos grandes, teclado no ecrã): {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "automatic: on when a touch screen is attached"
+msgstr "automático: ligado quando há um ecrã tátil"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Each D.Ai window takes it the next time it opens; the keyboard at the next login."
+msgstr "Cada janela do D.Ai aplica-o na próxima vez que abrir; o teclado, no próximo início de sessão."

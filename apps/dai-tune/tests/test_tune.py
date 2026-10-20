@@ -730,6 +730,28 @@ class LanguageTests(TuneTestCase):
                              [("appearance.theme", {"theme": theme})], sentence)
         self.assertNotIn("appearance.theme", [r.action for r in parser.parse("night light").requests])
 
+    def test_touch_sentences(self):
+        cases = {"touch mode": "on", "touch screen mode": "on", "מצב מגע": "on", "הפעל מצב מגע": "on",
+                 "touch mode off": "off", "turn off touch mode": "off", "no touch mode": "off", "כבה מצב מגע": "off",
+                 "בלי מצב מגע": "off", "automatic touch mode": "auto", "touch mode auto": "auto", "מצב מגע אוטומטי": "auto"}
+        for sentence, mode in cases.items():
+            result = parser.parse(sentence)
+            self.assertEqual([(r.action, r.params) for r in result.requests],
+                             [("appearance.touch", {"mode": mode})], sentence)
+        self.assertNotIn("appearance.touch", [r.action for r in parser.parse("dark mode").requests])
+
+    def test_touch_is_written_and_undone(self):
+        touch = self.home / ".config/dai/touch"
+        plan = self.plan("touch mode")
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        journal = executor.Journal.for_user(self.ctx)
+        entry = executor.apply_steps(plan.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertEqual(touch.read_text(), "on\n")
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertFalse(touch.exists())
+        with self.assertRaises(catalog.ValidationError):
+            catalog.CATALOG["appearance.touch"].validate({"mode": "sometimes"}, self.ctx)
+
     def test_sound_sentences(self):
         cases = {"turn off system sounds": "off", "mute sounds": "off", "השתק צלילי מערכת": "off", "בלי צלילים": "off",
                  "quiet sounds": "quiet", "צלילים שקטים": "quiet", "turn on sounds": "on", "הפעל צלילים": "on"}

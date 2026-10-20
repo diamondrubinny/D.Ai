@@ -12,6 +12,11 @@ replaced by the same role's color in the other theme. So a new app gets all thre
 
 The choice is ~/.config/dai/theme (one word; D.Ai Tune "light theme" writes it), or DAI_THEME for one app.
 Raz's accessibility audit checks every window in all three themes (dai_raz.a11y.assert_accessible).
+
+Touch (docs/MOBILE.md A1): on a touch screen every control is at least 44 px tall and the text a little bigger.
+touch() decides from ~/.config/dai/touch (on, off or auto; D.Ai Tune "touch mode" writes it) or DAI_TOUCH for one
+app; auto means "a touch screen is attached" (the kernel's INPUT_PROP_DIRECT bit on an input device).
+with_touch(sheet) appends the touch rules to a stylesheet when touch is on.
 """
 
 from __future__ import annotations
@@ -49,6 +54,23 @@ PALETTES: dict[str, dict[str, str]] = {
         "code_bg": "#000000", "code_text": "#FFFFFF", "disabled": "#BFBFBF", "dot": "#BFBFBF", "panel": "#4B2FC4",
     },
 }
+TOUCH_MODES = ("auto", "on", "off")
+TOUCH_TARGET = 44  # px: WCAG 2.5.5 target size, Apple's and Android's guidance alike
+# Appended to a window's stylesheet when touch is on: bigger targets, bigger indicators, bigger scroll bars, a
+# touch of extra text size. Later rules win in QSS, so an app's own selectors with an objectName still apply.
+TOUCH_SHEET = f"""
+QWidget {{ font-size: 12pt; }}
+QPushButton, QToolButton, QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QCheckBox, QRadioButton, QSlider {{
+    min-height: {TOUCH_TARGET}px; min-width: {TOUCH_TARGET}px; }}
+QTabBar::tab {{ min-height: {TOUCH_TARGET}px; padding: 8px 18px; }}
+QAbstractItemView::item {{ min-height: {TOUCH_TARGET}px; padding: 6px 10px; }}
+QCheckBox::indicator, QRadioButton::indicator {{ width: 28px; height: 28px; }}
+QScrollBar:vertical {{ width: 20px; }}
+QScrollBar:horizontal {{ height: 20px; }}
+QSlider::handle:horizontal {{ width: 32px; margin: -10px 0; }}
+QSlider::groove:horizontal {{ height: 12px; }}
+"""
+_INPUT_PROP_DIRECT = 1 << 1  # linux/input-event-codes.h: a touch screen or a drawing tablet
 _HEX = re.compile(r"#([0-9A-Fa-f]{6})\b")
 _RGB = re.compile(r"rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(,\s*[\d.]+\s*)?\)")
 
@@ -112,4 +134,57 @@ def save(theme: str, home: Path | None = None) -> Path:
     path = (home or Path.home()) / ".config" / "dai" / "theme"
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     path.write_text(theme + "\n", encoding="ascii")
+    return path
+
+
+def touchscreen_present(sys_input: Path = Path("/sys/class/input")) -> bool:
+    """Whether the kernel knows a direct-touch input device (a touch screen; a pen tablet counts too)."""
+    try:
+        entries = list(sys_input.iterdir())
+    except OSError:
+        return False
+    for entry in entries:
+        try:
+            words = (entry / "device" / "properties").read_text(encoding="ascii").split()
+            if words and int(words[-1], 16) & _INPUT_PROP_DIRECT:
+                return True
+        except (OSError, ValueError, UnicodeError):
+            continue
+    return False
+
+
+def touch_mode(environ: dict[str, str] | None = None, home: Path | None = None) -> str:
+    """What the person asked for: "on", "off" or "auto" (the default, and anything unknown)."""
+    env = os.environ if environ is None else environ
+    wanted = env.get("DAI_TOUCH", "").strip().lower()
+    wanted = {"1": "on", "true": "on", "yes": "on", "0": "off", "false": "off", "no": "off"}.get(wanted, wanted)
+    if not wanted:
+        try:
+            config = Path(env.get("XDG_CONFIG_HOME") or (home or Path.home()) / ".config")
+            wanted = (config / "dai" / "touch").read_text(encoding="ascii").strip().lower()
+        except (OSError, UnicodeError):
+            wanted = ""
+    return wanted if wanted in TOUCH_MODES else "auto"
+
+
+def touch(environ: dict[str, str] | None = None, home: Path | None = None, sys_input: Path | None = None) -> bool:
+    """Whether this window should be laid out for fingers."""
+    mode = touch_mode(environ, home)
+    if mode != "auto":
+        return mode == "on"
+    return touchscreen_present(sys_input) if sys_input is not None else touchscreen_present()
+
+
+def with_touch(sheet: str, on: bool | None = None) -> str:
+    """A stylesheet with the touch rules appended when touch is on (default: touch())."""
+    return sheet + TOUCH_SHEET if (touch() if on is None else on) else sheet
+
+
+def save_touch(mode: str, home: Path | None = None) -> Path:
+    """Write the person's choice (D.Ai Tune's appearance.touch does this, with undo)."""
+    if mode not in TOUCH_MODES:
+        raise ValueError(f"unknown touch mode: {mode}")
+    path = (home or Path.home()) / ".config" / "dai" / "touch"
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    path.write_text(mode + "\n", encoding="ascii")
     return path
