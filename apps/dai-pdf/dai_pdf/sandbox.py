@@ -35,7 +35,10 @@ def package_dir() -> str:
     return str(Path(__file__).resolve().parents[1])
 
 
-def _common(extra: list[str], mounts: list[str]) -> list[str]:
+EDIT_CPU_SECONDS = 1800  # OCR of a long scan is honest work; the viewing helper keeps the short limit
+
+
+def _common(extra: list[str], mounts: list[str], cpu: int = CPU_SECONDS) -> list[str]:
     return [
         "bwrap",
         "--ro-bind", "/usr", "/usr",
@@ -59,7 +62,7 @@ def _common(extra: list[str], mounts: list[str]) -> list[str]:
         "--setenv", "XDG_RUNTIME_DIR", "/tmp",
         "--setenv", "LANG", "C.UTF-8",
         "--",
-        "prlimit", f"--data={MEMORY}", f"--cpu={CPU_SECONDS}", "--nofile=256", "--",
+        "prlimit", f"--data={MEMORY}", f"--cpu={cpu}", "--nofile=256", "--",
     ]
 
 
@@ -79,7 +82,7 @@ def edit_argv(inputs: list[str], out_dir: str, python: str = "/usr/bin/python3",
     /tmp/out (an empty folder the window made), nothing else of the person's files."""
     mounts = [arg for i, path in enumerate(inputs) for arg in ("--ro-bind", path, f"{IN_DIR}/{i}.pdf")]
     mounts += ["--bind", out_dir, OUT_DIR]
-    return _common(_extra(binds), mounts) + [python, "-I", "-c", BOOT_EDIT, package_dir(), IN_DIR, OUT_DIR, str(len(inputs))]
+    return _common(_extra(binds), mounts, EDIT_CPU_SECONDS) + [python, "-I", "-c", BOOT_EDIT, package_dir(), IN_DIR, OUT_DIR, str(len(inputs))]
 
 
 def direct_argv(pdf_path: str, python: str = "/usr/bin/python3") -> list[str]:

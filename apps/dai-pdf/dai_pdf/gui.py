@@ -25,7 +25,7 @@ from dai_i18n import pick, qt_direction, ui_lang
 from dai_style import color
 from dai_style.panes import Panes, WrapRow, touch_scrolling
 
-from .edit import EditError, Editor
+from .edit import EditError, Editor, ocr_langs
 from .reader import Document, PdfError, Reader
 from .text import find_all
 
@@ -240,6 +240,10 @@ class PageView(QLabel):
             picture = self.window_.picture(mark.get("image", -1))
             if picture is not None and not picture.isNull():
                 painter.drawPixmap(rect, picture)
+        elif kind == "redact":
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QColor("#000000"))
+            painter.drawRect(rect)
         painter.restore()
 
     def to_pixels(self, rect: tuple[float, float, float, float]) -> QRect:
@@ -576,7 +580,8 @@ class PdfWindow(QWidget):
         for tool, text, name_en, name_he in (("select", "↖", "Select and follow links", "בחירה ומעקב אחר קישורים"),
                                              ("highlight", "▆", "Highlight", "הדגשה"), ("underline", "U̲", "Underline", "קו תחתון"),
                                              ("strikeout", "S̶", "Strike through", "קו חוצה"), ("note", "✎", "Note", "הערה"),
-                                             ("text", "T", "Text (Hebrew too)", "טקסט (גם עברית)"), ("stamp", "🖼", "Stamp a picture or a signature", "חותמת תמונה או חתימה")):
+                                             ("text", "T", "Text (Hebrew too)", "טקסט (גם עברית)"), ("stamp", "🖼", "Stamp a picture or a signature", "חותמת תמונה או חתימה"),
+                                             ("redact", "■", "Black out (the page becomes a picture; what is under the box is gone)", "השחרה (העמוד הופך לתמונה; מה שמתחת לתיבה נעלם)")):
             button = self._button(text, say(self.lang, name_en, name_he), lambda _c=False, t=tool: self.set_tool(t), tools)
             button.setCheckable(True)
             self.tool_buttons[tool] = button
@@ -653,6 +658,38 @@ class PdfWindow(QWidget):
         self.remove_mark_button = self._button("✕", say(self.lang, "Remove this mark", "הסרת הסימון הזה"), self.remove_mark, marks_row)
         marks_layout.addLayout(marks_row)
         self.side.addTab(marks_tab, say(self.lang, "Marks", "סימונים"))
+        clean_tab = QWidget()
+        clean_layout = QVBoxLayout(clean_tab)
+        clean_hint = QLabel(say(self.lang, "Applied when you save. Everything runs in the sandbox on this computer.",
+                                "חל בשמירה. הכול רץ בארגז החול במחשב הזה."))
+        clean_hint.setObjectName("FormHint")
+        clean_hint.setWordWrap(True)
+        clean_layout.addWidget(clean_hint)
+        self.ocr_box = QCheckBox(say(self.lang, "Make scanned pages searchable (OCR, {langs})", "הפיכת עמודים סרוקים לניתנים לחיפוש (OCR, {langs})",
+                                     langs=ocr_langs(self.lang).replace("+", ", ")))
+        self.ocr_box.setAccessibleName(say(self.lang, "Make scanned pages searchable", "הפיכת עמודים סרוקים לניתנים לחיפוש"))
+        self.ocr_box.toggled.connect(lambda _on: self._clean_changed())
+        clean_layout.addWidget(self.ocr_box)
+        self.ocr_all_box = QCheckBox(say(self.lang, "Every page, not only scans (each becomes a picture with a text layer)",
+                                         "כל העמודים, לא רק סריקות (כל אחד הופך לתמונה עם שכבת טקסט)"))
+        self.ocr_all_box.setAccessibleName(say(self.lang, "OCR every page", "OCR לכל העמודים"))
+        self.ocr_all_box.toggled.connect(lambda _on: self._clean_changed())
+        clean_layout.addWidget(self.ocr_all_box)
+        self.strip_box = QCheckBox(say(self.lang, "Remove the metadata (author, program, dates) before sharing",
+                                       "הסרת המטא-דאטה (מחבר, תוכנה, תאריכים) לפני שיתוף"))
+        self.strip_box.setAccessibleName(say(self.lang, "Remove the metadata", "הסרת המטא-דאטה"))
+        self.strip_box.toggled.connect(lambda _on: self._clean_changed())
+        clean_layout.addWidget(self.strip_box)
+        redact_hint = QLabel(say(self.lang, "Black boxes (the ■ tool) make their page a picture when you save: what was under them is "
+                                            "truly gone, and so is that page's text unless OCR is on.",
+                                 "תיבות שחורות (הכלי ■) הופכות את העמוד שלהן לתמונה בשמירה: מה שהיה מתחתן נעלם באמת, וגם הטקסט של העמוד אלא אם OCR פועל."))
+        redact_hint.setObjectName("FormHint")
+        redact_hint.setWordWrap(True)
+        clean_layout.addWidget(redact_hint)
+        self.export_button = self._button(say(self.lang, "Export pages as pictures…", "ייצוא עמודים כתמונות…"),
+                                          say(self.lang, "Every page as a PNG picture", "כל עמוד כתמונת PNG"), self.export_dialog, clean_layout)
+        clean_layout.addStretch(1)
+        self.side.addTab(clean_tab, say(self.lang, "Clean", "ניקוי"))
         self.side.currentChanged.connect(lambda i: self._thumbnails_start() if i == 0 else None)
         self.splitter.addWidget(self.side)
 
@@ -1392,6 +1429,8 @@ class PdfWindow(QWidget):
             "note": say(self.lang, "Click where the note goes.", "לחצו היכן שההערה תהיה."),
             "text": say(self.lang, "Drag a box for the text.", "גררו תיבה לטקסט."),
             "stamp": say(self.lang, "Drag a box for the picture.", "גררו תיבה לתמונה."),
+            "redact": say(self.lang, "Drag over what must disappear. The page becomes a picture when you save.",
+                          "גררו על מה שחייב להיעלם. העמוד הופך לתמונה בשמירה."),
         }.get(tool, ""))
 
     def choose_color(self) -> None:
@@ -1421,6 +1460,9 @@ class PdfWindow(QWidget):
             if points[2] < 2 or points[3] < 2:
                 return
         kind = self.tool
+        if kind == "redact":
+            self.add_mark(kind, index, points)
+            return
         if kind == "text" or kind == "note":
             text = self.ask_text(kind)
             if text is None:
@@ -1454,7 +1496,8 @@ class PdfWindow(QWidget):
         """A mark on the source page at position index; shown at once, written by the sandbox on save."""
         entry = self.plan[index]
         mark = {"source": entry["source"], "index": entry["index"], "kind": kind, "rect": [float(v) for v in rect],
-                "color": self.tool_color if kind not in ("text",) else "#111111", "text": text, "image": image, "size": size}
+                "color": self.tool_color if kind not in ("text", "redact") else "#111111" if kind == "text" else "#000000",
+                "text": text, "image": image, "size": size}
         self._snapshot()
         self.marks.append(mark)
         self._marks_changed(index)
@@ -1483,7 +1526,8 @@ class PdfWindow(QWidget):
         self.marks_list.clear()
         names = {"highlight": say(self.lang, "Highlight", "הדגשה"), "underline": say(self.lang, "Underline", "קו תחתון"),
                  "strikeout": say(self.lang, "Strike through", "קו חוצה"), "note": say(self.lang, "Note", "הערה"),
-                 "text": say(self.lang, "Text", "טקסט"), "stamp": say(self.lang, "Stamp", "חותמת")}
+                 "text": say(self.lang, "Text", "טקסט"), "stamp": say(self.lang, "Stamp", "חותמת"),
+                 "redact": say(self.lang, "Black box", "תיבה שחורה")}
         for number, mark in enumerate(self.marks):
             position = next((i for i, e in enumerate(self.plan) if e["source"] == mark["source"] and e["index"] == mark["index"]), -1)
             where = say(self.lang, "p. {n}", "עמ׳ {n}", n=position + 1) if position >= 0 else say(self.lang, "(page removed)", "(העמוד הוסר)")
@@ -1496,10 +1540,40 @@ class PdfWindow(QWidget):
         out = []
         for position, entry in enumerate(self.plan):
             for mark in self.marks:
-                if mark["source"] == entry["source"] and mark["index"] == entry["index"]:
+                if mark["kind"] != "redact" and mark["source"] == entry["source"] and mark["index"] == entry["index"]:
                     out.append({"page": position, "kind": mark["kind"], "rect": mark["rect"], "color": mark["color"],
                                 "text": mark.get("text", ""), "image": mark.get("image", -1), "size": mark.get("size", 12)})
         return out
+
+    def _redactions_for_save(self) -> list[dict]:
+        return [{"page": position, "rect": mark["rect"]} for position, entry in enumerate(self.plan) for mark in self.marks
+                if mark["kind"] == "redact" and mark["source"] == entry["source"] and mark["index"] == entry["index"]]
+
+    def _clean_changed(self) -> None:
+        if self.doc and not self.modified:
+            self.modified = True
+            self._title()
+
+    def export_dialog(self) -> None:
+        if not self.doc:
+            return
+        folder = QFileDialog.getExistingDirectory(self, say(self.lang, "A folder for the pictures", "תיקייה לתמונות"), "")
+        if folder:
+            self.export_to(folder)
+
+    def export_to(self, folder: str, dpi: int = 150) -> list[str]:
+        if not self.doc:
+            return []
+        self.status.setText(say(self.lang, "Drawing the pages in the sandbox…", "מצייר את העמודים בארגז החול…"))
+        QApplication.processEvents()
+        try:
+            files = self.editor.export([s.path for s in self.sources], folder, pages=[dict(e) for e in self.plan], dpi=dpi,
+                                       passwords=[s.password for s in self.sources])
+        except EditError as exc:
+            self.status.setText(self._edit_error_text(exc))
+            return []
+        self.status.setText(say(self.lang, "{n} pictures written to {folder}", "{n} תמונות נכתבו ל-{folder}", n=len(files), folder=folder))
+        return files
 
     # --- forms -------------------------------------------------------------------------------------------------
 
@@ -1608,7 +1682,9 @@ class PdfWindow(QWidget):
             answer = self.editor.save([s.path for s in self.sources], path, pages=[dict(e) for e in self.plan],
                                       fields=dict(self.field_values), flatten=flatten,
                                       passwords=[s.password for s in self.sources], annotations=self._marks_for_save(),
-                                      pictures=list(self.pictures))
+                                      pictures=list(self.pictures), redactions=self._redactions_for_save(),
+                                      ocr={"pages": "all" if self.ocr_all_box.isChecked() else "scans", "langs": ocr_langs(self.lang)}
+                                      if self.ocr_box.isChecked() else None, strip_metadata=self.strip_box.isChecked())
         except EditError as exc:
             self.status.setText(self._edit_error_text(exc))
             return False

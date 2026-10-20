@@ -820,9 +820,16 @@ def main() -> int:
          # Stage 2 (editing) in the sandbox: a merged, turned copy and the form's fields, from the command line.
          "dai-pdf merge /tmp/wants.pdf /tmp/wants.pdf -o /tmp/two.pdf; dai-pdf rotate /tmp/two.pdf --by 90 --pages 2 -o /tmp/turned.pdf; "
          "echo EDIT_RC=$?; dai-pdf info /tmp/turned.pdf | grep -E '^Pages'; dai-pdf fields /tmp/wants.pdf | head -n 3; "
-         "ls -l /tmp/turned.pdf | cut -c1-10",
+         "ls -l /tmp/turned.pdf | cut -c1-10; "
+         # Stage 3: a black box that truly removes, metadata gone, a text layer from Tesseract (Hebrew and English on
+         # the image), pages as pictures; all inside the sandbox.
+         "dai-pdf redact /tmp/wants.pdf --page 1 --box 10,80,280,40 -o /tmp/black.pdf >/dev/null; echo REDACT_RC=$?; "
+         "dai-pdf text /tmp/black.pdf | grep -c sandbox | sed 's/^/WORDS_LEFT=/'; dai-pdf strip /tmp/wants.pdf -o /tmp/clean.pdf >/dev/null; "
+         "dai-pdf info /tmp/clean.pdf | grep -c '^Title' | sed 's/^/TITLE_LEFT=/'; "
+         "dai-pdf ocr /tmp/black.pdf -o /tmp/ocr.pdf; echo OCR_RC=$?; dai-pdf export /tmp/wants.pdf --dir /tmp/pics --dpi 72 | wc -l | sed 's/^/PICS=/'",
          True, lambda o: "SANDBOXED" in o and "CHECK_RC=1" in o and "JavaScript" in o and "Hello sandbox" in o
-         and "dai-pdf.desktop" in o and "EDIT_RC=0" in o and "Pages: 2" in o and "-rw-------" in o, 180),
+         and "dai-pdf.desktop" in o and "EDIT_RC=0" in o and "Pages: 2" in o and "-rw-------" in o
+         and "REDACT_RC=0" in o and "WORDS_LEFT=0" in o and "TITLE_LEFT=0" in o and "OCR_RC=0" in o and "PICS=1" in o, 420),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",

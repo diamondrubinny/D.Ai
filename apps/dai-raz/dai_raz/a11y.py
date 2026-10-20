@@ -212,7 +212,7 @@ def _check(widget: QWidget, root: QWidget, image: QImage, labels: dict[int, str]
         issues.append(Issue("target", describe(widget),
                             f"{widget.width()}x{widget.height()} px, a finger needs {TARGET}x{TARGET} (WCAG 2.5.5)"))
     if narrow:
-        if interactive and enabled:
+        if interactive and enabled and not isinstance(widget.parentWidget(), QTabBar):  # a tab bar's own scroll arrows
             area = _scroll_area_of(widget, root)
             if area is not None:  # inside a scroll area: scrolling reaches it, only the width must fit
                 origin = widget.mapTo(area.viewport(), QPoint(0, 0))

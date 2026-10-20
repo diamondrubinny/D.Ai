@@ -13,6 +13,11 @@
   dai-pdf delete FILE --pages 2 -o OUT         the file without those pages
   dai-pdf fields FILE            the form's fields: name, kind, value
   dai-pdf fill FILE --set name=value ... [--flatten] -o OUT   fill the form (true/false for check boxes)
+  dai-pdf ocr FILE -o OUT [--lang heb,eng] [--all]   a text layer for scanned pages (every page with --all)
+  dai-pdf strip FILE -o OUT        remove the metadata (author, program, dates, XMP) before sharing
+  dai-pdf redact FILE --page N --box LEFT,TOP,WIDTH,HEIGHT ... -o OUT   black boxes; the page becomes a
+                                   picture, so what was under a box is truly gone
+  dai-pdf export FILE --dir FOLDER [--dpi 150] [--pages 1-3]   every page as a PNG picture
   dai-pdf --version | --help
 
 Everything runs on this computer, inside bubblewrap. Nothing in the file is executed, followed or opened.
@@ -168,7 +173,7 @@ def _inputs(args: list[str]) -> list[str]:
     for arg in args[1:]:
         if skip:
             skip = False
-        elif arg in ("-o", "--pages", "--by", "--set", "--password"):
+        elif arg in ("-o", "--pages", "--by", "--set", "--password", "--lang", "--page", "--box", "--dir", "--dpi"):
             skip = True
         elif not arg.startswith("--"):
             out.append(arg)
@@ -209,7 +214,7 @@ def edit(args: list[str], lang: str) -> int:
     if not inputs:
         print(say(lang, "Which file? dai-pdf {command} FILE", "איזה קובץ? dai-pdf {command} FILE", command=command), file=sys.stderr)
         return 2
-    if command != "fields" and not out:
+    if command not in ("fields", "export") and not out:
         print(say(lang, "Where to? add -o OUT.pdf", "לאן? הוסיפו -o OUT.pdf"), file=sys.stderr)
         return 2
     editor = _editor()
@@ -263,6 +268,56 @@ def edit(args: list[str], lang: str) -> int:
                     return 2
                 pages = [{"source": 0, "index": i, "rotate": 0} for i in range(count) if i not in chosen]
             answer = editor.save(inputs[:1], out, pages=pages, passwords=[password])
+        elif command == "ocr":
+            from .edit import ocr_langs
+            answer = editor.save(inputs[:1], out, ocr={"pages": "all" if "--all" in args else "scans",
+                                                       "langs": ocr_langs(lang, _option(args, "--lang") or "")}, passwords=[password])
+            print(say(lang, "{n} pages got a text layer.", "{n} עמודים קיבלו שכבת טקסט.", n=answer.get("ocr", 0)))
+        elif command == "strip":
+            answer = editor.save(inputs[:1], out, strip_metadata=True, passwords=[password])
+            print(say(lang, "Metadata removed.", "המטא-דאטה הוסר."))
+        elif command == "redact":
+            boxes, page = [], None
+            for i, arg in enumerate(args):
+                if arg == "--page" and i + 1 < len(args):
+                    try:
+                        page = int(args[i + 1]) - 1
+                    except ValueError:
+                        page = -1
+                elif arg == "--box" and i + 1 < len(args):
+                    try:
+                        rect = [float(v) for v in args[i + 1].split(",")]
+                    except ValueError:
+                        rect = []
+                    if page is None or page < 0 or len(rect) != 4:
+                        print(say(lang, "Say --page N before each --box LEFT,TOP,WIDTH,HEIGHT (in points).",
+                                  "ציינו --page N לפני כל --box LEFT,TOP,WIDTH,HEIGHT (בנקודות)."), file=sys.stderr)
+                        return 2
+                    boxes.append({"page": page, "rect": rect})
+            if not boxes:
+                print(say(lang, "Nothing to black out: add --page N --box LEFT,TOP,WIDTH,HEIGHT.",
+                          "אין מה להשחיר: הוסיפו --page N --box LEFT,TOP,WIDTH,HEIGHT."), file=sys.stderr)
+                return 2
+            answer = editor.save(inputs[:1], out, redactions=boxes, passwords=[password])
+            print(say(lang, "{n} pages redacted; each became a picture, so nothing under a box remains.",
+                      "{n} עמודים הושחרו; כל אחד הפך לתמונה, כך ששום דבר מתחת לתיבה לא נשאר.", n=answer.get("redacted", 0)))
+        elif command == "export":
+            folder = _option(args, "--dir")
+            if not folder:
+                print(say(lang, "Where to? add --dir FOLDER", "לאן? הוסיפו --dir FOLDER"), file=sys.stderr)
+                return 2
+            count = _count(inputs[0], password)
+            try:
+                chosen = parse_pages(_option(args, "--pages") or "", count)
+                dpi = int(_option(args, "--dpi") or 150)
+            except ValueError as exc:
+                print(say(lang, "No page {page}: the file has {n}.", "אין עמוד {page}: בקובץ יש {n}.", page=exc, n=count), file=sys.stderr)
+                return 2
+            files = editor.export(inputs[:1], folder, pages=[{"source": 0, "index": i, "rotate": 0} for i in chosen], dpi=dpi,
+                                  passwords=[password])
+            for f in files:
+                print(f)
+            return 0
         elif command == "fill":
             values: dict[str, object] = {}
             for i, arg in enumerate(args):
@@ -291,7 +346,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args and args[0] in ("info", "text", "check"):
         return {"info": info, "text": text, "check": check}[args[0]](args, lang)
-    if args and args[0] in ("merge", "split", "rotate", "delete", "fields", "fill"):
+    if args and args[0] in ("merge", "split", "rotate", "delete", "fields", "fill", "ocr", "strip", "redact", "export"):
         return edit(args, lang)
     from .gui import main as window
 

@@ -5555,3 +5555,95 @@ msgstr "Unbekannter Befehl: {verb}. dai-tv --help"
 #: apps/dai-tv/dai_tv/cli.py
 msgid "What to say? dai-tv say TEXT"
 msgstr "Was sagen? dai-tv say TEXT"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "A folder for the pictures"
+msgstr "Ein Ordner für die Bilder"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Applied when you save. Everything runs in the sandbox on this computer."
+msgstr "Wird beim Speichern angewendet. Alles läuft in der Sandbox auf diesem Computer."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Black box"
+msgstr "Schwarzer Kasten"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Black boxes (the ■ tool) make their page a picture when you save: what was under them is truly gone, and so is that page's text unless OCR is on."
+msgstr "Schwarze Kästen (das Werkzeug ■) machen ihre Seite beim Speichern zu einem Bild: Was darunter war, ist wirklich weg, ebenso der Text dieser Seite, außer OCR ist an."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Clean"
+msgstr "Bereinigen"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drag over what must disappear. The page becomes a picture when you save."
+msgstr "Ziehen Sie über das, was verschwinden muss. Beim Speichern wird die Seite ein Bild."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Drawing the pages in the sandbox…"
+msgstr "Die Seiten werden in der Sandbox gezeichnet…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Every page as a PNG picture"
+msgstr "Jede Seite als PNG-Bild"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Every page, not only scans (each becomes a picture with a text layer)"
+msgstr "Jede Seite, nicht nur Scans (jede wird ein Bild mit Textebene)"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Export pages as pictures…"
+msgstr "Seiten als Bilder exportieren…"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Make scanned pages searchable"
+msgstr "Gescannte Seiten durchsuchbar machen"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Make scanned pages searchable (OCR, {langs})"
+msgstr "Gescannte Seiten durchsuchbar machen (OCR, {langs})"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Metadata removed."
+msgstr "Metadaten entfernt."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Nothing to black out: add --page N --box LEFT,TOP,WIDTH,HEIGHT."
+msgstr "Nichts zu schwärzen: --page N --box LEFT,TOP,WIDTH,HEIGHT angeben."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "OCR every page"
+msgstr "OCR für jede Seite"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove the metadata"
+msgstr "Die Metadaten entfernen"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Remove the metadata (author, program, dates) before sharing"
+msgstr "Die Metadaten (Autor, Programm, Daten) vor dem Teilen entfernen"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Say --page N before each --box LEFT,TOP,WIDTH,HEIGHT (in points)."
+msgstr "--page N vor jedem --box LEFT,TOP,WIDTH,HEIGHT angeben (in Punkt)."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Where to? add --dir FOLDER"
+msgstr "Wohin? --dir FOLDER angeben"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages got a text layer."
+msgstr "{n} Seiten haben eine Textebene bekommen."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pages redacted; each became a picture, so nothing under a box remains."
+msgstr "{n} Seiten geschwärzt; jede wurde ein Bild, unter einem Kasten bleibt nichts."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "{n} pictures written to {folder}"
+msgstr "{n} Bilder nach {folder} geschrieben"

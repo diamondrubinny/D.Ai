@@ -299,6 +299,31 @@ class WindowTests(unittest.TestCase):
         win.set_tool("select")
         self.assertFalse(win.tool_buttons["highlight"].isChecked())
 
+    def test_redaction_and_the_clean_tab(self):
+        import pikepdf
+        win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2))
+        win.set_tool("redact")
+        self.assertIn("disappear", win.status.text())
+        win.add_mark("redact", 0, (10.0, 80.0, 280.0, 40.0))
+        self.assertEqual(win.marks_list.count(), 1)
+        self.assertIn("Black box", win.marks_list.item(0).text())
+        win.render_visible()
+        picture = win.views[0].pixmap().toImage()
+        self.assertLess(picture.pixelColor(picture.width() // 2, picture.height() // 2).lightness(), 40)  # the overlay is black
+        win.strip_box.setChecked(True)
+        self.assertTrue(win.modified)
+        out = self.dir / "clean.pdf"
+        self.assertTrue(win.save_to(str(out)))
+        with pikepdf.open(out) as pdf:
+            self.assertEqual(dict(pdf.docinfo), {})
+            self.assertIn("/DaiPage", pdf.pages[0].Resources.XObject)
+            self.assertNotIn("/XObject", pdf.pages[1].Resources)
+        win.reader and self.assertEqual(win.reader.text(0).strip(), "")  # the words are gone in the saved file
+        pics = self.dir / "pics"
+        files = win.export_to(str(pics), dpi=72)
+        self.assertEqual(len(files), 2)
+        self.assertIn("2 pictures", win.status.text())
+
     def test_unsaved_changes_ask_before_closing(self):
         asked = []
         win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2), confirm_discard=lambda: asked.append(1) or False)
@@ -325,6 +350,8 @@ class WindowTests(unittest.TestCase):
             assert_accessible(self, form, touch=True)
             form.add_mark("note", 0, (10.0, 10.0, 20.0, 20.0), text="x")
             form.side.setCurrentIndex(5)
+            assert_accessible(self, form, touch=True)
+            form.side.setCurrentIndex(6)
             assert_accessible(self, form, touch=True)
             gui = sys.modules["dai_pdf.gui"]
             for dialog in (gui.InfoDialog(win, lang, win.doc, False), gui.LinkDialog(win, lang, "https://x", True),

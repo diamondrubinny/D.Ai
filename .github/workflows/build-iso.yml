@@ -225,7 +225,7 @@ jobs:
           PYTHONPATH: apps/dai-pdf:apps/dai-i18n:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: |
-          sudo apt-get install -y -qq --no-install-recommends python3-pyqt6.qtpdf python3-pikepdf bubblewrap >/dev/null
+          sudo apt-get install -y -qq --no-install-recommends python3-pyqt6.qtpdf python3-pikepdf bubblewrap tesseract-ocr tesseract-ocr-eng >/dev/null
           python3 -m unittest discover -s apps/dai-pdf/tests -t apps/dai-pdf -v
 
       - name: Unit tests (dai-ocr, copy text from the screen, and its D.Ai Command row)

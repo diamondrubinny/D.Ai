@@ -5,7 +5,7 @@
 >
 > **Decided (19 October 2026, "from now on you decide"):** the name is D.Ai PDF; qpdfview leaves the image once
 > stage 1 is the default viewer; signatures are verify-only until a signing library is in Debian; Diamond only when
-> asked. **Status: stages 1 and 2 built** (§10, §11, §12). Stages 3–4 not started.
+> asked. **Status: stages 1, 2 and 3a built** (§10–§13). Compression (3b) and stage 4 not started.
 
 ## 10. Stage 1: what was built
 
@@ -74,6 +74,26 @@
   the Marks tab in the touch and narrow passes).
 - **Not yet:** freehand drawing and shapes, editing a mark after it is placed (remove and draw again for now),
   selectable text with an embedded Hebrew font (**requires a check** of font subsetting with pikepdf).
+
+## 13. Stage 3a: clean and search (what was built)
+
+- **Redaction that truly removes:** a black box on a page makes that page a picture (300 dpi, drawn by Qt in the
+  sandbox, the box painted on it); whatever was under the box, and every hidden layer of that page, is gone.
+  The page keeps its size on paper. The price is said plainly in the window: the page's text becomes a
+  picture (add OCR to make it searchable again).
+- **A text layer for scans (OCR):** Tesseract, inside the same sandbox, in the person's language and English
+  (eight languages on the image); pages without text get Tesseract's picture page with invisible text
+  (`--all` for every page). Nothing is sent anywhere; no Ghostscript, no ocrmypdf.
+- **Remove metadata:** the Info dictionary, XMP and PieceInfo of the file and its pages.
+- **Pages as pictures:** every page of the plan as a PNG at a chosen resolution, with its turns.
+- **Command line:** `ocr`, `strip`, `redact --page N --box L,T,W,H`, `export --dir FOLDER`.
+- **Tests:** the picture page's pixels (black under the box, white elsewhere, text gone, the turned page's
+  size), the metadata gone, OCR finding the words on a scan and leaving a text page alone (skipped where
+  Tesseract is absent; CI installs it), export sizes and modes, the commands. The VM check redacts, strips,
+  OCRs and exports with the real tools on the image.
+- **A lesson:** Qt draws a PDF page over nothing; a picture of a page needs white paper under it first, or it
+  comes out black (and Tesseract reads nothing).
+- **Not yet:** compression with a size preview (3b), PDF/A.
 
 ## 0. Why, and what "native" means here
 

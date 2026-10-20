@@ -107,6 +107,30 @@ class CliTests(unittest.TestCase):
         self.assertIn("-o", err)
         self.assertFalse((self.dir / "x.pdf").exists())
 
+    def test_strip_redact_export_and_ocr(self):
+        import os as _os
+        import pikepdf
+        _os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        a = fixtures.plain(self.dir / "a.pdf", pages=2)
+        code, text, _ = self.run_cli("strip", str(a), "-o", str(self.dir / "s.pdf"))
+        self.assertEqual(code, 0, text)
+        with pikepdf.open(self.dir / "s.pdf") as pdf:
+            self.assertEqual(dict(pdf.docinfo), {})
+        code, text, _ = self.run_cli("redact", str(a), "--page", "1", "--box", "10,80,280,40", "-o", str(self.dir / "r.pdf"))
+        self.assertEqual(code, 0, text)
+        self.assertIn("1 pages redacted", text)
+        code, _, err = self.run_cli("redact", str(a), "--box", "1,1,1,1", "-o", str(self.dir / "x.pdf"))
+        self.assertEqual(code, 2)
+        self.assertIn("--page", err)
+        code, text, _ = self.run_cli("export", str(a), "--dir", str(self.dir / "pics"), "--dpi", "72", "--pages", "2")
+        self.assertEqual(code, 0, text)
+        self.assertEqual(sorted(p.name for p in (self.dir / "pics").iterdir()), ["page-1.png"])
+        self.assertEqual(self.run_cli("export", str(a))[0], 2)
+        if __import__("shutil").which("tesseract"):
+            code, text, _ = self.run_cli("ocr", str(self.dir / "r.pdf"), "-o", str(self.dir / "o.pdf"), "--lang", "eng")
+            self.assertEqual(code, 0, text)
+            self.assertIn("1 pages got a text layer", text)
+
     def test_fields_and_fill(self):
         form = fixtures.form(self.dir / "f.pdf")
         code, text, _ = self.run_cli("fields", str(form))
