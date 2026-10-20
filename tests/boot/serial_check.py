@@ -893,6 +893,21 @@ def main() -> int:
          True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
              "NIGHT_RC=0", "DIM=1", "NIGHT_RESTORED", "KIDS_RC=0", "LOCKS=2", "KIDS=1", "<autologin>1</autologin>",
              "PROFILES_GONE", "KEYMAP_RC=0", "NIGHT_LIVE_RC=0")), 180),
+        # D.Ai TV stage 3a (docs/TV.md §11): the add-ons are on the image, the database was seeded before Kodi
+        # started (so Kodi itself reports them enabled, and asked nothing), and live channels come by sentence.
+        ("tv: live channels from my own playlist, nothing asked at first start",
+         ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
+         "ls /usr/share/kodi/addons /usr/lib/x86_64-linux-gnu/kodi/addons 2>/dev/null | grep -c -E '^(pvr.iptvsimple|inputstream.adaptive)$' | sed 's/^/ADDONS_ON_IMAGE=/'; "
+         "dai-tv seed; echo SEED_RC=$?; python3 -c \"import sqlite3, os; c = sqlite3.connect(os.path.expanduser('~/.kodi/userdata/Database/Addons33.db')); "
+         "print('ROWS', c.execute(\\\"select count(*) from installed where enabled=1 and addonID in ('pvr.iptvsimple','inputstream.adaptive')\\\").fetchone()[0], "
+         "'VERSION', c.execute('select idVersion from version').fetchone()[0])\"; "
+         "python3 -c \"import sys; sys.path.insert(0, '/usr/lib/dai'); from dai_tv import rpc; a = rpc.call('Addons.GetAddonDetails', {'addonid': 'pvr.iptvsimple', 'properties': ['enabled']}); "
+         "print('KODI_SAYS_ENABLED', a['addon']['enabled']); w = rpc.call('GUI.GetProperties', {'properties': ['currentwindow']}); print('WINDOW', w['currentwindow']['label'])\"; "
+         "printf '#EXTM3U\\n#EXTINF:-1,Test channel\\nhttp://127.0.0.1:9/none.ts\\n' > ~/channels.m3u; dai-tune --yes 'ערוצים מהרשימה שלי ~/channels.m3u' >/tmp/tune-ch.txt 2>&1; echo CH_RC=$?; "
+         "grep -c 'channels.m3u' ~/.kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml | sed 's/^/INSTANCE=/'; dai-tune undo >/dev/null 2>&1; "
+         "test -e ~/.kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml && echo INSTANCE_LEFT || echo INSTANCE_GONE; tail -n 2 /tmp/tune-ch.txt; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
+             "ADDONS_ON_IMAGE=2", "SEED_RC=0", "ROWS 2", "VERSION 33", "KODI_SAYS_ENABLED True", "WINDOW", "CH_RC=0", "INSTANCE=1", "INSTANCE_GONE")), 180),
         # D.Ai TV stage 2b (docs/TV.md §9): Kodi's service listens on this computer only, and dai-tv reaches it.
         ("tv: D.Ai talks to Kodi on this computer only",
          ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "

@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Mobile is in
 > `docs/MOBILE.md`. **Decided (under "from now on you decide"):** the editions and stages below; stage 1 begins
-> now. **Status: stage 1 built and verified in CI** (§7): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening.
+> now. **Status: stages 1, 2 and 3a built** (§7–§11): Kodi in Hebrew on Wayland, the privacy defaults, nothing listening; D.Ai on the remote, by sentence, and live channels from the person's own playlist.
 
 ## 0. What a "television version" can honestly be
 
@@ -51,6 +51,31 @@
   kept. The tv VM check applies night mode and the children's profile through the real `dai-tune` with undo,
   checks the keymap parses and `dai-tv night` reaches the running Kodi.
 - **Not yet (2d):** the Living Diamond on the TV status, "what this add-on sends" before an install.
+
+## 11. Stage 3a: live channels from the person's own playlist (what was built)
+
+- **Nothing asks at first start.** Kodi stores a binary add-on it meets for the first time as disabled unless
+  it is in Kodi's own manifest (`CAddonDatabase::SyncInstalled`: `enable = 0`), which is why Debian's
+  `kodi-pvr-iptvsimple` and `kodi-inputstream-adaptive` were taken out in stage 1. They are back: the TV
+  session runs `dai-tv seed` before Kodi starts, which creates Kodi 21's `Addons33.db` with its exact schema
+  (`CreateTables`, `CreateAnalytics`, the `version` table with 33; copied from the source, not guessed) and
+  writes the two add-ons into `installed` as enabled. A row that already exists is left alone by Kodi, and a row
+  the person disabled themselves (`disabledReason` = user) is left alone by D.Ai. On the CI image Kodi itself
+  reports `pvr.iptvsimple` enabled over JSON-RPC, and the window at the end of boot is the home screen.
+- **The channels:** "ערוצים מהרשימה שלי ~/channels.m3u" / "live channels from ~/channels.m3u" (`tv.channels` in
+  D.Ai Tune; the file must exist on this computer and be `.m3u`/`.m3u8`) writes IPTV Simple's first instance
+  (`addon_data/pvr.iptvsimple/instance-settings-1.xml`: the instance name and enabled flag Kodi reads from
+  `IAddon.h`, `m3uPathType` 0 = a local file, the path, no cache, an EPG address when `--epg URL` is given to
+  `dai-tv channels`). "כבה ערוצים חיים" / "turn off live channels" removes it; undo puts the file back. Kodi
+  shows the channels when it starts again. The playlist is the person's own: D.Ai ships no channel list and
+  no address, and says nothing about what a given list may lawfully carry (**requires legal review** per
+  source before any list is recommended).
+- **Tests:** dai-tv (8): the schema and version, the rows with their dates, the person's own disabling kept,
+  idempotence, the instance file and its removal, the commands; Tune: the sentences (a path in both
+  languages, off, a sentence without a path refused rather than half-done), the file rule, the dai-tv calls.
+  The tv VM check: the add-ons on the image, the seeded rows, Kodi's own answer, the sentence and its undo.
+- **Not yet (3b):** the broadcasters' web players through Ruby in TV mode; Widevine (**requires verification**
+  per service); an EPG by sentence.
 
 ## 1. Stages
 
@@ -146,8 +171,8 @@ build/live-build/editions/tv/
   dialog) is `docs/screenshots/tv-desktop.png`.
 - **A lesson from the screenshot:** Debian's binary add-ons (`kodi-pvr-iptvsimple`, `kodi-inputstream-adaptive`)
   are installed disabled, and Kodi's first start asks "enable this add-on?" for each. They were taken out of
-  stage 1; stage 3 (IPTV) brings them back and seeds Kodi's add-on database (`Addons33.db`, `installed` table)
-  at the first start so nothing asks.
+  stage 1; stage 3a (§11) brought them back and seeds Kodi's add-on database (`Addons33.db`, `installed` table)
+  before the first start, so nothing asks.
 - **Not yet:** the measurement on the weak profile, stages 2–5.
 
 ## 8. Stage 2a: the first D.Ai sentence for the TV (what was built)

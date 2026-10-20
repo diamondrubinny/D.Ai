@@ -6032,3 +6032,46 @@ msgstr "прямо"
 #: apps/dai-rotate/dai_rotate/cli.py
 msgid "upside down"
 msgstr "вверх ногами"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Add-ons ready: {ids}"
+msgstr "Дополнения готовы: {ids}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Kodi shows the channels when it starts again. The playlist stays where it is; only its path is kept."
+msgstr "Kodi покажет каналы при следующем запуске. Плейлист остаётся на месте; хранится только его путь."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Live channels from {file}; Kodi shows them when it starts again."
+msgstr "Каналы из {file}; Kodi покажет их при следующем запуске."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Live channels off"
+msgstr "Каналы выключены"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Live channels off."
+msgstr "Каналы выключены."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Live channels on the TV from your playlist {file}"
+msgstr "Каналы на ТВ из вашего плейлиста {file}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "The EPG is a web address (http:// or https://)."
+msgstr "EPG — это веб-адрес (http:// или https://)."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "There was no playlist."
+msgstr "Плейлиста не было."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Which playlist? dai-tv channels FILE.m3u (a file on this computer)"
+msgstr "Какой плейлист? dai-tv channels FILE.m3u (файл на этом компьютере)"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "nothing to change"
+msgstr "менять нечего"

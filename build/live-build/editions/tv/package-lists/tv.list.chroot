@@ -2,9 +2,12 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # D.Ai TV (docs/TV.md): the 10-foot interface on a TV-connected computer, driven by the TV's remote.
 kodi
-# Binary add-ons from Debian (kodi-inputstream-adaptive, kodi-pvr-iptvsimple) arrive disabled and Kodi asks
-# at first start whether to enable each one (seen on the CI screenshot). They return with stage 3 (IPTV),
-# when the first start seeds Kodi's add-on database so nothing asks.
+# Binary add-ons from Debian arrive disabled and Kodi would ask at first start whether to enable each one
+# (seen on a CI screenshot in stage 1). The TV session now seeds Kodi's add-on database before the first
+# start (dai-tv seed, docs/TV.md §11), so they are simply there: live channels from the person's own playlist
+# and adaptive streams.
+kodi-pvr-iptvsimple
+kodi-inputstream-adaptive
 cec-utils
 mpv
 # Hardware video decoding on Intel and AMD graphics

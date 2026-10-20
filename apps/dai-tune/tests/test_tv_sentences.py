@@ -113,6 +113,32 @@ class TvSentenceTests(unittest.TestCase):
         self.assertIn("<autologin>-1</autologin>", text)
         self.assertNotIn(hashlib.md5(b"1357").hexdigest(), text)
 
+    def test_live_channels_from_my_playlist(self):
+        """docs/TV.md §11: the playlist must be a real .m3u on this computer; dai-tv gets its path; off removes it."""
+        playlist = self.home / "channels.m3u"
+        self.assertEqual([(r.action, r.params) for r in parser.parse("live channels from ~/channels.m3u").requests],
+                         [("tv.channels", {"playlist": "~/channels.m3u"})])
+        self.assertEqual([(r.action, r.params) for r in parser.parse("ערוצים מהרשימה שלי /tmp/x/list.m3u8").requests],
+                         [("tv.channels", {"playlist": "/tmp/x/list.m3u8"})])
+        self.assertEqual([(r.action, r.params) for r in parser.parse("turn off live channels").requests], [("tv.channels", {"playlist": ""})])
+        self.assertEqual([(r.action, r.params) for r in parser.parse("כבה ערוצים חיים").requests], [("tv.channels", {"playlist": ""})])
+        self.assertEqual(parser.parse("live channels").requests, [])  # no playlist named: not understood, not half-done
+        with self.assertRaises(ValidationError):
+            CATALOG["tv.channels"].validate({"playlist": str(playlist)}, self.ctx)  # not there yet
+        playlist.write_text("#EXTM3U\n")
+        with self.assertRaises(ValidationError):
+            CATALOG["tv.channels"].validate({"playlist": str(self.home / "notes.txt")}, self.ctx)
+        self.assertEqual(CATALOG["tv.channels"].validate({"playlist": "channels.m3u"}, self.ctx), {"playlist": str(playlist)})
+        plan = self.plan("ערוצים מהרשימה שלי " + str(playlist))
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        self.assertIn("channels.m3u", CATALOG["tv.channels"].summary(plan.steps[0].params, "he"))
+        journal = executor.Journal.for_user(self.ctx)
+        executor.apply_steps(plan.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertEqual(self.runner.calls[-1], ["dai-tv", "channels", str(playlist)])
+        off = self.plan("turn off live channels")
+        executor.apply_steps(off.scoped("user"), self.ctx, journal, actor="1000", scope="user")
+        self.assertEqual(self.runner.calls[-1], ["dai-tv", "channels", "--off"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -39,4 +39,8 @@ if [ ! -d "$HOME/.kodi" ] && [ -d /etc/skel/.kodi ]; then
 	cp -r /etc/skel/.kodi "$HOME/.kodi"
 fi
 
+# Kodi's add-on database with the channel add-ons already enabled, so the first start asks nothing
+# (docs/TV.md §11); a row the person changed is left as it is.
+command -v dai-tv >/dev/null 2>&1 && dai-tv seed >/dev/null 2>&1 || true
+
 exec labwc -C /etc/dai/tv/labwc -S dai-tv-kodi

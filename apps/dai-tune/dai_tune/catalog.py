@@ -1127,6 +1127,40 @@ register(ActionSpec(
 ))
 
 
+KODI_CHANNELS = ".kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml"
+
+
+def _tv_channels_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"playlist"})
+    playlist = str(params.get("playlist") or "").strip()
+    if not playlist:
+        return {"playlist": ""}
+    path = Path(playlist).expanduser()
+    if not path.is_absolute():
+        path = ctx.home / path
+    if path.suffix.lower() not in (".m3u", ".m3u8"):
+        raise ValidationError("a playlist is a .m3u or .m3u8 file")
+    if not path.is_file():
+        raise ValidationError(f"no such playlist: {path}")
+    return {"playlist": str(path)}
+
+
+register(ActionSpec(
+    id="tv.channels",
+    scope="user",
+    validate=_tv_channels_validate,
+    apply=lambda p, c: c.run(["dai-tv", "channels", p["playlist"]] if p["playlist"] else ["dai-tv", "channels", "--off"]),
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Live channels on the TV from your playlist {file}", "ערוצים חיים בטלוויזיה מהרשימה שלכם {file}",
+                                file=Path(p["playlist"]).name) if p["playlist"] else
+                             _t(lang, "Live channels off", "ערוצים חיים כבויים")),
+    files=lambda p, c: [c.user_path(KODI_CHANNELS)],
+    note=lambda p, lang: _t(lang, "Kodi shows the channels when it starts again. The playlist stays where it is; only its path is kept.",
+                            "Kodi יציג את הערוצים כשיופעל מחדש. הרשימה נשארת במקומה; רק הנתיב שלה נשמר.") if p["playlist"] else "",
+))
+
+
 # --------------------------------------------------------------------------
 # D.Ai's system sounds (docs/SOUNDS.md), read by dai-sound
 # --------------------------------------------------------------------------

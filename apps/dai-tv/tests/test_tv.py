@@ -121,6 +121,66 @@ class TvTests(unittest.TestCase):
         self.assertIn(("Application.SetVolume", {"volume": 75}), fake.calls)
         self.assertEqual(self.run_cli(fake, "night", "dim")[0], 2)
 
+    def test_the_addon_database_is_seeded_before_kodi(self):
+        """docs/TV.md §11: Kodi 21's schema, the channel add-ons enabled, the person's own disabling respected."""
+        import datetime
+        import sqlite3
+        import tempfile
+        from pathlib import Path
+
+        from dai_tv import seed
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp) / ".kodi"
+            changed = seed.seed(home, now=datetime.datetime(2026, 10, 20, 9, 30))
+            self.assertEqual(changed, ["pvr.iptvsimple", "inputstream.adaptive"])
+            db = home / "userdata/Database/Addons33.db"
+            self.assertEqual(oct(db.stat().st_mode & 0o777), "0o600")
+            with sqlite3.connect(db) as conn:
+                self.assertEqual(conn.execute("SELECT idVersion, iCompressCount FROM version").fetchall(), [(33, 0)])
+                tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+                self.assertEqual(tables, {"addons", "repo", "addonlinkrepo", "update_rules", "package", "installed", "version"})
+                self.assertEqual(conn.execute("SELECT addonID, enabled, installDate, origin, disabledReason FROM installed ORDER BY id").fetchall(),
+                                 [("pvr.iptvsimple", 1, "2026-10-20 09:30:00", "", 0), ("inputstream.adaptive", 1, "2026-10-20 09:30:00", "", 0)])
+                conn.execute("UPDATE installed SET enabled = 0, disabledReason = 1 WHERE addonID = 'pvr.iptvsimple'")  # the person's choice
+                conn.execute("UPDATE installed SET enabled = 0 WHERE addonID = 'inputstream.adaptive'")  # Kodi's default
+            self.assertEqual(seed.seed(home), ["inputstream.adaptive"])
+            self.assertEqual((seed.enabled(home, "pvr.iptvsimple"), seed.enabled(home, "inputstream.adaptive"), seed.enabled(home, "x")),
+                             (False, True, None))
+            self.assertEqual(seed.seed(home), [])  # idempotent
+            playlist = Path(tmp) / "channels.m3u"
+            playlist.write_text("#EXTM3U\n")
+            path = seed.channels(home, playlist, epg="https://example.org/epg.xml")
+            text = path.read_text()
+            self.assertEqual(path.name, "instance-settings-1.xml")
+            for piece in ('<setting id="kodi_addon_instance_name">D.Ai channels</setting>', '<setting id="kodi_addon_instance_enabled">true</setting>',
+                          '<setting id="m3uPathType">0</setting>', f'<setting id="m3uPath">{playlist}</setting>',
+                          '<setting id="epgUrl">https://example.org/epg.xml</setting>'):
+                self.assertIn(piece, text)
+            self.assertEqual(seed.current_playlist(home), str(playlist))
+            self.assertTrue(seed.channels_off(home))
+            self.assertFalse(seed.channels_off(home))
+            self.assertEqual(seed.current_playlist(home), "")
+
+    def test_channels_from_the_command_line(self):
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(cli, "kodi_home", return_value=Path(tmp) / ".kodi"):
+            fake = self.kodi()
+            code, out, _ = self.run_cli(fake, "seed")
+            self.assertEqual((code, "pvr.iptvsimple" in out), (0, True), out)
+            code, _, err = self.run_cli(fake, "channels", str(Path(tmp) / "none.m3u"))
+            self.assertEqual((code, "Which playlist" in err), (2, True))
+            playlist = Path(tmp) / "my.m3u"
+            playlist.write_text("#EXTM3U\n")
+            self.assertEqual(self.run_cli(fake, "channels", str(playlist), "--epg", "ftp://x")[0], 2)
+            code, out, _ = self.run_cli(fake, "channels", str(playlist))
+            self.assertEqual((code, "Live channels from my.m3u" in out), (0, True), out)
+            self.assertIn("m3uPath", (Path(tmp) / ".kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml").read_text())
+            code, out, _ = self.run_cli(fake, "channels", "--off")
+            self.assertEqual((code, out.strip()), (0, "Live channels off."))
+            self.assertEqual(fake.calls, [])  # nothing of this needs the running Kodi
+
     def test_playing_and_nothing(self):
         fake = self.kodi(playing={"title": "The Film", "year": 1999, "plot": "A long story " * 50, "type": "movie", "label": "x"})
         code, out, _ = self.run_cli(fake, "playing")

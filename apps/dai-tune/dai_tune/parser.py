@@ -70,6 +70,8 @@ TV_REMOTE = r"(?:\b(?:remote control|control (?:the |my )?tv|tv remote|kodi remo
 TV_NIGHT = r"(?:\bnight mode\b|\bnight\b.*\b(?:tv|television)\b|מצב לילה)"
 TV_CHILDREN = r"(?:children'?s? (?:profile|mode)|kids'? (?:profile|mode)|פרופיל (?:ה)?ילדים|מצב (?:ה)?ילדים|פרופיל לילדים)"
 PIN = r"(?:\b(?:pin|code)\b|קוד|פין)\s*:?\s*([0-9]{4,8})"
+TV_CHANNELS = r"(?:\blive channels?\b|\bchannels? (?:list|playlist)\b|\bmy channels\b|\biptv\b|ערוצים חיים|ערוצי טלוויזיה|רשימת (?:ה)?ערוצים|ערוצים מ)"
+PLAYLIST_PATH = r"((?:~|/)[^\s]+\.m3u8?)"
 
 INSTALL = r"^(?:please\s+)?(?:install|add app|התקן|תתקין|להתקין|התקנת)\s+(.+)$"
 REMOVE = r"^(?:please\s+)?(?:remove|uninstall|delete app|הסר|תסיר|להסיר|הסרת|מחק את|תמחק את)\s+(.+)$"
@@ -307,6 +309,11 @@ def parse_clause(clause: str) -> list[Request]:
     # D.Ai TV: night mode and the children's profile (docs/TV.md §10).
     if _has(TV_NIGHT, c):
         return [Request("tv.night_mode", {"enabled": not _has(OFF, re.sub(r"בטלוויזיה", "", c))}, clause)]
+    if _has(TV_CHANNELS, c):
+        found = re.search(PLAYLIST_PATH, clause, re.IGNORECASE)
+        if _has(OFF, re.sub(r"בטלוויזיה", "", c)) and not found:
+            return [Request("tv.channels", {"playlist": ""}, clause)]
+        return [Request("tv.channels", {"playlist": found.group(1) if found else ""}, clause)] if found else []
     if _has(TV_CHILDREN, c):
         pin = re.search(PIN, c, re.IGNORECASE)
         return [Request("tv.children_profile", {"enabled": not _has(OFF, re.sub(r"בטלוויזיה", "", c)),
@@ -394,7 +401,7 @@ _TOPICS = {
     "lock": (LOCK, ("session.lock",)),
     "port": (PORT, ("firewall.",)),
     "vm": (VIRTUALIZATION, ("vm.",)),
-    "tv": (f"(?:{TV_REMOTE}|{TV_NIGHT}|{TV_CHILDREN})", ("tv.",)),
+    "tv": (f"(?:{TV_REMOTE}|{TV_NIGHT}|{TV_CHILDREN}|{TV_CHANNELS})", ("tv.",)),
     "machine": (r"(?:ווינדוס|וינדוס|\bwindows\b)", ("vm.",)),
     "touch": (TOUCH_WORD, ("appearance.touch",)),
     "rotation": (ROTATE_WORD + r"(?=.*" + SCREEN_WORD + r")", ("display.rotation",)),
@@ -476,6 +483,7 @@ EXAMPLES = {
         "שלט מהטלפון",
         "מצב לילה",
         "פרופיל ילדים עם קוד 2468",
+        "ערוצים מהרשימה שלי ~/channels.m3u",
         "סובב את המסך",
         "סיבוב מסך אוטומטי",
         "הפעל את ווינדוס",
@@ -505,6 +513,7 @@ EXAMPLES = {
         "remote control from the phone",
         "night mode",
         "children's profile with pin 2468",
+        "live channels from ~/channels.m3u",
         "rotate the screen",
         "lock the screen rotation",
         "start windows",

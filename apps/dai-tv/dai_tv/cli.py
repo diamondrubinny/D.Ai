@@ -10,6 +10,8 @@
   dai-tv listen [--seconds 6] the remote's microphone: a spoken command ("pause", "השהה") is done, anything else
                               is asked of Diamond; the answer goes on the TV (D.Ai Voice transcribes on this computer)
   dai-tv night on|off         night mode now, in the running Kodi: dim after 5 minutes, the volume down
+  dai-tv seed                 before Kodi starts: its add-on database with the channel add-ons enabled (no questions)
+  dai-tv channels PLAYLIST.m3u [--epg URL] | --off   live channels from your own playlist (IPTV Simple)
   dai-tv --version | --help
 
 Nothing here leaves the computer: Diamond runs locally and Kodi is reached on 127.0.0.1 only.
@@ -109,6 +111,12 @@ def describe(now: dict | None, lang: str) -> str:
     return title + (f"\n{plot[:300]}" if plot else "")
 
 
+def kodi_home() -> "Path":
+    from pathlib import Path
+
+    return Path.home() / ".kodi"
+
+
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv if argv is None else argv)[1:]
     lang = ui_lang()
@@ -167,6 +175,35 @@ def main(argv: list[str] | None = None) -> int:
                 return 0
             print(say(lang, "Heard: {text}", "שמעתי: {text}", text=text))
             print(_answer(text, lang))
+            return 0
+        if verb == "seed":
+            from . import seed
+
+            changed = seed.seed(kodi_home())
+            print(say(lang, "Add-ons ready: {ids}", "תוספים מוכנים: {ids}", ids=", ".join(changed) or say(lang, "nothing to change", "אין מה לשנות")))
+            return 0
+        if verb == "channels":
+            from pathlib import Path
+
+            from . import seed
+
+            if rest[:1] == ["--off"]:
+                gone = seed.channels_off(kodi_home())
+                print(say(lang, "Live channels off.", "ערוצים חיים כבויים.") if gone else say(lang, "There was no playlist.", "לא הייתה רשימה."))
+                return 0
+            playlist = Path(rest[0]).expanduser() if rest and not rest[0].startswith("--") else None
+            if playlist is None or playlist.suffix.lower() not in (".m3u", ".m3u8") or not playlist.is_file():
+                print(say(lang, "Which playlist? dai-tv channels FILE.m3u (a file on this computer)",
+                          "איזו רשימה? dai-tv channels FILE.m3u (קובץ במחשב הזה)"), file=sys.stderr)
+                return 2
+            epg = rest[rest.index("--epg") + 1] if "--epg" in rest and rest.index("--epg") + 1 < len(rest) else ""
+            if epg and not epg.startswith(("http://", "https://")):
+                print(say(lang, "The EPG is a web address (http:// or https://).", "לוח השידורים הוא כתובת אינטרנט (http:// או https://)."), file=sys.stderr)
+                return 2
+            seed.seed(kodi_home())
+            seed.channels(kodi_home(), playlist.resolve(), epg=epg)
+            print(say(lang, "Live channels from {file}; Kodi shows them when it starts again.",
+                      "ערוצים חיים מתוך {file}; Kodi יציג אותם כשיופעל מחדש.", file=playlist.name))
             return 0
         if verb == "night":
             mode = rest[0].lower() if rest else ""
