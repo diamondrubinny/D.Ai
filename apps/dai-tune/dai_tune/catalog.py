@@ -987,6 +987,116 @@ register(ActionSpec(
 ))
 
 
+KODI_PROFILES = ".kodi/userdata/profiles.xml"
+KODI_NIGHT = {"screensaver.mode": "screensaver.xbmc.builtin.dim", "screensaver.time": "5"}
+CHILDREN_PROFILE = "Children"
+
+
+def _tv_night_apply(params: Params, ctx: Context) -> None:
+    """The file for the next start; the running Kodi is told directly through dai-tv (best effort)."""
+    on = params["enabled"]
+    _kodi_settings_set(ctx.user_path(KODI_SETTINGS), KODI_NIGHT if on else {"screensaver.time": "10"})
+    ctx.run(["dai-tv", "night", "on" if on else "off"], check=False)
+
+
+register(ActionSpec(
+    id="tv.night_mode",
+    scope="user",
+    validate=lambda p, c: (_only_keys(p, {"enabled"}), {"enabled": _bool(p.get("enabled"))})[1],
+    apply=_tv_night_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Night mode on the TV: the screen dims after 5 minutes, the volume goes down",
+                                "מצב לילה בטלוויזיה: המסך מתעמעם אחרי 5 דקות, העוצמה יורדת") if p["enabled"] else
+                             _t(lang, "Night mode on the TV off", "מצב לילה בטלוויזיה כבוי")),
+    files=lambda p, c: [c.user_path(KODI_SETTINGS)],
+    restore=lambda p, c, e: c.run(["dai-tv", "night", "off" if p["enabled"] else "on"], check=False),
+))
+
+
+def _kodi_profiles_set(path: Path, enabled: bool, pin: str) -> None:
+    """Kodi's profiles.xml (xbmc/profiles/Profile.cpp, ProfileManager.cpp): the master profile gets a numeric lock
+    (its code is the MD5 of the PIN, as CGUIPassword compares it), a "Children" profile without a lock becomes the
+    one Kodi logs into on its own, with its own sources it cannot change and no settings or add-on manager. Off:
+    the master lock and the automatic login go; the children's profile and its library stay."""
+    import hashlib
+    import xml.etree.ElementTree as ET
+
+    try:
+        root = ET.fromstring(read_text(path))
+        if root.tag != "profiles":
+            raise ValueError("not a profiles file")
+    except (ET.ParseError, ValueError):
+        root = ET.Element("profiles")
+    profiles = root.findall("profile")
+
+    def field(profile, tag: str, value: str) -> None:
+        element = profile.find(tag)
+        if element is None:
+            element = ET.SubElement(profile, tag)
+        element.text = value
+
+    master = next((p for p in profiles if (p.findtext("id") or "").strip() == "0"), None)
+    if master is None:
+        master = ET.SubElement(root, "profile")
+        for tag, value in (("id", "0"), ("name", "Master user"), ("directory", "special://masterprofile/")):
+            field(master, tag, value)
+    children = next((p for p in profiles if (p.findtext("name") or "").strip() == CHILDREN_PROFILE), None)
+    if children is None:
+        used = {int(p.findtext("id") or 0) for p in root.findall("profile")}
+        new_id = next(i for i in range(1, 100) if i not in used)
+        children = ET.SubElement(root, "profile")
+        for tag, value in (("id", str(new_id)), ("name", CHILDREN_PROFILE), ("directory", f"profiles/{CHILDREN_PROFILE}/"),
+                           ("hasdatabases", "true"), ("canwritedatabases", "true"), ("hassources", "true"),
+                           ("canwritesources", "false"), ("lockaddonmanager", "true"), ("locksettings", "1"),
+                           ("lockfiles", "true"), ("lockprograms", "true"), ("lockmode", "0"), ("lockcode", "-")):
+            field(children, tag, value)
+    if enabled:
+        field(master, "lockmode", "1")
+        field(master, "lockcode", hashlib.md5(pin.encode("utf-8")).hexdigest())  # noqa: S324 - Kodi's own scheme
+        field(root, "useloginscreen", "true")
+        field(root, "autologin", (children.findtext("id") or "1").strip())
+    else:
+        field(master, "lockmode", "0")
+        field(master, "lockcode", "-")
+        field(root, "autologin", "-1")
+    used = {int(p.findtext("id") or 0) for p in root.findall("profile")}
+    field(root, "nextIdProfile", str(max(used) + 1))
+    field(root, "lastloaded", "0")
+    ET.indent(root)
+    write_file(path, ET.tostring(root, encoding="unicode") + "\n", mode=0o600)
+
+
+def _tv_children_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"enabled", "pin"})
+    enabled = _bool(params.get("enabled"))
+    pin = str(params.get("pin") or "")
+    if enabled and not pin:
+        import secrets
+        pin = "".join(secrets.choice("0123456789") for _ in range(4))  # shown in the plan: the parents' code
+    if pin and not re.fullmatch(r"[0-9]{4,8}", pin):
+        raise ValidationError("the PIN is 4 to 8 digits")
+    return {"enabled": enabled, "pin": pin}
+
+
+register(ActionSpec(
+    id="tv.children_profile",
+    scope="user",
+    validate=_tv_children_validate,
+    apply=lambda p, c: _kodi_profiles_set(c.user_path(KODI_PROFILES), p["enabled"], p["pin"]),
+    risk=lambda p: "low",
+    effect=lambda p: "hardens" if p["enabled"] else "weakens",
+    summary=lambda p, lang: (_t(lang, "A children's profile on the TV: Kodi starts in it, with its own sources; leaving it asks the PIN {pin}",
+                                "פרופיל ילדים בטלוויזיה: Kodi מתחיל בו, עם מקורות משלו; יציאה ממנו מבקשת את הקוד {pin}", pin=p["pin"])
+                             if p["enabled"] else
+                             _t(lang, "The children's profile no longer starts on its own; the parents' PIN is removed",
+                                "פרופיל הילדים כבר לא מופעל מעצמו; קוד ההורים מוסר")),
+    files=lambda p, c: [c.user_path(KODI_PROFILES)],
+    note=lambda p, lang: _t(lang, "Takes effect when Kodi starts again. Write the PIN down: it is what lets a grown-up out.",
+                            "נכנס לתוקף כש-Kodi יופעל מחדש. רשמו את הקוד: הוא מה שמוציא מבוגר מהפרופיל.") if p["enabled"] else "",
+))
+
+
 # --------------------------------------------------------------------------
 # D.Ai's system sounds (docs/SOUNDS.md), read by dai-sound
 # --------------------------------------------------------------------------

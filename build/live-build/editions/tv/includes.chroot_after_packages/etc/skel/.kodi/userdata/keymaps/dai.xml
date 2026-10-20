@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 Diamond Rubinny (d.Ai) -->
+<!-- D.Ai on the remote (docs/TV.md §10): the blue button (CEC F1/blue on most remotes; which key a given TV sends
+     for "voice" requires a check) and F12 on a keyboard run dai-tv listen: a few seconds from the microphone,
+     transcribed on this box by D.Ai Voice, a command done or a question answered by Diamond. Kodi's own windows
+     that use the blue button (teletext, the TV guide) keep it: their maps come before this global one. -->
+<keymap>
+  <global>
+    <keyboard>
+      <f12>System.Exec(dai-tv listen)</f12>
+    </keyboard>
+    <remote>
+      <blue>System.Exec(dai-tv listen)</blue>
+    </remote>
+  </global>
+</keymap>

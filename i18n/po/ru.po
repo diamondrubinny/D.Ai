@@ -5788,3 +5788,61 @@ msgstr "{names}; аппаратное ускорение включено."
 #, python-brace-format
 msgid "{name} takes most of the memory"
 msgstr "{name} забирает большую часть памяти"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "A children's profile on the TV: Kodi starts in it, with its own sources; leaving it asks the PIN {pin}"
+msgstr "Детский профиль на ТВ: Kodi запускается в нём со своими источниками; выход из него спросит PIN {pin}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Could not listen: {why}"
+msgstr "Не удалось послушать: {why}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text}"
+msgstr "Услышано: {text}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text} → {action}"
+msgstr "Услышано: {text} → {action}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "I heard nothing."
+msgstr "Я ничего не услышал."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Listening… ({n} seconds)"
+msgstr "Слушаю… ({n} с)"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode off."
+msgstr "Ночной режим выключен."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV off"
+msgstr "Ночной режим на ТВ выключен"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV: the screen dims after 5 minutes, the volume goes down"
+msgstr "Ночной режим на ТВ: экран гаснет через 5 минут, громкость снижается"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on: dim after 5 minutes, the volume down."
+msgstr "Ночной режим включён: затемнение через 5 минут, громкость ниже."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Night mode: {mode}"
+msgstr "Ночной режим: {mode}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Takes effect when Kodi starts again. Write the PIN down: it is what lets a grown-up out."
+msgstr "Вступит в силу при следующем запуске Kodi. Запишите PIN: именно он выпускает взрослого."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "The children's profile no longer starts on its own; the parents' PIN is removed"
+msgstr "Детский профиль больше не запускается сам; PIN родителей снят"

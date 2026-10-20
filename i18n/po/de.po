@@ -5788,3 +5788,61 @@ msgstr "{names}; Hardware-Beschleunigung ist an."
 #, python-brace-format
 msgid "{name} takes most of the memory"
 msgstr "{name} nimmt den größten Teil des Speichers"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "A children's profile on the TV: Kodi starts in it, with its own sources; leaving it asks the PIN {pin}"
+msgstr "Ein Kinderprofil auf dem Fernseher: Kodi startet darin, mit eigenen Quellen; das Verlassen fragt die PIN {pin}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Could not listen: {why}"
+msgstr "Konnte nicht zuhören: {why}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text}"
+msgstr "Gehört: {text}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text} → {action}"
+msgstr "Gehört: {text} → {action}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "I heard nothing."
+msgstr "Ich habe nichts gehört."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Listening… ({n} seconds)"
+msgstr "Ich höre zu… ({n} Sekunden)"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode off."
+msgstr "Nachtmodus aus."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV off"
+msgstr "Nachtmodus am Fernseher aus"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV: the screen dims after 5 minutes, the volume goes down"
+msgstr "Nachtmodus am Fernseher: der Bildschirm dimmt nach 5 Minuten, die Lautstärke sinkt"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on: dim after 5 minutes, the volume down."
+msgstr "Nachtmodus an: Dimmen nach 5 Minuten, Lautstärke runter."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Night mode: {mode}"
+msgstr "Nachtmodus: {mode}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Takes effect when Kodi starts again. Write the PIN down: it is what lets a grown-up out."
+msgstr "Gilt, wenn Kodi neu startet. Schreiben Sie die PIN auf: sie lässt einen Erwachsenen hinaus."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "The children's profile no longer starts on its own; the parents' PIN is removed"
+msgstr "Das Kinderprofil startet nicht mehr von selbst; die Eltern-PIN ist entfernt"

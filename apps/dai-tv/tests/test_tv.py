@@ -84,6 +84,43 @@ class TvTests(unittest.TestCase):
         code, out, _ = self.run_cli(fake, "--version")
         self.assertIn("dai-tv 0.1.0 — Diamond Rubinny (d.Ai)", out)
 
+    def test_the_remotes_microphone(self):
+        """docs/TV.md §10: a spoken command is done; anything else goes to Diamond; no Voice is said on the TV."""
+        fake = self.kodi()
+        with mock.patch.object(cli, "_voice_text", return_value=" השהה "):
+            code, out, _ = self.run_cli(fake, "listen", "--seconds", "3")
+        self.assertEqual((code, out.strip()), (0, "Heard: השהה → pause"))
+        self.assertEqual(fake.calls[0], ("GUI.ShowNotification", {"title": "D.Ai", "message": "Listening… (3 seconds)", "displaytime": 3000}))
+        self.assertEqual(fake.calls[-1], ("Input.ExecuteAction", {"action": "pause"}))
+        with mock.patch.object(cli, "_voice_text", return_value="who directed this film"), \
+                mock.patch.object(cli, "_ask_diamond", return_value="Someone famous."):
+            code, out, _ = self.run_cli(fake, "listen")
+        self.assertEqual(code, 0)
+        self.assertEqual(out.splitlines(), ["Heard: who directed this film", "Someone famous."])
+        self.assertEqual(fake.calls[-1][0], "GUI.ShowNotification")
+        self.assertEqual(fake.calls[-1][1]["title"], "Diamond")
+        with mock.patch.object(cli, "_voice_text", return_value="  "):
+            self.assertEqual(self.run_cli(fake, "listen")[0], 3)
+        with mock.patch.object(cli, "_voice_text", side_effect=RuntimeError("D.Ai Voice is not installed on this TV")):
+            code, _, err = self.run_cli(fake, "listen")
+        self.assertEqual(code, 1)
+        self.assertIn("not installed", err)
+        self.assertIn("not installed", fake.calls[-1][1]["message"])
+        for text, action in (("Pause.", "pause"), ("חזק יותר", "volumeup"), ("what is this?", "info"), ("rm -rf /", None),
+                             ("pause " * 20, None)):
+            self.assertEqual(cli.spoken_action(text), action, text)
+
+    def test_night_mode_in_the_running_kodi(self):
+        fake = self.kodi()
+        code, out, _ = self.run_cli(fake, "night", "on")
+        self.assertEqual((code, out.strip()), (0, "Night mode: on"))
+        self.assertIn(("Settings.SetSettingValue", {"setting": "screensaver.mode", "value": "screensaver.xbmc.builtin.dim"}), fake.calls)
+        self.assertIn(("Settings.SetSettingValue", {"setting": "screensaver.time", "value": 5}), fake.calls)
+        self.assertIn(("Application.SetVolume", {"volume": 40}), fake.calls)
+        self.assertEqual(self.run_cli(fake, "night", "off")[0], 0)
+        self.assertIn(("Application.SetVolume", {"volume": 75}), fake.calls)
+        self.assertEqual(self.run_cli(fake, "night", "dim")[0], 2)
+
     def test_playing_and_nothing(self):
         fake = self.kodi(playing={"title": "The Film", "year": 1999, "plot": "A long story " * 50, "type": "movie", "label": "x"})
         code, out, _ = self.run_cli(fake, "playing")

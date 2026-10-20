@@ -874,6 +874,22 @@ def main() -> int:
          "tail -n 3 /tmp/tune-tv.txt; fi",
          True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
              "TUNE_RC=0", "WEB_ON=1", "ES_ON=1", "PORTS_AFTER=0", "SETTINGS_RESTORED")) and re.search(r"PORTS=[3-9]", o) is not None, 120),
+        # D.Ai TV stage 2c (docs/TV.md §10): night mode and the children's profile by sentence (with undo), the
+        # running Kodi told directly, the remote's keymap in place, the voice command table (no microphone here).
+        ("tv: night mode, the children's profile and the remote's keymap",
+         ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
+         "cp ~/.kodi/userdata/guisettings.xml /tmp/gui-before2.xml; dai-tune --yes 'מצב לילה' >/tmp/tune-night.txt 2>&1; echo NIGHT_RC=$?; "
+         "grep -c 'screensaver.xbmc.builtin.dim' ~/.kodi/userdata/guisettings.xml | sed 's/^/DIM=/'; "
+         "dai-tune undo >/dev/null 2>&1; cmp -s /tmp/gui-before2.xml ~/.kodi/userdata/guisettings.xml && echo NIGHT_RESTORED; "
+         "dai-tune --yes 'פרופיל ילדים עם קוד 2468' >/tmp/tune-kids.txt 2>&1; echo KIDS_RC=$?; "
+         "grep -c '<lockcode>' ~/.kodi/userdata/profiles.xml | sed 's/^/LOCKS=/'; grep -c '<name>Children</name>' ~/.kodi/userdata/profiles.xml | sed 's/^/KIDS=/'; "
+         "grep -o '<autologin>[0-9-]*</autologin>' ~/.kodi/userdata/profiles.xml; dai-tune undo >/dev/null 2>&1; "
+         "[ -e ~/.kodi/userdata/profiles.xml ] && echo PROFILES_STILL_THERE || echo PROFILES_GONE; "
+         "python3 -c \"import xml.etree.ElementTree as E, os; E.parse(os.path.expanduser('~/.kodi/userdata/keymaps/dai.xml'))\"; echo KEYMAP_RC=$?; "
+         "dai-tv night on; echo NIGHT_LIVE_RC=$?; dai-tv night off >/dev/null; tail -n 2 /tmp/tune-night.txt /tmp/tune-kids.txt; fi",
+         True, lambda o: "TV_NOT_THIS_EDITION" in o or all(mark in o for mark in (
+             "NIGHT_RC=0", "DIM=1", "NIGHT_RESTORED", "KIDS_RC=0", "LOCKS=2", "KIDS=1", "<autologin>1</autologin>",
+             "PROFILES_GONE", "KEYMAP_RC=0", "NIGHT_LIVE_RC=0")), 180),
         # D.Ai TV stage 2b (docs/TV.md §9): Kodi's service listens on this computer only, and dai-tv reaches it.
         ("tv: D.Ai talks to Kodi on this computer only",
          ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "

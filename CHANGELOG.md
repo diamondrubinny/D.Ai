@@ -40,6 +40,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
   opens their ports to the local network only, with undo.
 - D.Ai TV: `dai-tv` talks to the Kodi on this computer (127.0.0.1 only): what plays, a notification, an action,
   and "ask" with Diamond answering on the screen.
+- D.Ai TV, on the remote: the blue button (or F12) listens through D.Ai Voice and does what was said or asks
+  Diamond; "night mode" and "children's profile with a PIN" in D.Ai Tune (docs/TV.md §10).
 - Touch mode (`docs/MOBILE.md` A1): on a touch screen, or after "touch mode" in D.Ai Tune, every D.Ai control
   is at least 44 px and the on-screen keyboard waits hidden behind Super+Alt+K; Raz audits the command bar, Quick
   and Welcome for finger-sized targets; the login screen's buttons grew to 44 px.

@@ -5788,3 +5788,61 @@ msgstr "{names}; a aceleração por hardware está ligada."
 #, python-brace-format
 msgid "{name} takes most of the memory"
 msgstr "{name} fica com a maior parte da memória"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "A children's profile on the TV: Kodi starts in it, with its own sources; leaving it asks the PIN {pin}"
+msgstr "Um perfil infantil na TV: o Kodi arranca nele, com as suas fontes; sair pede o PIN {pin}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Could not listen: {why}"
+msgstr "Não consegui ouvir: {why}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text}"
+msgstr "Ouvi: {text}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text} → {action}"
+msgstr "Ouvi: {text} → {action}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "I heard nothing."
+msgstr "Não ouvi nada."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Listening… ({n} seconds)"
+msgstr "A ouvir… ({n} segundos)"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode off."
+msgstr "Modo noturno desligado."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV off"
+msgstr "Modo noturno na TV desligado"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV: the screen dims after 5 minutes, the volume goes down"
+msgstr "Modo noturno na TV: o ecrã escurece após 5 minutos, o volume baixa"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on: dim after 5 minutes, the volume down."
+msgstr "Modo noturno ligado: escurece após 5 minutos, volume baixo."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Night mode: {mode}"
+msgstr "Modo noturno: {mode}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Takes effect when Kodi starts again. Write the PIN down: it is what lets a grown-up out."
+msgstr "Entra em vigor quando o Kodi arrancar de novo. Anote o PIN: é o que deixa um adulto sair."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "The children's profile no longer starts on its own; the parents' PIN is removed"
+msgstr "O perfil infantil já não arranca sozinho; o PIN dos pais é removido"

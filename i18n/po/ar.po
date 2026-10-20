@@ -5788,3 +5788,61 @@ msgstr "{names}؛ التسريع العتادي مفعّل."
 #, python-brace-format
 msgid "{name} takes most of the memory"
 msgstr "{name} تأخذ معظم الذاكرة"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "A children's profile on the TV: Kodi starts in it, with its own sources; leaving it asks the PIN {pin}"
+msgstr "ملف أطفال على التلفاز: يبدأ Kodi فيه بمصادره الخاصة؛ الخروج منه يطلب الرمز {pin}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Could not listen: {why}"
+msgstr "تعذّر الاستماع: {why}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text}"
+msgstr "سمعت: {text}"
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Heard: {text} → {action}"
+msgstr "سمعت: {text} ← {action}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "I heard nothing."
+msgstr "لم أسمع شيئًا."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Listening… ({n} seconds)"
+msgstr "أستمع… ({n} ثوانٍ)"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode off."
+msgstr "الوضع الليلي متوقف."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV off"
+msgstr "إيقاف الوضع الليلي على التلفاز"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on the TV: the screen dims after 5 minutes, the volume goes down"
+msgstr "الوضع الليلي على التلفاز: تخفت الشاشة بعد 5 دقائق وينخفض الصوت"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Night mode on: dim after 5 minutes, the volume down."
+msgstr "الوضع الليلي يعمل: تعتيم بعد 5 دقائق، والصوت منخفض."
+
+#: apps/dai-tv/dai_tv/cli.py
+#, python-brace-format
+msgid "Night mode: {mode}"
+msgstr "الوضع الليلي: {mode}"
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "Takes effect when Kodi starts again. Write the PIN down: it is what lets a grown-up out."
+msgstr "يسري عند تشغيل Kodi من جديد. دوّن الرمز: هو ما يُخرج الكبار من الملف."
+
+#: apps/dai-tv/dai_tv/cli.py
+msgid "The children's profile no longer starts on its own; the parents' PIN is removed"
+msgstr "لم يعد ملف الأطفال يبدأ تلقائيًا؛ أُزيل رمز الوالدين"

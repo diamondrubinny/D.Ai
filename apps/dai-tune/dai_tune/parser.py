@@ -67,6 +67,10 @@ BEFORE_UPDATE = r"(?:before (?:the |an? )?(?:windows )?updates?|לפני (?:ה)?
 TV_REMOTE = r"(?:\b(?:remote control|control (?:the |my )?tv|tv remote|kodi remote|phone as (?:a |the )?remote)\b|"\
             r"שלט מהטלפון|שליטה מרחוק בטלוויזיה|שלט לטלוויזיה|שלט רחוק|לשלוט בטלוויזיה)"
 
+TV_NIGHT = r"(?:\bnight mode\b|\bnight\b.*\b(?:tv|television)\b|מצב לילה)"
+TV_CHILDREN = r"(?:children'?s? (?:profile|mode)|kids'? (?:profile|mode)|פרופיל (?:ה)?ילדים|מצב (?:ה)?ילדים|פרופיל לילדים)"
+PIN = r"(?:\b(?:pin|code)\b|קוד|פין)\s*:?\s*([0-9]{4,8})"
+
 INSTALL = r"^(?:please\s+)?(?:install|add app|התקן|תתקין|להתקין|התקנת)\s+(.+)$"
 REMOVE = r"^(?:please\s+)?(?:remove|uninstall|delete app|הסר|תסיר|להסיר|הסרת|מחק את|תמחק את)\s+(.+)$"
 
@@ -285,6 +289,13 @@ def parse_clause(clause: str) -> list[Request]:
         if _has(START, c):
             return [Request("vm.power", {"name": name, "action": "start"}, clause)]
 
+    # D.Ai TV: night mode and the children's profile (docs/TV.md §10).
+    if _has(TV_NIGHT, c):
+        return [Request("tv.night_mode", {"enabled": not _has(OFF, re.sub(r"בטלוויזיה", "", c))}, clause)]
+    if _has(TV_CHILDREN, c):
+        pin = re.search(PIN, c, re.IGNORECASE)
+        return [Request("tv.children_profile", {"enabled": not _has(OFF, re.sub(r"בטלוויזיה", "", c)),
+                                                "pin": pin.group(1) if pin else ""}, clause)]
     # D.Ai TV: remote control from the phone.
     if _has(TV_REMOTE, c):
         # "בטלוויזיה" (in the TV) contains "בטל" (cancel): the word is set aside before looking for an "off".
@@ -368,7 +379,7 @@ _TOPICS = {
     "lock": (LOCK, ("session.lock",)),
     "port": (PORT, ("firewall.",)),
     "vm": (VIRTUALIZATION, ("vm.",)),
-    "tv": (TV_REMOTE, ("tv.",)),
+    "tv": (f"(?:{TV_REMOTE}|{TV_NIGHT}|{TV_CHILDREN})", ("tv.",)),
     "machine": (r"(?:ווינדוס|וינדוס|\bwindows\b)", ("vm.",)),
     "touch": (TOUCH_WORD, ("appearance.touch",)),
 }
@@ -444,6 +455,8 @@ EXAMPLES = {
         "מצב פרטיות",
         "מצב מגע",
         "שלט מהטלפון",
+        "מצב לילה",
+        "פרופיל ילדים עם קוד 2468",
         "הפעל את ווינדוס",
         "צילום מצב של ווינדוס לפני העדכון",
         "פנה מקום בדיסק",
@@ -469,6 +482,8 @@ EXAMPLES = {
         "privacy mode",
         "touch mode",
         "remote control from the phone",
+        "night mode",
+        "children's profile with pin 2468",
         "start windows",
         "snapshot windows before the update",
         "free up disk space",

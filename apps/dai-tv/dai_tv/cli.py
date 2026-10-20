@@ -7,6 +7,9 @@
   dai-tv say TEXT             show TEXT on the TV as a notification
   dai-tv ask QUESTION         ask Diamond (the local AI) about what plays, or anything; the answer goes on the TV
   dai-tv do ACTION            one of Kodi's actions: play, pause, stop, back, select, up, down, left, right, info
+  dai-tv listen [--seconds 6] the remote's microphone: a spoken command ("pause", "השהה") is done, anything else
+                              is asked of Diamond; the answer goes on the TV (D.Ai Voice transcribes on this computer)
+  dai-tv night on|off         night mode now, in the running Kodi: dim after 5 minutes, the volume down
   dai-tv --version | --help
 
 Nothing here leaves the computer: Diamond runs locally and Kodi is reached on 127.0.0.1 only.
@@ -23,6 +26,51 @@ ACTIONS = ("play", "pause", "stop", "back", "select", "up", "down", "left", "rig
            "skipnext", "skipprevious", "fullscreen", "contextmenu")
 
 
+# What a spoken word does on the remote (docs/TV.md §10): Hebrew and English, a fixed table, nothing else runs.
+SPOKEN = {
+    "pause": ("pause", "השהה", "השהייה", "עצור רגע", "הפסקה"),
+    "play": ("play", "continue", "resume", "נגן", "המשך", "תמשיך", "תנגן"),
+    "stop": ("stop", "עצור", "תעצור", "די"),
+    "skipnext": ("next", "skip", "הבא", "דלג"),
+    "skipprevious": ("previous", "back one", "הקודם", "אחורה"),
+    "mute": ("mute", "quiet", "silence", "השתק", "שקט"),
+    "volumeup": ("louder", "volume up", "חזק יותר", "הגבר", "תגביר"),
+    "volumedown": ("quieter", "volume down", "lower", "חלש יותר", "הנמך", "תנמיך"),
+    "back": ("go back", "back", "חזור", "תחזור"),
+    "info": ("info", "what is this", "מידע", "מה זה"),
+    "select": ("select", "ok", "okay", "בחר", "אישור"),
+}
+LISTEN_SECONDS = 6
+NIGHT = {"on": {"screensaver.mode": "screensaver.xbmc.builtin.dim", "screensaver.time": 5},
+         "off": {"screensaver.time": 10}}
+NIGHT_VOLUME = {"on": 40, "off": 75}
+
+
+def spoken_action(text: str) -> str | None:
+    """The action a spoken sentence means, or None when it is a question for Diamond."""
+    words = text.strip().strip(".!?,").casefold()
+    if not words or len(words) > 40:
+        return None
+    for action, phrases in SPOKEN.items():
+        if words in phrases:
+            return action
+    return None
+
+
+def _voice_text(seconds: int, lang: str) -> str:
+    """Record from the microphone for a few seconds and transcribe on this computer (D.Ai Voice)."""
+    import time
+
+    try:
+        from dai_voice import engine
+    except ImportError as exc:
+        raise RuntimeError("D.Ai Voice is not installed on this TV") from exc
+    engine.start()
+    time.sleep(seconds)
+    wav = engine.stop()
+    return engine.transcribe(wav, lang=lang if lang in engine.LANGS else None, delete=True)  # i18n: ok (Whisper's language code)
+
+
 def say(lang: str, en: str, he: str, **kwargs: object) -> str:
     return pick(lang, en, he).format(**kwargs)
 
@@ -37,6 +85,16 @@ def _ask_diamond(question: str, lang: str) -> str:
         return "".join(client.ask(question, max_tokens=120)).strip() or say(lang, "Diamond had no answer.", "ל-Diamond לא הייתה תשובה.")
     except Exception as exc:  # noqa: BLE001 - daid is not running, or no model: say so, never crash the TV
         return say(lang, "Diamond is not available now ({why}).", "Diamond לא זמין עכשיו ({why}).", why=type(exc).__name__)
+
+
+def _answer(question: str, lang: str) -> str:
+    """Diamond's answer about the question (with what plays now as context), shown on the TV too."""
+    now = rpc.playing()
+    if now:
+        question = say(lang, "On the TV now: {what}. {q}", "בטלוויזיה עכשיו: {what}. {q}", what=describe(now, lang).replace("\n", " "), q=question)
+    answer = _ask_diamond(question, lang)
+    rpc.notify("Diamond", answer[:200], 10)
+    return answer
 
 
 def describe(now: dict | None, lang: str) -> str:
@@ -83,12 +141,44 @@ def main(argv: list[str] | None = None) -> int:
             if not question:
                 print(say(lang, "Ask what? dai-tv ask QUESTION", "לשאול מה? dai-tv ask QUESTION"), file=sys.stderr)
                 return 2
-            now = rpc.playing()
-            if now:
-                question = say(lang, "On the TV now: {what}. {q}", "בטלוויזיה עכשיו: {what}. {q}", what=describe(now, lang).replace("\n", " "), q=question)
-            answer = _ask_diamond(question, lang)
-            print(answer)
-            rpc.notify("Diamond", answer[:200], 10)
+            print(_answer(question, lang))
+            return 0
+        if verb == "listen":
+            try:
+                seconds = max(2, min(15, int(rest[rest.index("--seconds") + 1]))) if "--seconds" in rest else LISTEN_SECONDS
+            except (ValueError, IndexError):
+                seconds = LISTEN_SECONDS
+            rpc.notify("D.Ai", say(lang, "Listening… ({n} seconds)", "מקשיב… ({n} שניות)", n=seconds), seconds)
+            try:
+                text = _voice_text(seconds, lang).strip()
+            except Exception as exc:  # noqa: BLE001 - no microphone, no Voice, no model: say so on the TV, never crash
+                why = str(exc) or type(exc).__name__
+                rpc.notify("D.Ai", say(lang, "Could not listen: {why}", "לא הצלחתי להקשיב: {why}", why=why)[:200], 6)
+                print(say(lang, "Could not listen: {why}", "לא הצלחתי להקשיב: {why}", why=why), file=sys.stderr)
+                return 1
+            if not text:
+                rpc.notify("D.Ai", say(lang, "I heard nothing.", "לא שמעתי כלום."), 4)
+                print(say(lang, "I heard nothing.", "לא שמעתי כלום."))
+                return 3
+            action = spoken_action(text)
+            if action:
+                rpc.action(action)
+                print(say(lang, "Heard: {text} → {action}", "שמעתי: {text} ← {action}", text=text, action=action))
+                return 0
+            print(say(lang, "Heard: {text}", "שמעתי: {text}", text=text))
+            print(_answer(text, lang))
+            return 0
+        if verb == "night":
+            mode = rest[0].lower() if rest else ""
+            if mode not in NIGHT:
+                print(say(lang, "dai-tv night on|off", "dai-tv night on|off"), file=sys.stderr)
+                return 2
+            for setting, value in NIGHT[mode].items():
+                rpc.call("Settings.SetSettingValue", {"setting": setting, "value": value})
+            rpc.call("Application.SetVolume", {"volume": NIGHT_VOLUME[mode]})
+            rpc.notify("D.Ai", say(lang, "Night mode on: dim after 5 minutes, the volume down.", "מצב לילה פועל: עמעום אחרי 5 דקות, עוצמה נמוכה.")
+                       if mode == "on" else say(lang, "Night mode off.", "מצב לילה כבוי."), 5)
+            print(say(lang, "Night mode: {mode}", "מצב לילה: {mode}", mode=mode))
             return 0
         if verb == "do":
             name = rest[0].lower() if rest else ""

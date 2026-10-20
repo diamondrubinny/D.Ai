@@ -18,6 +18,40 @@
   needed, no telemetry, nothing watching what you watch; updates for years from Debian; the whole D.Ai desktop
   one key away when a TV should also be a computer.
 
+## 10. Stage 2c: D.Ai on the remote, night mode, the children's profile (what was built)
+
+- **The remote's microphone:** `dai-tv listen` records a few seconds from the box's microphone through D.Ai
+  Voice (whisper.cpp on this computer), then either does what was said, from a fixed table in Hebrew and
+  English ("השהה", "pause", "הבא", "louder", "what is this"…), or asks Diamond and puts the answer on the TV.
+  "Listening…" and "I heard nothing" are notifications on the screen; without Voice, a microphone or a model the
+  TV says so and nothing else happens. Kodi runs it from a keymap shipped in every new user's `.kodi`
+  (`userdata/keymaps/dai.xml`): the **blue** button of a CEC remote (Kodi maps CEC's "F1 blue" to it,
+  `PeripheralCecAdapter.cpp`) and **F12** on a keyboard, both free in Kodi's global keymap (F9 and F10 are its
+  MCE volume keys, so they were not taken). Kodi's windows that use blue themselves (teletext, the guide)
+  keep it. Which key a given TV's remote sends for "voice" **requires a check** on real sets; the blue button is
+  the one every CEC remote has.
+- **Night mode** (`tv.night_mode`): "מצב לילה" / "night mode" dims the screen after 5 minutes (Kodi's built-in
+  dim screensaver) and brings the volume down; the file gets the setting for the next start and the running
+  Kodi is told at once through `dai-tv night on` (JSON-RPC `Settings.SetSettingValue`, `Application.SetVolume`
+  to 40). "כבה מצב לילה" puts the time back to 10 minutes and the volume to 75. Undo does the same.
+- **The children's profile** (`tv.children_profile`): "פרופיל ילדים עם קוד 2468" / "children's profile with
+  pin 2468" (a 4-digit PIN is made and shown when none is said). Kodi's `profiles.xml` gets a "Children" profile
+  with its own library and sources it cannot change, no settings and no add-on manager, no lock of its own, and
+  Kodi logs into it on its own at start (`autologin`); the master profile gets a numeric lock whose code is the
+  MD5 of the PIN, exactly as Kodi compares it (`CGUIPassword`, `GUIDialogNumeric.cpp`: the entered digits are
+  MD5'd and compared to the stored code). Leaving the children's profile for the parents' one therefore asks
+  the PIN. Sources for the children go into `profiles/Children/sources.xml` (the parents add them from their
+  profile). "כבה פרופיל ילדים" removes the master lock and the automatic login; the profile and its library
+  stay. The plan is marked as hardening; the note says to write the PIN down. Takes effect when Kodi starts
+  again (a running Kodi rewrites the file on exit, so the sentence is best said from the desktop or before a
+  restart; **requires a check** on the image).
+- **Tests:** dai-tv (6): the spoken table, a question to Diamond with the answer on the TV, nothing heard, Voice
+  absent (said on the TV, exit 1), night mode's three calls; Tune: the sentences (Hebrew and English, with and
+  without a PIN, off), the files written and restored by undo, the PIN rule, a profiles file with other profiles
+  kept. The tv VM check applies night mode and the children's profile through the real `dai-tune` with undo,
+  checks the keymap parses and `dai-tv night` reaches the running Kodi.
+- **Not yet (2d):** the Living Diamond on the TV status, "what this add-on sends" before an install.
+
 ## 1. Stages
 
 | Stage | What | Size |
@@ -143,6 +177,5 @@ build/live-build/editions/tv/
 - **Tests:** 4 (a fake Kodi on a local socket: every command, exit codes, a refusal, no Kodi, Diamond answering
   and Diamond absent). The tv VM check sees the port bound to 127.0.0.1 only and every command answered by
   the real Kodi.
-- **Not yet:** the remote's microphone button (a keymap that runs `dai-tv ask` with Voice; **requires a check**
-  of which CEC key the common TVs send for "voice"), "children's profile" and "night mode" sentences, the Living
-  Diamond on the TV, "what this add-on sends" before an install.
+- **Not yet (built in 2c, §10):** the remote's microphone button, "children's profile" and "night mode"; still
+  to come: the Living Diamond on the TV, "what this add-on sends" before an install.
