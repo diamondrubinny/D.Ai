@@ -3,7 +3,7 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 # Build a D.Ai OS live ISO with Debian live-build.
 #
-# Usage: build-iso.sh <user|dev> [output-dir]
+# Usage: build-iso.sh <user|dev|edu|tv|server|phone> [output-dir]
 #
 # Must run as root inside a disposable Debian trixie container or VM,
 # because live-build creates chroots and mounts /proc, /sys and /dev.
@@ -32,8 +32,13 @@ die() { log "error: $*"; exit 1; }
 
 case "$EDITION" in
   user | dev | edu | tv | server) ;;
-  *) die "usage: $(basename "$0") <user|dev|edu|tv|server> [output-dir]" ;;
+  phone) ;;
+  *) die "usage: $(basename "$0") <user|dev|edu|tv|server|phone> [output-dir]" ;;
 esac
+# The phone edition (docs/MOBILE.md C1) is arm64, built on an amd64 host through QEMU user emulation.
+ARCH=amd64
+[[ "$EDITION" == phone ]] && ARCH=arm64
+readonly ARCH
 
 [[ $EUID -eq 0 ]] || die "must run as root inside a disposable container or VM"
 # live-build from other distributions (e.g. Ubuntu) is too old for this config.
@@ -60,6 +65,11 @@ install_build_deps() {
     live-build debootstrap ca-certificates \
     xorriso squashfs-tools mtools dosfstools cpio \
     isolinux syslinux-common grub-efi-amd64-bin grub-pc-bin python3
+  if [[ "$ARCH" == arm64 ]]; then
+    # The arm64 chroot runs through qemu-aarch64-static (binfmt_misc on the host must know it: the runner
+    # installs qemu-user-static, which registers the handler with the fix-binary flag).
+    apt-get install -y --no-install-recommends qemu-user-static binfmt-support grub-efi-arm64-bin
+  fi
 }
 
 configure() {
@@ -74,11 +84,17 @@ configure() {
 
   local volume="DAI_OS_${EDITION^^}"
 
+  local arch_args=(--architectures "$ARCH" --linux-flavours "$ARCH" --uefi-secure-boot enable)
+  if [[ "$ARCH" == arm64 ]]; then
+    # No syslinux on arm64 (GRUB EFI only); the chroot's binaries run through qemu-aarch64-static; Secure Boot
+    # on arm64 phones is a per-device matter (docs/MOBILE.md C1), so the shim is left out here.
+    arch_args=(--architectures arm64 --linux-flavours arm64 --bootloaders grub-efi
+      --bootstrap-qemu-arch arm64 --bootstrap-qemu-static /usr/bin/qemu-aarch64-static --uefi-secure-boot disable)
+  fi
   lb config \
     --mode debian \
     --distribution trixie \
-    --architectures amd64 \
-    --linux-flavours amd64 \
+    "${arch_args[@]}" \
     --archive-areas "main non-free-firmware" \
     --apt-recommends false \
     --security true \
@@ -87,7 +103,6 @@ configure() {
     --firmware-chroot false \
     --firmware-binary false \
     --memtest none \
-    --uefi-secure-boot enable \
     --image-name "dai-os-$EDITION" \
     --iso-application "D.Ai OS" \
     --iso-publisher "Diamond Rubinny (d.Ai)" \
@@ -103,6 +118,10 @@ configure() {
   fi
   cp -a "$LB_SRC/editions/$EDITION/." config/
   chmod 0755 config/hooks/normal/*.hook.chroot config/hooks/normal/*.hook.binary
+  if [[ "$ARCH" == arm64 ]]; then
+    # The shared lists name the amd64 kernel and the x86 microcode; the rest is architecture-neutral.
+    sed -i -e 's/^linux-image-amd64$/linux-image-arm64/' -e '/^\(intel\|amd64\)-microcode$/d' config/package-lists/*.chroot
+  fi
   # Qt draws SVG files (the D.Ai diamond on Start, in D.Ai Command and Forge)
   # through its SVG plugins. Newer Debian Qt packages ship them separately
   # from libqt6svg6; recommends are not installed, so add them explicitly.
@@ -142,7 +161,13 @@ stage_apps() {
   local root="$1" debs="config/packages.chroot" deb name
   install -d "$debs"
   DAI_VERSION="$VERSION" bash "$SCRIPT_DIR/build-debs.sh" "$OUT_DIR/debs"
-  cp -- "$OUT_DIR"/debs/dai-*.deb "$debs/"
+  # Only packages for this architecture (D.Ai's apps are "all"; the runtimes and the panel plugin are amd64).
+  for deb in "$OUT_DIR"/debs/dai-*.deb; do
+    case "$(basename "$deb")" in
+      *_all.deb | *_"$ARCH".deb) cp -- "$deb" "$debs/" ;;
+      *) log "not for $ARCH, left out: $(basename "$deb")" ;;
+    esac
+  done
   # Listing them makes the build fail loudly if one cannot be installed.
   {
     echo '# D.Ai packages built by build-debs.sh (added by build-iso.sh)'
@@ -177,13 +202,14 @@ main() {
   configure
   lb build 2>&1 | tee build.log
 
-  local iso="$WORK_DIR/dai-os-$EDITION-amd64.hybrid.iso"
+  local iso="$WORK_DIR/dai-os-$EDITION-$ARCH.hybrid.iso"
+  [[ -f "$iso" ]] || iso="$WORK_DIR/dai-os-$EDITION-$ARCH.iso"
   [[ -f "$iso" ]] || die "live-build finished without producing $iso (see $WORK_DIR/build.log)"
 
-  local name="dai-os-$EDITION-$VERSION-amd64"
+  local name="dai-os-$EDITION-$VERSION-$ARCH"
   mv -- "$iso" "$OUT_DIR/$name.iso"
-  if [[ -f "dai-os-$EDITION-amd64.packages" ]]; then
-    cp -- "dai-os-$EDITION-amd64.packages" "$OUT_DIR/$name.packages"
+  if [[ -f "dai-os-$EDITION-$ARCH.packages" ]]; then
+    cp -- "dai-os-$EDITION-$ARCH.packages" "$OUT_DIR/$name.packages"
   fi
   (cd "$OUT_DIR" && sha256sum "$name.iso" >"$name.iso.sha256")
 

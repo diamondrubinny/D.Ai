@@ -361,6 +361,57 @@ jobs:
           path: ruby-extension/
           retention-days: 3
 
+  # D.Ai Phone (docs/MOBILE.md C1): arm64 under QEMU user emulation, booted in QEMU's virt machine. Experimental:
+  # it runs on its own and never fails the workflow until it is green on its own merits.
+  build-phone:
+    needs: [lint]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 170
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - name: Register arm64 user emulation on the runner (binfmt_misc, fix-binary)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user-static binfmt-support
+          ls /proc/sys/fs/binfmt_misc/ | grep -E '^qemu-aarch64$'
+      - name: Build the phone ISO (arm64, Debian trixie container)
+        timeout-minutes: 120
+        run: |
+          version="0.1.0-alpha+${GITHUB_SHA::7}"
+          docker run --rm --privileged \
+            -e DAI_VERSION="$version" \
+            -e SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)" \
+            -v "$PWD:/src" -w /src \
+            debian:trixie \
+            bash build/scripts/build-iso.sh phone /src/out
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-phone
+          path: .work/phone/build.log
+          if-no-files-found: ignore
+      - name: Install QEMU for arm64
+        run: |
+          sudo apt-get install -y --no-install-recommends qemu-system-arm xorriso
+      - name: Boot test (QEMU virt, emulated, slow)
+        env:
+          BOOT_TIMEOUT: "1500"
+          DESKTOP_WAIT: "180"
+          QEMU_MEM: "3072"
+        run: bash tests/boot/boot-test.sh out/dai-os-phone-*.iso boot-artifacts
+      - name: Upload boot artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot-phone
+          path: boot-artifacts/
+          if-no-files-found: ignore
   build:
     needs: [lint, llama, whisper, panel-plugin, ruby-extension]
     runs-on: ubuntu-24.04

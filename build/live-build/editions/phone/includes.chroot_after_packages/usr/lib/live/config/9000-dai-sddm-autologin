@@ -1,0 +1,18 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# Live session only: log the live user straight into Phosh (docs/MOBILE.md C1), as the tv edition does for Kodi.
+# live-config's own sddm script writes /etc/sddm.conf and picks the first X11 session; this runs later.
+set -e
+live_user="$(getent passwd 1000 | cut -d: -f1)"
+if [ -z "$live_user" ]; then
+	echo "dai-sddm-autologin: no live user (UID 1000) found, skipping" >&2
+	exit 0
+fi
+cat >/etc/sddm.conf <<CONF
+# Written at boot by /usr/lib/live/config/9000-dai-sddm-autologin (live session only)
+[Autologin]
+User=${live_user}
+Session=phosh.desktop
+Relogin=false
+CONF

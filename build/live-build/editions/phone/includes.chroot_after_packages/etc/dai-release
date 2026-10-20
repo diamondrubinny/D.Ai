@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+NAME="D.Ai OS"
+EDITION=phone
+VERSION="0.1.0-alpha"
+AUTHOR="Diamond Rubinny (d.Ai)"
+LICENSE="Apache-2.0"
+BASE="Debian 13 (trixie)"
+HOME_URL="https://github.com/diamondrubinny/D.Ai"

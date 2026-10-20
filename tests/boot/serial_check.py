@@ -228,6 +228,14 @@ TV_REQUIRED = {
     "os: secure boot shim", "i18n: boot menu languages", "pdf: opened in the sandbox, wants listed, text out",
 }
 
+# The phone edition (docs/MOBILE.md C1): Phosh instead of the desktop, arm64 under emulation (so only what
+# must hold is required), and its own checks.
+PHONE_REQUIRED = {
+    "dai-release", "credit", "graphical target", "display manager", "network manager", "firewall loaded",
+    "firewall input policy", "apparmor enabled", "root locked", "failed units", "tune: version",
+    "packages: installed by dpkg",
+}
+
 # Runs inside the VM (which has no KVM of its own): defines a D.Ai VM machine through libvirt's session daemon,
 # which validates the whole definition (UEFI with Secure Boot, the TPM, passt, SPICE on a socket), and removes it.
 VM_CHECK = r'''
@@ -868,6 +876,15 @@ def main() -> int:
          and "REDACT_RC=0" in o and "WORDS_LEFT=0" in o and "TITLE_LEFT=0" in o and "OCR_RC=0" in o and "PICS=1" in o
          and "pictures made smaller" in o and "COMPRESS_RC=0" in o and "SMALLER=yes" in o and "SIG_RC=3" in o
          and ("ASK_PDF_RC=0" in o or "ASK_PDF_RC=1" in o), 480),
+        # D.Ai Phone (docs/MOBILE.md C1): Phosh (phoc under it) is the session that runs, arm64 is the machine,
+        # touch mode is on for everyone, and D.Ai's apps are there (Tune answers, in touch mode).
+        ("phone: Phosh runs on arm64 with D.Ai in touch mode",
+         ". /etc/dai-release; if [ \"$EDITION\" != phone ]; then echo PHONE_NOT_THIS_EDITION; else "
+         "uname -m; pgrep -a -x phoc | head -n 1 | cut -c1-60; pgrep -a -x phosh | head -n 1 | cut -c1-60; "
+         "pgrep -x squeekboard >/dev/null && echo KEYBOARD_RUNNING; cat ~/.config/dai/touch | sed 's/^/TOUCH=/'; "
+         "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_style; print(\"MODE\", dai_style.touch_mode(), \"ON\" if dai_style.touch() else \"OFF\")'; "
+         "dai-tune --version | head -n 1; fi",
+         True, lambda o: "PHONE_NOT_THIS_EDITION" in o or all(mark in o for mark in ("aarch64", "phoc", "phosh", "TOUCH=on", "MODE on ON", "dai-tune")), 120),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",
@@ -1080,6 +1097,8 @@ def main() -> int:
         name, command, required, ok = check[:4]
         timeout = check[4] if len(check) > 4 else 30
         if edition == "tv" and name not in TV_REQUIRED and not name.startswith("tv:"):
+            required = False
+        if edition == "phone" and name not in PHONE_REQUIRED and not name.startswith("phone:"):
             required = False
         try:
             output = serial.run(command, timeout=timeout)

@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Phone (docs/MOBILE.md C1): touch mode is on for every user (dai_style.touch reads it), the session's
+# files are executable, and Phosh's session is what the login starts.
+set -eu
+chmod 0755 /usr/lib/live/config/9000-dai-sddm-autologin
+install -d -m 0755 /etc/skel/.config/dai
+printf 'on\n' >/etc/skel/.config/dai/touch
+test -f /usr/share/wayland-sessions/phosh.desktop || { echo "dai-phone: phosh session missing" >&2; exit 1; }
+echo "dai-phone: phone session ready"

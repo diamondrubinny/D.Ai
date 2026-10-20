@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Television is in
 > `docs/TV.md`. **Decided (under "from now on you decide"):** the three tracks below and their order.
-> **Status:** A1, A2 and A3 built (§5); B1 blocked on the Chat protocol review; C1 not started.
+> **Status:** A1, A2 and A3 built (§5); B1 blocked on the Chat protocol review; C1a (the arm64 phone image in CI) experimental.
 
 ## 0. What a "mobile version" can honestly be
 
@@ -154,6 +154,32 @@ a separate "home" gesture is A3.
   as it changes (off, fixed, nonsense), wlr-randr failing, the command line; Tune: thirteen sentences in both
   languages, the file and its undo. The VM check turns the CI screen to 90 and back through `dai-rotate` and
   through the sentence, and sees the transform in wlr-randr.
+
+### C1a — the phone image builds and boots (experimental, in CI on its own)
+
+- **What it is:** `build-iso.sh phone` makes an **arm64** live image: Debian 13 with Phosh (phoc, squeekboard,
+  phosh-mobile-settings, Debian's own mobile shell), Calls, Chatty and Contacts for calls, SMS and people,
+  ModemManager, and the D.Ai apps with touch mode on for every user; the shared layer stays (the LXQt desktop
+  is on the image too, as a second session). The live login goes straight into Phosh, as the tv edition's does
+  into Kodi.
+- **How it is built on an amd64 runner:** live-build bootstraps the arm64 chroot through `qemu-aarch64-static`
+  (`--bootstrap-qemu-arch arm64 --bootstrap-qemu-static`, options of live-build's `lb config`), with the host's
+  binfmt_misc handler (the runner installs `qemu-user-static`, fix-binary flag); GRUB EFI only (no syslinux on
+  arm64); the shared package lists get the arm64 kernel in place of the amd64 one and lose the x86 microcode;
+  D.Ai's own packages are installed only where their architecture fits ("all" apps yes; the llama.cpp and
+  whisper.cpp runtimes and the panel plugin are amd64 builds and are left out, so Diamond and Voice are not on
+  the phone image yet). Secure Boot's shim is left out: on an arm64 phone it is a per-device matter.
+- **How it is booted in CI:** the boot test drives `qemu-system-aarch64 -M virt -cpu cortex-a72` under TCG
+  (emulated: slow, so its timeouts are longer), the kernel and initrd taken from the ISO and booted directly,
+  the ISO on a virtio SCSI CD, the console on `ttyAMA0`, a virtio GPU for the screenshot, and the same serial
+  checks with a `phone` allowance (what must hold on any edition, plus "Phosh runs on arm64 with D.Ai in touch
+  mode": `uname -m`, phoc and phosh alive, the touch file, `dai_style.touch()`, `dai-tune --version`).
+- **Honesty about CI:** the job `build-phone` is marked experimental (`continue-on-error`): it cannot turn the
+  workflow red while the arm64 build under emulation is being proven; each run's log and artifacts show how far
+  it got. Nothing here is a device image: the PinePhone Pro boots from a different firmware and kernel than
+  QEMU's virt machine (C1b: the device's U-Boot and kernel, **requires a check** of Debian's arm64 kernel on
+  it). Calls and SMS touch telecommunications rules per country (**requires legal review** before any phone
+  image is offered).
 
 
 **A2, what was built.** `dai_style.panes`: `Panes` (the splitter that stacks under 700 px), `WrapRow` (a

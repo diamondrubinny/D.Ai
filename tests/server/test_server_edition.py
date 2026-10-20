@@ -116,6 +116,7 @@ class ServerPackages(unittest.TestCase):
     def test_the_build_accepts_the_server_edition(self):
         text = (ROOT / "build" / "scripts" / "build-iso.sh").read_text(encoding="utf-8")
         self.assertIn("user | dev | edu | tv | server", text)
+        self.assertIn("phone) ;;", text)  # the arm64 phone edition (docs/MOBILE.md C1) is its own case
         self.assertIn('if [[ "$EDITION" == server ]]; then', text)
         self.assertIn("server-prune.py", text)
 

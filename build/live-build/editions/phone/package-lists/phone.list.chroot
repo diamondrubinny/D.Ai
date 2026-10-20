@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Phone (docs/MOBILE.md C1): Debian 13 on arm64 with Phosh, the mobile shell of Debian's own phone
+# work (DebianOnMobile), and the D.Ai apps in touch mode. The reference device is the PinePhone Pro.
+phosh
+phoc
+squeekboard
+phosh-mobile-settings
+# Calls, SMS and contacts through Phosh's own apps
+gnome-calls
+chatty
+gnome-contacts
+# Mobile broadband
+modemmanager

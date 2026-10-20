@@ -36,7 +36,15 @@ log() { printf '[boot-test] %s\n' "$*" >&2; }
 die() { log "FAIL: $*"; exit 1; }
 
 [[ -f "$ISO" ]] || die "usage: $(basename "$0") <iso> [artifact-dir]"
-for tool in qemu-system-x86_64 xorriso python3; do
+# The phone edition (docs/MOBILE.md C1) is arm64: QEMU's virt machine, the kernel booted directly, the ISO on a
+# virtio SCSI CD, the console on ttyAMA0; everything else below is the same.
+PHONE=0
+[[ "$(basename "$ISO")" == dai-os-phone-* ]] && PHONE=1
+readonly PHONE
+QEMU_BIN=qemu-system-x86_64
+[[ "$PHONE" == 1 ]] && QEMU_BIN=qemu-system-aarch64
+readonly QEMU_BIN
+for tool in "$QEMU_BIN" xorriso python3; do
   command -v "$tool" >/dev/null 2>&1 || die "missing required tool: $tool"
 done
 
@@ -125,32 +133,40 @@ INITRD="$(find "$EXTRACT_DIR/live" -maxdepth 1 -name 'initrd.img*' | sort | head
 log "kernel=$(basename "$KERNEL") initrd=$(basename "$INITRD")"
 
 ACCEL=(-accel tcg)
-if [[ -r /dev/kvm && -w /dev/kvm ]]; then
+if [[ "$PHONE" == 1 ]]; then
+  ACCEL=(-accel tcg -M virt -cpu cortex-a72)  # an arm64 guest on an amd64 runner: emulated
+  log "arm64 guest: QEMU virt machine under TCG (slow)"
+elif [[ -r /dev/kvm && -w /dev/kvm ]]; then
   ACCEL=(-accel kvm -cpu host)
   log "using KVM acceleration"
 else
   log "KVM unavailable, using TCG (slow)"
 fi
-
-readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il timezone=Asia/Jerusalem console=tty0 console=ttyS0,115200"
+CONSOLE="console=tty0 console=ttyS0,115200"
+[[ "$PHONE" == 1 ]] && CONSOLE="console=tty0 console=ttyAMA0,115200"
+readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il timezone=Asia/Jerusalem $CONSOLE"
+MEDIA=(-cdrom "$ISO" -vga std -usb -device usb-tablet)
+if [[ "$PHONE" == 1 ]]; then
+  MEDIA=(-device virtio-scsi-pci -drive "file=$ISO,if=none,id=cd0,media=cdrom,format=raw" -device scsi-cd,drive=cd0
+    -device virtio-gpu-pci -device qemu-xhci -device usb-tablet)
+fi
 
 : >"$SERIAL_LOG"
 # An empty, sparse target disk so the installer sees somewhere to install.
 truncate -s 24G "$EXTRACT_DIR/target-disk.raw"
 LAUNCH_EPOCH="$(date +%s)"
-qemu-system-x86_64 \
+"$QEMU_BIN" \
   "${ACCEL[@]}" \
   -m "$QEMU_MEM" -smp "$QEMU_SMP" \
-  -cdrom "$ISO" \
+  "${MEDIA[@]}" \
   -drive "file=$EXTRACT_DIR/target-disk.raw,format=raw,if=virtio" \
   -kernel "$KERNEL" -initrd "$INITRD" -append "$CMDLINE" \
-  -vga std -display none \
+  -display none \
   -chardev "socket,id=ser0,path=$SERIAL_SOCK,server=on,wait=off,logfile=$SERIAL_LOG" \
   -serial chardev:ser0 \
   -monitor "unix:$MONITOR_SOCK,server,nowait" \
   -qmp "unix:$QMP_SOCK,server,nowait" \
   -nic user,model=virtio-net-pci \
-  -usb -device usb-tablet \
   -no-reboot &
 QEMU_PID=$!
 
@@ -194,8 +210,8 @@ monitor "screendump $ARTIFACT_DIR/desktop.png -f png" || log "warning: screensho
 
 log "running in-guest system checks over the serial console"
 checks_ok=1
-if [[ "$(basename "$ISO")" == dai-os-tv-* ]]; then
-  # Kodi owns the screen on the TV edition (docs/TV.md §5): no desktop demo apps over it.
+if [[ "$(basename "$ISO")" == dai-os-tv-* || "$PHONE" == 1 ]]; then
+  # Kodi owns the screen on the TV edition (docs/TV.md §5), Phosh on the phone: no desktop demo apps over them.
   python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" || checks_ok=0
 else
   python3 "$SCRIPT_DIR/serial_check.py" "$SERIAL_SOCK" "$REPORT" --launch-apps || checks_ok=0
@@ -208,8 +224,8 @@ fi
 
 # The TV edition boots into Kodi, not the desktop: the desktop's interactive checks and screenshots below do
 # not apply to it (docs/TV.md §5); its own checks ran in serial_check.py, and its screenshot is desktop.png.
-if [[ "$(basename "$ISO")" == dai-os-tv-* ]]; then
-  log "tv edition: skipping the desktop's interactive checks"
+if [[ "$(basename "$ISO")" == dai-os-tv-* || "$PHONE" == 1 ]]; then
+  log "tv or phone edition: skipping the desktop's interactive checks"
 else
 
 # Interactive checks driven through the QEMU monitor (real keyboard/mouse).
