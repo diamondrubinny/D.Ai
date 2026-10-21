@@ -2,7 +2,7 @@
 
 > Written on 2026-10-20 after "I also want a version for televisions and mobile devices". Television is in
 > `docs/TV.md`. **Decided (under "from now on you decide"):** the three tracks below and their order.
-> **Status:** A1, A2 and A3 built (§5); B1 blocked on the Chat protocol review; C1a (the arm64 phone image in CI) experimental.
+> **Status:** A1, A2 and A3 built (§5); B1 blocked on the Chat protocol review; C1a built: the arm64 phone image builds and boots into Phosh in CI (its job stays experimental, §5).
 
 ## 0. What a "mobile version" can honestly be
 
@@ -183,7 +183,9 @@ a separate "home" gesture is A3.
   mode": `uname -m`, phoc and phosh alive, the touch file, `dai_style.touch()`, `dai-tune --version`).
 - **Honesty about CI:** the job `build-phone` is marked experimental (`continue-on-error`): it cannot turn the
   workflow red while the arm64 build under emulation is being proven; each run's log and artifacts show how far
-  it got. Nothing here is a device image: the PinePhone Pro boots from a different firmware and kernel than
+  it got. First green run: 2026-10-21 (build 133 minutes, login prompt after 201 s under TCG, phoc, phosh and
+  squeekboard running, every shared check and the phone check passing); it takes four times the amd64 jobs'
+  time, so it stays experimental until it has been green for a while. Nothing here is a device image: the PinePhone Pro boots from a different firmware and kernel than
   QEMU's virt machine (C1b: the device's U-Boot and kernel, **requires a check** of Debian's arm64 kernel on
   it). Calls and SMS touch telecommunications rules per country (**requires legal review** before any phone
   image is offered).

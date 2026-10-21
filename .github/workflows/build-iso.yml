@@ -366,7 +366,7 @@ jobs:
   build-phone:
     needs: [lint]
     runs-on: ubuntu-24.04
-    timeout-minutes: 200
+    timeout-minutes: 240
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -379,10 +379,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends qemu-user-static binfmt-support
           ls /proc/sys/fs/binfmt_misc/ | grep -E '^qemu-aarch64$'
-      # Under emulation the package installation alone takes about an hour (the bootstrap is mmdebstrap's,
-      # minutes instead of debootstrap's hour: build-iso.sh bootstrap_foreign).
+      # Under emulation the package installation takes about an hour and the squashfs another one (the
+      # bootstrap is mmdebstrap's, minutes instead of debootstrap's hour: build-iso.sh bootstrap_foreign);
+      # 133 minutes in the first green run, with the runner's speed varying between runs.
       - name: Build the phone ISO (arm64, Debian trixie container)
-        timeout-minutes: 150
+        timeout-minutes: 180
         run: |
           version="0.1.0-alpha+${GITHUB_SHA::7}"
           docker run --rm --privileged \
