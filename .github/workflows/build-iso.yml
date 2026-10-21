@@ -415,6 +415,61 @@ jobs:
           name: boot-phone
           path: boot-artifacts/
           if-no-files-found: ignore
+  # D.Ai TV on ARM boxes (docs/TV.md §14): the tv edition for arm64, built and booted like the phone. Experimental
+  # for the same reason: hours under emulation, on its own, never failing the workflow.
+  build-tv-arm64:
+    needs: [lint]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - name: Register arm64 user emulation on the runner (binfmt_misc, fix-binary)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user-static binfmt-support
+          ls /proc/sys/fs/binfmt_misc/ | grep -E '^qemu-aarch64$'
+      # Under emulation the package installation takes about an hour and the squashfs another one (the
+      # bootstrap is mmdebstrap's, minutes instead of debootstrap's hour: build-iso.sh bootstrap_foreign);
+      # 133 minutes in the first green run, with the runner's speed varying between runs.
+      - name: Build the TV ISO for arm64 (Debian trixie container)
+        timeout-minutes: 180
+        run: |
+          version="0.1.0-alpha+${GITHUB_SHA::7}"
+          docker run --rm --privileged \
+            -e DAI_VERSION="$version" \
+            -e DAI_ARCH=arm64 \
+            -e SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)" \
+            -v "$PWD:/src" -w /src \
+            debian:trixie \
+            bash build/scripts/build-iso.sh tv /src/out
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-tv-arm64
+          path: .work/tv/build.log
+          if-no-files-found: ignore
+      - name: Install QEMU for arm64
+        run: |
+          sudo apt-get install -y --no-install-recommends qemu-system-arm xorriso
+      - name: Boot test (QEMU virt, emulated, slow)
+        env:
+          BOOT_TIMEOUT: "1500"
+          DESKTOP_WAIT: "600"   # Kodi starts with software rendering under TCG
+          QEMU_MEM: "3072"
+        run: bash tests/boot/boot-test.sh out/dai-os-tv-*-arm64.iso boot-artifacts
+      - name: Upload boot artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot-tv-arm64
+          path: boot-artifacts/
+          if-no-files-found: ignore
   build:
     needs: [lint, llama, whisper, panel-plugin, ruby-extension]
     runs-on: ubuntu-24.04

@@ -36,13 +36,16 @@ log() { printf '[boot-test] %s\n' "$*" >&2; }
 die() { log "FAIL: $*"; exit 1; }
 
 [[ -f "$ISO" ]] || die "usage: $(basename "$0") <iso> [artifact-dir]"
-# The phone edition (docs/MOBILE.md C1) is arm64: QEMU's virt machine, the kernel booted directly, the ISO on a
-# virtio SCSI CD, the console on ttyAMA0; everything else below is the same.
+# An arm64 image (the phone edition, docs/MOBILE.md C1; the tv edition for ARM boxes, docs/TV.md §14) boots in
+# QEMU's virt machine, the kernel loaded directly, the ISO on a virtio SCSI CD, the console on ttyAMA0;
+# everything else below is the same. The phone boots into Phosh, so the desktop's checks do not apply to it.
 PHONE=0
 [[ "$(basename "$ISO")" == dai-os-phone-* ]] && PHONE=1
-readonly PHONE
+ARM64=0
+[[ "$(basename "$ISO")" == *-arm64.iso ]] && ARM64=1
+readonly PHONE ARM64
 QEMU_BIN=qemu-system-x86_64
-[[ "$PHONE" == 1 ]] && QEMU_BIN=qemu-system-aarch64
+[[ "$ARM64" == 1 ]] && QEMU_BIN=qemu-system-aarch64
 readonly QEMU_BIN
 for tool in "$QEMU_BIN" xorriso python3; do
   command -v "$tool" >/dev/null 2>&1 || die "missing required tool: $tool"
@@ -133,7 +136,7 @@ INITRD="$(find "$EXTRACT_DIR/live" -maxdepth 1 -name 'initrd.img*' | sort | head
 log "kernel=$(basename "$KERNEL") initrd=$(basename "$INITRD")"
 
 ACCEL=(-accel tcg)
-if [[ "$PHONE" == 1 ]]; then
+if [[ "$ARM64" == 1 ]]; then
   ACCEL=(-accel tcg -M virt -cpu cortex-a72)  # an arm64 guest on an amd64 runner: emulated
   log "arm64 guest: QEMU virt machine under TCG (slow)"
 elif [[ -r /dev/kvm && -w /dev/kvm ]]; then
@@ -143,11 +146,11 @@ else
   log "KVM unavailable, using TCG (slow)"
 fi
 CONSOLE="console=tty0 console=ttyS0,115200"
-[[ "$PHONE" == 1 ]] && CONSOLE="console=tty0 console=ttyAMA0,115200"
+[[ "$ARM64" == 1 ]] && CONSOLE="console=tty0 console=ttyAMA0,115200"
 readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il timezone=Asia/Jerusalem $CONSOLE"
 MEDIA=(-cdrom "$ISO" -vga std -usb -device usb-tablet)
 NET=(-nic "user,model=virtio-net-pci")
-if [[ "$PHONE" == 1 ]]; then
+if [[ "$ARM64" == 1 ]]; then
   MEDIA=(-device virtio-scsi-pci -drive "file=$ISO,if=none,id=cd0,media=cdrom,format=raw" -device "scsi-cd,drive=cd0"
     -device virtio-gpu-pci -device qemu-xhci -device usb-tablet)
   # No option ROM for the card: the kernel is loaded directly, and qemu-system-arm without recommends has no

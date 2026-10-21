@@ -10,6 +10,8 @@
 #
 # Environment:
 #   DAI_VERSION        Version string embedded in the ISO name (default: 0.1.0-alpha)
+#   DAI_ARCH           amd64 (default) or arm64 (built on an amd64 host through QEMU user emulation;
+#                      the phone edition is arm64 whatever this says)
 #   SOURCE_DATE_EPOCH  Fixed timestamp for reproducible output (default: now)
 #   WORK_DIR           live-build working directory (default: <repo>/.work/<edition>)
 #   DEBIAN_MIRROR      Optional Debian mirror URL override
@@ -36,10 +38,15 @@ case "$EDITION" in
   phone) ;;
   *) die "usage: $(basename "$0") <user|dev|edu|tv|server|phone> [output-dir]" ;;
 esac
-# The phone edition (docs/MOBILE.md C1) is arm64, built on an amd64 host through QEMU user emulation.
-ARCH=amd64
+# arm64 (the phone edition, docs/MOBILE.md C1; the tv edition for ARM boxes, docs/TV.md §14) is built on an
+# amd64 host through QEMU user emulation.
+ARCH="${DAI_ARCH:-amd64}"
 [[ "$EDITION" == phone ]] && ARCH=arm64
 readonly ARCH
+case "$ARCH" in
+  amd64 | arm64) ;;
+  *) die "DAI_ARCH must be amd64 or arm64, not $ARCH" ;;
+esac
 
 [[ $EUID -eq 0 ]] || die "must run as root inside a disposable container or VM"
 # live-build from other distributions (e.g. Ubuntu) is too old for this config.

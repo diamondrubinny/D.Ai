@@ -61,6 +61,8 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - Rotation on tablets (`docs/MOBILE.md` A3): the screen follows the accelerometer through iio-sensor-proxy
   and wlr-randr; "rotate the screen", "auto-rotate", "lock the screen rotation" in D.Ai Tune. Gestures are
   not in labwc 0.8, and D.Ai says so instead of faking them.
+- D.Ai TV for arm64 boxes, experimental (`docs/TV.md` §14): `DAI_ARCH=arm64 build-iso.sh tv` builds the
+  television edition as a generic UEFI arm64 image; CI boots it in QEMU's virt machine with the same TV checks.
 - D.Ai Phone, experimental (`docs/MOBILE.md` C1a): `build-iso.sh phone` builds an arm64 image with Phosh,
   Calls, Chatty and the D.Ai apps in touch mode, through QEMU user emulation (the chroot comes from mmdebstrap,
   which keeps the package resolution on the host and off the emulator); CI boots it in QEMU's virt machine on

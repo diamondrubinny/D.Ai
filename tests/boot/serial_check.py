@@ -354,6 +354,10 @@ def main() -> int:
     # checks are run (as information) but only the shared ones and its own are required (docs/TV.md §5).
     edition = (serial.run(". /etc/dai-release 2>/dev/null; echo EDITION=$EDITION").strip().splitlines() or [""])[-1]
     edition = edition.removeprefix("EDITION=").strip()
+    # An arm64 image runs under TCG on the amd64 runner (docs/MOBILE.md C1a, docs/TV.md §14): several times
+    # slower, so every check's time allowance grows with it.
+    arch = (serial.run("uname -m").strip().splitlines() or [""])[-1].strip()
+    slowdown = 3 if arch == "aarch64" else 1
 
     # (name, command, required, predicate on output)
     checks = [
@@ -947,7 +951,7 @@ def main() -> int:
         # started (so Kodi itself reports them enabled, and asked nothing), and live channels come by sentence.
         ("tv: live channels from my own playlist, nothing asked at first start",
          ". /etc/dai-release; if [ \"$EDITION\" != tv ]; then echo TV_NOT_THIS_EDITION; else "
-         "ls /usr/share/kodi/addons /usr/lib/x86_64-linux-gnu/kodi/addons 2>/dev/null | grep -c -E '^(pvr.iptvsimple|inputstream.adaptive)$' | sed 's/^/ADDONS_ON_IMAGE=/'; "
+         "ls /usr/share/kodi/addons /usr/lib/x86_64-linux-gnu/kodi/addons /usr/lib/aarch64-linux-gnu/kodi/addons 2>/dev/null | grep -c -E '^(pvr.iptvsimple|inputstream.adaptive)$' | sed 's/^/ADDONS_ON_IMAGE=/'; "
          "dai-tv seed; echo SEED_RC=$?; python3 -c \"import sqlite3, os; c = sqlite3.connect(os.path.expanduser('~/.kodi/userdata/Database/Addons33.db')); "
          "print('ROWS', c.execute(\\\"select count(*) from installed where enabled=1 and addonID in ('pvr.iptvsimple','inputstream.adaptive')\\\").fetchone()[0], "
          "'VERSION', c.execute('select idVersion from version').fetchone()[0])\"; "
@@ -1105,10 +1109,10 @@ def main() -> int:
     ]
 
     failed_required = 0
-    lines = [f"[INFO] edition: {edition or '?'}"]
+    lines = [f"[INFO] edition: {edition or '?'} ({arch or '?'})"]
     for check in checks:
         name, command, required, ok = check[:4]
-        timeout = check[4] if len(check) > 4 else 30
+        timeout = (check[4] if len(check) > 4 else 30) * slowdown
         if edition == "tv" and name not in TV_REQUIRED and not name.startswith("tv:"):
             required = False
         if edition == "phone" and name not in PHONE_REQUIRED and not name.startswith("phone:"):

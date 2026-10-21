@@ -119,6 +119,26 @@
 - **Not yet:** "what this add-on sends" before a Kodi add-on install (Kodi offers no hook before an install;
   a review of the add-on's code after install is a stage of its own).
 
+## 14. Stage 5a: D.Ai TV on arm64 boxes with UEFI (what was built)
+
+- **What it is:** `DAI_ARCH=arm64 build-iso.sh tv` makes the tv edition for arm64: the same package lists
+  (Kodi 21, `kodi-pvr-iptvsimple`, `kodi-inputstream-adaptive`, `cec-utils`, `mpv` all exist for arm64 in
+  Debian 13) with the arm64 kernel, as a GRUB EFI live image. It is a **generic UEFI arm64** image: it boots
+  where an arm64 machine has UEFI firmware (QEMU's virt machine in CI; ARM boxes and laptops with EDK2-style
+  firmware). The Raspberry Pi 4/5 boot from their own firmware; a UEFI firmware for them exists as a community
+  project and would make this image boot there (**requires a check** on the device, not done), and Debian's own
+  Pi images use a different kernel and boot partition. A Pi-specific SD image is stage 5b, not this.
+- **How it is built and booted:** the same way as the phone (`docs/MOBILE.md` C1a): mmdebstrap for the
+  bootstrap, dpkg and mksquashfs (zstd) under QEMU user emulation, about two hours; the boot test picks
+  `qemu-system-aarch64 -M virt` from the `-arm64.iso` suffix, loads the kernel directly, and gives every
+  in-guest check three times its usual time under TCG. The tv checks are the same as on amd64 (the session,
+  Kodi's defaults, the remote, night mode, the children's profile, the playlist channels, Ruby in TV mode,
+  D.Ai's word); Kodi's add-ons are looked for under the arm64 library directory too.
+- **What is not on it, said plainly:** Diamond and Voice (the llama.cpp and whisper.cpp runtimes are amd64
+  builds; `dai-tv ask` and `listen` say so instead of failing); Widevine (not available on ARM, §1 stage 3);
+  hardware video decoding (not claimed anywhere; on the Pi 5, H.264 and HEVC are software only). The CI job
+  `build-tv-arm64` is experimental (`continue-on-error`), like the phone's, until it has been green for a while.
+
 ## 1. Stages
 
 | Stage | What | Size |
@@ -127,7 +147,7 @@
 | **2. D.Ai inside the TV** | Diamond and Voice on the remote's microphone button or a phone ("find comedies from the 90s", "what is this film about", in Hebrew); D.Ai Tune sentences for the TV ("night mode", "children's profile"); the Living Diamond on the TV status; "what this app sends" shown before a Kodi add-on is installed | Medium |
 | **3. Israeli television** | Live channels through `kodi-pvr-iptvsimple` from the person's own playlist; the broadcasters' web players (Kan, Keshet 12, Reshet 13) through Ruby in TV mode (big fonts, remote navigation); DRM (Widevine) only where Firefox gets it on x86 (**requires verification** per service, and it is not available on ARM) | Medium |
 | **4. The phone as the remote** | Diamond Chat's pairing (codes and six symbols) pairs a D.Ai phone or the companion app (`docs/MOBILE.md`) to the TV: remote, keyboard, "send this picture to the TV", on the local network only | Medium |
-| **5. ARM boxes** | arm64 images for the Raspberry Pi 4/5 (hardware video decoding **requires a check**: H.264/HEVC on the Pi 5 is software only) | Large |
+| **5. ARM boxes** | 5a (built, §14): the tv edition for arm64 as a generic UEFI image, booted in QEMU in CI; 5b: a Raspberry Pi 4/5 SD image with the Pi's firmware and boot partition (hardware video decoding **requires a check**: H.264/HEVC on the Pi 5 is software only) | Large |
 
 Out of scope, plainly: installing on a smart TV itself; Netflix, Disney+ and the like (their apps are not
 available to Linux boxes, and their web players need Widevine at a level Linux does not get in 4K); game
@@ -179,6 +199,7 @@ build/live-build/editions/tv/
   Wayland session (process present, no crash within 60 s), the guisettings have the telemetry and servers off,
   `cec-client -l` runs, nothing listens (`ss -ltn` empty), and a screenshot of Kodi's home in Hebrew.
 - Measure: memory with Kodi idle on the weak profile.
+- arm64 (§14): `build-tv-arm64` boots the arm64 image in QEMU's virt machine under TCG with the same tv checks.
 
 ## 6. Risks and limits
 

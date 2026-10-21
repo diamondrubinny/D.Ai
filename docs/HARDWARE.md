@@ -32,7 +32,7 @@
 |---|---|---|---|---|
 | **D.Ai** (today's) | Computers from about 2012 on, and new ones | Debian 13, amd64 | Everything, including the local AI and voice | 4 GB memory, 2 cores, 32 GB disk. AI: 8 GB recommended |
 | **D.Ai Lite** | Old 64-bit computers, roughly 2007–2012 (Core 2, Athlon 64), hard disks | Debian 13, amd64 | All of D.Ai except the local AI and voice (they can be added later); lighter defaults | 2 GB memory, 1 core, 16 GB disk |
-| **D.Ai ARM** (later) | Raspberry Pi 4/5, ARM laptops | Debian 13, arm64 | Like Lite at first | Measured on the device |
+| **D.Ai ARM** (started) | ARM boxes and laptops with UEFI firmware now (the tv edition, `docs/TV.md` §14, and the phone, `docs/MOBILE.md` C1a, both booted in QEMU in CI); the Raspberry Pi 4/5 with their own firmware later | Debian 13, arm64 | Like Lite: no local AI or voice (amd64 runtimes) | Measured on the device |
 
 **Notes:**
 - **New hardware:** the newest computers (new Wi-Fi, graphics cards and processors) sometimes need a newer kernel than Debian's.
@@ -102,7 +102,7 @@
 2. **Lite:** a "lite" edition in `build-iso.sh` (without the AI and voice runtimes), the first-start hardware profile through Tune, and the budget checks for Lite.
 3. **New hardware:** the backports kernel offered when needed, with a test on new hardware (a QEMU machine type, plus reports from people).
 4. **Native where it pays:** rewrite what the measurements show is slow.
-5. **ARM** (later): arm64 images for the Raspberry Pi first.
+5. **ARM** (started): arm64 images build and boot in CI for the tv and phone editions (generic UEFI; `DAI_ARCH=arm64 build-iso.sh <edition>`); the Raspberry Pi's own firmware and boot partition are the next step.
 
 ## 5. Decisions needed
 
