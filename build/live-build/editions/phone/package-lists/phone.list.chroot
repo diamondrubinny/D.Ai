@@ -6,6 +6,15 @@ phosh
 phoc
 squeekboard
 phosh-mobile-settings
+# phosh-session runs gnome-session inside phoc and the shell through its systemd user units; these are only
+# recommended by phosh, and the image is built without recommends (the first CI boot ended at the greeter:
+# gnome-session was not there).
+gnome-session-bin
+gnome-session-common
+gnome-settings-daemon
+feedbackd
+phosh-mobile-tweaks
+phosh-plugins
 # Calls, SMS and contacts through Phosh's own apps
 gnome-calls
 chatty

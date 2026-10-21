@@ -428,11 +428,14 @@ def main() -> int:
          lambda o: "country" in o.lower(), 300),
         # D.Ai components are real packages: dpkg owns and verifies their files.
         ("packages: installed by dpkg", "dpkg-query -W -f '${Package} ${Version} ${Status}\\n' 'dai-*'; "
-         "dpkg -S /usr/bin/dai-code /opt/dai/llama/llama-server; dpkg --verify dai-apps && echo VERIFY_OK; "
+         "dpkg -S /usr/bin/dai-code; dpkg -S /opt/dai/llama/llama-server 2>/dev/null || echo NO_RUNTIME_$(uname -m); "
+         "dpkg --verify dai-apps && echo VERIFY_OK; "
          "test -L /etc/systemd/user/sockets.target.wants/dai-daid.socket && echo SOCKET_ENABLED", True,
+         # The llama.cpp runtime is an amd64 build (docs/MOBILE.md C1a): the arm64 phone image has none.
          lambda o: not re.search(r"^\s*(missing|[?.0-9]{9}) ", o, re.M) and "dai-apps: /usr/bin/dai-code" in o
-         and "dai-llama-runtime: /opt/dai/llama/llama-server" in o and "VERIFY_OK" in o and "SOCKET_ENABLED" in o
-         and o.count("install ok installed") >= 4),
+         and ("dai-llama-runtime: /opt/dai/llama/llama-server" in o or "NO_RUNTIME_aarch64" in o)
+         and "VERIFY_OK" in o and "SOCKET_ENABLED" in o
+         and o.count("install ok installed") >= (2 if "NO_RUNTIME_aarch64" in o else 4)),
         # D.Ai Find: files as you remember them, in English and Hebrew.
         ("find: natural language", "mkdir -p ~/Downloads ~/Pictures && echo x > ~/Downloads/boarding-pass.pdf "
          "&& echo x > ~/Pictures/beach.jpg && touch -d '40 days ago' ~/Downloads/old-ticket.pdf; "
@@ -885,8 +888,11 @@ def main() -> int:
          "uname -m; pgrep -a -x phoc | head -n 1 | cut -c1-60; pgrep -a -x phosh | head -n 1 | cut -c1-60; "
          "pgrep -x squeekboard >/dev/null && echo KEYBOARD_RUNNING; cat ~/.config/dai/touch | sed 's/^/TOUCH=/'; "
          "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_style; print(\"MODE\", dai_style.touch_mode(), \"ON\" if dai_style.touch() else \"OFF\")'; "
-         "dai-tune --version | head -n 1; fi",
-         True, lambda o: "PHONE_NOT_THIS_EDITION" in o or all(mark in o for mark in ("aarch64", "phoc", "phosh", "TOUCH=on", "MODE on ON", "dai-tune")), 120),
+         "dai-tune --version | head -n 1; "
+         # When the session is not there, say why: what sddm was told, what the session and phoc logged.
+         "pgrep -x phosh >/dev/null || { grep -h Session= /etc/sddm.conf; ls /dev/dri; tail -n 15 ~/.local/share/sddm/wayland-session.log 2>/dev/null; "
+         "sudo journalctl -b -o cat -t phoc -t phosh -t gnome-session -t gnome-session-binary -u sddm 2>/dev/null | grep -v '^$' | tail -n 30; }; fi",
+         True, lambda o: "PHONE_NOT_THIS_EDITION" in o or all(mark in o for mark in ("aarch64", "phoc", "phosh", "TOUCH=on", "MODE on ON", "dai-tune")), 180),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",

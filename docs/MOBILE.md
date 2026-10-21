@@ -158,7 +158,8 @@ a separate "home" gesture is A3.
 ### C1a — the phone image builds and boots (experimental, in CI on its own)
 
 - **What it is:** `build-iso.sh phone` makes an **arm64** live image: Debian 13 with Phosh (phoc, squeekboard,
-  phosh-mobile-settings, Debian's own mobile shell), Calls, Chatty and Contacts for calls, SMS and people,
+  phosh-mobile-settings, Debian's own mobile shell, with the gnome-session and gnome-settings-daemon pieces its
+  session script needs and that phosh only recommends), Calls, Chatty and Contacts for calls, SMS and people,
   ModemManager, and the D.Ai apps with touch mode on for every user; the shared layer stays (the LXQt desktop
   is on the image too, as a second session). The live login goes straight into Phosh, as the tv edition's does
   into Kodi.
