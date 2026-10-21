@@ -168,14 +168,16 @@ a separate "home" gesture is A3.
   stage inside the chroot, where its Perl parsing of the package index took 53 minutes under emulation in the
   first CI run (dpkg's real work was 5), past the job's time limit. The chroot's binaries run through
   `qemu-aarch64-static` with the host's binfmt_misc handler (the runner installs `qemu-user-static`, fix-binary
-  flag; live-build's `--bootstrap-qemu-*` options stay as the fallback when the cache is missing); GRUB EFI
-  only (no syslinux on arm64); the shared package lists get the arm64 kernel in place of the amd64 one and lose the x86 microcode;
+  flag; live-build's `--bootstrap-qemu-*` options stay as the fallback when the cache is missing); the squashfs
+  is compressed with zstd instead of xz, because mksquashfs runs inside the chroot, under emulation as well
+  (72 minutes with xz in CI); GRUB EFI only (no syslinux on arm64); the shared package lists get the arm64 kernel in place of the amd64 one and lose the x86 microcode;
   D.Ai's own packages are installed only where their architecture fits ("all" apps yes; the llama.cpp and
   whisper.cpp runtimes and the panel plugin are amd64 builds and are left out, so Diamond and Voice are not on
   the phone image yet). Secure Boot's shim is left out: on an arm64 phone it is a per-device matter.
 - **How it is booted in CI:** the boot test drives `qemu-system-aarch64 -M virt -cpu cortex-a72` under TCG
   (emulated: slow, so its timeouts are longer), the kernel and initrd taken from the ISO and booted directly,
-  the ISO on a virtio SCSI CD, the console on `ttyAMA0`, a virtio GPU for the screenshot, and the same serial
+  the ISO on a virtio SCSI CD, the console on `ttyAMA0`, a virtio network card without an option ROM (the
+  runner's QEMU has no iPXE ROMs), a virtio GPU for the screenshot, and the same serial
   checks with a `phone` allowance (what must hold on any edition, plus "Phosh runs on arm64 with D.Ai in touch
   mode": `uname -m`, phoc and phosh alive, the touch file, `dai_style.touch()`, `dai-tune --version`).
 - **Honesty about CI:** the job `build-phone` is marked experimental (`continue-on-error`): it cannot turn the

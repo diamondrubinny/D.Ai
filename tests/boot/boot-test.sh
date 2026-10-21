@@ -146,9 +146,13 @@ CONSOLE="console=tty0 console=ttyS0,115200"
 [[ "$PHONE" == 1 ]] && CONSOLE="console=tty0 console=ttyAMA0,115200"
 readonly CMDLINE="boot=live components hostname=dai-os username=dai locales=en_US.UTF-8,he_IL.UTF-8 keyboard-layouts=us,il timezone=Asia/Jerusalem $CONSOLE"
 MEDIA=(-cdrom "$ISO" -vga std -usb -device usb-tablet)
+NET=(-nic "user,model=virtio-net-pci")
 if [[ "$PHONE" == 1 ]]; then
   MEDIA=(-device virtio-scsi-pci -drive "file=$ISO,if=none,id=cd0,media=cdrom,format=raw" -device "scsi-cd,drive=cd0"
     -device virtio-gpu-pci -device qemu-xhci -device usb-tablet)
+  # No option ROM for the card: the kernel is loaded directly, and qemu-system-arm without recommends has no
+  # iPXE ROMs (QEMU otherwise exits: failed to find romfile "efi-virtio.rom").
+  NET=(-netdev "user,id=net0" -device "virtio-net-pci,netdev=net0,romfile=")
 fi
 
 : >"$SERIAL_LOG"
@@ -166,7 +170,7 @@ LAUNCH_EPOCH="$(date +%s)"
   -serial chardev:ser0 \
   -monitor "unix:$MONITOR_SOCK,server,nowait" \
   -qmp "unix:$QMP_SOCK,server,nowait" \
-  -nic user,model=virtio-net-pci \
+  "${NET[@]}" \
   -no-reboot &
 QEMU_PID=$!
 

@@ -113,8 +113,11 @@ configure() {
     # bootstrap itself comes from mmdebstrap, see bootstrap_foreign; these options are the fallback when
     # cache/bootstrap is missing); Secure Boot on arm64 phones is a per-device matter (docs/MOBILE.md C1), so
     # the shim is left out here.
+    # mksquashfs runs inside the chroot (live-build's default), i.e. under emulation too: with xz it took 72
+    # minutes in CI for this image; zstd compresses several times faster for a somewhat larger file.
     arch_args=(--architectures arm64 --linux-flavours arm64 --bootloaders grub-efi
-      --bootstrap-qemu-arch arm64 --bootstrap-qemu-static /usr/bin/qemu-aarch64-static --uefi-secure-boot disable)
+      --bootstrap-qemu-arch arm64 --bootstrap-qemu-static /usr/bin/qemu-aarch64-static --uefi-secure-boot disable
+      --chroot-squashfs-compression-type zstd)
   fi
   lb config \
     --mode debian \
