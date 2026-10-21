@@ -39,7 +39,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **MOM**: apps, not processes, explained in plain words | **D.Ai Clip**: never keeps passwords | **Welcome** in Arabic, right to left |
 | ![The USB boot menu](docs/screenshots/boot-menu.png) | ![The loading screen](docs/screenshots/boot-splash.png) | ![The login screen](docs/screenshots/login.png) |
 | **Boot menu**: "Start D.Ai OS", eight languages | **Loading**: the diamond (and the disk passphrase) | **Login**: clock, keyboard language, Caps Lock warning |
-| ![D.Ai TV: Kodi full screen in Hebrew](docs/screenshots/tv-desktop.png) | ![D.Ai Phone: Phosh's lock screen on the arm64 image, booted in QEMU](docs/screenshots/phone-lock.png) | |
+| ![D.Ai TV: Kodi full screen in Hebrew](docs/screenshots/tv-desktop.png) | ![D.Ai Phone: Phosh's lock screen on the arm64 image, booted in QEMU](docs/screenshots/phone-lock.png) | ![D.Ai TV on arm64: the same Kodi, booted in QEMU's virt machine](docs/screenshots/tv-arm64.png) |
 | **D.Ai TV**: Kodi in Hebrew on the TV, nothing listening | | |
 
 ## What's included

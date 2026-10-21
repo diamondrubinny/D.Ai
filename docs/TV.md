@@ -138,6 +138,9 @@
   builds; `dai-tv ask` and `listen` say so instead of failing); Widevine (not available on ARM, §1 stage 3);
   hardware video decoding (not claimed anywhere; on the Pi 5, H.264 and HEVC are software only). The CI job
   `build-tv-arm64` is experimental (`continue-on-error`), like the phone's, until it has been green for a while.
+- **First run, green (2026-10-21):** build 104 minutes, login prompt after 137 s under TCG, Kodi on Wayland
+  ("Linux ARM 64-bit" in its log), all six tv checks passing at the first try. The screenshot, Kodi's home in
+  Hebrew on arm64, is `docs/screenshots/tv-arm64.png`.
 
 ## 1. Stages
 
