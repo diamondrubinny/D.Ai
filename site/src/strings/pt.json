@@ -278,6 +278,28 @@
             "instale uma vez, e o comprador cria o próprio usuário na primeira inicialização."
           ]
         ]
+      },
+      {
+        "icon": "🖥",
+        "title": "Além da área de trabalho",
+        "items": [
+          [
+            "D.Ai PDF",
+            "cada PDF abre em uma caixa de areia; o que o arquivo \"quer\" fazer (scripts, executar programas, enviar formulários) é mostrado e nunca feito. Páginas, formulários, notas, assinatura carimbada, censura de verdade e OCR, tudo dentro da caixa de areia."
+          ],
+          [
+            "D.Ai VM",
+            "Windows em uma janela, a partir da sua própria mídia de instalação e com a sua própria chave: Secure Boot, TPM 2.0, um instantâneo antes de atualizar; pasta compartilhada, área de transferência e USB só quando você os liga. O D.Ai nunca distribui o Windows."
+          ],
+          [
+            "D.Ai TV",
+            "uma edição para o computador ligado à TV: Kodi em hebraico, pelo controle remoto; a sua lista de canais, os sites das emissoras, modo noturno e perfil infantil em uma frase; nada escuta na rede."
+          ],
+          [
+            "Celular e ARM (experimental)",
+            "modo de toque em cada janela do D.Ai; uma imagem arm64 com Phosh para celulares Linux e a edição de TV para caixas ARM são construídas e iniciadas na CI. Não substitui o celular no seu bolso."
+          ]
+        ]
       }
     ]
   },
@@ -615,6 +637,12 @@
         "ok",
         "Funciona",
         "<code>+ work vpn</code>"
+      ],
+      [
+        "O próprio Windows, com a sua licença",
+        "ok",
+        "Em uma janela (D.Ai VM)",
+        "edições user e dev"
       ]
     ]
   },

@@ -278,6 +278,28 @@
             "une seule installation, et l'acheteur crée son propre utilisateur au premier démarrage."
           ]
         ]
+      },
+      {
+        "icon": "🖥",
+        "title": "Au-delà du bureau",
+        "items": [
+          [
+            "D.Ai PDF",
+            "chaque PDF s'ouvre dans un bac à sable ; ce que le fichier « veut » faire (scripts, lancer des programmes, envoyer des formulaires) est affiché et jamais exécuté. Pages, formulaires, notes, signature tamponnée, vrai caviardage et OCR, le tout dans le bac à sable."
+          ],
+          [
+            "D.Ai VM",
+            "Windows dans une fenêtre, depuis votre propre support d'installation et avec votre propre clé : Secure Boot, TPM 2.0, un instantané avant une mise à jour ; dossier partagé, presse-papiers et USB seulement quand vous les activez. D.Ai ne fournit jamais Windows."
+          ],
+          [
+            "D.Ai TV",
+            "une édition pour l'ordinateur branché à la télé : Kodi en hébreu, à la télécommande ; votre liste de chaînes, les sites des diffuseurs, le mode nuit et un profil enfants en une phrase ; rien n'écoute sur le réseau."
+          ],
+          [
+            "Téléphone et ARM (expérimental)",
+            "mode tactile dans chaque fenêtre D.Ai ; une image arm64 avec Phosh pour les téléphones Linux et l'édition télé pour les boîtiers ARM sont construites et démarrées en CI. Pas un remplaçant du téléphone dans votre poche."
+          ]
+        ]
       }
     ]
   },
@@ -615,6 +637,12 @@
         "ok",
         "Fonctionne",
         "<code>+ work vpn</code>"
+      ],
+      [
+        "Windows lui-même, avec votre licence",
+        "ok",
+        "Dans une fenêtre (D.Ai VM)",
+        "éditions user et dev"
       ]
     ]
   },

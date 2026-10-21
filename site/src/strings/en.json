@@ -278,6 +278,28 @@
             "install once, and the buyer sets up their own user at first start."
           ]
         ]
+      },
+      {
+        "icon": "🖥",
+        "title": "Beyond the desktop",
+        "items": [
+          [
+            "D.Ai PDF",
+            "every PDF opens in a sandbox; what the file wants to do (scripts, launching programs, sending forms) is shown and never done. Pages, forms, notes, a stamped signature, real redaction and OCR, all inside the sandbox."
+          ],
+          [
+            "D.Ai VM",
+            "Windows in a window, from your own installation media and your own key: Secure Boot, TPM 2.0, a snapshot before an update; shared folder, clipboard and USB only when you turn them on. D.Ai never ships Windows."
+          ],
+          [
+            "D.Ai TV",
+            "an edition for the computer on the TV: Kodi in Hebrew, driven by the remote; your own channel list, the broadcasters' sites, night mode and a children's profile in one sentence; nothing listens on the network."
+          ],
+          [
+            "Phone and ARM (experimental)",
+            "touch mode in every D.Ai window; an arm64 image with Phosh for Linux phones, and the TV edition for ARM boxes, build and boot in CI. Not a replacement for the phone in your pocket."
+          ]
+        ]
       }
     ]
   },
@@ -615,6 +637,12 @@
         "ok",
         "Works",
         "<code>+ work vpn</code>"
+      ],
+      [
+        "Windows itself, with your own license",
+        "ok",
+        "In a window (D.Ai VM)",
+        "user and dev editions"
       ]
     ]
   },
