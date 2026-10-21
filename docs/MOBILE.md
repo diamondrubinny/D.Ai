@@ -184,8 +184,9 @@ a separate "home" gesture is A3.
 - **Honesty about CI:** the job `build-phone` is marked experimental (`continue-on-error`): it cannot turn the
   workflow red while the arm64 build under emulation is being proven; each run's log and artifacts show how far
   it got. First green run: 2026-10-21 (build 133 minutes, login prompt after 201 s under TCG, phoc, phosh and
-  squeekboard running, every shared check and the phone check passing); it takes four times the amd64 jobs'
-  time, so it stays experimental until it has been green for a while. Nothing here is a device image: the PinePhone Pro boots from a different firmware and kernel than
+  squeekboard running, every shared check and the phone check passing; the screenshot, Phosh's lock screen at
+  720 × 1440, is `docs/screenshots/phone-lock.png`); it takes four times the amd64 jobs' time, so it stays
+  experimental until it has been green for a while. Nothing here is a device image: the PinePhone Pro boots from a different firmware and kernel than
   QEMU's virt machine (C1b: the device's U-Boot and kernel, **requires a check** of Debian's arm64 kernel on
   it). Calls and SMS touch telecommunications rules per country (**requires legal review** before any phone
   image is offered).
