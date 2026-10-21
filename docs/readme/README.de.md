@@ -21,6 +21,9 @@ D.Ai OS ist ein freies Open-Source-Betriebssystem auf Basis von Debian 13, entwi
 - **🌍 Acht Sprachen:** Hebräisch, Englisch, Arabisch, Russisch, Spanisch, Französisch, Deutsch und Portugiesisch: die Oberfläche, die Sätze, die D.Ai versteht, das Startmenü und die Website.
 - **🎨 Schön ab der ersten Sekunde:** ein D.Ai-Startmenü, ein Ladebildschirm, auf dem die verschlüsselte Festplatte nach ihrer Passphrase fragt, ein D.Ai-Anmeldebildschirm und drei Designs (Nacht, Tag und hoher Kontrast).
 - **📦 Eigene Apps für jeden Tag:** J (Mail, signiert und verschlüsselt, Import aus Outlook), Ruby (Browser mit Tracking-Schutz und uBlock Origin), MOM (Task-Manager, der Apps statt Prozesse zeigt), D.Ai Quick und D.Ai Rescue (holt das System nach einem missglückten Update vom USB-Stick aus zurück).
+- **📄 PDFs in der Sandbox:** D.Ai PDF öffnet jede Datei in einer Sandbox, zeigt, was die Datei „will“ (JavaScript, Programme starten, Formulare senden), und tut es nie; Seiten, Formulare, Notizen, eine Stempel-Unterschrift, echtes Schwärzen, OCR und eine kleinere Datei, alles in der Sandbox.
+- **🪟 Windows im Fenster:** D.Ai VM startet Windows von deinem eigenen Installationsmedium mit deinem eigenen Schlüssel (KVM, UEFI mit Secure Boot, TPM 2.0); gemeinsamer Ordner, Zwischenablage und USB bleiben aus, bis du sie einschaltest. D.Ai liefert kein Windows mit.
+- **📺 Am Fernseher, am Telefon, auf ARM:** die Edition tv startet in Kodi auf Hebräisch und wird mit der Fernbedienung gesteuert; experimentelle arm64-Abbilder des Telefons (Phosh) und des Fernsehers werden in der CI gebaut und in QEMU gestartet.
 
 ## 📸 Screenshots
 
@@ -30,6 +33,8 @@ D.Ai OS ist ein freies Open-Source-Betriebssystem auf Basis von Debian 13, entwi
 | **Diamond**: antwortet auf diesem Computer | **D.Ai Quick**: alles Schnelle an einem Ort | **J**: Mail, signiert und verschlüsselt |
 | ![Das Startmenü vom USB-Stick](../screenshots/boot-menu.png) | ![Der Anmeldebildschirm](../screenshots/login.png) | ![D.Ai Welcome auf Arabisch, von rechts nach links](../screenshots/welcome-ar.png) |
 | **Startmenü**: „Start D.Ai OS“ | **Anmeldung**: der D.Ai-Anmeldebildschirm | **Welcome** auf Arabisch, von rechts nach links |
+| ![D.Ai TV: Kodi auf Hebräisch im Vollbild](../screenshots/tv-desktop.png) | ![D.Ai Phone: der Sperrbildschirm von Phosh auf arm64](../screenshots/phone-lock.png) | ![D.Ai TV auf arm64](../screenshots/tv-arm64.png) |
+| **D.Ai TV**: Kodi auf Hebräisch, nichts lauscht im Netz | **D.Ai Phone** (experimentell): Phosh auf arm64, in QEMU gestartet | **D.Ai TV auf arm64** (experimentell): dasselbe Kodi, ein generisches UEFI-Abbild |
 
 ## ⚠️ Status
 

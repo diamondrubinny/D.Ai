@@ -24,6 +24,9 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 - **Secure by default.** Default-deny firewall, AppArmor, kernel hardening, locked root, automatic security updates, full-disk encryption in the installer.
 - **Eight languages.** Hebrew, English, Arabic, Russian, Spanish, French, German and Portuguese: the interface, the sentences D.Ai understands, the boot menu and the website.
 - **Beautiful from the first second.** A D.Ai boot menu, a loading screen where the encrypted disk asks for its passphrase, a D.Ai login screen, and three themes (Night, Day, high contrast) that every window follows.
+- **PDFs in a sandbox.** D.Ai PDF opens every file in a bubblewrap sandbox, shows what the file wants to do (JavaScript, launching programs, sending forms) and never does it; pages, forms, notes, a stamped signature, real redaction, OCR and a smaller file, all edited inside the sandbox.
+- **Windows in a window.** D.Ai VM runs Windows from your own installation media with your own key (KVM, UEFI with Secure Boot, TPM 2.0), with no shared folder, clipboard or USB until you flip each switch. D.Ai never ships Windows.
+- **On the TV, on a phone, on ARM.** The tv edition boots into Kodi in Hebrew and is driven by the remote; experimental arm64 images of the phone (Phosh) and of the TV build and boot in QEMU in CI.
 
 ## Screenshots
 
@@ -40,7 +43,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | ![The USB boot menu](docs/screenshots/boot-menu.png) | ![The loading screen](docs/screenshots/boot-splash.png) | ![The login screen](docs/screenshots/login.png) |
 | **Boot menu**: "Start D.Ai OS", eight languages | **Loading**: the diamond (and the disk passphrase) | **Login**: clock, keyboard language, Caps Lock warning |
 | ![D.Ai TV: Kodi full screen in Hebrew](docs/screenshots/tv-desktop.png) | ![D.Ai Phone: Phosh's lock screen on the arm64 image, booted in QEMU](docs/screenshots/phone-lock.png) | ![D.Ai TV on arm64: the same Kodi, booted in QEMU's virt machine](docs/screenshots/tv-arm64.png) |
-| **D.Ai TV**: Kodi in Hebrew on the TV, nothing listening | | |
+| **D.Ai TV**: Kodi in Hebrew on the TV, nothing listening | **D.Ai Phone** (experimental): Phosh on arm64, booted in QEMU | **D.Ai TV on arm64** (experimental): the same Kodi, a generic UEFI image |
 
 ## What's included
 
@@ -85,7 +88,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 - **user**: the everyday desktop
 - **dev**: user edition plus developer tools
 - **edu**: user edition plus learning apps (GCompris, Tux Paint, TuxMath, Stellarium, KDE Edu, Marble) and organization policies for schools
-- **tv**: the television edition for a computer on the TV's HDMI: boots into Kodi full screen in Hebrew, driven by the TV's remote (CEC); no telemetry, no account, nothing listening; "Exit" reaches the desktop (`docs/TV.md`)
+- **tv**: the television edition for a computer on the TV's HDMI: boots into Kodi full screen in Hebrew, driven by the TV's remote (CEC); no telemetry, no account, nothing listening; "Exit" reaches the desktop (`docs/TV.md`). Also built for arm64 (`DAI_ARCH=arm64`, a generic UEFI image for ARM boxes; experimental, `docs/TV.md` §14)
+- **phone** (experimental, arm64): Debian's Phosh shell with Calls, Chatty and the D.Ai apps in touch mode; builds and boots in QEMU in CI, no real phone tested yet (`docs/MOBILE.md`)
 - **server**: no desktop, hardened for internal servers (`docs/SERVER.md`); not built in CI yet
 
 ## D.Ai Forge
@@ -127,17 +131,22 @@ Coming from Windows? Read `docs/FROM-WINDOWS.md` first.
 
 ## Build from source
 
-Requires Debian or Ubuntu with `live-build`:
+The build runs as root inside a disposable Debian 13 (trixie) container, because live-build makes chroots:
 
 ```bash
-# build one edition: user, dev or edu
-build/build-iso.sh user
+# build one edition: user, dev, edu, tv, server or phone
+docker run --rm --privileged -v "$PWD:/src" -w /src debian:trixie \
+  bash build/scripts/build-iso.sh user /src/out
 
-# boot it in QEMU
-build/run-qemu.sh
+# the tv edition for arm64 (built through QEMU user emulation: slow)
+docker run --rm --privileged -e DAI_ARCH=arm64 -v "$PWD:/src" -w /src debian:trixie \
+  bash build/scripts/build-iso.sh tv /src/out
+
+# boot an ISO in QEMU
+build/scripts/run-qemu.sh out/dai-os-user-*.iso
 ```
 
-CI (`.github/workflows/build-iso.yml`) runs ShellCheck and unit tests, builds llama.cpp, whisper.cpp, the panel plugin and every ISO in `debian:trixie`, boots each ISO in QEMU/KVM, runs in-guest checks and publishes screenshots.
+CI (`.github/workflows/build-iso.yml`) runs ShellCheck and unit tests, builds llama.cpp, whisper.cpp, the panel plugin and every ISO in `debian:trixie`, boots each ISO in QEMU/KVM, runs in-guest checks and publishes screenshots. The arm64 phone and TV images are built and booted under emulation in jobs of their own, which cannot fail the workflow while they are being proven.
 
 ## Repository layout
 
@@ -196,7 +205,15 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **אבטחה כברירת מחדל:** חומת אש, AppArmor, הצפנת דיסק מלאה בהתקנה, גיבוי מוצפן ועדכוני אבטחה אוטומטיים.
 - **שמונה שפות:** עברית, אנגלית, ערבית, רוסית, ספרדית, צרפתית, גרמנית ופורטוגזית.
 - **יפה מהשנייה הראשונה:** תפריט אתחול, מסך טעינה ומסך כניסה בעיצוב של D.Ai, ושלוש ערכות נושא (כהה, בהירה וניגודיות גבוהה).
+- **PDF בארגז חול:** ‏D.Ai PDF פותח כל קובץ בארגז חול, מראה מה הקובץ "רוצה" לעשות (JavaScript, הרצת תוכניות, שליחת טפסים) ולא עושה זאת לעולם; עריכה של עמודים, טפסים, הערות, חתימה מוטבעת, השחרה אמיתית, OCR וקובץ קטן יותר, הכול בתוך ארגז החול.
+- **Windows בחלון:** ‏D.Ai VM מריץ Windows מהמדיה ומהמפתח שלכם (KVM, ‏UEFI עם Secure Boot, ‏TPM 2.0), בלי תיקייה משותפת, לוח או USB עד שתפעילו כל אחד מהם. D.Ai לא מפיץ Windows.
+- **בטלוויזיה, בטלפון ועל ARM:** מהדורת tv עולה ל-Kodi בעברית ונשלטת מהשלט; תמונות arm64 ניסיוניות של הטלפון (Phosh) ושל הטלוויזיה נבנות ועולות ב-QEMU ב-CI.
 - **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
+
+| | | |
+|---|---|---|
+| ![D.Ai TV: ‏Kodi בעברית על הטלוויזיה](docs/screenshots/tv-desktop.png) | ![D.Ai Phone: מסך הנעילה של Phosh על arm64](docs/screenshots/phone-lock.png) | ![D.Ai TV על arm64](docs/screenshots/tv-arm64.png) |
+| **D.Ai TV**: ‏Kodi בעברית, שום דבר לא מאזין לרשת | **D.Ai Phone** (ניסיוני): ‏Phosh על arm64, עולה ב-QEMU | **D.Ai TV על arm64** (ניסיוני): אותו Kodi, תמונת UEFI גנרית |
 
 **אתר:** [rubinny.com](https://rubinny.com) · **הורדה:** [הגרסה האחרונה](https://github.com/diamondrubinny/D.Ai/releases/latest)
 

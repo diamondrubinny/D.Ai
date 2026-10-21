@@ -21,6 +21,9 @@ D.Ai OS est un système d'exploitation libre et gratuit basé sur Debian 13, cr�
 - **🌍 Huit langues :** hébreu, anglais, arabe, russe, espagnol, français, allemand et portugais : l'interface, les phrases que D.Ai comprend, le menu de démarrage et le site web.
 - **🎨 Beau dès la première seconde :** un menu de démarrage D.Ai, un écran de chargement où le disque chiffré demande sa phrase secrète, un écran de connexion D.Ai et trois thèmes (Nuit, Jour et contraste élevé).
 - **📦 Ses propres applis du quotidien :** J (courriel signé et chiffré, importe depuis Outlook), Ruby (navigateur avec protection contre le pistage et uBlock Origin), MOM (gestionnaire des tâches qui montre des applis, pas des processus), D.Ai Quick et D.Ai Rescue (remet le système en route depuis la clé USB après une mise à jour ratée).
+- **📄 Des PDF dans un bac à sable :** D.Ai PDF ouvre chaque fichier dans un environnement isolé, montre ce que le fichier « veut » faire (JavaScript, lancer des programmes, envoyer des formulaires) et ne le fait jamais ; pages, formulaires, notes, une signature tamponnée, un vrai caviardage, l'OCR et un fichier plus léger, le tout dans le bac à sable.
+- **🪟 Windows dans une fenêtre :** D.Ai VM lance Windows depuis votre propre support d'installation et avec votre propre clé (KVM, UEFI avec Secure Boot, TPM 2.0) ; dossier partagé, presse-papiers et USB restent coupés tant que vous ne les activez pas. D.Ai ne fournit jamais Windows.
+- **📺 Sur la télé, sur le téléphone, sur ARM :** l'édition tv démarre dans Kodi en hébreu et se pilote à la télécommande ; des images arm64 expérimentales du téléphone (Phosh) et de la télé sont construites et démarrées dans QEMU en CI.
 
 ## 📸 Captures d'écran
 
@@ -30,6 +33,8 @@ D.Ai OS est un système d'exploitation libre et gratuit basé sur Debian 13, cr�
 | **Diamond** : répond sur cet ordinateur | **D.Ai Quick** : les réglages rapides | **J** : courriel signé et chiffré |
 | ![Le menu de démarrage sur clé USB](../screenshots/boot-menu.png) | ![L'écran de connexion](../screenshots/login.png) | ![D.Ai Welcome en arabe, de droite à gauche](../screenshots/welcome-ar.png) |
 | **Menu de démarrage** : « Start D.Ai OS » | **Connexion** : l'écran de D.Ai | **Welcome** en arabe, de droite à gauche |
+| ![D.Ai TV : Kodi en hébreu en plein écran](../screenshots/tv-desktop.png) | ![D.Ai Phone : l'écran de verrouillage de Phosh sur arm64](../screenshots/phone-lock.png) | ![D.Ai TV sur arm64](../screenshots/tv-arm64.png) |
+| **D.Ai TV** : Kodi en hébreu, rien n'écoute sur le réseau | **D.Ai Phone** (expérimental) : Phosh sur arm64, démarré dans QEMU | **D.Ai TV sur arm64** (expérimental) : le même Kodi, une image UEFI générique |
 
 ## ⚠️ État
 

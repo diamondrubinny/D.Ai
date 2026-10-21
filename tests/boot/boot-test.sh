@@ -387,6 +387,18 @@ sleep 6
 monitor "screendump $ARTIFACT_DIR/heal.png -f png" || log "warning: screenshot failed"
 type_keys esc
 sleep 2
+log "interactive: D.Ai PDF with the checks' test file (the file's wants in the bar)"
+command_bar shift-4 spc d a i minus p d f spc slash t m p slash w a n t s dot p d f ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/pdf.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
+log "interactive: D.Ai VM (no machine yet: the first-machine page)"
+command_bar shift-4 spc d a i minus v m ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/vm.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
 log "interactive: the on-screen keyboard (Super+Alt+K)"
 type_keys meta_l-alt-k
 sleep 4
