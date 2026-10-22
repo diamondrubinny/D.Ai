@@ -27,5 +27,6 @@ Fusion כסגנון Qt (ה־QSS שלנו מכסה), התנהגות ומקשים.
 ## 4. בדיקות
 
 הרקע נוצר דטרמיניסטית (`build/assets/make_wallpaper.py`, seed קבוע) ומחויב לריפו; ה־SVG של הכפתורים נבדק
-ב־xmllint; Raz על כל חלון (הגופן משנה רוחבים); צילומי מסך ב־CI: `desktop.png`, `settings.png`, `store.png`,
+ב־xmllint. ‏labwc 0.8 מחפש לכל כפתור `NAME-active.svg` ו־`NAME-inactive.svg` (לא `NAME.svg`: הריצה הראשונה
+ציירה את הביטמפים המובנים), ולכן לכל יהלום יש גרסה פעילה וגרסה עמומה לחלון לא פעיל; Raz על כל חלון (הגופן משנה רוחבים); צילומי מסך ב־CI: `desktop.png`, `settings.png`, `store.png`,
 `captions.png`, ‏`login.png` — ואז לתוך ה־README.
