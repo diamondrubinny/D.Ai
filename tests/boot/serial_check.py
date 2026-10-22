@@ -400,13 +400,12 @@ def main() -> int:
         # the sandbox while the same command works outside it (no root involved).
         ("offline app: the launcher and the sandbox", "dai-tune --yes 'firefox does not go online' >/dev/null; echo RC=$?; "
          "grep -c '^Exec=dai-offline-run firefox -- ' ~/.local/share/applications/firefox-esr.desktop; "
-         "dai-offline-run firefox -- sh -c 'ls /sys/class/net; curl -s -m 5 -o /dev/null http://10.0.2.2:80/; echo INSIDE_RC=$?; "
-         "test -e /dev/dri && echo GPU_SEEN; id -u'; "
-         "ls /sys/class/net | wc -l; "
+         "dai-offline-run firefox -- sh -c 'echo LINKS_INSIDE=$(grep -c : /proc/net/dev); curl -s -m 5 -o /dev/null http://10.0.2.2:80/; "
+         "echo INSIDE_RC=$?; test -e /dev/dri && echo GPU_SEEN; id -u'; echo LINKS_OUTSIDE=$(grep -c : /proc/net/dev); "
          "dai-tune --yes 'firefox goes online again' >/dev/null; echo RC2=$?; "
          "test -e ~/.local/share/applications/firefox-esr.desktop || echo OVERRIDE_GONE", True,
-         lambda o: "RC=0" in o and "RC2=0" in o and "INSIDE_RC=7" in o and "OVERRIDE_GONE" in o
-         and re.search(r"^lo\s*$", o, re.M) is not None and re.search(r"^1000\s*$", o, re.M) is not None, 60),
+         lambda o: "RC=0" in o and "RC2=0" in o and "INSIDE_RC=7" in o and "OVERRIDE_GONE" in o and "LINKS_INSIDE=1" in o
+         and re.search(r"LINKS_OUTSIDE=[2-9]", o) is not None and re.search(r"^1000\s*$", o, re.M) is not None, 60),
         ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["0"]),
         ("tune: injection refused", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'install vlc; rm -rf /tmp/x'; echo rc=$?", True,
