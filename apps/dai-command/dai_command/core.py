@@ -459,6 +459,12 @@ _STRINGS = {
     "focus_title": ("Focus for {n} minutes", "פוקוס ל־{n} דקות"),
     "focus_hint": ("D.Ai Focus · pop-ups hidden and a warmer light until the timer ends · Enter",
                    "D.Ai Focus · ההתראות מוסתרות והתאורה חמה עד שהטיימר נגמר · Enter"),
+    "game_title": ("Game mode", "מצב משחק"),
+    "game_hint": ("D.Ai Focus · full performance and no pop-ups until you end it · Enter",
+                  "D.Ai Focus · ביצועים מלאים ובלי התראות עד שתסיימו · Enter"),
+    "game_stop_title": ("End game mode", "סיום מצב משחק"),
+    "game_stop_hint": ("D.Ai Focus · the power profile and pop-ups go back to what they were · Enter",
+                       "D.Ai Focus · פרופיל החשמל וההתראות חוזרים למה שהיו · Enter"),
     "focus_stop_title": ("End the focus session", "סיום סשן הפוקוס"),
     "focus_stop_hint": ("D.Ai Focus · pop-ups and the light go back to what they were · Enter",
                         "D.Ai Focus · ההתראות והתאורה חוזרות למה שהיו · Enter"),
@@ -744,6 +750,7 @@ OCR_WORDS = re.compile(r"\bocr\b|\btext (?:from|on|in) (?:the |my |this )?(?:scr
 FOCUS_WORDS = re.compile(r"\bfocus(?: mode| session| time)?\b|(?:מצב )?(?:פוקוס|ריכוז)\b|בלי הפרעות", re.IGNORECASE)
 FOCUS_STOP = re.compile(r"\b(?:stop|end|cancel)\b|סיים|סיימי|עצור|עצרי|הפסק|הפסיקי|בטל", re.IGNORECASE)
 FOCUS_MINUTES = re.compile(r"\b(\d{1,3})\b")
+GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IGNORECASE)
 # D.Ai Settings (docs/BEYOND.md §6): "settings", "הגדרות", "security settings".
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
@@ -751,7 +758,13 @@ BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגב
 
 def focus_actions(text: str) -> list[Action] | None:
     """D.Ai Focus: "focus for 40 minutes" starts a session (25 without a number); "stop focus" ends it."""
-    if not FOCUS_WORDS.search(text) or not shutil.which("dai-focus"):
+    if not shutil.which("dai-focus"):
+        return None
+    if GAME_WORDS.search(text):
+        if FOCUS_STOP.search(text):
+            return [Action("focus", tr("game_stop_title"), tr("game_stop_hint"), "process-stop", "game-stop")]
+        return [Action("focus", tr("game_title"), tr("game_hint"), "applications-games", "game")]
+    if not FOCUS_WORDS.search(text):
         return None
     if FOCUS_STOP.search(text):
         return [Action("focus", tr("focus_stop_title"), tr("focus_stop_hint"), "process-stop", "stop")]

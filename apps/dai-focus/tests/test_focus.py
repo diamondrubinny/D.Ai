@@ -24,10 +24,11 @@ class FakeControls:
 
 
 class FakeSystem:
-    """pgrep, pkill, systemd-run, systemctl and notify-send, remembered."""
+    """pgrep, pkill, systemd-run, systemctl, powerprofilesctl and notify-send, remembered."""
 
-    def __init__(self, nightlight=False, tools=("wlsunset", "systemd-run", "notify-send")):
+    def __init__(self, nightlight=False, tools=("wlsunset", "systemd-run", "notify-send", "powerprofilesctl")):
         self.nightlight, self.tools, self.calls, self.popens = nightlight, set(tools), [], []
+        self.profile = "balanced"
 
     def run(self, argv, **kwargs):
         self.calls.append(argv)
@@ -35,6 +36,10 @@ class FakeSystem:
             return subprocess.CompletedProcess(argv, 0 if self.nightlight else 1, "", "")
         if argv[:2] == ["pkill", "-x"]:
             self.nightlight = False
+        if argv == ["powerprofilesctl", "get"]:
+            return subprocess.CompletedProcess(argv, 0, self.profile + "\n", "")
+        if argv[:2] == ["powerprofilesctl", "set"]:
+            self.profile = argv[2]
         return subprocess.CompletedProcess(argv, 0, "", "")
 
     def popen(self, argv, **kwargs):
@@ -106,7 +111,7 @@ class FocusTests(unittest.TestCase):
         self.session.start(30, "en")
         self.clock[0] += 10 * 60 + 1
         self.assertIn("20 of 30 minutes left", self.session.status("en")[1])
-        self.assertEqual(json.loads(self.session.status("en", as_json=True)[1]), {"active": True, "minutes": 30, "remaining": 20})
+        self.assertEqual(json.loads(self.session.status("en", as_json=True)[1]), {"active": True, "kind": "focus", "minutes": 30, "remaining": 20})
 
     def test_minutes_are_bounded_and_defaults_apply(self):
         self.assertEqual(cli.clamp_minutes(None), 25)
@@ -132,12 +137,40 @@ class FocusTests(unittest.TestCase):
             self.assertIsInstance(argv, list)
             self.assertNotIn(argv[0], ("sh", "bash"))
 
+    def test_game_mode_goes_fast_and_quiet_then_back(self):
+        code, message = self.session.game("en")
+        self.assertEqual(code, 0)
+        self.assertIn("full performance", message)
+        self.assertEqual(self.system.profile, "performance")
+        self.assertEqual(self.controls.calls, [True])
+        self.assertEqual(self.system.popens, [])                         # no warm light for a game
+        self.assertFalse(any(c[0] == "systemd-run" for c in self.system.calls))  # no timer either
+        self.assertEqual(json.loads(self.session.status("en", as_json=True)[1])["kind"], "game")
+        self.assertEqual(self.session.game("en")[0], 1)                  # not twice
+        self.assertEqual(self.session.start(25, "en")[0], 1)             # and not a focus session over it
+        self.clock[0] += 90 * 60
+        code, message = self.session.stop("en")
+        self.assertIn("Game mode off after 90 minutes", message)
+        self.assertIn("back to balanced", message)
+        self.assertEqual(self.system.profile, "balanced")
+        self.assertEqual(self.controls.calls, [True, False])
+
+    def test_game_mode_leaves_a_performance_profile_alone(self):
+        self.system.profile = "performance"
+        self.session.game("en")
+        data = json.loads(self.path.read_text())
+        self.assertEqual(data["profile_before"], "")
+        self.session.stop("en")
+        self.assertNotIn(["powerprofilesctl", "set", "performance"], self.system.calls)
+
     def test_cli_verbs(self):
         self.assertEqual(cli.main(["dai-focus", "status"], self.session), 0)
         self.assertEqual(cli.main(["dai-focus", "start", "15"], self.session), 0)
         self.assertEqual(cli.main(["dai-focus", "start"], self.session), 1)
         self.assertEqual(cli.main(["dai-focus", "stop"], self.session), 0)
         self.assertEqual(cli.main(["dai-focus", "stop"], self.session), 1)
+        self.assertEqual(cli.main(["dai-focus", "game"], self.session), 0)
+        self.assertEqual(cli.main(["dai-focus", "game", "stop"], self.session), 0)
         self.assertEqual(cli.main(["dai-focus", "dance"], self.session), 2)
         self.assertEqual(cli.main(["dai-focus", "--version"], self.session), 0)
 

@@ -5,6 +5,8 @@
   dai-focus start [MINUTES]   do not disturb + warm light for MINUTES (default 25, 5-180); a timer ends it
   dai-focus stop              end the session now: what was changed is put back
   dai-focus status [--json]   how much is left
+  dai-focus game [stop]       game mode (docs/BEYOND.md §8): the performance power profile and no pop-ups,
+                              until "dai-focus game stop" puts both back
 
 Nothing here needs root or a shell: "do not disturb" is the same file D.Ai Quick writes and the notification
 daemon reads, the light is wlsunset, and the timer is a systemd user timer. The session's state lives in
@@ -107,6 +109,14 @@ class Session:
     def disarm_timer(self) -> None:
         self._quiet(["systemctl", "--user", "stop", f"{TIMER_UNIT}.timer"])
 
+    def power_profile(self) -> str:
+        if not self.which("powerprofilesctl"):
+            return ""
+        return self._quiet(["powerprofilesctl", "get"]).stdout.strip()
+
+    def set_power_profile(self, profile: str) -> bool:
+        return self._quiet(["powerprofilesctl", "set", profile]).returncode == 0
+
     def notify(self, title: str, body: str) -> None:
         if self.which("notify-send"):
             self._quiet(["notify-send", "-a", "D.Ai", title, body])
@@ -159,16 +169,43 @@ class Session:
         self.notify(say(lang, "Focus: {n} minutes", "פוקוס: {n} דקות", n=minutes), body)
         return 0, say(lang, "Focus for {n} minutes. To end early: dai-focus stop", "פוקוס ל־{n} דקות. לסיים מוקדם: dai-focus stop", n=minutes)
 
+    def game(self, lang: str) -> tuple[int, str]:
+        """Game mode: the performance profile and no pop-ups, with no timer; "game stop" ends it."""
+        data = self.load()
+        if data is not None:
+            if data.get("kind") == "game":
+                return 1, say(lang, "Game mode is already on (dai-focus game stop).", "מצב משחק כבר פועל (dai-focus game stop).")
+            return 1, say(lang, "A focus session is already running (dai-focus status).",
+                          "סשן פוקוס כבר רץ (dai-focus status).")
+        controls = self.controls()
+        dnd_before = bool(controls.dnd()) if controls is not None else None
+        if controls is not None and not dnd_before:
+            controls.set_dnd(True)
+        profile_before = self.power_profile()
+        changed_profile = bool(profile_before) and profile_before != "performance" and self.set_power_profile("performance")
+        self.save({"started": self.now(), "minutes": 0, "kind": "game", "dnd_before": dnd_before,
+                   "nightlight_started": False, "timer": False,
+                   "profile_before": profile_before if changed_profile else ""})
+        parts = [say(lang, "pop-ups are hidden", "ההתראות מוסתרות")]
+        if changed_profile:
+            parts.insert(0, say(lang, "the computer runs at full performance", "המחשב רץ בביצועים מלאים"))
+        body = ", ".join(parts) + ". " + say(lang, "To end: dai-focus game stop", "לסיום: dai-focus game stop")
+        self.notify(say(lang, "Game mode on", "מצב משחק פועל"), body[0].upper() + body[1:])
+        return 0, say(lang, "Game mode on: ", "מצב משחק פועל: ") + body
+
     def stop(self, lang: str, by_timer: bool = False) -> tuple[int, str]:
         data = self.load()
         if data is None:
             return 1, say(lang, "No focus session is running.", "אין סשן פוקוס פעיל.")
+        game = data.get("kind") == "game"
         controls = self.controls()
         if controls is not None and data.get("dnd_before") is False:
             controls.set_dnd(False)
         if data.get("nightlight_started"):
             self.stop_nightlight()
-        if not by_timer:
+        if data.get("profile_before"):
+            self.set_power_profile(str(data["profile_before"]))
+        if not by_timer and not game:
             self.disarm_timer()
         self.clear()
         elapsed = max(1, int((self.now() - float(data.get("started", self.now()))) // 60))
@@ -177,9 +214,15 @@ class Session:
             restored.append(say(lang, "pop-ups are back", "ההתראות חזרו"))
         if data.get("nightlight_started"):
             restored.append(say(lang, "the light is normal again", "התאורה חזרה לרגיל"))
+        if data.get("profile_before"):
+            restored.append(say(lang, "the power profile is back to {p}", "פרופיל החשמל חזר ל־{p}", p=data["profile_before"]))
         body = (", ".join(restored) + ".") if restored else say(lang, "Nothing had been changed.", "שום דבר לא השתנה.")
-        title = say(lang, "Focus ended: {n} minutes", "הפוקוס נגמר: {n} דקות", n=elapsed) if by_timer else \
-            say(lang, "Focus stopped after {n} minutes", "הפוקוס נעצר אחרי {n} דקות", n=elapsed)
+        if game:
+            title = say(lang, "Game mode off after {n} minutes", "מצב משחק כבה אחרי {n} דקות", n=elapsed)
+        elif by_timer:
+            title = say(lang, "Focus ended: {n} minutes", "הפוקוס נגמר: {n} דקות", n=elapsed)
+        else:
+            title = say(lang, "Focus stopped after {n} minutes", "הפוקוס נעצר אחרי {n} דקות", n=elapsed)
         self.notify(title, body[0].upper() + body[1:])
         return 0, title + ". " + body[0].upper() + body[1:]
 
@@ -188,10 +231,13 @@ class Session:
         if as_json:
             payload = {"active": data is not None}
             if data is not None:
-                payload.update({"minutes": data.get("minutes"), "remaining": self.remaining(data)})
+                payload.update({"kind": data.get("kind", "focus"), "minutes": data.get("minutes"),
+                                "remaining": self.remaining(data)})
             return 0, json.dumps(payload)
         if data is None:
             return 0, say(lang, "No focus session. Start one: dai-focus start 25", "אין סשן פוקוס. להתחיל: dai-focus start 25")
+        if data.get("kind") == "game":
+            return 0, say(lang, "Game mode is on. To end: dai-focus game stop", "מצב משחק פועל. לסיום: dai-focus game stop")
         return 0, say(lang, "Focus: {left} of {n} minutes left.", "פוקוס: נשארו {left} מתוך {n} דקות.",
                       left=self.remaining(data), n=data.get("minutes"))
 
@@ -212,6 +258,8 @@ def main(argv: list[str] | None = None, session: Session | None = None) -> int:
         code, message = session.start(clamp_minutes(rest[0] if rest else None), lang)
     elif verb == "stop":
         code, message = session.stop(lang, by_timer="--by-timer" in rest)
+    elif verb == "game":
+        code, message = session.stop(lang) if rest[:1] == ["stop"] else session.game(lang)
     elif verb == "status":
         code, message = session.status(lang, as_json="--json" in rest)
     else:

@@ -675,10 +675,14 @@ def main() -> int:
          "pgrep -x wlsunset >/dev/null && echo WARM || echo NOT_WARM; dai-focus status --json; "
          "dai-focus stop; echo STOP_RC=$?; grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf | sed 's/^/DND_AFTER=/'; "
          "systemctl --user list-timers --all --no-legend | grep -c dai-focus-end | sed 's/^/TIMER_AFTER=/'; "
-         "pgrep -x wlsunset >/dev/null && echo STILL_WARM || echo COOL; dai-focus status", True,
+         "pgrep -x wlsunset >/dev/null && echo STILL_WARM || echo COOL; dai-focus status; "
+         # Game mode (docs/BEYOND.md §8): the performance profile while it is on, the old one back after.
+         "dai-focus game; echo GAME_RC=$?; powerprofilesctl get | sed 's/^/PROFILE=/'; dai-focus status --json; "
+         "dai-focus game stop; echo GAME_STOP_RC=$?; powerprofilesctl get | sed 's/^/PROFILE_AFTER=/'", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "START_RC=0" in o and "DND=1" in o and "TIMER=1" in o
          and '"active": true' in o and "STOP_RC=0" in o and "DND_AFTER=1" in o and "TIMER_AFTER=0" in o
-         and "COOL" in o and "No focus session" in o, 60),
+         and "COOL" in o and "No focus session" in o and "GAME_RC=0" in o and "PROFILE=performance" in o
+         and '"kind": "game"' in o and "GAME_STOP_RC=0" in o and "PROFILE_AFTER=balanced" in o, 90),
         # Ruby (docs/BROWSER.md stage 1): Firefox ESR reads D.Ai's policies (root-owned), the menu shows one
         # browser named Ruby, the Hebrew interface is installed, and a headless start installs uBlock Origin and
         # Containers from Mozilla's add-on site (which proves the policies are active). Without a network the

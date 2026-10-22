@@ -50,7 +50,8 @@ class Toggle:
 TOGGLES = (Toggle("wifi", "network-wireless", "📶"), Toggle("bluetooth", "preferences-system-bluetooth", "ᛒ"),
            Toggle("dnd", "notifications-disabled", "🌙"), Toggle("saver", "battery-profile-powersave|battery-060|battery", "🔋"),
            Toggle("mic", "microphone-sensitivity-muted", "🎙"),
-           Toggle("focus", "appointment-new|alarm-symbolic|alarm", "🎯"))
+           Toggle("focus", "appointment-new|alarm-symbolic|alarm", "🎯"),
+           Toggle("game", "applications-games|input-gaming", "🎮"))
 
 
 class Controls:
@@ -102,18 +103,29 @@ class Controls:
     def set_mic(self, muted: bool) -> bool:
         return self._ok(["wpctl", "set-mute", SOURCE, "1" if muted else "0"])
 
-    def focus(self) -> bool | None:
-        """A D.Ai Focus session is running (docs/BEYOND.md §5); None when dai-focus is not installed."""
+    def _session(self) -> dict | None:
+        """D.Ai Focus's state (docs/BEYOND.md §5, §8); None when dai-focus is not installed."""
         out = self._out(["dai-focus", "status", "--json"])
         if out is None:
             return None
         try:
-            return bool(json.loads(out).get("active"))
+            return json.loads(out)
         except ValueError:
             return None
 
+    def focus(self) -> bool | None:
+        session = self._session()
+        return None if session is None else bool(session.get("active") and session.get("kind", "focus") == "focus")
+
     def set_focus(self, on: bool) -> bool:
         return self._ok(["dai-focus", "start", "25"] if on else ["dai-focus", "stop"])
+
+    def game(self) -> bool | None:
+        session = self._session()
+        return None if session is None else bool(session.get("active") and session.get("kind") == "game")
+
+    def set_game(self, on: bool) -> bool:
+        return self._ok(["dai-focus", "game"] if on else ["dai-focus", "game", "stop"])
 
     def dnd(self) -> bool | None:
         parser = self._notifications()

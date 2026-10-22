@@ -30,6 +30,7 @@ STRINGS = {
     "saver": ("Battery saver", "חיסכון בסוללה"),
     "mic": ("Mute mic", "השתקת מיק׳"),
     "focus": ("Focus 25 min", "פוקוס 25 דק׳"),
+    "game": ("Game mode", "מצב משחק"),
     "on": ("on", "פועל"),
     "off": ("off", "כבוי"),
     "volume": ("Volume", "עוצמת שמע"),
@@ -200,7 +201,7 @@ class QuickWindow(QWidget):
         self._label_tile(key)
         if key == "dnd":
             self.dnd_note.setVisible(bool(actual))
-        if key == "focus" and "dnd" in self.tiles:
+        if key in ("focus", "game") and "dnd" in self.tiles:
             # A session turns "do not disturb" on and off with it: show that tile's truth too.
             dnd = self.controls.read("dnd")
             self.tiles["dnd"].setChecked(bool(dnd))

@@ -6445,3 +6445,57 @@ msgstr "каждую неделю"
 #: apps/dai-settings/dai_settings/model.py
 msgid "performance"
 msgstr "производительность"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "D.Ai Focus · full performance and no pop-ups until you end it · Enter"
+msgstr "D.Ai Focus · полная производительность и без уведомлений, пока вы не закончите · Enter"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "D.Ai Focus · the power profile and pop-ups go back to what they were · Enter"
+msgstr "D.Ai Focus · профиль питания и уведомления возвращаются к прежнему · Enter"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "End game mode"
+msgstr "Выключить игровой режим"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode"
+msgstr "Игровой режим"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode is already on (dai-focus game stop)."
+msgstr "Игровой режим уже включён (dai-focus game stop)."
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode is on. To end: dai-focus game stop"
+msgstr "Игровой режим включён. Выключить: dai-focus game stop"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Game mode off after {n} minutes"
+msgstr "Игровой режим выключен через {n} мин"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode on"
+msgstr "Игровой режим включён"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode on: "
+msgstr "Игровой режим включён: "
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "To end: dai-focus game stop"
+msgstr "Выключить: dai-focus game stop"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "pop-ups are hidden"
+msgstr "уведомления скрыты"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "the computer runs at full performance"
+msgstr "компьютер работает на полной производительности"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "the power profile is back to {p}"
+msgstr "профиль питания снова {p}"

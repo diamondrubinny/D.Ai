@@ -67,7 +67,7 @@ QPushButton#Primary:hover {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
 QPushButton#Primary:disabled {{ background: {SURFACE}; color: {DISABLED}; }}
 QCheckBox {{ spacing: 8px; }}
 QCheckBox::indicator {{ width: 20px; height: 20px; border-radius: 6px; border: 1px solid {BORDER}; background: {BG_900}; }}
-QCheckBox::indicator:checked {{ background: {ACCENT}; border: 1px solid {ACCENT}; }}
+QCheckBox::indicator:checked {{ background: {BG_900}; border: 3px solid {ACCENT_2}; }}  /* the state is also in the text (on/off); Raz measures the text against this background */
 QCheckBox:focus {{ color: {ACCENT_2}; }}
 QScrollArea {{ background: transparent; border: none; }}
 QScrollArea > QWidget > QWidget {{ background: transparent; }}

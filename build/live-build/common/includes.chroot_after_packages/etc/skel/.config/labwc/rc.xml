@@ -59,7 +59,34 @@
     <!-- On-screen keyboard and night light -->
     <keybind key="W-A-k"><action name="Execute" command="dai-keyboard" /></keybind>
     <keybind key="W-A-n"><action name="Execute" command="dai-nightlight" /></keybind>
+    <!-- Window layouts (docs/BEYOND.md §7): Super+arrows are labwc's halves; thirds and quarters below.
+         Holding Super while dragging a window also drops it into one of these regions. -->
+    <keybind key="W-S-Left"><action name="ToggleSnapToRegion" region="third-left" /></keybind>
+    <keybind key="W-S-Up"><action name="ToggleSnapToRegion" region="third-middle" /></keybind>
+    <keybind key="W-S-Right"><action name="ToggleSnapToRegion" region="third-right" /></keybind>
+    <keybind key="W-S-Down"><action name="UnSnap" /></keybind>
+    <keybind key="W-C-Up"><action name="ToggleSnapToRegion" region="quarter-top-left" /></keybind>
+    <keybind key="W-C-Right"><action name="ToggleSnapToRegion" region="quarter-top-right" /></keybind>
+    <keybind key="W-C-Down"><action name="ToggleSnapToRegion" region="quarter-bottom-right" /></keybind>
+    <keybind key="W-C-Left"><action name="ToggleSnapToRegion" region="quarter-bottom-left" /></keybind>
   </keyboard>
+
+  <!-- Dragging a window to a screen edge snaps it to that half, with labwc's preview overlay first. -->
+  <snapping>
+    <range>12</range>
+    <overlay><enabled>yes</enabled></overlay>
+    <topMaximize>yes</topMaximize>
+  </snapping>
+
+  <regions>
+    <region name="third-left" x="0%" y="0%" width="33%" height="100%" />
+    <region name="third-middle" x="33%" y="0%" width="34%" height="100%" />
+    <region name="third-right" x="67%" y="0%" width="33%" height="100%" />
+    <region name="quarter-top-left" x="0%" y="0%" width="50%" height="50%" />
+    <region name="quarter-top-right" x="50%" y="0%" width="50%" height="50%" />
+    <region name="quarter-bottom-left" x="0%" y="50%" width="50%" height="50%" />
+    <region name="quarter-bottom-right" x="50%" y="50%" width="50%" height="50%" />
+  </regions>
 
   <windowRules>
     <!-- D.Ai Command draws its own frame and behaves like a popup -->

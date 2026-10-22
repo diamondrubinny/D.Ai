@@ -369,7 +369,8 @@ class CommandWindow(QWidget):
             self._spawn(["dai-settings"])
             remembered = self.query.text().strip()
         elif action.kind == "focus":
-            self._spawn(["dai-focus", "stop"] if action.payload == "stop" else ["dai-focus", "start", str(action.payload)])
+            argv = {"stop": ["dai-focus", "stop"], "game": ["dai-focus", "game"], "game-stop": ["dai-focus", "game", "stop"]}
+            self._spawn(argv.get(str(action.payload), ["dai-focus", "start", str(action.payload)]))
             remembered = self.query.text().strip()
         elif action.kind == "ocr":
             # A moment for this window to close, so the area chooser covers the screen and not us.

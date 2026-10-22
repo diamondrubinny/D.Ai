@@ -270,7 +270,9 @@ class HealLanguageTests(unittest.TestCase):
         with mock.patch("shutil.which", lambda name: "/usr/bin/dai-focus" if name == "dai-focus" else None):
             for text, payload in (("focus for 40 minutes", "40"), ("פוקוס ל-15 דקות", "15"), ("מצב ריכוז", "25"),
                                   ("focus", "25"), ("בלי הפרעות", "25"), ("focus for 999 minutes", "180"),
-                                  ("stop focus", "stop"), ("סיים את הפוקוס", "stop")):
+                                  ("stop focus", "stop"), ("סיים את הפוקוס", "stop"),
+                                  ("game mode", "game"), ("מצב משחק", "game"), ("stop game mode", "game-stop"),
+                                  ("סיים מצב משחק", "game-stop")):
                 with self.subTest(text):
                     actions = core.focus_actions(text)
                     self.assertIsNotNone(actions)

@@ -6445,3 +6445,57 @@ msgstr "كل أسبوع"
 #: apps/dai-settings/dai_settings/model.py
 msgid "performance"
 msgstr "أداء"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "D.Ai Focus · full performance and no pop-ups until you end it · Enter"
+msgstr "D.Ai Focus · أداء كامل وبلا تنبيهات حتى تنهيه · Enter"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "D.Ai Focus · the power profile and pop-ups go back to what they were · Enter"
+msgstr "D.Ai Focus · يعود وضع الطاقة والتنبيهات إلى ما كانا عليه · Enter"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "End game mode"
+msgstr "إنهاء وضع الألعاب"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode"
+msgstr "وضع الألعاب"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode is already on (dai-focus game stop)."
+msgstr "وضع الألعاب مفعّل بالفعل (dai-focus game stop)."
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode is on. To end: dai-focus game stop"
+msgstr "وضع الألعاب مفعّل. للإنهاء: dai-focus game stop"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Game mode off after {n} minutes"
+msgstr "أُوقف وضع الألعاب بعد {n} دقيقة"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode on"
+msgstr "وضع الألعاب مفعّل"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Game mode on: "
+msgstr "وضع الألعاب مفعّل: "
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "To end: dai-focus game stop"
+msgstr "للإنهاء: dai-focus game stop"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "pop-ups are hidden"
+msgstr "التنبيهات مخفية"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "the computer runs at full performance"
+msgstr "يعمل الحاسوب بأداء كامل"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "the power profile is back to {p}"
+msgstr "عاد وضع الطاقة إلى {p}"
