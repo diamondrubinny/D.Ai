@@ -86,6 +86,8 @@ jobs:
           python3 -m unittest tests/boot/test_boot_languages.py tests/boot/test_boot_look.py tests/boot/test_measure.py -v
 
       - name: Unit tests (dai-ai)
+        env:
+          PYTHONPATH: apps/dai-i18n
         run: python3 -m unittest discover -s apps/dai-ai/tests -t apps/dai-ai -v
 
       - name: Languages (dai-i18n; the text catalog is up to date and every translation is usable)
