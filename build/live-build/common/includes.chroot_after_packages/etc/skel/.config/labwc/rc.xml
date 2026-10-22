@@ -59,6 +59,7 @@
     <!-- On-screen keyboard and night light -->
     <keybind key="W-A-k"><action name="Execute" command="dai-keyboard" /></keybind>
     <keybind key="W-A-n"><action name="Execute" command="dai-nightlight" /></keybind>
+    <keybind key="W-A-c"><action name="Execute" command="dai-captions" /></keybind>
     <!-- Window layouts (docs/BEYOND.md §7): Super+arrows are labwc's halves; thirds and quarters below.
          Holding Super while dragging a window also drops it into one of these regions. -->
     <keybind key="W-S-Left"><action name="ToggleSnapToRegion" region="third-left" /></keybind>

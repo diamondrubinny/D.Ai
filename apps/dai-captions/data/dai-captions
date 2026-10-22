@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Captions: live captions for whatever the computer plays (docs/BEYOND.md §13). Installed as /usr/bin/dai-captions.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_captions.cli import main; sys.exit(main(["dai-captions", *sys.argv[1:]]))' "$@"

@@ -411,6 +411,12 @@ sleep 8
 monitor "screendump $ARTIFACT_DIR/store.png -f png" || log "warning: screenshot failed"
 type_keys alt-f4
 sleep 2
+log "interactive: D.Ai Live Captions (the bar, fed from whisper's test file)"
+command_bar shift-4 spc d a i minus c a p t i o n s spc minus minus f r o m minus f i l e spc slash o p t slash d a i slash w h i s p e r slash t e s t minus j f k dot w a v ret
+sleep 60
+monitor "screendump $ARTIFACT_DIR/captions.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
 log "interactive: the on-screen keyboard (Super+Alt+K)"
 type_keys meta_l-alt-k
 sleep 4

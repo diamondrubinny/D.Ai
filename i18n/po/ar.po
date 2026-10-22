@@ -6645,3 +6645,49 @@ msgstr "{app} يُفتح مع الوصول إلى الشبكة من جديد"
 #, python-brace-format
 msgid "{app} opens without network access from now on"
 msgstr "{app} يُفتح بلا وصول إلى الشبكة من الآن فصاعدًا"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "(no speech)"
+msgstr "(لا كلام)"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Captions failed: {error}"
+msgstr "فشلت الترجمة النصية: {error}"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "D.Ai Live Captions"
+msgstr "الترجمة الحية D.Ai"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Finished"
+msgstr "انتهى"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Listening to what the computer plays…"
+msgstr "يستمع إلى ما يشغّله الحاسوب…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "No speech model yet. Run: dai-models install whisper-small"
+msgstr "لا يوجد نموذج كلام بعد. شغّل: dai-models install whisper-small"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "On this computer only: no network, nothing saved."
+msgstr "على هذا الحاسوب فقط: بلا شبكة، لا يُحفظ شيء."
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Paused"
+msgstr "متوقف مؤقتًا"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Reading {name}…"
+msgstr "يقرأ {name}…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Subtitles for whatever the computer plays · on this computer only · Enter"
+msgstr "ترجمة نصية لكل ما يشغّله الحاسوب · على هذا الحاسوب فقط · Enter"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "The first words appear a few seconds after they are said."
+msgstr "تظهر الكلمات الأولى بعد ثوانٍ قليلة من قولها."

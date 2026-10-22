@@ -108,6 +108,7 @@
 | `Alt+Shift` | החלפת שפה (dai-lang, עם מחוון HE/EN בפאנל) |
 | `Pause` / `Super+Alt+L` | תיקון טקסט מסומן שהוקלד בשפה הלא נכונה |
 | `Super+Alt+S` | קורא מסך (Orca) |
+| `Super+Alt+C` | כתוביות חיות למה שהמחשב משמיע (D.Ai Captions, docs/BEYOND.md §13) |
 | `Print` | צילום מסך (`Shift+Print`: אזור) |
 | `Super+Shift+T` | העתקת טקסט מכל חלק במסך (D.Ai OCR, נקרא על המחשב) |
 

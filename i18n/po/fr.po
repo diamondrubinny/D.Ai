@@ -6645,3 +6645,49 @@ msgstr "{app} s'ouvre de nouveau avec accès au réseau"
 #, python-brace-format
 msgid "{app} opens without network access from now on"
 msgstr "{app} s'ouvre désormais sans accès au réseau"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "(no speech)"
+msgstr "(pas de parole)"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Captions failed: {error}"
+msgstr "Les sous-titres ont échoué : {error}"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "D.Ai Live Captions"
+msgstr "Sous-titres en direct D.Ai"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Finished"
+msgstr "Terminé"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Listening to what the computer plays…"
+msgstr "À l'écoute de ce que l'ordinateur joue…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "No speech model yet. Run: dai-models install whisper-small"
+msgstr "Pas encore de modèle de parole. Lancez : dai-models install whisper-small"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "On this computer only: no network, nothing saved."
+msgstr "Sur cet ordinateur seulement : sans réseau, rien n'est enregistré."
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Paused"
+msgstr "En pause"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Reading {name}…"
+msgstr "Lecture de {name}…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Subtitles for whatever the computer plays · on this computer only · Enter"
+msgstr "Sous-titres pour tout ce que l'ordinateur joue · sur cet ordinateur seulement · Entrée"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "The first words appear a few seconds after they are said."
+msgstr "Les premiers mots apparaissent quelques secondes après avoir été dits."

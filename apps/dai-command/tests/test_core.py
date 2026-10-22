@@ -288,6 +288,12 @@ class HealLanguageTests(unittest.TestCase):
         self.assertFalse(core.STORE_WORDS.search("grocery store list"))
         self.assertFalse(core.STORE_WORDS.search("install vlc"))
 
+    def test_captions_words(self):
+        for text in ("captions", "live captions", "subtitles", "כתוביות", "כתוביות חיות", "תמלול חי"):
+            with self.subTest(text):
+                self.assertTrue(core.CAPTIONS_WORDS.search(text.strip()))
+        self.assertFalse(core.CAPTIONS_WORDS.search("add captions to the video"))
+
     def test_settings_words(self):
         for text in ("settings", "Settings", "open settings", "security settings", "הגדרות", "הגדרות אבטחה"):
             with self.subTest(text):

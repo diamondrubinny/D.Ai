@@ -6645,3 +6645,49 @@ msgstr "{app} volta a abrir com acesso à rede"
 #, python-brace-format
 msgid "{app} opens without network access from now on"
 msgstr "{app} abre sem acesso à rede a partir de agora"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "(no speech)"
+msgstr "(sem fala)"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Captions failed: {error}"
+msgstr "As legendas falharam: {error}"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "D.Ai Live Captions"
+msgstr "Legendas ao vivo D.Ai"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Finished"
+msgstr "Concluído"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Listening to what the computer plays…"
+msgstr "A ouvir o que o computador reproduz…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "No speech model yet. Run: dai-models install whisper-small"
+msgstr "Ainda não há modelo de fala. Execute: dai-models install whisper-small"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "On this computer only: no network, nothing saved."
+msgstr "Só neste computador: sem rede, nada é guardado."
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Paused"
+msgstr "Em pausa"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Reading {name}…"
+msgstr "A ler {name}…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Subtitles for whatever the computer plays · on this computer only · Enter"
+msgstr "Legendas para tudo o que o computador reproduz · só neste computador · Enter"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "The first words appear a few seconds after they are said."
+msgstr "As primeiras palavras aparecem alguns segundos depois de serem ditas."

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Live Captions
+Name[he]=כתוביות חיות D.Ai
+GenericName=Live captions
+GenericName[he]=כתוביות חיות
+Comment=Subtitles for whatever the computer plays, in Hebrew and English, on this computer only
+Comment[he]=כתוביות למה שהמחשב משמיע, בעברית ובאנגלית, על המחשב הזה בלבד
+Exec=dai-captions
+TryExec=dai-captions
+Icon=accessories-text-editor
+StartupWMClass=dai-captions
+Categories=Utility;Accessibility;AudioVideo;
+Keywords=captions;subtitles;live;speech;hearing;כתוביות;תמלול;שמיעה;

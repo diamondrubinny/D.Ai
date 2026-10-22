@@ -225,6 +225,11 @@ build_apps() {
   install -m 0644 "$settings/data/dai-settings.desktop" "$root/usr/share/applications/"
 
   # D.Ai Store (docs/BEYOND.md §9): find and set up software, with the plan first.
+  local captions="$REPO_ROOT/apps/dai-captions"
+  copy_package "$captions/dai_captions" "$root"
+  install -m 0755 "$captions/data/dai-captions" "$root/usr/bin/dai-captions"
+  install -m 0644 "$captions/data/dai-captions.desktop" "$root/usr/share/applications/"
+
   local store="$REPO_ROOT/apps/dai-store"
   copy_package "$store/dai_store" "$root"
   install -m 0755 "$store/data/dai-store" "$root/usr/bin/dai-store"

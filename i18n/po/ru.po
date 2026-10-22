@@ -6645,3 +6645,49 @@ msgstr "{app} снова открывается с доступом к сети"
 #, python-brace-format
 msgid "{app} opens without network access from now on"
 msgstr "{app} отныне открывается без доступа к сети"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "(no speech)"
+msgstr "(речи нет)"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Captions failed: {error}"
+msgstr "Субтитры не удались: {error}"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "D.Ai Live Captions"
+msgstr "Живые субтитры D.Ai"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Finished"
+msgstr "Готово"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Listening to what the computer plays…"
+msgstr "Слушаю, что воспроизводит компьютер…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "No speech model yet. Run: dai-models install whisper-small"
+msgstr "Модели речи ещё нет. Выполните: dai-models install whisper-small"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "On this computer only: no network, nothing saved."
+msgstr "Только на этом компьютере: без сети, ничего не сохраняется."
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Paused"
+msgstr "Пауза"
+
+#: apps/dai-captions/dai_captions/gui.py
+#, python-brace-format
+msgid "Reading {name}…"
+msgstr "Читаю {name}…"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "Subtitles for whatever the computer plays · on this computer only · Enter"
+msgstr "Субтитры ко всему, что воспроизводит компьютер · только на этом компьютере · Enter"
+
+#: apps/dai-captions/dai_captions/gui.py
+msgid "The first words appear a few seconds after they are said."
+msgstr "Первые слова появляются через несколько секунд после того, как их произнесли."

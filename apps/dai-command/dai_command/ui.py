@@ -371,6 +371,9 @@ class CommandWindow(QWidget):
         elif action.kind == "settings":
             self._spawn(["dai-settings"])
             remembered = self.query.text().strip()
+        elif action.kind == "captions":
+            self._spawn(["dai-captions"])
+            remembered = self.query.text().strip()
         elif action.kind == "focus":
             argv = {"stop": ["dai-focus", "stop"], "game": ["dai-focus", "game"], "game-stop": ["dai-focus", "game", "stop"]}
             self._spawn(argv.get(str(action.payload), ["dai-focus", "start", str(action.payload)]))

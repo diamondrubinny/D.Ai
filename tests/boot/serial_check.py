@@ -490,6 +490,13 @@ def main() -> int:
         ("phone link: the recipe opens the range", "dai-forge --dry-run 'connect my phone' </dev/null; "
          "dai-tune --dry-run 'open ports 1714 to 1764 udp' </dev/null; dai-store list | grep -A3 -i 'phone'", True,
          lambda o: "kdeconnect" in o and o.count("1714-1764") >= 3 and "udp" in o and "tcp" in o),
+        # D.Ai Captions (docs/BEYOND.md §13): whisper's test file through the chunk pipeline, with the real model.
+        ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
+         "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "
+         "ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; "
+         "grep -c 'W-A-c' ~/.config/labwc/rc.xml", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "RC=0" in o and "country" in o.lower()
+         and "DESKTOP_ENTRY" in o and o.strip().splitlines()[-1] == "1", 400),
         # D.Ai Doctor: plain-language answers; its fixes are real D.Ai Tune plans.
         ("doctor: diagnosis", "dai-doctor --version; dai-doctor --json slow disk battery | python3 -c "
          "'import json,sys; f=json.load(sys.stdin); print(\"FINDINGS\", len(f), sorted({x[\"key\"].split(\":\")[0] for x in f}))'; "
