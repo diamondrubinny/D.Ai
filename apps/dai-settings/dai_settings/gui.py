@@ -16,14 +16,14 @@ import sys
 from typing import Any, Callable
 
 from PyQt6.QtCore import QObject, Qt, QThread, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QFont, QFontDatabase, QKeySequence, QShortcut
+from PyQt6.QtGui import QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea,
     QStackedWidget, QVBoxLayout, QWidget,
 )
 
 from dai_i18n import pick, qt_direction, text as i18n_text, ui_lang
-from dai_style import color, controls, rgba, with_touch
+from dai_style import app_font, color, controls, rgba, with_touch
 from dai_style.panes import fit_width, touch_scrolling
 from dai_tune.catalog import CATALOG
 from dai_tune.cli import apply_plan, cmd_undo
@@ -511,8 +511,8 @@ def main(argv: list[str] | None = None) -> int:
     app = QApplication.instance() or QApplication(argv)
     app.setApplicationName(APP_ID)
     app.setDesktopFileName(APP_ID)
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 11))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     app.setStyleSheet(with_touch(STYLE))
     window = SettingsWindow(ui_lang())
     window.show()

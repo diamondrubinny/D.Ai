@@ -17,14 +17,14 @@ from pathlib import Path
 from typing import Callable
 
 from PyQt6.QtCore import QObject, QRunnable, Qt, QThreadPool, QTimer, QUrl, pyqtSignal
-from PyQt6.QtGui import QAction, QDesktopServices, QFont, QFontDatabase, QKeySequence, QShortcut, QTextBlockFormat, QTextCursor
+from PyQt6.QtGui import QAction, QDesktopServices, QKeySequence, QShortcut, QTextBlockFormat, QTextCursor
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFormLayout, QGroupBox,
                              QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QPushButton,
                              QSpinBox, QStackedWidget, QTextBrowser, QTextEdit, QToolBar, QTreeWidget,
                              QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, qt_direction, ui_lang
-from dai_style import controls, themed
+from dai_style import app_font, controls, themed
 from dai_style.panes import Panes, touch_scrolling
 
 from . import __author__, __version__, accounts as acc, compose, discover, engine, localmail, mail, sanitize
@@ -1286,8 +1286,8 @@ def main(mailto: str = "") -> int:
     app.setOrganizationName(__author__)
     app.setDesktopFileName("dai-j")
     app.setLayoutDirection(qt_direction(lang))
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 10))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     window = MainWindow(lang)
     window.show()
     if mailto:

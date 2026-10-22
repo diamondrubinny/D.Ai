@@ -17,12 +17,12 @@ from pathlib import Path
 from typing import Callable
 
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QFont, QFontDatabase, QIcon, QKeySequence, QShortcut
+from PyQt6.QtGui import QIcon, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox, QProgressBar,
                              QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, qt_direction, ui_lang
-from dai_style import themed
+from dai_style import app_font, themed
 
 from . import __author__, __version__
 from . import actions, apps as apps_mod, procs
@@ -488,8 +488,8 @@ def main(server=None) -> int:
     app.setOrganizationName(__author__)
     app.setDesktopFileName("dai-mom")
     app.setLayoutDirection(qt_direction(lang))
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 10))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     window = MomWindow(lang)
     if server is not None:
         def bring_forward() -> None:

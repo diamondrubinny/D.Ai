@@ -49,6 +49,8 @@ grim
 slurp
 # D.Ai Find reads PDFs into its content index with pdftotext (docs/BEYOND.md §11).
 poppler-utils
+# The interface font (docs/LOOK.md); Hebrew falls back to Noto Sans Hebrew through fontconfig.
+fonts-inter
 # D.Ai OCR (docs/V2.md F1): text from the screen, read locally, in D.Ai's eight languages
 tesseract-ocr
 tesseract-ocr-eng

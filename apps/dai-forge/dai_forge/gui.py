@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from PyQt6.QtCore import QObject, QPoint, QRect, QSize, Qt, QThread, QTimer, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon, QKeySequence, QShortcut
+from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QCheckBox, QFrame, QHBoxLayout, QLabel, QLayout, QLineEdit, QPlainTextEdit, QPushButton,
     QScrollArea, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget,
@@ -35,7 +35,7 @@ from dai_tune.context import Context, detect_lang
 from dai_tune.planner import Plan, build_plan
 
 from dai_i18n import pick, qt_direction
-from dai_style import color, controls, rgba
+from dai_style import app_font, color, controls, rgba
 
 from . import __author__, __version__, apps
 from .ai import author_recipe, generate_app, partial_code
@@ -914,8 +914,8 @@ def main(argv: list[str] | None = None) -> int:
     app.setOrganizationName(__author__)
     lang = detect_lang()
     app.setLayoutDirection(qt_direction(lang))
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 11))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     app.setStyleSheet(STYLE)
     request = " ".join(a for a in argv[1:] if not a.startswith("--"))
     window = ForgeWindow(lang, request)

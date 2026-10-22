@@ -29,8 +29,8 @@
 
 - **גרדיאנט מותג:** `#7C5CFF → #22D3EE` (סגול לטורקיז), רק לקישוט: לוגו, פס עליון דק, רקע.
 - **פוקוס מקלדת:** מסגרת טורקיז 2px, תמיד גלויה.
-- **פינות:** 8px לחלונות ו־10px לשדה הפקודה ולכפתור "התחל".
-- **גופנים:** Noto Sans + Noto Sans Hebrew (11pt), ו־DejaVu Sans Mono לטרמינל.
+- **פינות:** 12px לחלונות (labwc), 14px לכרטיסים, 10px לשדה הפקודה ולכפתור "התחל" (docs/LOOK.md).
+- **גופנים:** Inter 10.5pt לממשק (`dai_style.app_font()`; עברית וערבית מ־Noto Sans דרך fontconfig), Noto Sans 11pt כשאין Inter, ו־DejaVu Sans Mono לטרמינל (docs/LOOK.md).
 - **אייקונים:** Breeze Dark. Papirus נבדק ונדחה: כ־200MB בהתקנה.
 
 ## 3. שורת המשימות

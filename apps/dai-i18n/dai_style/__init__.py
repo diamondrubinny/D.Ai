@@ -175,6 +175,23 @@ def touch(environ: dict[str, str] | None = None, home: Path | None = None, sys_i
     return touchscreen_present(sys_input) if sys_input is not None else touchscreen_present()
 
 
+UI_FONTS = ("Inter", "Noto Sans")
+UI_POINT_SIZE = {"Inter": 10.5, "Noto Sans": 11}
+
+
+def app_font(families: list[str] | tuple[str, ...] | None = None):
+    """The interface font for a QApplication (docs/LOOK.md): Inter when installed, Noto Sans otherwise, or None."""
+    from PyQt6.QtGui import QFont, QFontDatabase
+
+    installed = set(families if families is not None else QFontDatabase.families())
+    for family in UI_FONTS:
+        if family in installed:
+            font = QFont(family)
+            font.setPointSizeF(UI_POINT_SIZE[family])
+            return font
+    return None
+
+
 def controls(theme: str | None = None) -> str:
     """One look for check boxes and radio buttons in every D.Ai window (docs/POLISH.md §2).
 

@@ -15,7 +15,7 @@ import sys
 from typing import Any, Callable
 
 from PyQt6.QtCore import QSize, Qt, QThread
-from PyQt6.QtGui import QFont, QFontDatabase, QGuiApplication, QIcon, QKeySequence, QShortcut
+from PyQt6.QtGui import QGuiApplication, QIcon, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QFrame, QGridLayout, QHBoxLayout, QLabel, QLayout, QProgressBar, QPushButton, QRadioButton,
     QScrollArea, QStackedWidget, QVBoxLayout, QWidget,
@@ -29,7 +29,7 @@ from dai_tune.cli import describe
 from dai_tune.context import Context, detect_lang
 
 from dai_i18n import NATIVE_NAMES, SUPPORTED, is_rtl, pick, qt_direction
-from dai_style import color, with_touch
+from dai_style import app_font, color, with_touch
 
 from . import __author__, __version__, core
 
@@ -561,8 +561,8 @@ def main(argv: list[str] | None = None) -> int:
     app.setApplicationVersion(__version__)
     app.setOrganizationName(__author__)
     app.setLayoutDirection(qt_direction(lang))
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 11))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     app.setStyleSheet(with_touch(STYLE))
     window = WelcomeWindow(lang, Context(lang=lang))
     window.show()

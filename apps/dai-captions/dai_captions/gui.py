@@ -9,11 +9,11 @@ from pathlib import Path
 from typing import Callable
 
 from PyQt6.QtCore import QObject, Qt, QThread, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QFont, QFontDatabase, QGuiApplication, QKeySequence, QShortcut
+from PyQt6.QtGui import QGuiApplication, QKeySequence, QShortcut
 from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from dai_i18n import pick, qt_direction, ui_lang
-from dai_style import color, rgba, with_touch
+from dai_style import app_font, color, rgba, with_touch
 
 from . import __author__, __version__
 from .engine import Captions, VoiceError, file_chunks, live_chunks, run_pipeline, transcribe_chunk
@@ -198,8 +198,8 @@ def main(argv: list[str] | None = None) -> int:
     app = QApplication.instance() or QApplication(argv)
     app.setApplicationName(APP_ID)
     app.setDesktopFileName(APP_ID)
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 11))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     app.setStyleSheet(with_touch(STYLE))
     source = Path(argv[argv.index("--from-file") + 1]) if "--from-file" in argv else None
     speech_lang = argv[argv.index("--lang") + 1] if "--lang" in argv and argv.index("--lang") + 1 < len(argv) else None

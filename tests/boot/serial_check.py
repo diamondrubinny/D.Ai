@@ -494,6 +494,13 @@ def main() -> int:
          "test -e /etc/dai/memory-saver || echo MARK_GONE", True,
          lambda o: "RC=0" in o and "RC2=0" in o and "\n180" in o and "MARK" in o and "SMALL True" in o and "MARK_GONE" in o
          and o.strip().splitlines()[-2] != "180", 60),
+        # The look (docs/LOOK.md): the labwc theme with its diamond buttons, Inter for the interface, the panel size.
+        ("look: theme, buttons and font", "ls /usr/share/themes/dai/labwc/ | tr '\\n' ' '; echo; "
+         "grep -c '<name>dai</name>' ~/.config/labwc/rc.xml | sed 's/^/THEME=/'; fc-match Inter | sed 's/^/FONT=/'; "
+         "fc-match 'Inter:lang=he' | sed 's/^/HEBREW=/'; grep -c 'panelSize=60' /etc/xdg/lxqt/panel.conf | sed 's/^/PANEL=/'; "
+         "python3 -c 'import xml.dom.minidom; xml.dom.minidom.parse(\"/usr/share/themes/dai/labwc/close.svg\")' && echo SVG_OK", True,
+         lambda o: "close.svg" in o and "themerc" in o and "THEME=1" in o and "FONT=Inter" in o and "Noto" in o
+         and "PANEL=1" in o and "SVG_OK" in o),
         # External AI providers (docs/PROVIDERS.md): off by default, consent typed, a dead custom server fails clearly
         # and the local Diamond answers instead, remove leaves nothing.
         ("ai: providers off by default", "dai-ai where; dai-models provider list | head -n 1; "

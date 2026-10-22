@@ -11,12 +11,12 @@ import subprocess
 import time
 
 from PyQt6.QtCore import QEvent, QSize, Qt, QTimer
-from PyQt6.QtGui import QFont, QFontDatabase, QIcon, QKeyEvent
+from PyQt6.QtGui import QIcon, QKeyEvent
 from PyQt6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout, QLabel, QPushButton, QSlider,
                              QToolButton, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, is_rtl, pick, qt_direction, text, ui_lang
-from dai_style import themed, with_touch
+from dai_style import app_font, themed, with_touch
 from dai_style.panes import fit_width
 
 from . import __author__, __version__
@@ -242,8 +242,8 @@ def main(controls: Controls | None = None) -> int:
     # labwc places the window by app id (rc.xml): next to the clock, which is on the left in Hebrew.
     app.setDesktopFileName("dai-quick-rtl" if is_rtl(lang) else "dai-quick")
     app.setLayoutDirection(qt_direction(lang))
-    if "Noto Sans" in QFontDatabase.families():
-        app.setFont(QFont("Noto Sans", 10))
+    if (font := app_font()) is not None:   # Inter when installed, Noto Sans otherwise (docs/LOOK.md)
+        app.setFont(font)
     window = QuickWindow(controls, lang)
     window.show()
     window.activateWindow()

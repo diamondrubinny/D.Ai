@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Night 2 window theme for labwc (docs/LOOK.md §2): no border, a soft shadow, diamond buttons (SVG beside this file).
+border.width: 0
+padding.height: 7
+window.titlebar.padding.width: 10
+window.titlebar.padding.height: 5
+window.button.width: 26
+window.button.height: 26
+window.button.spacing: 4
+window.button.hover.bg.corner-radius: 13
+
+window.active.border.color: #141B33
+window.inactive.border.color: #0B1020
+window.active.title.bg.color: #151C36
+window.inactive.title.bg.color: #0E1328
+window.active.label.text.color: #E6E9F5
+window.inactive.label.text.color: #9AA3C7
+window.label.text.justify: center
+window.active.button.unpressed.image.color: #E6E9F5
+window.inactive.button.unpressed.image.color: #9AA3C7
+window.active.button.hover.bg.color: #2A3563
+window.inactive.button.hover.bg.color: #1C2547
+
+window.active.shadow.size: 28
+window.inactive.shadow.size: 14
+window.active.shadow.color: #000000A6
+window.inactive.shadow.color: #00000066
+
+menu.border.width: 1
+menu.border.color: #2A3563
+menu.items.bg.color: #141B33
+menu.items.text.color: #E6E9F5
+menu.items.active.bg.color: #5B3FD6
+menu.items.active.text.color: #FFFFFF
+menu.separator.color: #2A3563
+
+osd.bg.color: #141B33
+osd.border.color: #7C5CFF
+osd.border.width: 1
+osd.label.text.color: #E6E9F5

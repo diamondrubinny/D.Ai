@@ -12,8 +12,8 @@
 LXQtPanel #BackgroundWidget {
     margin: 0 0 8px 0;
     padding: 0 6px;
-    border-radius: 18px;
-    border: 1px solid rgba(124, 92, 255, 38%);
+    border-radius: 20px;
+    border: 1px solid rgba(124, 92, 255, 42%);
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 rgba(36, 44, 86, 92%), stop: 0.08 rgba(14, 20, 40, 90%),
                                 stop: 1 rgba(11, 16, 32, 90%));
@@ -123,7 +123,7 @@ QLineEdit#DaiCommand:focus, QLineEdit#DaiCommandField:focus { border: 2px solid 
 /* Windows as icons with light: the active one glows with the violet→cyan
  * line (task-active.svg); one that asks for attention gets an amber edge,
  * never a blinking button. */
-/* Height budget: 56 (panelSize) - 8 (floating gap) - 2 (border) = 46 for every button. */
+/* Height budget: 60 (panelSize) - 8 (floating gap) - 2 (border) = 50 for every button. */
 #TaskBar QToolButton {
     margin: 5px 2px;
     padding: 2px 8px;

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
-"""Generate the D.Ai OS "Night" wallpaper (deterministic).
+"""Generate the D.Ai OS "Night 2" wallpaper (deterministic; docs/LOOK.md §2).
 
 Usage: make_wallpaper.py <output.jpg> [width] [height]
 Requires numpy and Pillow (build-time only; the image is committed).
@@ -16,6 +16,8 @@ BG_TOP = np.array([11, 16, 32], dtype=np.float64)      # #0B1020
 BG_BOTTOM = np.array([20, 27, 51], dtype=np.float64)   # #141B33
 VIOLET = np.array([124, 92, 255], dtype=np.float64)    # #7C5CFF
 CYAN = np.array([34, 211, 238], dtype=np.float64)      # #22D3EE
+MAGENTA = np.array([255, 122, 158], dtype=np.float64)  # #FF7A9E
+DEEP = np.array([7, 10, 24], dtype=np.float64)         # under the taskbar
 
 
 def glow(x, y, cx, cy, rx, ry, angle):
@@ -37,41 +39,43 @@ def ribbon(x, y, base, slope, amp, freq, phase, width, fade_from, fade_to):
 
 
 def render(width: int, height: int) -> Image.Image:
+    """A gradient mesh: three large soft lights on deep blue, the diamond as a faint line, fine grain."""
     rng = np.random.default_rng(1452)  # fixed seed: reproducible output
     py, px = np.mgrid[0:height, 0:width].astype(np.float64)
     x, y = px / width, py / height
+    aspect = width / height
 
-    img = BG_TOP + (BG_BOTTOM - BG_TOP) * y[..., None]
+    img = BG_TOP + (DEEP - BG_TOP) * (y ** 1.6)[..., None]
 
-    # Aurora: two violet ribbons and one cyan ribbon with a bright core.
-    violet = (
-        0.75 * ribbon(x, y, 0.46, -0.30, 0.05, 1.1, 0.4, 0.075, -0.2, 1.1)
-        + 0.35 * ribbon(x, y, 0.36, -0.22, 0.07, 0.8, 2.1, 0.13, -0.1, 0.9)
-    )
-    cyan = 0.65 * ribbon(x, y, 0.80, -0.32, 0.04, 1.3, 4.0, 0.055, 0.15, 1.2)
-    core = 0.35 * ribbon(x, y, 0.46, -0.30, 0.05, 1.1, 0.4, 0.018, 0.1, 0.8)
-    img += np.clip(violet, 0, 1)[..., None] * (VIOLET - img) * 0.8
-    img += np.clip(cyan, 0, 1)[..., None] * (CYAN - img) * 0.65
-    img += core[..., None] * (np.array([220, 210, 255.0]) - img) * 0.5
+    def light(cx, cy, rx, ry, angle, color, strength):
+        g = glow(x * aspect, y, cx * aspect, cy, rx, ry, angle)
+        return (g ** 1.15)[..., None] * (color - img) * strength
 
-    # Diamond lattice at 45 degrees in pixel space (the D.Ai mark), very faint.
+    img += light(0.22, 0.18, 0.62, 0.34, -0.35, VIOLET, 0.78)        # a wide violet light, top left
+    img += light(0.84, 0.30, 0.40, 0.26, 0.55, CYAN, 0.62)           # cyan, upper right
+    img += light(0.58, 0.72, 0.52, 0.20, 0.15, MAGENTA, 0.30)        # a warm low band, soft
+    img += light(0.50, 0.46, 0.30, 0.16, 0.0, np.array([230, 224, 255.0]), 0.16)   # a pale core
+    # The violet and the cyan meet in a soft ribbon, the brand gradient.
+    img += 0.45 * ribbon(x, y, 0.42, -0.22, 0.05, 1.0, 0.6, 0.06, -0.2, 1.2)[..., None] * (CYAN * 0.5 + VIOLET * 0.5 - img) * 0.5
+
+    # Large, soft diamond outline on the right: the brand mark.
+    dx, dy = (x - 0.76) * aspect, y - 0.42
+    diamond = np.abs(dx) + np.abs(dy)
+    outline = np.exp(-(((diamond - 0.17) / 0.0035) ** 2))
+    img += outline[..., None] * (np.array([200, 190, 255.0]) - img) * 0.20
+
+    # A faint diamond lattice, only where there is light.
     cell = height / 18.0
     u = (px + py) / cell
     v = (px - py) / cell
     edge = np.minimum(np.abs(u - np.round(u)), np.abs(v - np.round(v)))
     lines = np.clip(1.0 - edge * cell / 1.2, 0, 1)
-    vignette = glow(x, y, 0.5, 0.5, 0.65, 0.6, 0.0)
-    img += (lines * vignette * 7.0)[..., None]
+    vignette = glow(x, y, 0.5, 0.42, 0.7, 0.55, 0.0)
+    img += (lines * vignette * 4.0)[..., None]
 
-    # Large, soft diamond outline on the right: the brand mark.
-    dx, dy = (x - 0.76) * width / height, y - 0.42
-    diamond = np.abs(dx) + np.abs(dy)
-    outline = np.exp(-(((diamond - 0.17) / 0.0035) ** 2))
-    img += outline[..., None] * (np.array([184, 166, 255.0]) - img) * 0.22
-
-    # Darken edges slightly and dither to avoid gradient banding.
-    img *= (0.80 + 0.20 * vignette)[..., None]
-    img += rng.normal(0, 1.2, img.shape)
+    # Keep the bottom calm (the taskbar floats there), add grain against banding.
+    img *= (0.86 + 0.14 * vignette)[..., None]
+    img += rng.normal(0, 1.4, img.shape)
     return Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB")
 
 
