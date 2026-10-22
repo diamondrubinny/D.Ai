@@ -6591,3 +6591,29 @@ msgstr "العمل والمستندات"
 #: apps/dai-store/dai_store/gui.py
 msgid "installed"
 msgstr "مثبّت"
+
+#: apps/dai-find/dai_find/cli.py
+msgid " (more next time)"
+msgstr " (المزيد في المرة القادمة)"
+
+#: apps/dai-find/dai_find/cli.py
+msgid "No content index yet (dai-find index builds it)."
+msgstr "لا يوجد فهرس محتوى بعد (dai-find index ينشئه)."
+
+#: apps/dai-find/dai_find/cli.py
+#, python-brace-format
+msgid "Read {read}, forgot {gone}, {total} documents in the index{more}."
+msgstr "تمت قراءة {read}، ونُسي {gone}، {total} مستندات في الفهرس{more}."
+
+#: apps/dai-find/dai_find/cli.py
+msgid "The content index was deleted."
+msgstr "تم حذف فهرس المحتوى."
+
+#: apps/dai-find/dai_find/cli.py
+msgid "There is no content index."
+msgstr "لا يوجد فهرس محتوى."
+
+#: apps/dai-find/dai_find/cli.py
+#, python-brace-format
+msgid "{n} documents in the content index."
+msgstr "{n} مستندات في فهرس المحتوى."

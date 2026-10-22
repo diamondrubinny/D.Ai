@@ -29,9 +29,9 @@
   "из": "the",
   "на": "the",
   "за": "the",
-  "про": "the",
-  "о": "the",
-  "об": "the",
+  "про": "about",
+  "о": "about",
+  "об": "about",
   "и": "the",
   "папке": "folder",
   "папка": "folder",
@@ -94,6 +94,11 @@
   "сентябре": "september",
   "октябре": "october",
   "ноябре": "november",
-  "декабре": "december"
+  "декабре": "december",
+  "содержащие": "containing",
+  "содержащий": "containing",
+  "со словом": "containing",
+  "в которых написано": "containing",
+  "где написано": "containing"
  }
 }

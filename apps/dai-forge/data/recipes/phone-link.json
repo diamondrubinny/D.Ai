@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "id": "phone-link",
+  "name": {
+    "en": "My phone next to the computer (KDE Connect)",
+    "he": "הטלפון שלי ליד המחשב (KDE Connect)"
+  },
+  "description": {
+    "en": "Phone notifications on the computer, files both ways, a shared clipboard, find my phone, a remote for slides and music. Pairs with the KDE Connect app on Android or iPhone, over the local network only, encrypted between the two devices and with no server.",
+    "he": "התראות הטלפון במחשב, קבצים לשני הכיוונים, לוח משותף, \"מצא את הטלפון\", שלט למצגות ולמוזיקה. מתחבר לאפליקציית KDE Connect באנדרואיד או באייפון, ברשת המקומית בלבד, מוצפן בין שני המכשירים ובלי שרת."
+  },
+  "match": {
+    "en": [
+      "phone",
+      "my phone",
+      "phone link",
+      "connect my phone",
+      "kde connect",
+      "kdeconnect",
+      "android",
+      "iphone"
+    ],
+    "he": [
+      "טלפון",
+      "הטלפון שלי",
+      "חיבור לטלפון",
+      "לחבר את הטלפון",
+      "אנדרואיד",
+      "אייפון"
+    ]
+  },
+  "steps": [
+    {
+      "action": "packages.install",
+      "params": {
+        "names": [
+          "kdeconnect"
+        ]
+      }
+    },
+    {
+      "action": "firewall.open_port",
+      "params": {
+        "port": "1714-1764",
+        "proto": "tcp",
+        "source": "lan"
+      }
+    },
+    {
+      "action": "firewall.open_port",
+      "params": {
+        "port": "1714-1764",
+        "proto": "udp",
+        "source": "lan"
+      }
+    }
+  ],
+  "author": "Diamond Rubinny (d.Ai)"
+}

@@ -159,6 +159,8 @@ build_apps() {
   local find="$REPO_ROOT/apps/dai-find"
   copy_package "$find/dai_find" "$root"
   install -m 0755 "$find/data/dai-find" "$root/usr/bin/dai-find"
+  install -D -m 0644 "$find/data/dai-find-index.service" "$root/usr/lib/systemd/user/dai-find-index.service"
+  install -D -m 0644 "$find/data/dai-find-index.timer" "$root/usr/lib/systemd/user/dai-find-index.timer"
 
   local doctor="$REPO_ROOT/apps/dai-doctor"
   copy_package "$doctor/dai_doctor" "$root"
@@ -345,6 +347,8 @@ if [ "$1" = configure ]; then
   install -d /etc/systemd/user/timers.target.wants
   ln -sf /usr/lib/systemd/user/dai-evolve.timer /etc/systemd/user/timers.target.wants/dai-evolve.timer
   ln -sf /usr/lib/systemd/user/dai-raz.timer /etc/systemd/user/timers.target.wants/dai-raz.timer
+  # D.Ai Find's content index, for every user (docs/BEYOND.md §11; dai-find index --clear removes it).
+  ln -sf /usr/lib/systemd/user/dai-find-index.timer /etc/systemd/user/timers.target.wants/dai-find-index.timer
   # D.Ai OEM: does nothing unless a first-boot setup was just finished.
   ln -sf /usr/lib/systemd/system/dai-oem-cleanup.service /etc/systemd/system/multi-user.target.wants/dai-oem-cleanup.service
   ln -sf /usr/lib/systemd/system/dai-snapshots-firstboot.service /etc/systemd/system/multi-user.target.wants/dai-snapshots-firstboot.service
@@ -364,6 +368,7 @@ if [ "$1" = remove ]; then
   rm -f /etc/systemd/system/multi-user.target.wants/dai-snapshots-firstboot.service
   rm -f /etc/systemd/user/timers.target.wants/dai-evolve.timer
   rm -f /etc/systemd/user/timers.target.wants/dai-raz.timer
+  rm -f /etc/systemd/user/timers.target.wants/dai-find-index.timer
 fi
 exit 0
 EOF

@@ -237,6 +237,25 @@ class ExecutorTests(TuneTestCase):
         nft_calls = [c for c in self.runner.calls if c[0] == "nft"]
         self.assertEqual(nft_calls[:2], [["nft", "-c", "-f", "/etc/nftables.conf"], ["nft", "-f", "/etc/nftables.conf"]])
 
+    def test_firewall_port_ranges(self):
+        """KDE Connect needs 1714-1764 on both protocols (docs/BEYOND.md §10)."""
+        plan = self.plan("open ports 1714 to 1764 udp")
+        self.assertTrue(plan.ok, plan.errors)
+        self.assertEqual(plan.steps[0].params, {"port": "1714-1764", "proto": "udp", "source": "lan"})
+        self.assertIn("1714-1764/udp", catalog.CATALOG["firewall.open_port"].summary(plan.steps[0].params, "en"))
+        self.assertEqual(self.plan("פתח פורטים 1714-1764").steps[0].params["port"], "1714-1764")
+        self.apply("open ports 1714-1764 udp")
+        self.apply("open port 8080")
+        rules = (self.root / "etc/dai/firewall-allow.nft").read_text()
+        self.assertIn("udp dport 1714-1764 accept", rules)
+        self.assertLess(rules.index("1714-1764"), rules.index("8080"))   # sorted by the low port
+        self.apply("close ports 1714-1764 udp")
+        self.assertNotIn("1714", (self.root / "etc/dai/firewall-allow.nft").read_text())
+        for bad in ("open ports 1764-1714", "open ports 0-10", "open port 70000"):
+            self.assertFalse(self.plan(bad).ok, bad)
+        self.assertEqual(catalog.port_span(443), (443, 443))
+        self.assertEqual(catalog.port_span("1714-1764"), (1714, 1764))
+
     def test_failed_step_rolls_back_everything(self):
         self.runner.responses[("nft", "-c")] = (1, "")
         plan = self.plan("block the camera and open port 9000")

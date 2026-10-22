@@ -307,10 +307,27 @@ def load_firewall_rules(ctx: Context) -> list[dict]:
     return [r for r in rules if isinstance(r, dict)]
 
 
+def port_span(value: Any) -> tuple[int, int]:
+    """A port (8080) or a range ("1714-1764") as (low, high); ValidationError otherwise."""
+    if isinstance(value, str) and "-" in value:
+        low, _, high = value.partition("-")
+        lo, hi = _int(low.strip(), 1, 65535, "port"), _int(high.strip(), 1, 65535, "port")
+        if hi <= lo:
+            raise ValidationError("port: a range goes from the lower port to the higher one")
+        return lo, hi
+    one = _int(value, 1, 65535, "port")
+    return one, one
+
+
+def port_text(value: Any) -> str:
+    lo, hi = port_span(value)
+    return str(lo) if lo == hi else f"{lo}-{hi}"
+
+
 def render_firewall(rules: list[dict]) -> str:
     lines = ['# Managed by dai-tune. Do not edit; use: dai-tune "close port N"']
-    for rule in sorted(rules, key=lambda r: (r["port"], r["proto"], r["source"])):
-        port, proto = int(rule["port"]), rule["proto"]
+    for rule in sorted(rules, key=lambda r: (port_span(r["port"]), r["proto"], r["source"])):
+        port, proto = port_text(rule["port"]), rule["proto"]
         if rule["source"] == "lan":
             lines.append(f'ip saddr {{ {LAN_V4} }} {proto} dport {port} accept comment "dai-tune lan"')
             lines.append(f'ip6 saddr {{ {LAN_V6} }} {proto} dport {port} accept comment "dai-tune lan"')
@@ -322,12 +339,18 @@ def render_firewall(rules: list[dict]) -> str:
 def _fw_validate(params: Params, ctx: Context, closing: bool = False) -> Params:
     _only_keys(params, {"port", "proto", "source"})
     out: Params = {
-        "port": _int(params.get("port"), 1, 65535, "port"),
+        "port": _port_param(params.get("port")),
         "proto": _choice(params.get("proto", "tcp"), ("tcp", "udp"), "proto"),
     }
     if not closing:
         out["source"] = _choice(params.get("source", "lan"), ("lan", "any"), "source")
     return out
+
+
+def _port_param(value: Any) -> int | str:
+    """A single port stays an int (older journals and recipes), a range becomes "low-high"."""
+    lo, hi = port_span(value)
+    return lo if lo == hi else f"{lo}-{hi}"
 
 
 def _fw_files(params: Params, ctx: Context) -> list[Path]:

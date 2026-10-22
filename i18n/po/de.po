@@ -6591,3 +6591,29 @@ msgstr "Arbeit und Dokumente"
 #: apps/dai-store/dai_store/gui.py
 msgid "installed"
 msgstr "installiert"
+
+#: apps/dai-find/dai_find/cli.py
+msgid " (more next time)"
+msgstr " (mehr beim nächsten Mal)"
+
+#: apps/dai-find/dai_find/cli.py
+msgid "No content index yet (dai-find index builds it)."
+msgstr "Noch kein Inhaltsindex (dai-find index erstellt ihn)."
+
+#: apps/dai-find/dai_find/cli.py
+#, python-brace-format
+msgid "Read {read}, forgot {gone}, {total} documents in the index{more}."
+msgstr "{read} gelesen, {gone} vergessen, {total} Dokumente im Index{more}."
+
+#: apps/dai-find/dai_find/cli.py
+msgid "The content index was deleted."
+msgstr "Der Inhaltsindex wurde gelöscht."
+
+#: apps/dai-find/dai_find/cli.py
+msgid "There is no content index."
+msgstr "Es gibt keinen Inhaltsindex."
+
+#: apps/dai-find/dai_find/cli.py
+#, python-brace-format
+msgid "{n} documents in the content index."
+msgstr "{n} Dokumente im Inhaltsindex."

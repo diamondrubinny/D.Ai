@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Find reads the documents in the home folder into a local index, at the lowest priority (docs/BEYOND.md §11).
+[Unit]
+Description=D.Ai Find: the content index of my documents
+Documentation=https://github.com/diamondrubinny/D.Ai/blob/main/docs/BEYOND.md
+
+[Service]
+Type=oneshot
+Nice=19
+IOSchedulingClass=idle
+ExecStart=/usr/bin/dai-find index --quiet

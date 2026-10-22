@@ -60,7 +60,7 @@ QPushButton#Primary {{ color: #FFFFFF; font-weight: 700; border: none;
 QPushButton#Primary:hover {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {ACCENT_2}); }}
 QPushButton#Primary:disabled {{ background: {SURFACE}; color: {DISABLED}; }}
 QPushButton#Chip {{ border-radius: 15px; padding: 6px 14px; background: {rgba('surface', 0.85)}; }}
-QPushButton#Chip:checked {{ border: 2px solid {ACCENT_2}; }}
+QPushButton#Chip:checked {{ background: {BG_900}; border: 2px solid {ACCENT_2}; }}
 QScrollArea {{ background: transparent; border: none; }}
 QScrollArea > QWidget > QWidget {{ background: transparent; }}
 QScrollBar:vertical {{ background: transparent; width: 10px; margin: 2px; }}

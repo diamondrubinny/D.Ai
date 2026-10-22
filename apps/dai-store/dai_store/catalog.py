@@ -29,7 +29,7 @@ CATEGORIES = {
     "more": ("More", "עוד"),
 }
 RECIPE_CATEGORY = {
-    "signal": "talk", "telegram": "talk", "discord": "talk", "zoom": "talk", "thunderbird": "talk",
+    "signal": "talk", "telegram": "talk", "phone-link": "talk", "discord": "talk", "zoom": "talk", "thunderbird": "talk",
     "onlyoffice": "work", "vscode": "work", "nextcloud": "work", "syncthing": "work", "archives": "work",
     "ebook-reader": "work",
     "spotify": "media", "video-player": "media", "image-editor": "media",

@@ -37,7 +37,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | ![Diamond answers a question in the command bar](docs/screenshots/ai-answer.png) | ![+install antivirus: the plan before anything changes](docs/screenshots/forge-preview.png) | ![D.Ai Quick: Wi-Fi, do not disturb, volume, security score](docs/screenshots/quick.png) |
 | **Diamond**: `?` and a question, answered on this computer | **D.Ai Forge**: `+install antivirus` shows the plan first | **D.Ai Quick**: everything quick, with the security score |
 | ![J, the mail client](docs/screenshots/j.png) | ![D.Ai Find: find photos from today](docs/screenshots/find.png) | ![D.Ai Heal: help and repair chat](docs/screenshots/heal.png) |
-| **J**: mail, signed and encrypted, imports from Outlook | **D.Ai Find**: files by meaning and date | **D.Ai Heal**: explains a crash and offers a fix |
+| **J**: mail, signed and encrypted, imports from Outlook | **D.Ai Find**: files by meaning, date and what they say | **D.Ai Heal**: explains a crash and offers a fix |
 | ![MOM, the task manager](docs/screenshots/mom.png) | ![D.Ai Clip: clipboard history](docs/screenshots/clip.png) | ![D.Ai Welcome in Arabic, right to left](docs/screenshots/welcome-ar.png) |
 | **MOM**: apps, not processes, explained in plain words | **D.Ai Clip**: never keeps passwords | **Welcome** in Arabic, right to left |
 | ![The USB boot menu](docs/screenshots/boot-menu.png) | ![The loading screen](docs/screenshots/boot-splash.png) | ![The login screen](docs/screenshots/login.png) |
@@ -62,7 +62,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **D.Ai Heal** | When a program crashes or a service fails: a notification, a chat that explains it in plain words, and fixes from a closed list applied only when you click (`Super+F1`) | `docs/EVOLVE.md` |
 | **D.Ai Voice** | Local Whisper dictation and voice commands | `docs/VOICE.md` |
 | **D.Ai Code** | Local coding assistant: explain, review, edit with diff and undo | |
-| **D.Ai Find** | "Find the PDF I downloaded last week", in Hebrew or English | `docs/FIND.md` |
+| **D.Ai Find** | "Find the PDF I downloaded last week", and inside the documents: "the file about the lease", from a local index built when the computer is idle | `docs/FIND.md`, `docs/BEYOND.md` §11 |
 | **D.Ai Doctor** | Why is it slow, what fills the disk, battery health, hardware check | `docs/DOCTOR.md` |
 | **D.Ai Privacy** | Microphone and camera indicator with a local log | `docs/PRIVACY.md` |
 | **D.Ai Backup** | Encrypted automatic backups (restic) to an external drive | `docs/BACKUP.md` |
@@ -75,7 +75,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **Raz** | Checks the system before and after every update; every D.Ai window passes an accessibility check in three themes before release | `docs/RAZ.md` |
 | **D.Ai Rescue** | From the USB stick: when the installed system no longer starts after an update, go back to before it | `docs/BASICS.md` |
 | **D.Ai sounds** | "The diamond family": crystal sounds from one musical family, soft and short, for login, notifications, USB devices, the charger, screenshots and copied text; "quiet sounds" or "turn off sounds" in one sentence | `docs/SOUNDS.md` |
-| **D.Ai Store** | Find and set up software: Forge's recipes by category and Flathub's apps, "what it sets up" before anything changes, the same plan, polkit and undo; no account, no ratings, nothing sent | `docs/BEYOND.md` |
+| **D.Ai Store** | Find and set up software: Forge's recipes by category (phone link with KDE Connect included) and Flathub's apps, "what it sets up" before anything changes, the same plan, polkit and undo; no account, no ratings, nothing sent | `docs/BEYOND.md` |
 | **D.Ai Settings** | Security, appearance, language and this computer in one window; every row is a D.Ai Tune action: the plan first, polkit, a journal and undo; the value shown is read back from the system | `docs/BEYOND.md` |
 | **D.Ai Focus** | "Focus for 25 minutes", or a tile in Quick: pop-ups hidden and a warmer light until a timer ends, then everything is put back | `docs/BEYOND.md` |
 | **D.Ai OCR** | Super+Shift+T: choose an area of the screen and its text is copied, read on this computer in eight languages | `docs/V2.md` |
@@ -213,7 +213,7 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **PDF בארגז חול:** ‏D.Ai PDF פותח כל קובץ בארגז חול, מראה מה הקובץ "רוצה" לעשות (JavaScript, הרצת תוכניות, שליחת טפסים) ולא עושה זאת לעולם; עריכה של עמודים, טפסים, הערות, חתימה מוטבעת, השחרה אמיתית, OCR וקובץ קטן יותר, הכול בתוך ארגז החול.
 - **Windows בחלון:** ‏D.Ai VM מריץ Windows מהמדיה ומהמפתח שלכם (KVM, ‏UEFI עם Secure Boot, ‏TPM 2.0), בלי תיקייה משותפת, לוח או USB עד שתפעילו כל אחד מהם. D.Ai לא מפיץ Windows.
 - **בטלוויזיה, בטלפון ועל ARM:** מהדורת tv עולה ל-Kodi בעברית ונשלטת מהשלט; תמונות arm64 ניסיוניות של הטלפון (Phosh) ושל הטלוויזיה נבנות ועולות ב-QEMU ב-CI.
-- **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏D.Ai Store (חנות בלי חשבון: מה זה מקים מוצג קודם), ‏D.Ai Settings (חלון הגדרות אחד, כל שינוי עם תוכנית וביטול), ‏D.Ai Focus ("פוקוס ל־25 דקות"), ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
+- **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏D.Ai Store (חנות בלי חשבון: מה זה מקים מוצג קודם; חיבור לטלפון עם KDE Connect), ‏D.Ai Find שמחפש גם בתוך המסמכים ("מסמך שמדבר על שכירות"), ‏D.Ai Settings (חלון הגדרות אחד, כל שינוי עם תוכנית וביטול), ‏D.Ai Focus ("פוקוס ל־25 דקות"), ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
 
 | | | |
 |---|---|---|

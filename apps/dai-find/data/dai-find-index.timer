@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Unit]
+Description=D.Ai Find: refresh the content index after login and every two hours
+
+[Timer]
+OnStartupSec=10min
+OnUnitActiveSec=2h
+RandomizedDelaySec=10min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -20,7 +20,7 @@
   "من": "the",
   "في": "the",
   "على": "the",
-  "عن": "the",
+  "عن": "about",
   "مع": "the",
   "كل": "the",
   "مجلد": "folder",
@@ -79,6 +79,11 @@
   "سبتمبر": "september",
   "أكتوبر": "october",
   "نوفمبر": "november",
-  "ديسمبر": "december"
+  "ديسمبر": "december",
+  "حول": "about",
+  "تحتوي على": "containing",
+  "يحتوي على": "containing",
+  "فيها كلمة": "containing",
+  "مكتوب فيها": "containing"
  }
 }

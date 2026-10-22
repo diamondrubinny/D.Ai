@@ -3,6 +3,7 @@
 import io
 import json
 import os
+import subprocess
 import tempfile
 import time
 import unittest
@@ -33,7 +34,8 @@ class ParseTests(unittest.TestCase):
         q = parse("התמונות מאתמול", NOW)
         self.assertEqual((q.kinds, q.since, q.until), ({"image"}, datetime(2026, 10, 15), datetime(2026, 10, 16)))
         q = parse("חפש מצגת על תקציב מהחודש שעבר", NOW)
-        self.assertEqual((q.kinds, q.words, q.since), ({"presentation"}, ["תקציב"], datetime(2026, 9, 1)))
+        self.assertEqual((q.kinds, q.words, q.content, q.since), ({"presentation"}, [], ["תקציב"], datetime(2026, 9, 1)))
+        self.assertTrue(q.names_too)   # "על תקציב": named budget, or about the budget inside
         q = parse("תמצא צילומי מסך מהיום", NOW)
         self.assertEqual((q.kinds, q.since, q.until), ({"image"}, datetime(2026, 10, 16), None))
         q = parse("איפה השירים מ־3 הימים האחרונים", NOW)
@@ -146,6 +148,120 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(data["query"]["kinds"], ["pdf"])
         self.assertTrue(data["results"][0]["path"].endswith("report.pdf"))
+
+
+class ContentTests(unittest.TestCase):
+    """Inside the documents (docs/BEYOND.md §11): the index, the phrases and the search."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.home = Path(self.tmp.name).resolve()
+        (self.home / "Documents").mkdir()
+        self.addCleanup(self.tmp.cleanup)
+        self.addCleanup(search_mod._CACHE.clear)
+
+    def docx(self, rel: str, text: str) -> Path:
+        import zipfile
+        path = self.home / rel
+        with zipfile.ZipFile(path, "w") as archive:
+            archive.writestr("[Content_Types].xml", "<Types/>")
+            archive.writestr("word/document.xml", f"<w:document><w:body><w:p><w:r><w:t>{text}</w:t></w:r></w:p></w:body></w:document>")
+        return path
+
+    def test_phrases_are_parsed_in_both_languages(self):
+        q = parse("find the pdf about the lease from last week", NOW)
+        self.assertEqual((q.kinds, q.content, q.words, q.time_label), ({"pdf"}, ["lease"], [], "last_week"))
+        self.assertEqual(parse("documents containing 4000 shekels", NOW).content, ["4000 shekels"])
+        self.assertEqual(parse("מצא מסמך שמדבר על שכירות", NOW).content, ["שכירות"])
+        self.assertEqual(parse("קבצים שכתוב בהם חוזה", NOW).content, ["חוזה"])
+        q = parse("חפש את ה-PDF עם המילה חשבונית מאתמול", NOW)
+        self.assertEqual((q.kinds, q.content, q.time_label), ({"pdf"}, ["חשבונית"], "yesterday"))
+        self.assertTrue(parse("find files about taxes", NOW).specific)
+        self.assertEqual(parse("найди документы о налогах", NOW).content, ["налогах"])
+        self.assertEqual(parse("busca documentos sobre impuestos", NOW).content, ["impuestos"])
+        self.assertEqual(parse("ابحث عن مستندات عن الضرائب", NOW).content, ["الضرائب"])
+
+    def test_extract_plain_office_and_pdf(self):
+        from dai_find import index
+        plain = self.home / "Documents" / "note.txt"
+        plain.write_text("the rent is 4000 shekels a month", encoding="utf-8")
+        self.assertIn("4000 shekels", index.extract(plain))
+        self.assertIn("Lease agreement", index.extract(self.docx("Documents/lease.docx", "Lease agreement &amp; terms")))
+        calls = []
+
+        def run(argv, **kwargs):
+            calls.append(argv)
+            return subprocess.CompletedProcess(argv, 0, "Boarding pass for flight 123\n", "")
+
+        self.assertIn("flight 123", index.extract(self.home / "Documents" / "pass.pdf", run))
+        self.assertEqual(calls[0][:4], ["pdftotext", "-q", "-l", str(index.PDF_PAGES)])
+        self.assertIsNone(index.extract(self.home / "Documents" / "photo.jpg"))
+        broken = self.home / "Documents" / "broken.docx"
+        broken.write_bytes(b"not a zip")
+        self.assertEqual(index.extract(broken), "")
+
+    def test_index_is_incremental_private_and_forgets(self):
+        from dai_find import index
+        first = self.home / "Documents" / "a.txt"
+        first.write_text("alpha budget", encoding="utf-8")
+        second = self.docx("Documents/b.docx", "beta budget")
+        entries, _ = search_mod._listing(self.home, 1000, 5.0, 0.0)
+        report = index.build(self.home, entries)
+        self.assertEqual((report.indexed, report.removed, report.total, report.complete), (2, 0, 2, True))
+        self.assertEqual(oct(index.index_path(self.home).stat().st_mode & 0o777), "0o600")
+        self.assertEqual(index.build(self.home, entries).indexed, 0)      # nothing changed, nothing read
+        first.write_text("alpha budget and taxes", encoding="utf-8")
+        os.utime(first, (time.time() + 5, time.time() + 5))
+        second.unlink()
+        entries, _ = search_mod._listing(self.home, 1000, 5.0, 0.0)
+        report = index.build(self.home, entries)
+        self.assertEqual((report.indexed, report.removed, report.total), (1, 1, 1))
+        self.assertEqual(index.status(self.home), 1)
+        self.assertEqual([m.path for m in index.lookup(self.home, ["taxes"])], [first])
+        self.assertEqual(index.lookup(self.home, ["beta"]), [])
+        self.assertTrue(index.clear(self.home))
+        self.assertIsNone(index.status(self.home))
+
+    def test_search_inside_with_endings_prefixes_and_snippets(self):
+        lease = self.home / "Documents" / "lease.txt"
+        lease.write_text("Lease agreement. The rent is 4000 shekels a month, taxes included.", encoding="utf-8")
+        hebrew = self.docx("Documents/חוזה.docx", "חוזה השכירות: דמי השכירות הם 4000 שקלים לחודש")
+        (self.home / "Documents" / "other.txt").write_text("a shopping list", encoding="utf-8")
+        hits = search(parse("find documents about tax", NOW), self.home)      # tax → taxes
+        self.assertEqual([h.path for h in hits], [lease])
+        self.assertIn("4000 shekels", hits[0].snippet)
+        hits = search(parse("מצא מסמך שמדבר על שכירות", NOW), self.home)      # שכירות → השכירות
+        self.assertEqual([h.path for h in hits], [hebrew])
+        self.assertEqual([h.path for h in search(parse("find files containing 4000 shekels", NOW), self.home)], [lease])
+        self.assertEqual(search(parse("find files about unicorns", NOW), self.home), [])
+        self.assertEqual(search(parse("find pdf about rent", NOW), self.home), [])  # the kind still filters
+        named = self.home / "Documents" / "rent-receipt.txt"
+        named.write_text("nothing inside", encoding="utf-8")
+        search_mod._CACHE.clear()
+        self.assertEqual({h.path for h in search(parse("find files about rent", NOW), self.home)}, {lease, named})
+        self.assertEqual({h.path for h in search(parse("find files containing rent", NOW), self.home)}, {lease})
+        self.assertEqual(index_count(self.home), 3)
+
+    def test_cli_index_verbs(self):
+        (self.home / "Documents" / "a.txt").write_text("alpha", encoding="utf-8")
+        out = io.StringIO()
+        with redirect_stdout(out):
+            self.assertEqual(cli.index_command(["--status"], "en", self.home), 1)
+            self.assertEqual(cli.index_command([], "en", self.home), 0)
+            self.assertEqual(cli.index_command(["--status"], "he", self.home), 0)
+            self.assertEqual(cli.index_command(["--clear"], "en", self.home), 0)
+        text = out.getvalue()
+        self.assertIn("No content index yet", text)
+        self.assertIn("Read 1, forgot 0, 1 documents", text)
+        self.assertIn("1 מסמכים באינדקס", text)
+        self.assertIn("deleted", text)
+        with mock.patch.object(Path, "home", return_value=self.home), redirect_stdout(io.StringIO()):
+            self.assertEqual(cli.main(["dai-find", "index", "--quiet"]), 0)
+
+
+def index_count(home: Path) -> int:
+    from dai_find import index
+    return index.status(home) or 0
 
 
 class CommandTests(unittest.TestCase):

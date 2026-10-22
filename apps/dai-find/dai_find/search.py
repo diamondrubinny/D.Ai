@@ -38,6 +38,7 @@ class Hit:
     when: float     # modification time: when it was downloaded, saved or last edited
     size: int
     kind: str
+    snippet: str = ""   # the text around a content match (docs/BEYOND.md §11)
 
     @property
     def date(self) -> datetime:
@@ -136,6 +137,9 @@ def search(query: Query, home: Path | None = None, limit: int = 20, max_files: i
     extensions = query.extensions
     since = query.since.timestamp() if query.since else None
     until = query.until.timestamp() if query.until else None
+    snippets: dict[Path, str] | None = None
+    if query.content:
+        snippets = _content_matches(home, query.content, max_files, budget)
     hits: list[Hit] = []
     for root in roots:
         if not root.is_dir():
@@ -148,9 +152,23 @@ def search(query: Query, home: Path | None = None, limit: int = 20, max_files: i
                 continue
             if query.words and not _name_matches(entry.name, query.words):
                 continue
-            hits.append(Hit(entry.path, entry.when, entry.size, kind_of(entry.path)))
+            if snippets is not None and entry.path not in snippets and not (
+                    query.names_too and _name_matches(entry.name, query.content)):
+                continue
+            hits.append(Hit(entry.path, entry.when, entry.size, kind_of(entry.path),
+                            snippets.get(entry.path, "") if snippets else ""))
     hits.sort(key=lambda hit: hit.when, reverse=True)
     return hits[:limit]
+
+
+def _content_matches(home: Path, phrases: list[str], max_files: int, budget: float) -> dict[Path, str]:
+    """Path → snippet for the files whose text has the phrases. Without an index yet (a new computer),
+    a quick one is built first within a short budget, so the first content search still answers."""
+    from . import index
+    if index.status(home) is None:
+        entries, _ = _listing(home, max_files, budget, 0.0)
+        index.build(home, entries, budget=min(10.0, max(budget, 2.0)))
+    return {match.path: match.snippet for match in index.lookup(home, phrases)}
 
 
 def human_size(size: int) -> str:

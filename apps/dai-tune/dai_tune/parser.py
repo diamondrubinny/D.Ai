@@ -49,7 +49,7 @@ UNBLOCK = r"(?:\bremove the block\b|(?:בטל|תבטל|לבטל|הסר|תסיר|
 
 OPEN_PORT = r"(?:\b(?:open|allow|expose)\b|פתח|תפתח|לפתוח|פתיחת|אפשר)"
 CLOSE_PORT = r"(?:\b(?:close|block|deny)\b|סגור|תסגור|לסגור|סגירת|חסום|תחסום)"
-PORT = r"(?:port|פורט|פורטים|יציאה)\s*(?:(?:tcp|udp)\s*)?(\d{1,5})"
+PORT = r"(?:ports?|פורט|פורטים|יציאה|יציאות)\s*(?:(?:tcp|udp)\s*)?(\d{1,5}(?:\s*(?:-|to|עד)\s*\d{1,5})?)"
 ANYWHERE = r"(?:anywhere|any network|internet|everyone|world|public|מכל מקום|מכל רשת|לאינטרנט|מהאינטרנט|לכולם|לכל העולם|ציבורי)"
 
 UPDATES = r"(?:auto(?:matic)?[- ]?updates?|security updates|unattended|עדכונים אוטומטיים|עדכון אוטומטי|עדכוני אבטחה)"
@@ -262,7 +262,9 @@ def parse_clause(clause: str) -> list[Request]:
 
     # Firewall ports.
     if m := re.search(PORT, c, re.IGNORECASE):
-        port = int(m.group(1))
+        # A single port stays an int; "1714 to 1764" becomes "1714-1764" (the catalog validates both).
+        span = re.sub(r"\s*(?:-|to|עד)\s*", "-", m.group(1))
+        port: int | str = span if "-" in span else int(span)
         proto = "udp" if _has(r"\budp\b", c) else "tcp"
         if _has(CLOSE_PORT, c):
             return [Request("firewall.close_port", {"port": port, "proto": proto}, clause)]

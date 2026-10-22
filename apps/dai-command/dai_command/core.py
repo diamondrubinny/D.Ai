@@ -667,8 +667,10 @@ def find_actions(text: str, home: Path | None = None) -> list[Action] | None:
             folder = "~/" + str(hit.path.parent.relative_to(base)) if hit.path.parent != base else "~"
         except ValueError:
             folder = str(hit.path.parent)
-        rows.append(Action("file", hit.path.name, f"{hit.date:%d.%m.%Y %H:%M} · {human_size(hit.size)} · {folder}",
-                           FILE_ICONS.get(hit.kind, "text-x-generic"), str(hit.path)))
+        detail = f"{hit.date:%d.%m.%Y %H:%M} · {human_size(hit.size)} · {folder}"
+        if hit.snippet:  # a content match: what the file says around the words
+            detail = f"“{hit.snippet[:80]}” · {detail}"
+        rows.append(Action("file", hit.path.name, detail, FILE_ICONS.get(hit.kind, "text-x-generic"), str(hit.path)))
     return rows
 
 

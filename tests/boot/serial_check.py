@@ -114,6 +114,7 @@ def _hex(text: str) -> str:
 # Runs inside the D.Ai Forge sandbox and reports what it can reach.
 SANDBOX_PROBE_B64 = "aW1wb3J0IG9zLCBzb2NrZXQKcHJpbnQoJ2hvbWU6Jywgc29ydGVkKG9zLmxpc3RkaXIob3MucGF0aC5leHBhbmR1c2VyKCd+JykpKSkKdHJ5OgogICAgc29ja2V0LmNyZWF0ZV9jb25uZWN0aW9uKCgnMS4xLjEuMScsIDgwKSwgdGltZW91dD0zKQogICAgcHJpbnQoJ25ldHdvcms6IG9wZW4nKQpleGNlcHQgT1NFcnJvcjoKICAgIHByaW50KCduZXR3b3JrOiBibG9ja2VkJykKZm9yIHBhdGggaW4gWycvYXBwL2FwcC5weScsICcvZXRjL3Bhc3N3ZCddOgogICAgdHJ5OgogICAgICAgIG9wZW4ocGF0aCwgJ2EnKS53cml0ZSgneCcpCiAgICAgICAgcHJpbnQoJ3dyaXRhYmxlOicsIHBhdGgpCiAgICBleGNlcHQgT1NFcnJvcjoKICAgICAgICBwcmludCgncmVhZC1vbmx5OicsIHBhdGgpCnByaW50KCdzc2gga2V5IHZpc2libGU6Jywgb3MucGF0aC5leGlzdHMoJy9ob21lL2RhaS8uc3NoL2NhbmFyeScpKQpwcmludCgneDExIHNvY2tldCB2aXNpYmxlOicsIG9zLnBhdGguZXhpc3RzKCcvdG1wLy5YMTEtdW5peCcpKQo="
 HEBREW_FORGE = "תתקין אנטי וירוס"
+HEBREW_FIND_CONTENT = "מצא מסמך שמדבר על שכירות"   # docs/BEYOND.md §11: שכירות also matches השכירות inside the file
 HEBREW_CLIP = "שלום מהלוח של D.Ai"
 
 # Runs as root in the VM against the real snapper, on a Btrfs image (the live root is not Btrfs).
@@ -449,6 +450,31 @@ def main() -> int:
          "dai-find 'find photos from today'", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and o.count("boarding-pass.pdf") == 2 and "old-ticket" not in o
          and "beach.jpg" in o),
+        # D.Ai Find inside the documents (docs/BEYOND.md §11): text, docx and a real PDF, both languages, the timer.
+        ("find: inside the documents", "mkdir -p ~/Documents && printf 'Lease agreement. The rent is 4000 shekels a month.' "
+         "> ~/Documents/lease.txt && printf 'A shopping list: milk, bread.' > ~/Documents/list.txt && python3 -c \""
+         "import zipfile; z=zipfile.ZipFile('/home/dai/Documents/contract.docx','w'); z.writestr('[Content_Types].xml','<Types/>'); "
+         "z.writestr('word/document.xml','<w:document><w:body><w:p><w:r><w:t>"
+         "\\u05d7\\u05d5\\u05d6\\u05d4 \\u05d4\\u05e9\\u05db\\u05d9\\u05e8\\u05d5\\u05ea \\u05d4\\u05d5\\u05d0 \\u05dc\\u05e9\\u05e0\\u05d4"
+         "</w:t></w:r></w:p></w:body></w:document>'); z.close()\" && "
+         "printf '%%PDF-1.4\\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj "
+         "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 100]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj "
+         "4 0 obj<</Length 47>>stream\\nBT /F1 12 Tf 10 50 Td (Boarding pass TLV) Tj ET\\nendstream endobj "
+         "5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\\ntrailer<</Root 1 0 R>>' > ~/Documents/pass.pdf; "
+         "dai-find index; dai-find index --status; dai-find 'find documents about the rent'; "
+         "dai-find 'find the pdf containing boarding pass'; "
+         f"LANG=he_IL.UTF-8 dai-find \"$(printf '{_hex(HEBREW_FIND_CONTENT)}')\"; "
+         "stat -c 'MODE=%a' ~/.cache/dai/find-index.sqlite; "
+         "test -L /etc/systemd/user/timers.target.wants/dai-find-index.timer && echo TIMER_WANTED; "
+         "export XDG_RUNTIME_DIR=/run/user/$(id -u); systemctl --user is-enabled dai-find-index.timer; "
+         "systemctl --user is-active dai-find-index.timer", True,
+         lambda o: "documents in the content index" in o and "lease.txt" in o
+         and "4000 shekels" in o and "pass.pdf" in o and "Boarding pass" in o and "contract.docx" in o
+         and "list.txt" not in o and "MODE=600" in o and "TIMER_WANTED" in o and re.search(r"^active\s*$", o, re.M) is not None, 60),
+        # Phone link (docs/BEYOND.md §10): the recipe's dry run shows the KDE Connect range on both protocols.
+        ("phone link: the recipe opens the range", "dai-forge --dry-run 'connect my phone' </dev/null; "
+         "dai-tune --dry-run 'open ports 1714 to 1764 udp' </dev/null; dai-store list | grep -A3 -i 'phone'", True,
+         lambda o: "kdeconnect" in o and o.count("1714-1764") >= 3 and "udp" in o and "tcp" in o),
         # D.Ai Doctor: plain-language answers; its fixes are real D.Ai Tune plans.
         ("doctor: diagnosis", "dai-doctor --version; dai-doctor --json slow disk battery | python3 -c "
          "'import json,sys; f=json.load(sys.stdin); print(\"FINDINGS\", len(f), sorted({x[\"key\"].split(\":\")[0] for x in f}))'; "

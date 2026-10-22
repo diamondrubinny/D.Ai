@@ -83,6 +83,13 @@ STOP = {
     "תראה", "הראה", "להראות", "עם", "על", "בשם", "שנקרא", "שנקראת", "כל", "יש", "הוא", "היא", "זה", "אותו",
     "שמרתי", "צילמתי", "קיבלתי", "תיקייה", "תיקיית", "ימים", "יום", "שבוע", "חודש", "שנה", "לפני",
 }
+# "about X", "containing X", "שמדבר על X", "שכתוב בו X": X is looked for inside the files (docs/BEYOND.md §11).
+# "about X" also accepts a file named X; the stricter wordings want X inside the file.
+CONTENT = re.compile(
+    r"(?P<loose>\babout\b|בנושא|(?<![\w\u0590-\u05FF])על)|"  # i18n: ok
+    r"(?P<strict>\b(?:containing|contains|mentioning|that\s+says?|with\s+the\s+words?|with\s+the\s+text)\b"
+    r"|שמדבר(?:ים|ת|ות)?\s+על|שמכיל(?:ים|ה|ות)?|שכתוב\s+ב(?:הם|הן|ו|ה)|שמוזכר(?:ת)?\s+ב(?:הם|הן|ו|ה)"
+    r"|עם\s+המיל(?:ה|ים))", re.IGNORECASE)
 TRIGGERS = re.compile(r"^\s*(?:find|search(?:\s+for)?|where(?:'s|\s+is|\s+are)?|show\s+me|"
                       r"מצא|תמצא|חפש|תחפש|איפה|תראה\s+לי|הראה\s+לי)\b", re.IGNORECASE)
 
@@ -96,6 +103,8 @@ class Query:
     folders: list[str] = field(default_factory=list)
     words: list[str] = field(default_factory=list)
     time_label: str = ""
+    content: list[str] = field(default_factory=list)   # phrases that must appear inside the file
+    names_too: bool = False   # "about X" / "על X": a file named X counts as well as one that says X
 
     @property
     def extensions(self) -> set[str]:
@@ -104,7 +113,7 @@ class Query:
     @property
     def specific(self) -> bool:
         """Enough to search without listing every file in the home folder."""
-        return bool(self.kinds or self.since or self.words or self.folders)
+        return bool(self.kinds or self.since or self.words or self.folders or self.content)
 
 
 def _english(text: str) -> str:
@@ -185,6 +194,17 @@ def _time_window(text: str, now: datetime, hebrew: bool) -> tuple[datetime | Non
     return None, None, "", text
 
 
+def _content_phrase(tail: str) -> str:
+    """The words after "about": without a leading article and without trailing connectives left by a
+    removed time phrase ("about the lease from [last week]" → "lease")."""
+    words = [w for w in re.findall(r"[\w\u0590-\u05FF.+-]+", tail) if w.strip(".-+")]  # i18n: ok
+    while words and words[0].lower() in ("the", "a", "an", "my", "ה", "את"):
+        words.pop(0)
+    while words and words[-1].lower() in STOP:
+        words.pop()
+    return " ".join(words)
+
+
 def parse(text: str, now: datetime | None = None, lang: str = "en") -> Query:
     now = now or datetime.now()
     hebrew = lang == "he" or bool(re.search(r"[֐-׿]", text))  # i18n: ok (Hebrew search words)
@@ -194,6 +214,12 @@ def parse(text: str, now: datetime | None = None, lang: str = "en") -> Query:
     # "ה-PDF" / "ה־PDF": a Hebrew prefix joined with a hyphen or maqaf.
     rest = re.sub(r"(?<=[\u0590-\u05FF])[-\u05BE](?=\w)", " ", TRIGGERS.sub(" ", text, count=1))
     query.since, query.until, query.time_label, rest = _time_window(rest, now, hebrew)
+    if match := CONTENT.search(rest):
+        query.names_too = bool(match.group("loose"))
+        phrase = _content_phrase(rest[match.end():])
+        if phrase:
+            query.content.append(phrase)
+        rest = rest[:match.start()]
 
     for pattern, kind in KIND_PHRASES:
         if re.search(pattern, rest, re.IGNORECASE):
