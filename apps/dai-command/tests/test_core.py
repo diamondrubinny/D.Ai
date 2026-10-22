@@ -264,6 +264,21 @@ class HealLanguageTests(unittest.TestCase):
                 self.assertTrue(core.HEAL_WORDS.search(core._heal_english(text)))
         self.assertFalse(core.HEAL_WORDS.search(core._heal_english("instala vlc")))
 
+    def test_focus_sentences(self):
+        """D.Ai Focus (docs/BEYOND.md §5): the minutes come from the sentence, 25 without one; stop words end it."""
+        from unittest import mock
+        with mock.patch("shutil.which", lambda name: "/usr/bin/dai-focus" if name == "dai-focus" else None):
+            for text, payload in (("focus for 40 minutes", "40"), ("פוקוס ל-15 דקות", "15"), ("מצב ריכוז", "25"),
+                                  ("focus", "25"), ("בלי הפרעות", "25"), ("focus for 999 minutes", "180"),
+                                  ("stop focus", "stop"), ("סיים את הפוקוס", "stop")):
+                with self.subTest(text):
+                    actions = core.focus_actions(text)
+                    self.assertIsNotNone(actions)
+                    self.assertEqual((actions[0].kind, actions[0].payload), ("focus", payload))
+            self.assertIsNone(core.focus_actions("find my photos"))
+        with mock.patch("shutil.which", lambda name: None):
+            self.assertIsNone(core.focus_actions("focus for 40 minutes"))  # not installed: no row
+
 
 if __name__ == "__main__":
     unittest.main()

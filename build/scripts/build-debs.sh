@@ -210,6 +210,11 @@ build_apps() {
   install -m 0755 "$ocr/data/dai-ocr" "$root/usr/bin/dai-ocr"
   install -m 0644 "$ocr/data/dai-ocr.desktop" "$root/usr/share/applications/"
 
+  # D.Ai Focus (docs/BEYOND.md §5): a quiet session with a timer, from Quick or a sentence.
+  local focus="$REPO_ROOT/apps/dai-focus"
+  copy_package "$focus/dai_focus" "$root"
+  install -m 0755 "$focus/data/dai-focus" "$root/usr/bin/dai-focus"
+
   # D.Ai VM (docs/VM.md): Windows in a window with the person's own media and key; the stack itself is a package list.
   local vm="$REPO_ROOT/apps/dai-vm"
   copy_package "$vm/dai_vm" "$root"

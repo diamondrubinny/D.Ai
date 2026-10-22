@@ -8,6 +8,8 @@ pre-releases are marked `-alpha`, `-beta` or `-rc`.
 First public alpha, built on Debian 13 (trixie). User and developer editions.
 
 ### Added
+- D.Ai Focus (`docs/BEYOND.md` §5): "focus for 25 minutes" in D.Ai Command, or a tile in D.Ai Quick: pop-ups
+  hidden, a warmer light, a user timer that ends it, and everything put back as it was; nothing needs root.
 - D.Ai PDF: the PDF reader. Every file opens through a bubblewrap helper (no network, no home folder, memory and
   CPU limits); what the file wants (JavaScript, launching programs, submitting forms, attachments, XFA) is shown
   in a bar and never done; links ask before opening and local ones are refused; Hebrew made readable; search,

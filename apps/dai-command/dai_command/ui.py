@@ -365,6 +365,9 @@ class CommandWindow(QWidget):
         elif action.kind == "clip":
             self._spawn(["dai-clip"])
             remembered = self.query.text().strip()
+        elif action.kind == "focus":
+            self._spawn(["dai-focus", "stop"] if action.payload == "stop" else ["dai-focus", "start", str(action.payload)])
+            remembered = self.query.text().strip()
         elif action.kind == "ocr":
             # A moment for this window to close, so the area chooser covers the screen and not us.
             self._spawn(["sh", "-c", "sleep 0.4; exec dai-ocr"])

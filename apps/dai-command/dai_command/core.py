@@ -453,6 +453,12 @@ _STRINGS = {
     "heal_title": ("Help & repair: what is not working?", "עזרה ותיקון: מה לא עובד?"),
     "heal_hint": ("D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter",
                   "D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter"),
+    "focus_title": ("Focus for {n} minutes", "פוקוס ל־{n} דקות"),
+    "focus_hint": ("D.Ai Focus · pop-ups hidden and a warmer light until the timer ends · Enter",
+                   "D.Ai Focus · ההתראות מוסתרות והתאורה חמה עד שהטיימר נגמר · Enter"),
+    "focus_stop_title": ("End the focus session", "סיום סשן הפוקוס"),
+    "focus_stop_hint": ("D.Ai Focus · pop-ups and the light go back to what they were · Enter",
+                        "D.Ai Focus · ההתראות והתאורה חוזרות למה שהיו · Enter"),
     "ocr_title": ("Copy text from the screen", "העתקת טקסט מהמסך"),
     "ocr_hint": ("D.Ai OCR · choose an area, its text is copied · read on this computer · Super+Shift+T",
                  "D.Ai OCR · בוחרים אזור והטקסט שבו מועתק · נקרא על המחשב הזה · Super+Shift+T"),
@@ -548,6 +554,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("clip", tr("clip_title"), tr("clip_hint"), "edit-paste", "")]
     if OCR_WORDS.search(text) and shutil.which("dai-ocr"):
         return [Action("ocr", tr("ocr_title"), tr("ocr_hint"), "edit-copy", "")]
+    if (focus := focus_actions(text)) is not None:
+        return focus
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -727,7 +735,22 @@ CLIP_WORDS = re.compile(r"\bclipboard\b|what (?:did i copy|i copied)|copy histor
 # Only about the screen or a picture: "read the text file" stays with D.Ai Find.
 OCR_WORDS = re.compile(r"\bocr\b|\btext (?:from|on|in) (?:the |my |this )?(?:screen|image|picture|photo)\b|"
                        r"טקסט (?:מ|ב|על )(?:ה)?(?:מסך|תמונה)|זיהוי טקסט", re.IGNORECASE)
+# D.Ai Focus (docs/BEYOND.md §5): "focus for 40 minutes", "פוקוס ל-40 דקות", "מצב ריכוז", "בלי הפרעות".
+FOCUS_WORDS = re.compile(r"\bfocus(?: mode| session| time)?\b|(?:מצב )?(?:פוקוס|ריכוז)\b|בלי הפרעות", re.IGNORECASE)
+FOCUS_STOP = re.compile(r"\b(?:stop|end|cancel)\b|סיים|סיימי|עצור|עצרי|הפסק|הפסיקי|בטל", re.IGNORECASE)
+FOCUS_MINUTES = re.compile(r"\b(\d{1,3})\b")
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
+
+
+def focus_actions(text: str) -> list[Action] | None:
+    """D.Ai Focus: "focus for 40 minutes" starts a session (25 without a number); "stop focus" ends it."""
+    if not FOCUS_WORDS.search(text) or not shutil.which("dai-focus"):
+        return None
+    if FOCUS_STOP.search(text):
+        return [Action("focus", tr("focus_stop_title"), tr("focus_stop_hint"), "process-stop", "stop")]
+    found = FOCUS_MINUTES.search(text)
+    minutes = max(5, min(180, int(found.group(1)))) if found else 25
+    return [Action("focus", tr("focus_title").format(n=minutes), tr("focus_hint"), "appointment-new", str(minutes))]
 
 
 def backup_actions(text: str) -> list[Action] | None:

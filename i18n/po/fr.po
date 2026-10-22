@@ -6146,3 +6146,82 @@ msgstr "{name} ne voit aucun de vos fichiers, à dessein"
 #, python-brace-format
 msgid "{n} USB devices given to it"
 msgstr "{n} périphériques USB qui lui sont donnés"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "A focus session is already running (dai-focus status)."
+msgstr "Une session de concentration est déjà en cours (dai-focus status)."
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "D.Ai Focus · pop-ups and the light go back to what they were · Enter"
+msgstr "D.Ai Focus · les notifications et la lumière reviennent comme avant · Entrée"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "D.Ai Focus · pop-ups hidden and a warmer light until the timer ends · Enter"
+msgstr "D.Ai Focus · notifications masquées et lumière plus chaude jusqu'à la fin du minuteur · Entrée"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "End the focus session"
+msgstr "Terminer la session de concentration"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Focus 25 min"
+msgstr "Concentration 25 min"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Focus ended: {n} minutes"
+msgstr "Concentration terminée : {n} minutes"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Focus for {n} minutes"
+msgstr "Concentration pendant {n} minutes"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Focus for {n} minutes. To end early: dai-focus stop"
+msgstr "Concentration pendant {n} minutes. Pour terminer plus tôt : dai-focus stop"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Focus stopped after {n} minutes"
+msgstr "Concentration arrêtée après {n} minutes"
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Focus: {left} of {n} minutes left."
+msgstr "Concentration : {left} minutes restantes sur {n}."
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Focus: {n} minutes"
+msgstr "Concentration : {n} minutes"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "No focus session is running."
+msgstr "Aucune session de concentration en cours."
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "No focus session. Start one: dai-focus start 25"
+msgstr "Pas de session de concentration. En lancer une : dai-focus start 25"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "No timer here: end it with dai-focus stop."
+msgstr "Pas de minuteur ici : terminez-la avec dai-focus stop."
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "Nothing had been changed."
+msgstr "Rien n'avait été modifié."
+
+#: apps/dai-focus/dai_focus/cli.py
+#, python-brace-format
+msgid "Pop-ups are hidden and the light is warmer for {n} minutes."
+msgstr "Les notifications sont masquées et la lumière plus chaude pendant {n} minutes."
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "pop-ups are back"
+msgstr "les notifications sont de retour"
+
+#: apps/dai-focus/dai_focus/cli.py
+msgid "the light is normal again"
+msgstr "la lumière est redevenue normale"

@@ -14,6 +14,7 @@ not what was asked for.
 from __future__ import annotations
 
 import configparser
+import json
 import os
 import re
 import shutil
@@ -48,7 +49,8 @@ class Toggle:
 
 TOGGLES = (Toggle("wifi", "network-wireless", "📶"), Toggle("bluetooth", "preferences-system-bluetooth", "ᛒ"),
            Toggle("dnd", "notifications-disabled", "🌙"), Toggle("saver", "battery-profile-powersave|battery-060|battery", "🔋"),
-           Toggle("mic", "microphone-sensitivity-muted", "🎙"))
+           Toggle("mic", "microphone-sensitivity-muted", "🎙"),
+           Toggle("focus", "appointment-new|alarm-symbolic|alarm", "🎯"))
 
 
 class Controls:
@@ -99,6 +101,19 @@ class Controls:
 
     def set_mic(self, muted: bool) -> bool:
         return self._ok(["wpctl", "set-mute", SOURCE, "1" if muted else "0"])
+
+    def focus(self) -> bool | None:
+        """A D.Ai Focus session is running (docs/BEYOND.md §5); None when dai-focus is not installed."""
+        out = self._out(["dai-focus", "status", "--json"])
+        if out is None:
+            return None
+        try:
+            return bool(json.loads(out).get("active"))
+        except ValueError:
+            return None
+
+    def set_focus(self, on: bool) -> bool:
+        return self._ok(["dai-focus", "start", "25"] if on else ["dai-focus", "stop"])
 
     def dnd(self) -> bool | None:
         parser = self._notifications()

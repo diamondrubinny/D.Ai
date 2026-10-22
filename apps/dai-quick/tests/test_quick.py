@@ -38,6 +38,13 @@ class FakeSystem:
                 out = self.state["profile"] + "\n"
             case ["powerprofilesctl", "set", value]:
                 self.state["profile"] = value
+            case ["dai-focus", "status", "--json"]:
+                out = '{"active": %s}\n' % ("true" if self.state.get("focus") else "false")
+            case ["dai-focus", "start", minutes]:
+                self.state["focus"] = True
+                self.state["dnd_by_focus"] = True
+            case ["dai-focus", "stop"]:
+                self.state["focus"] = False
             case ["wpctl", "get-volume", "@DEFAULT_AUDIO_SOURCE@"]:
                 out = "Volume: 1.00" + (" [MUTED]" if self.state["mic"] else "") + "\n"
             case ["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", value]:
@@ -61,7 +68,7 @@ class ControlsTests(unittest.TestCase):
 
     def test_reads_and_switches_every_toggle(self):
         self.assertEqual(self.controls.state(), {"wifi": True, "bluetooth": False, "dnd": False, "saver": False,
-                                                 "mic": False, "volume": 62})
+                                                 "mic": False, "focus": None, "volume": 62})  # no dai-focus: no tile
         for key in ("wifi", "bluetooth", "dnd", "saver", "mic"):
             before = self.controls.read(key)
             self.assertTrue(self.controls.set(key, not before), key)
@@ -142,6 +149,19 @@ class WindowTests(unittest.TestCase):
         window.tiles["dnd"].click()
         self.assertFalse(window.dnd_note.isHidden())
         self.assertIn("85/100", window.security_label.text())
+
+    def test_focus_tile_starts_a_session_and_shows_it(self):
+        self.system.tools.add("dai-focus")
+        self.assertIs(self.controls.focus(), False)
+        window = self.window()
+        self.assertIn("focus", window.tiles)
+        self.assertEqual(window.tiles["focus"].accessibleName(), "Focus 25 min: off")
+        window.tiles["focus"].click()
+        self.assertIn(["dai-focus", "start", "25"], self.system.calls)
+        self.assertTrue(window.tiles["focus"].isChecked())
+        window.tiles["focus"].click()
+        self.assertIn(["dai-focus", "stop"], self.system.calls)
+        self.assertFalse(window.tiles["focus"].isChecked())
 
     def test_a_failed_switch_shows_the_truth(self):
         window = self.window()

@@ -658,6 +658,18 @@ def main() -> int:
          "grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and '"wifi"' in o and '"volume"' in o and '"security"' in o
          and re.search(r"CLOCK=[1-9]", o) is not None and "DND_ON True" in o and "DND_OFF False" in o, 60),
+        # D.Ai Focus (docs/BEYOND.md §5): a session hides pop-ups, arms a user timer and warms the light; stopping it
+        # puts everything back. "Do not disturb" is checked in the same file Quick writes.
+        ("focus: a session hides pop-ups and ends", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-focus --version; "
+         "dai-focus start 30; echo START_RC=$?; dai-focus status; grep -c '^doNotDisturb=true' ~/.config/lxqt/notifications.conf | sed 's/^/DND=/'; "
+         "systemctl --user list-timers --all --no-legend | grep -c dai-focus-end | sed 's/^/TIMER=/'; "
+         "pgrep -x wlsunset >/dev/null && echo WARM || echo NOT_WARM; dai-focus status --json; "
+         "dai-focus stop; echo STOP_RC=$?; grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf | sed 's/^/DND_AFTER=/'; "
+         "systemctl --user list-timers --all --no-legend | grep -c dai-focus-end | sed 's/^/TIMER_AFTER=/'; "
+         "pgrep -x wlsunset >/dev/null && echo STILL_WARM || echo COOL; dai-focus status", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "START_RC=0" in o and "DND=1" in o and "TIMER=1" in o
+         and '"active": true' in o and "STOP_RC=0" in o and "DND_AFTER=1" in o and "TIMER_AFTER=0" in o
+         and "COOL" in o and "No focus session" in o, 60),
         # Ruby (docs/BROWSER.md stage 1): Firefox ESR reads D.Ai's policies (root-owned), the menu shows one
         # browser named Ruby, the Hebrew interface is installed, and a headless start installs uBlock Origin and
         # Containers from Mozilla's add-on site (which proves the policies are active). Without a network the

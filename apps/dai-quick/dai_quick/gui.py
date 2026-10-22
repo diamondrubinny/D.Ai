@@ -29,6 +29,7 @@ STRINGS = {
     "dnd": ("Do not disturb", "לא להפריע"),
     "saver": ("Battery saver", "חיסכון בסוללה"),
     "mic": ("Mute mic", "השתקת מיק׳"),
+    "focus": ("Focus 25 min", "פוקוס 25 דק׳"),
     "on": ("on", "פועל"),
     "off": ("off", "כבוי"),
     "volume": ("Volume", "עוצמת שמע"),
@@ -199,6 +200,12 @@ class QuickWindow(QWidget):
         self._label_tile(key)
         if key == "dnd":
             self.dnd_note.setVisible(bool(actual))
+        if key == "focus" and "dnd" in self.tiles:
+            # A session turns "do not disturb" on and off with it: show that tile's truth too.
+            dnd = self.controls.read("dnd")
+            self.tiles["dnd"].setChecked(bool(dnd))
+            self._label_tile("dnd")
+            self.dnd_note.setVisible(bool(dnd))
 
     def _apply_volume(self) -> None:
         """Set it, then a small crystal tick at the new level (docs/SOUNDS.md), as a phone does."""
