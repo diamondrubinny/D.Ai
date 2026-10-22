@@ -44,6 +44,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **Boot menu**: "Start D.Ai OS", eight languages | **Loading**: the diamond (and the disk passphrase) | **Login**: clock, keyboard language, Caps Lock warning |
 | ![D.Ai TV: Kodi full screen in Hebrew](docs/screenshots/tv-desktop.png) | ![D.Ai Phone: Phosh's lock screen on the arm64 image, booted in QEMU](docs/screenshots/phone-lock.png) | ![D.Ai TV on arm64: the same Kodi, booted in QEMU's virt machine](docs/screenshots/tv-arm64.png) |
 | **D.Ai TV**: Kodi in Hebrew on the TV, nothing listening | **D.Ai Phone** (experimental): Phosh on arm64, booted in QEMU | **D.Ai TV on arm64** (experimental): the same Kodi, a generic UEFI image |
+| ![D.Ai PDF: a file opened in the sandbox, its JavaScript and attachment listed in the bar and never run](docs/screenshots/pdf.png) | ![D.Ai VM: the honest hardware check and what Windows can see](docs/screenshots/vm.png) | |
+| **D.Ai PDF**: what the file wants is shown in the bar, never done | **D.Ai VM**: the hardware check, and what Windows can see | |
 
 ## What's included
 
@@ -214,6 +216,8 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 |---|---|---|
 | ![D.Ai TV: ‏Kodi בעברית על הטלוויזיה](docs/screenshots/tv-desktop.png) | ![D.Ai Phone: מסך הנעילה של Phosh על arm64](docs/screenshots/phone-lock.png) | ![D.Ai TV על arm64](docs/screenshots/tv-arm64.png) |
 | **D.Ai TV**: ‏Kodi בעברית, שום דבר לא מאזין לרשת | **D.Ai Phone** (ניסיוני): ‏Phosh על arm64, עולה ב-QEMU | **D.Ai TV על arm64** (ניסיוני): אותו Kodi, תמונת UEFI גנרית |
+| ![D.Ai PDF: קובץ שנפתח בארגז חול, ה-JavaScript והקובץ המצורף שלו רשומים בסרגל ולא מורצים](docs/screenshots/pdf.png) | ![D.Ai VM: בדיקת החומרה הכנה ומה Windows רואה](docs/screenshots/vm.png) | |
+| **D.Ai PDF**: מה שהקובץ רוצה מוצג בסרגל, ולא מבוצע | **D.Ai VM**: בדיקת החומרה, ומה Windows רואה | |
 
 **אתר:** [rubinny.com](https://rubinny.com) · **הורדה:** [הגרסה האחרונה](https://github.com/diamondrubinny/D.Ai/releases/latest)
 

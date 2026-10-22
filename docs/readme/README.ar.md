@@ -37,6 +37,8 @@
 | **قائمة الإقلاع**: «Start D.Ai OS» | **شاشة الدخول**: شاشة D.Ai | **Welcome** بالعربية، من اليمين إلى اليسار |
 | ![D.Ai TV: ‏Kodi بالعبرية بملء الشاشة](../screenshots/tv-desktop.png) | ![D.Ai Phone: شاشة قفل Phosh على arm64](../screenshots/phone-lock.png) | ![D.Ai TV على arm64](../screenshots/tv-arm64.png) |
 | **D.Ai TV**: ‏Kodi بالعبرية، لا شيء يستمع إلى الشبكة | **D.Ai Phone** (تجريبي): ‏Phosh على arm64، يقلع في QEMU | **D.Ai TV على arm64** (تجريبي): ‏Kodi نفسه، صورة UEFI عامة |
+| ![D.Ai PDF: ملف مفتوح في بيئة معزولة، وJavaScript والمرفق فيه معروضان في الشريط ولا يُشغَّلان](../screenshots/pdf.png) | ![D.Ai VM: فحص العتاد الصادق وما يراه ويندوز](../screenshots/vm.png) | |
+| **D.Ai PDF**: ما يريده الملف يظهر في الشريط ولا يُنفَّذ | **D.Ai VM**: فحص العتاد، وما يراه ويندوز | |
 
 ## ⚠️ الحالة
 

@@ -1570,11 +1570,15 @@ def _av_apply(params: Params, ctx: Context) -> None:
 
 
 def _av_restore(params: Params, ctx: Context, extra: dict) -> None:
-    # Unit files were already restored from the snapshot.
-    ctx.run(["systemctl", "daemon-reload"], check=False)
-    verb = "enable" if extra.get("was_enabled") else "disable"
+    # Unit files were already restored from the snapshot (gone again after an install's undo). Stop the timer
+    # before systemd re-reads the units: a running timer whose file vanished is left "failed" otherwise, and
+    # D.Ai Heal would report a failure that was only this undo (seen in CI). reset-failed clears any remains.
     if extra.get("was_enabled") or params["enabled"]:
-        ctx.run(["systemctl", verb, "--now", "dai-av-scan.timer"], check=False)
+        ctx.run(["systemctl", "disable", "--now", "dai-av-scan.timer"], check=False)
+    ctx.run(["systemctl", "daemon-reload"], check=False)
+    ctx.run(["systemctl", "reset-failed", "dai-av-scan.timer"], check=False)
+    if extra.get("was_enabled"):
+        ctx.run(["systemctl", "enable", "--now", "dai-av-scan.timer"], check=False)
 
 
 register(ActionSpec(

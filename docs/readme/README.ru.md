@@ -35,6 +35,8 @@ D.Ai OS: бесплатная операционная система с отк�
 | **Меню загрузки**: «Start D.Ai OS» | **Вход**: экран входа D.Ai | **Welcome** на арабском, справа налево |
 | ![D.Ai TV: Kodi на иврите на весь экран](../screenshots/tv-desktop.png) | ![D.Ai Phone: экран блокировки Phosh на arm64](../screenshots/phone-lock.png) | ![D.Ai TV на arm64](../screenshots/tv-arm64.png) |
 | **D.Ai TV**: Kodi на иврите, ничего не слушает сеть | **D.Ai Phone** (эксперимент): Phosh на arm64, запущен в QEMU | **D.Ai TV на arm64** (эксперимент): тот же Kodi, универсальный образ UEFI |
+| ![D.Ai PDF: файл открыт в песочнице, его JavaScript и вложение показаны в панели и не запускаются](../screenshots/pdf.png) | ![D.Ai VM: честная проверка оборудования и то, что видит Windows](../screenshots/vm.png) | |
+| **D.Ai PDF**: то, что «хочет» файл, показано в панели и не выполняется | **D.Ai VM**: проверка оборудования и то, что видит Windows | |
 
 ## ⚠️ Статус
 

@@ -469,6 +469,12 @@ class ForgeActionTests(TuneTestCase):
         executor.undo_entry(entry, self.ctx, journal)
         self.assertFalse((self.root / "etc/systemd/system/dai-av-scan.service").exists())
         self.assertFalse((self.root / "etc/systemd/system/dai-av-scan.timer").exists())
+        # The timer is stopped before systemd re-reads the units, and nothing is left "failed" behind.
+        calls = self.runner.calls
+        stop = calls.index(["systemctl", "disable", "--now", "dai-av-scan.timer"])
+        reload = len(calls) - 1 - calls[::-1].index(["systemctl", "daemon-reload"])
+        self.assertLess(stop, reload)
+        self.assertIn(["systemctl", "reset-failed", "dai-av-scan.timer"], calls)
 
     def test_antivirus_needs_clamav(self):
         with self.assertRaises(executor.ApplyError):

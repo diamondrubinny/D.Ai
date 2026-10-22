@@ -35,6 +35,8 @@ D.Ai OS est un système d'exploitation libre et gratuit basé sur Debian 13, cr�
 | **Menu de démarrage** : « Start D.Ai OS » | **Connexion** : l'écran de D.Ai | **Welcome** en arabe, de droite à gauche |
 | ![D.Ai TV : Kodi en hébreu en plein écran](../screenshots/tv-desktop.png) | ![D.Ai Phone : l'écran de verrouillage de Phosh sur arm64](../screenshots/phone-lock.png) | ![D.Ai TV sur arm64](../screenshots/tv-arm64.png) |
 | **D.Ai TV** : Kodi en hébreu, rien n'écoute sur le réseau | **D.Ai Phone** (expérimental) : Phosh sur arm64, démarré dans QEMU | **D.Ai TV sur arm64** (expérimental) : le même Kodi, une image UEFI générique |
+| ![D.Ai PDF : un fichier ouvert dans le bac à sable, son JavaScript et sa pièce jointe listés dans la barre et jamais exécutés](../screenshots/pdf.png) | ![D.Ai VM : la vérification honnête du matériel et ce que Windows voit](../screenshots/vm.png) | |
+| **D.Ai PDF** : ce que le fichier veut est affiché dans la barre, jamais fait | **D.Ai VM** : la vérification du matériel, et ce que Windows voit | |
 
 ## ⚠️ État
 
