@@ -6619,24 +6619,6 @@ msgid "{n} documents in the content index."
 msgstr "{n} documentos en el índice de contenido."
 
 #: apps/dai-tune/dai_tune/catalog.py
-msgid "Connections fail at once; local services (sound, D-Bus) still work. A copy already running stays connected until it is opened again."
-msgstr "Las conexiones fallan de inmediato; los servicios locales (sonido, D-Bus) siguen funcionando. Una copia ya abierta sigue conectada hasta que se abra de nuevo."
-
-#: apps/dai-tune/dai_tune/catalog.py
-#, python-brace-format
-msgid "Firewall: {app} can reach the network again"
-msgstr "Cortafuegos: {app} vuelve a tener acceso a la red"
-
-#: apps/dai-tune/dai_tune/catalog.py
-#, python-brace-format
-msgid "Firewall: {app} started by this user cannot reach the network"
-msgstr "Cortafuegos: {app} iniciado por este usuario no accede a la red"
-
-#: apps/dai-tune/dai_tune/catalog.py
-msgid "The menu, the command bar and the taskbar all start it that way."
-msgstr "El menú, la barra de comandos y la barra de tareas lo abren así."
-
-#: apps/dai-tune/dai_tune/catalog.py
 #, python-brace-format
 msgid "{app} opens with network access again"
 msgstr "{app} vuelve a abrirse con acceso a la red"
