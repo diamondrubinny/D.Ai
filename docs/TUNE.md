@@ -79,6 +79,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 |------|--------------|-------|-------|
 | `device.block` / `device.allow` (usb_storage, camera, bluetooth) | "חסום דיסק און קי", "חסום מצלמה" | מערכת | מחזק / מחליש |
 | `firewall.open_port` / `firewall.close_port` | "פתח פורט 8080", "סגור פורט 8080", "פתח פורטים 1714 עד 1764 udp" (טווח) | מערכת | מחליש / מחזק |
+| `diamond.provider` | "answer with anthropic", "תענה במחשב הזה" (docs/PROVIDERS.md: מקומי, או ספק שכבר הוסכם ב־`dai-models provider use`; גם בחירה ב־Settings) | משתמש | מחליש (ספק) / מחזק (מקומי) |
 | `memory.saver` + `diamond.small_model` | "מצב חיסכון בזיכרון", "memory saver off" (docs/BEYOND.md §14: sysctl ל־zram עכשיו, zram גדול מהאתחול הבא, Diamond על המודל הקטן; גם מתג ב־Settings) | מערכת + משתמש | ניטרלי |
 | `app.offline` / `app.online` | "פיירפוקס לא יוצא לאינטרנט", "אפשר אינטרנט לפיירפוקס" (docs/BEYOND.md §12: קובץ ‎.desktop חופף שמריץ את האפליקציה ב־bubblewrap בלי רשת; Flatpak: override) | משתמש | מחזק / מחליש |
 | `updates.auto` | "הפעל עדכונים אוטומטיים" | מערכת | מחזק / מחליש |

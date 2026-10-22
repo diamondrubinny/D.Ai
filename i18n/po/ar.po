@@ -6844,3 +6844,24 @@ msgstr "✓ {name} يجيب عن: {tasks}. الكلام يبقى محليًا. �
 #, python-brace-format
 msgid "✓ {name}: {model} at {url}. Next: dai-models provider key {name}"
 msgstr "✓ {name}: {model} على {url}. التالي: dai-models provider key {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Who answers Diamond's questions"
+msgstr "من يجيب على أسئلة Diamond"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "A provider appears here after dai-models provider use NAME (your key, your consent)."
+msgstr "يظهر المزوّد هنا بعد dai-models provider use NAME (مفتاحك، موافقتك)."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Diamond answers on this computer only"
+msgstr "يجيب Diamond على هذا الحاسوب فقط"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Diamond's questions and code go to {name}, with your own key"
+msgstr "أسئلة Diamond وكوده تُرسل إلى {name} بمفتاحك الخاص"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Speech stays on the computer. The consent was given at dai-models provider use."
+msgstr "يبقى الكلام على الحاسوب. أُعطيت الموافقة في dai-models provider use."

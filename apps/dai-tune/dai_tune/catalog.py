@@ -2019,3 +2019,56 @@ register(ActionSpec(
                              if p["enabled"] else _t(lang, "Diamond uses the chosen model again", "Diamond משתמש שוב במודל שנבחר")),
     files=lambda p, c: [c.user_path(AI_CONFIG)],
 ))
+
+
+# --------------------------------------------------------------------------
+# Which AI answers: the local Diamond, or a provider the person set up and agreed
+# to (docs/PROVIDERS.md); the consent itself is only ever typed at dai-models.
+# --------------------------------------------------------------------------
+
+PROVIDERS_FILE = ".config/dai/providers.json"
+
+
+def _providers_module():
+    from dai_ai import providers  # installed next to dai_tune in /usr/lib/dai
+    return providers
+
+
+def _provider_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"name"})
+    name = params.get("name")
+    if not isinstance(name, str) or not name:
+        raise ValidationError("name: 'local' or a provider set up with dai-models provider")
+    if name == "local":
+        return {"name": "local"}
+    config = _providers_module().load(ctx.user_path(PROVIDERS_FILE))
+    provider = config.providers.get(name)
+    if provider is None:
+        raise ValidationError(f"name: no provider called {name} (dai-models provider add {name})")
+    if not provider.consented:
+        raise ValidationError(f"name: {name} needs your typed consent first (dai-models provider use {name})")
+    return {"name": name}
+
+
+def _provider_apply(params: Params, ctx: Context) -> None:
+    providers = _providers_module()
+    path = ctx.user_path(PROVIDERS_FILE)
+    config = providers.load(path)
+    config.active = "" if params["name"] == "local" else params["name"]
+    providers.save(config, path)
+
+
+register(ActionSpec(
+    id="diamond.provider",
+    scope="user",
+    validate=_provider_validate,
+    apply=_provider_apply,
+    risk=lambda p: "low" if p["name"] == "local" else "medium",
+    effect=lambda p: "hardens" if p["name"] == "local" else "weakens",
+    summary=lambda p, lang: (_t(lang, "Diamond answers on this computer only", "Diamond עונה במחשב הזה בלבד") if p["name"] == "local"
+                             else _t(lang, "Diamond's questions and code go to {name}, with your own key",
+                                     "השאלות והקוד של Diamond נשלחים ל־{name}, במפתח שלך", name=p["name"])),
+    files=lambda p, c: [c.user_path(PROVIDERS_FILE)],
+    note=lambda p, lang: "" if p["name"] == "local" else _t(lang, "Speech stays on the computer. The consent was given at dai-models provider use.",
+                                                             "דיבור נשאר במחשב. ההסכמה ניתנה ב־dai-models provider use."),
+))

@@ -322,6 +322,11 @@ msgstr ""
 msgid "A picture to stamp (your signature, a logo)"
 msgstr ""
 
+#. he: ספק מופיע כאן אחרי dai-models provider use NAME (המפתח שלך, ההסכמה שלך).
+#: apps/dai-settings/dai_settings/model.py:210
+msgid "A provider appears here after dai-models provider use NAME (your key, your consent)."
+msgstr ""
+
 #. he: שאלה ל-Diamond
 #: apps/dai-pdf/dai_pdf/gui.py:770
 msgid "A question for Diamond"
@@ -527,7 +532,7 @@ msgid "Allow {kind}"
 msgstr ""
 
 #. he: מדיניות ארגונית יכולה להגביל את זה.
-#: apps/dai-settings/dai_settings/model.py:204
+#: apps/dai-settings/dai_settings/model.py:205
 msgid "An organization policy may cap this."
 msgstr ""
 
@@ -1217,7 +1222,7 @@ msgid "Compare with {name}"
 msgstr ""
 
 #. he: החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד.
-#: apps/dai-settings/dai_settings/model.py:208
+#: apps/dai-settings/dai_settings/model.py:209
 msgid "Compressed swap first, Diamond on its smallest model, MOM says what is heavy."
 msgstr ""
 
@@ -1655,6 +1660,11 @@ msgstr ""
 msgid "Diamond answered."
 msgstr ""
 
+#. he: Diamond עונה במחשב הזה בלבד
+#: apps/dai-tune/dai_tune/catalog.py:2068
+msgid "Diamond answers on this computer only"
+msgstr ""
+
 #. he: Diamond עונה עם המודל הקטן ביותר שמותקן
 #: apps/dai-tune/dai_tune/catalog.py:2018
 msgid "Diamond answers with its smallest installed model"
@@ -1765,6 +1775,12 @@ msgstr ""
 #: apps/dai-pdf/dai_pdf/gui.py:785
 #: apps/dai-pdf/dai_pdf/gui.py:792
 msgid "Diamond's answer"
+msgstr ""
+
+#. he: השאלות והקוד של Diamond נשלחים ל־{name}, במפתח שלך
+#: apps/dai-tune/dai_tune/catalog.py:2069
+#, python-brace-format
+msgid "Diamond's questions and code go to {name}, with your own key"
 msgstr ""
 
 #. he: Diamond, ה־AI, רץ על המחשב הזה. שאלות, קבצים וקוד לא נשלחים לשום מקום.
@@ -1888,7 +1904,7 @@ msgid "Downloaded and verified: {path}"
 msgstr ""
 
 #. he: קבצי התקנה שהורדו ויומנים ישנים. אי אפשר לבטל; שום דבר שבשימוש לא נמחק.
-#: apps/dai-settings/dai_settings/model.py:212
+#: apps/dai-settings/dai_settings/model.py:214
 msgid "Downloaded package files and old logs. Cannot be undone; nothing you use is lost."
 msgstr ""
 
@@ -2361,7 +2377,7 @@ msgid "Found: {host} (secure connection)"
 msgstr ""
 
 #. he: פינוי מקום בדיסק
-#: apps/dai-settings/dai_settings/model.py:201
+#: apps/dai-settings/dai_settings/model.py:202
 msgid "Free disk space"
 msgstr ""
 
@@ -2408,7 +2424,7 @@ msgid "From history"
 msgstr ""
 
 #. he: מהכניסה הבאה.
-#: apps/dai-settings/dai_settings/model.py:209
+#: apps/dai-settings/dai_settings/model.py:211
 msgid "From the next login."
 msgstr ""
 
@@ -3199,7 +3215,7 @@ msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it
 msgstr ""
 
 #. he: דורש דיסק Btrfs; הדרך חזרה היא D.Ai Rescue.
-#: apps/dai-settings/dai_settings/model.py:207
+#: apps/dai-settings/dai_settings/model.py:208
 msgid "Needs a Btrfs system disk; the way back is D.Ai Rescue."
 msgstr ""
 
@@ -3998,7 +4014,7 @@ msgid "Opened in a sandbox"
 msgstr ""
 
 #. he: פותח את פורט 22 לרשת המקומית.
-#: apps/dai-settings/dai_settings/model.py:206
+#: apps/dai-settings/dai_settings/model.py:207
 msgid "Opens port 22 to the local network."
 msgstr ""
 
@@ -5156,6 +5172,11 @@ msgstr ""
 msgid "Speak (local, Whisper)"
 msgstr ""
 
+#. he: דיבור נשאר במחשב. ההסכמה ניתנה ב־dai-models provider use.
+#: apps/dai-tune/dai_tune/catalog.py:2072
+msgid "Speech stays on the computer. The consent was given at dai-models provider use."
+msgstr ""
+
 #. he: חותמת
 #: apps/dai-pdf/dai_pdf/gui.py:1631
 msgid "Stamp"
@@ -6158,7 +6179,7 @@ msgid "Turn this page"
 msgstr ""
 
 #. he: כיבוי דורש אישור מוקלד.
-#: apps/dai-settings/dai_settings/model.py:205
+#: apps/dai-settings/dai_settings/model.py:206
 msgid "Turning them off needs a typed confirmation."
 msgstr ""
 
@@ -6277,7 +6298,7 @@ msgid "Up to date"
 msgstr ""
 
 #. he: עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף.
-#: apps/dai-settings/dai_settings/model.py:210
+#: apps/dai-settings/dai_settings/model.py:212
 msgid "Up to four, separated by commas: us,il,ru. Alt+Shift switches."
 msgstr ""
 
@@ -6528,6 +6549,11 @@ msgstr ""
 #. he: איזו מערכת
 #: apps/dai-vm/dai_vm/gui.py:179
 msgid "Which system"
+msgstr ""
+
+#. he: מי עונה לשאלות של Diamond
+#: apps/dai-settings/dai_settings/model.py:201
+msgid "Who answers Diamond's questions"
 msgstr ""
 
 #. he: למי ההודעה? הוסיפו כתובת בשדה אל.
@@ -6808,22 +6834,22 @@ msgid "administrator"
 msgstr ""
 
 #. he: אחרי דקה
-#: apps/dai-settings/dai_settings/model.py:216
+#: apps/dai-settings/dai_settings/model.py:218
 msgid "after 1 minute"
 msgstr ""
 
 #. he: אחרי 10 דקות
-#: apps/dai-settings/dai_settings/model.py:217
+#: apps/dai-settings/dai_settings/model.py:219
 msgid "after 10 minutes"
 msgstr ""
 
 #. he: אחרי 30 דקות
-#: apps/dai-settings/dai_settings/model.py:217
+#: apps/dai-settings/dai_settings/model.py:219
 msgid "after 30 minutes"
 msgstr ""
 
 #. he: אחרי 5 דקות
-#: apps/dai-settings/dai_settings/model.py:216
+#: apps/dai-settings/dai_settings/model.py:218
 msgid "after 5 minutes"
 msgstr ""
 
@@ -6869,12 +6895,12 @@ msgid "automatic: on when a touch screen is attached"
 msgstr ""
 
 #. he: מאוזן
-#: apps/dai-settings/dai_settings/model.py:220
+#: apps/dai-settings/dai_settings/model.py:222
 msgid "balanced"
 msgstr ""
 
 #. he: חיסכון בסוללה
-#: apps/dai-settings/dai_settings/model.py:220
+#: apps/dai-settings/dai_settings/model.py:222
 msgid "battery saver"
 msgstr ""
 
@@ -6967,7 +6993,7 @@ msgid "evaluates text as code"
 msgstr ""
 
 #. he: כל יום
-#: apps/dai-settings/dai_settings/model.py:219
+#: apps/dai-settings/dai_settings/model.py:221
 msgid "every day"
 msgstr ""
 
@@ -6988,7 +7014,7 @@ msgid "every time you log in"
 msgstr ""
 
 #. he: כל שבוע
-#: apps/dai-settings/dai_settings/model.py:219
+#: apps/dai-settings/dai_settings/model.py:221
 msgid "every week"
 msgstr ""
 
@@ -7192,7 +7218,7 @@ msgstr ""
 
 #. he: אף פעם
 #: apps/dai-backup/dai_backup/cli.py:55
-#: apps/dai-settings/dai_settings/model.py:218
+#: apps/dai-settings/dai_settings/model.py:220
 msgid "never"
 msgstr ""
 
@@ -7284,7 +7310,7 @@ msgstr ""
 #: apps/dai-quick/dai_quick/gui.py:35
 #: apps/dai-settings/dai_settings/cli.py:49
 #: apps/dai-settings/dai_settings/gui.py:88
-#: apps/dai-settings/dai_settings/model.py:219
+#: apps/dai-settings/dai_settings/model.py:221
 #: apps/dai-tune/dai_tune/catalog.py:838
 msgid "off"
 msgstr ""
@@ -7331,7 +7357,7 @@ msgid "paused"
 msgstr ""
 
 #. he: ביצועים
-#: apps/dai-settings/dai_settings/model.py:221
+#: apps/dai-settings/dai_settings/model.py:223
 msgid "performance"
 msgstr ""
 

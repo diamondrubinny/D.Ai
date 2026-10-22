@@ -198,6 +198,7 @@ TITLES = {
     "timezone": ("Time zone", "אזור זמן"),
     "hostname": ("Computer name", "שם המחשב"),
     "power": ("Power", "צריכת חשמל"),
+    "ai": ("Who answers Diamond's questions", "מי עונה לשאלות של Diamond"),
     "clean": ("Free disk space", "פינוי מקום בדיסק"),
 }
 HINTS = {
@@ -206,6 +207,7 @@ HINTS = {
     "ssh": ("Opens port 22 to the local network.", "פותח את פורט 22 לרשת המקומית."),
     "snapshots": ("Needs a Btrfs system disk; the way back is D.Ai Rescue.", "דורש דיסק Btrfs; הדרך חזרה היא D.Ai Rescue."),
     "saver": ("Compressed swap first, Diamond on its smallest model, MOM says what is heavy.", "החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד."),
+    "ai": ("A provider appears here after dai-models provider use NAME (your key, your consent).", "ספק מופיע כאן אחרי dai-models provider use NAME (המפתח שלך, ההסכמה שלך)."),
     "language": ("From the next login.", "מהכניסה הבאה."),
     "layouts": ("Up to four, separated by commas: us,il,ru. Alt+Shift switches.",
                 "עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף."),
@@ -225,6 +227,27 @@ NO_HINT = ("", "")
 
 def _choices(key: str) -> tuple[tuple[str, tuple[str, str]], ...]:
     return tuple(CHOICES[key].items())
+
+
+def read_ai(ctx: Context) -> str:
+    try:
+        from dai_ai import providers
+        return providers.load(ctx.user_path(catalog.PROVIDERS_FILE)).active or "local"
+    except Exception:  # noqa: BLE001 - no dai_ai: local
+        return "local"
+
+
+def _ai_choices() -> tuple[tuple[str, tuple[str, str]], ...]:
+    """local, and every provider the person agreed to (read when the window opens)."""
+    choices = [("local", ("on this computer (Diamond)", "במחשב הזה (Diamond)"))]
+    try:
+        from dai_ai import providers
+        for provider in providers.load().providers.values():
+            if provider.consented:
+                choices.append((provider.name, (f"{provider.name} ({provider.model})", f"{provider.name} ({provider.model})")))
+    except Exception:  # noqa: BLE001
+        pass
+    return tuple(choices)
 
 
 def _catalog_choices(names: dict[str, tuple[str, str]]) -> tuple[tuple[str, tuple[str, str]], ...]:
@@ -261,6 +284,7 @@ SETTINGS: tuple[Setting, ...] = (
             placeholder="my-computer"),
     Setting("power", "system", "choice", TITLES["power"], read_power, _choice("power.profile", "profile"), _choices("power")),
     Setting("saver", "system", "toggle", TITLES["saver"], catalog.saver_on, _saver, hint=HINTS["saver"]),
+    Setting("ai", "system", "choice", TITLES["ai"], read_ai, _choice("diamond.provider", "name"), _ai_choices(), hint=HINTS["ai"]),
     Setting("clean", "system", "button", TITLES["clean"], lambda c: "", lambda value: _one("system.clean"), hint=HINTS["clean"]),
 )
 

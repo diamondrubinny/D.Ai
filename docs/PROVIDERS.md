@@ -49,6 +49,13 @@ Code, Tune, Heal, MOM, J, Ruby, Command) עוברים דרך אותו לקוח, 
 | openrouter | openai | `https://openrouter.ai/api/v1` | `anthropic/claude-sonnet-4.5` |
 | custom | openai | `--url` (גם `http://` לרשת מקומית, עם אזהרה) | `--model` |
 
+## 4b. החלפה מהירה: Settings ו־Tune
+
+אחרי שההסכמה ניתנה פעם אחת ב־`dai-models provider use NAME`, אפשר לעבור בין "במחשב הזה" לספק בלי להקליד
+שוב: שורת "מי עונה לשאלות של Diamond" ב־D.Ai Settings (פעולת Tune `diamond.provider`, עם undo ביומן),
+או משפט: "answer with anthropic", "תענה דרך openrouter", "תענה במחשב הזה". ספק שלא הוסכם לא מופיע ברשימה
+והפעולה מסרבת לו, כך שההסכמה עצמה נשארת רק במקום אחד.
+
 ## 5. מה לא
 
 אין חשבון D.Ai, אין proxy של הפרויקט, אין חיוב דרכנו: המפתח והחוזה הם בינך לבין הספק. אין שליחת קבצים או
@@ -58,5 +65,6 @@ Code, Tune, Heal, MOM, J, Ruby, Command) עוברים דרך אותו לקוח, 
 
 יחידה: קובץ ההגדרות (0600, מסכת מפתח, משתנה סביבה); בניית הבקשה לכל סוג (openai / anthropic / gemini, כולל
 סכמת JSON); ניתוב לפי משימה והסכמה; נפילה חזרה; CLI (add/key/use/test/remove/list; `use` בלי "כן" לא מפעיל).
-‏VM: `ai: providers off by default` (סטטוס "local", הוספת ספק custom על כתובת שלא קיימת, הסכמה, test נכשל
+יחידה (Tune/Settings): `diamond.provider` מסרב לספק בלי הסכמה, מחליף active ושומר 0600; שורת הבחירה ב־Settings
+עוברת את Raz עם שאר החלון; משפטי הפרסר. ‏VM: `ai: providers off by default` (סטטוס "local", הוספת ספק custom על כתובת שלא קיימת, הסכמה, test נכשל
 בבירור, נפילה חזרה למקומי, remove).

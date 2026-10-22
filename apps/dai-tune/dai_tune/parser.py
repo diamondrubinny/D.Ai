@@ -225,6 +225,9 @@ def _package_names(raw: str) -> list[str]:
 
 
 SAVER = r"(?:\b(?:memory|ram)\s+saver\b|\bsav(?:e|ing)\s+(?:memory|ram)\b|\blow[\s-]+memory\s+mode\b|(?:מצב\s+)?חיסכון\s+בזיכרון|חסוך\s+(?:ב)?זיכרון)"
+# "answer with anthropic" / "Diamond answers locally" (docs/PROVIDERS.md): the name must already be set up and agreed to.
+PROVIDER = r"(?:\b(?:answer|answers|ask|asking|think)\s+(?:with|through|via|using)\s+(?P<provider>[a-z][a-z0-9_-]{1,31})\b|(?:ענה|תענה|תשאל|שאל|חשוב|תחשוב)\s+(?:דרך|עם|באמצעות)\s+(?P<provider_he>[a-z][a-z0-9_-]{1,31}))"
+PROVIDER_LOCAL = r"(?:\b(?:answer|answers|think)\s+(?:locally|on\s+this\s+computer|here\s+only|on\s+the\s+computer)\b|(?:ענה|תענה|חשוב|תחשוב)\s+(?:מקומית|במחשב\s+הזה|רק\s+כאן|במחשב\s+בלבד))"
 SAVER_OFF = r"(?:\boff\b|\bstop\b|\bdisable\b|\bno\s+more\b|כבוי|כבה|בטל|תבטל|לבטל|הפסק|תפסיק|בלי)"
 NET = r"(?:the\s+)?(?:internet|network|online|web)"
 APP = r"([\w.+'-]+(?:\s+[\w.+'-]+)?)"   # one or two words: "firefox", "google chrome", "org.telegram.desktop"
@@ -278,6 +281,12 @@ def parse_clause(clause: str) -> list[Request]:
         enabled = not _has(SAVER_OFF, c)
         return [Request("memory.saver", {"enabled": enabled}, clause),
                 Request("diamond.small_model", {"enabled": enabled}, clause)]
+
+    # Who answers Diamond's questions (docs/PROVIDERS.md): local, or a provider the person agreed to at dai-models.
+    if _has(PROVIDER_LOCAL, c):
+        return [Request("diamond.provider", {"name": "local"}, clause)]
+    if (m := re.search(PROVIDER, c, re.IGNORECASE)) is not None:
+        return [Request("diamond.provider", {"name": m.group("provider") or m.group("provider_he")}, clause)]
 
     # Maintenance and power (D.Ai Doctor suggests these sentences).
     if _has(CLEAN, c):
@@ -522,6 +531,7 @@ EXAMPLES = {
         "שפה רוסית",
         "פיירפוקס לא יוצא לאינטרנט",
         "מצב חיסכון בזיכרון",
+        "תענה במחשב הזה",
         "אפשר אינטרנט לפיירפוקס",
         "אזור זמן ירושלים",
         "שנה שם מחשב ל office-pc",
@@ -568,6 +578,7 @@ EXAMPLES = {
         "snapshot windows before the update",
         "free up disk space",
         "battery saver mode",
+        "answer locally",
         "snapshots before updates",
         "undo the last update",
     ],

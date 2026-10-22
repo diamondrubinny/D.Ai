@@ -300,6 +300,39 @@ class ExecutorTests(TuneTestCase):
         with self.assertRaises(ValidationError):
             catalog.CATALOG["app.offline"].validate({"app": "x; rm"}, self.ctx)
 
+    def test_provider_sentences(self):
+        self.assertEqual(parser.parse("answer with anthropic").requests[0].params, {"name": "anthropic"})
+        self.assertEqual(parser.parse("answer with anthropic").requests[0].action, "diamond.provider")
+        self.assertEqual(parser.parse("תענה דרך openrouter").requests[0].params, {"name": "openrouter"})
+        self.assertEqual(parser.parse("Diamond, answer on this computer").requests[0].params, {"name": "local"})
+        self.assertEqual(parser.parse("תענה במחשב הזה").requests[0].params, {"name": "local"})
+
+    def test_diamond_provider_choice_needs_a_consented_provider(self):
+        """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "dai-ai"))
+        from dai_ai import providers
+        spec = catalog.CATALOG["diamond.provider"]
+        self.assertEqual(spec.validate({"name": "local"}, self.ctx), {"name": "local"})
+        with self.assertRaises(ValidationError):
+            spec.validate({"name": "anthropic"}, self.ctx)
+        config = providers.Config()
+        config.providers["anthropic"] = providers.make("anthropic")
+        path = self.home / ".config/dai/providers.json"
+        providers.save(config, path)
+        with self.assertRaises(ValidationError):
+            spec.validate({"name": "anthropic"}, self.ctx)              # no consent yet
+        providers.record_consent(config, "anthropic")
+        config.active = ""
+        providers.save(config, path)
+        self.assertEqual(spec.validate({"name": "anthropic"}, self.ctx), {"name": "anthropic"})
+        spec.apply({"name": "anthropic"}, self.ctx)
+        self.assertEqual(providers.load(path).active, "anthropic")
+        spec.apply({"name": "local"}, self.ctx)
+        self.assertEqual(providers.load(path).active, "")
+        self.assertEqual(oct(path.stat().st_mode & 0o777), "0o600")
+        self.assertIn("anthropic", spec.summary({"name": "anthropic"}, "he"))
+
     def test_memory_saver_on_and_off(self):
         """docs/BEYOND.md §14: sysctl now, zram at the next boot, the mark, Diamond's small model; off removes all."""
         plan = self.plan("memory saver on")

@@ -6844,3 +6844,24 @@ msgstr "✓ {name} responde para: {tasks}. A fala fica local. Voltar: dai-models
 #, python-brace-format
 msgid "✓ {name}: {model} at {url}. Next: dai-models provider key {name}"
 msgstr "✓ {name}: {model} em {url}. A seguir: dai-models provider key {name}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Who answers Diamond's questions"
+msgstr "Quem responde às perguntas do Diamond"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "A provider appears here after dai-models provider use NAME (your key, your consent)."
+msgstr "Um fornecedor aparece aqui após dai-models provider use NAME (a sua chave, o seu consentimento)."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Diamond answers on this computer only"
+msgstr "O Diamond responde apenas neste computador"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Diamond's questions and code go to {name}, with your own key"
+msgstr "As perguntas e o código do Diamond vão para {name}, com a sua própria chave"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Speech stays on the computer. The consent was given at dai-models provider use."
+msgstr "A fala fica no computador. O consentimento foi dado em dai-models provider use."
