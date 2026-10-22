@@ -319,7 +319,7 @@
           ],
           [
             "„Firefox geht nicht ins Internet“",
-            "ein Satz nimmt eine App vom Netz: eine Firewall-Regel auf ihrer eigenen cgroup und ein Starter, der sie dort startet. Rückgängig ebenfalls in einem Satz."
+            "ein Satz nimmt eine App vom Netz: ihr Starter öffnet sie in einer Sandbox ohne Netzwerk (bubblewrap, ohne root); Dateien, Bildschirm, Ton und GPU bleiben. Rückgängig ebenfalls in einem Satz."
           ],
           [
             "Live-Untertitel und Speichersparmodus",

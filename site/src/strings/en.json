@@ -319,7 +319,7 @@
           ],
           [
             "\"Firefox does not go online\"",
-            "one sentence makes an app offline: a firewall rule on its own cgroup and a launcher that starts it there. Undo in one sentence too."
+            "one sentence makes an app offline: its launcher starts it in a sandbox with no network (bubblewrap, no root needed); files, display, sound and the GPU stay. Undo in one sentence too."
           ],
           [
             "Live captions and a memory saver",

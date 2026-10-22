@@ -319,7 +319,7 @@
           ],
           [
             "« Firefox ne va pas sur Internet »",
-            "une phrase met une application hors ligne : une règle de pare-feu sur son propre cgroup et un lanceur qui la démarre là. L'annulation aussi, en une phrase."
+            "une phrase met une application hors ligne : son lanceur la démarre dans un bac à sable sans réseau (bubblewrap, sans root) ; fichiers, écran, son et GPU restent. L'annulation aussi, en une phrase."
           ],
           [
             "Sous-titres en direct et économie de mémoire",

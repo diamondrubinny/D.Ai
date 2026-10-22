@@ -6724,3 +6724,7 @@ msgstr "Poupança de memória ligada: swap comprimido primeiro, afinado para pou
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The larger compressed swap starts at the next boot; the rest applies now."
 msgstr "O swap comprimido maior começa no próximo arranque; o resto aplica-se agora."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
+msgstr "O menu, a barra de comandos e a barra de tarefas abrem-no assim; as ligações falham de imediato e os serviços locais (som, ecrã) continuam a funcionar. Uma cópia já aberta continua ligada até ser aberta de novo."

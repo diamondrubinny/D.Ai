@@ -319,7 +319,7 @@
           ],
           [
             "«O Firefox não vai à Internet»",
-            "uma frase deixa uma aplicação sem rede: uma regra de firewall no seu próprio cgroup e um lançador que a abre aí. Desfazer, também numa frase."
+            "uma frase deixa uma aplicação sem rede: o seu lançador abre-a numa caixa de areia sem rede (bubblewrap, sem root); ficheiros, ecrã, som e GPU mantêm-se. Desfazer, também numa frase."
           ],
           [
             "Legendas ao vivo e poupança de memória",

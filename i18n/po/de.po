@@ -6724,3 +6724,7 @@ msgstr "Speichersparmodus an: komprimierter Swap zuerst, abgestimmt auf wenig RA
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The larger compressed swap starts at the next boot; the rest applies now."
 msgstr "Der größere komprimierte Swap startet beim nächsten Booten; der Rest gilt sofort."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
+msgstr "Menü, Befehlsleiste und Taskleiste starten es alle so; Verbindungen scheitern sofort und lokale Dienste (Ton, Bildschirm) laufen weiter. Eine bereits laufende Kopie bleibt verbunden, bis sie erneut geöffnet wird."

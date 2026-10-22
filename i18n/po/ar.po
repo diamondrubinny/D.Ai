@@ -6724,3 +6724,7 @@ msgstr "توفير الذاكرة مفعّل: التبديل المضغوط أو
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The larger compressed swap starts at the next boot; the rest applies now."
 msgstr "يبدأ التبديل المضغوط الأكبر عند الإقلاع التالي؛ والباقي يسري الآن."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
+msgstr "القائمة وشريط الأوامر وشريط المهام تشغّله كلها بهذه الطريقة؛ تفشل الاتصالات فورًا وتستمر الخدمات المحلية (الصوت، الشاشة) في العمل. النسخة التي تعمل بالفعل تبقى متصلة حتى تُفتح من جديد."

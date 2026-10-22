@@ -157,23 +157,22 @@
 - **במשפט:** "firefox does not go online", "no internet for firefox", "פיירפוקס לא יוצא לאינטרנט", "בלי אינטרנט
   לטלגרם"; וחזרה: "firefox goes online again", "אפשר אינטרנט לפיירפוקס". כינויים בעברית (פיירפוקס, דפדפן, טלגרם,
   סיגנל, דיסקורד, זום, ספוטיפיי, סטים, קודי) ושם של כל קובץ `.desktop` (מזהה, תחילית או שם).
-- **שני צעדים בתוכנית אחת, כרגיל ב־Tune:**
-  1. **מערכת** (`network.app_offline`, helper עם polkit): כלל nftables בשרשרת ה־output של D.Ai:
-     `socket cgroupv2 level 4 "user.slice/user-UID.slice/user@UID.service/offline_APP.slice" reject`, ב־
-     `/etc/dai/firewall-offline.nft` (קובץ מנוהל עם JSON לצדו, כמו הפורטים), נבדק ב־`nft -c` לפני הטעינה.
-     ‏`lo` תמיד מותר (האפליקציה מדברת עם PipeWire, D-Bus ושירותים מקומיים).
-  2. **משתמש** (`app.offline`): קובץ `.desktop` חופף ב־`~/.local/share/applications` שבו כל `Exec=` עטוף ב־
-     `dai-offline-run APP -- …` (והערה `X-DAi-Offline=true`); העטיפה מריצה את התוכנית ב־
-     `systemd-run --user --scope --slice=offline_APP.slice`, כלומר ב־cgroup שהכלל מזהה. אפליקציית **Flatpak**
-     לא צריכה כלל: העטיפה היא `~/.local/share/flatpak/overrides/ID` עם `shared=!network` (ארגז החול של flatpak).
+- **צעד אחד, של המשתמש, בלי root** (`app.offline`): קובץ `.desktop` חופף ב־`~/.local/share/applications` שבו כל
+  `Exec=` עטוף ב־`dai-offline-run APP -- …` (והערה `X-DAi-Offline=true`); העטיפה מריצה את התוכנית ב־bubblewrap
+  עם **מרחב רשת משלה** (`--unshare-net`: רק loopback), אותם קבצים, התקנים (GPU), תצוגה, צליל ו־D-Bus (הם
+  sockets בקבצים, לא רשת). אפליקציית **Flatpak** מקבלת במקום זה `~/.local/share/flatpak/overrides/ID` עם
+  `shared=!network` (ארגז החול של flatpak עצמו).
+- **למה לא nftables לפי cgroup (כמו בתוכנית המקורית):** `socket cgroupv2` של nft נקשר למזהה ה־cgroup בזמן
+  הטעינה, לא לנתיב; באתחול ה־slice עוד לא קיים, הכלל נכשל, וכל `/etc/nftables.conf` (חומת האש הסגורה) לא
+  היה נטען. נבדק מקומית ונפסל. הארגז של bubblewrap לא תלוי באתחול, לא דורש root ולא מודול קרנל.
 - **מה רואים:** התפריט, D.Ai Command וסרגל המשימות פותחים את הקובץ החופף (XDG: הבית קודם), אז כל פתיחה רגילה
-  של האפליקציה היא בלי אינטרנט, וחיבור נכשל מיד ("connection refused"), לא תוקע. `dai-tune status` מראה את
-  הרשימה; undo מחזיר את שני הקבצים ומטעין את חומת האש מחדש.
-- **מה לא:** תוכנית שרצה כבר כשהכלל נוסף (נשארת מחוברת עד שפותחים מחדש, ההודעה אומרת זאת); תהליכים
-  שהאפליקציה מריצה דרך D-Bus activation (יוצאים מה־cgroup; לדפדפנים ולמסנג'רים זה לא קורה, **דורש בדיקה**
-  לכל אפליקציה); X11 דרך Xwayland נשאר באותו cgroup, כן נחסם.
-- **בדיקות:** יחידה (פרסור בשתי השפות, הכלל והקובץ החופף, Flatpak, הסרה, undo, שמות לא חוקיים); VM
-  ‏(`offline app: the rule and the launcher` — `curl` בתוך ה־slice נכשל והמונה של הכלל עולה, מחוץ ל־slice עובד).
+  של האפליקציה היא בלי אינטרנט, וחיבור נכשל מיד ("network is unreachable"), לא תוקע. undo מחזיר את הקובץ.
+- **מה לא:** תוכנית שרצה כבר כשהשינוי נעשה (נשארת מחוברת עד שפותחים מחדש, ההערה אומרת זאת); תוכנות שמופעלות
+  דרך D-Bus activation ולא מהקובץ (**דורש בדיקה** לכל אפליקציה); setuid בתוך הארגז לא עובד (לא רלוונטי לאפליקציות
+  גרפיות).
+- **בדיקות:** יחידה (פרסור בשתי השפות, הקובץ החופף, Flatpak, הסרה, undo, שמות לא חוקיים, בלי root); VM
+  ‏(`offline app: the launcher and the sandbox` — בתוך הארגז יש רק `lo`, ‏`curl` נכשל ו־uid נשאר 1000; בחוץ
+  הרשת רגילה; "online again" מסיר את הקובץ).
 
 ## 13. שלב 5ב: כתוביות חיות (מה נבנה)
 

@@ -396,21 +396,17 @@ def main() -> int:
          lambda o: "rc=1" in o),
         ("tune: open port (confirmed)", "echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'open port 8080' && sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["2"]),
-        # "firefox does not go online" (docs/BEYOND.md §12): the rule, the launcher, and a connection that fails inside
-        # the slice while the same command works outside it (the rule's counter proves which packets it saw).
-        ("offline app: the rule and the launcher", "export XDG_RUNTIME_DIR=/run/user/$(id -u); "
-         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'firefox does not go online' >/dev/null; echo RC=$?; "
-         "sudo nft list chain inet dai_filter output | grep -c 'offline_firefox.slice'; "
+        # "firefox does not go online" (docs/BEYOND.md §12): the launcher override, and a connection that fails inside
+        # the sandbox while the same command works outside it (no root involved).
+        ("offline app: the launcher and the sandbox", "dai-tune --yes 'firefox does not go online' >/dev/null; echo RC=$?; "
          "grep -c '^Exec=dai-offline-run firefox -- ' ~/.local/share/applications/firefox-esr.desktop; "
-         "dai-offline-run firefox -- sh -c 'cat /proc/self/cgroup; curl -s -m 5 -o /dev/null http://10.0.2.2:80/; echo INSIDE_RC=$?'; "
-         "curl -s -m 5 -o /dev/null http://10.0.2.2:80/; echo OUTSIDE_RC=$?; "
-         "sudo nft list chain inet dai_filter output | grep -o 'counter packets [0-9]*'; "
-         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'firefox goes online again' >/dev/null; echo RC2=$?; "
-         "sudo nft list chain inet dai_filter output | grep -c 'offline_firefox.slice'; "
+         "dai-offline-run firefox -- sh -c 'ls /sys/class/net; curl -s -m 5 -o /dev/null http://10.0.2.2:80/; echo INSIDE_RC=$?; "
+         "test -e /dev/dri && echo GPU_SEEN; id -u'; "
+         "ls /sys/class/net | wc -l; "
+         "dai-tune --yes 'firefox goes online again' >/dev/null; echo RC2=$?; "
          "test -e ~/.local/share/applications/firefox-esr.desktop || echo OVERRIDE_GONE", True,
-         lambda o: "RC=0" in o and "RC2=0" in o and "offline_firefox.slice" in o and "INSIDE_RC=7" in o
-         and re.search(r"counter packets [1-9]", o) is not None and "OVERRIDE_GONE" in o
-         and o.strip().splitlines()[-2:-1] == ["0"], 60),
+         lambda o: "RC=0" in o and "RC2=0" in o and "INSIDE_RC=7" in o and "OVERRIDE_GONE" in o
+         and re.search(r"^lo\s*$", o, re.M) is not None and re.search(r"^1000\s*$", o, re.M) is not None, 60),
         ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["0"]),
         ("tune: injection refused", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'install vlc; rm -rf /tmp/x'; echo rc=$?", True,

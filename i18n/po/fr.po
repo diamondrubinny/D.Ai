@@ -6724,3 +6724,7 @@ msgstr "Économie de mémoire activée : swap compressé d'abord, réglé pour p
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The larger compressed swap starts at the next boot; the rest applies now."
 msgstr "Le swap compressé plus grand démarre au prochain démarrage ; le reste s'applique maintenant."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
+msgstr "Le menu, la barre de commande et la barre des tâches le lancent ainsi ; les connexions échouent aussitôt et les services locaux (son, écran) continuent de fonctionner. Une copie déjà ouverte reste connectée jusqu'à sa prochaine ouverture."

@@ -271,55 +271,34 @@ class ExecutorTests(TuneTestCase):
         folder.mkdir(parents=True, exist_ok=True)
         (folder / name).write_text(text)
 
-    def test_app_offline_rule_and_launcher(self):
-        """"firefox does not go online" (docs/BEYOND.md §12): the cgroup rule and the .desktop override."""
-        with mock.patch("os.getuid", return_value=1000):   # the parser names the user whose apps go offline
-            self._app_offline_rule_and_launcher()
-
-    def _app_offline_rule_and_launcher(self):
+    def test_app_offline_launcher_override(self):
+        """"firefox does not go online" (docs/BEYOND.md §12): a .desktop override whose Exec runs through dai-offline-run."""
         self._desktop("firefox-esr.desktop", "[Desktop Entry]\nName=Firefox ESR\nExec=/usr/lib/firefox-esr/firefox-esr %u\n"
                                              "[Desktop Action new-window]\nExec=/usr/lib/firefox-esr/firefox-esr --new-window\n")
         plan = self.plan("firefox does not go online")
         self.assertTrue(plan.ok, plan.errors + plan.unknown)
-        self.assertEqual([s.action for s in plan.steps], ["network.app_offline", "app.offline"])
-        self.assertEqual(plan.steps[0].params, {"app": "firefox", "uid": 1000})
-        self.assertEqual(plan.steps[1].params, {"app": "firefox"})
-        self.assertEqual(plan.steps[0].scope, "system")
-        self.assertEqual(plan.steps[1].scope, "user")
-        # System: the rule file, checked and loaded.
-        entry, journal = self.apply("firefox does not go online")
-        rules = (self.root / "etc/dai/firewall-offline.nft").read_text()
-        self.assertIn('socket cgroupv2 level 4 "user.slice/user-1000.slice/user@1000.service/offline_firefox.slice" '
-                      'counter reject comment "dai-tune offline firefox"', rules)
-        self.assertIn('oifname != "lo"', rules)
-        self.assertEqual(json.loads((self.root / "etc/dai/firewall-offline.json").read_text()), [{"app": "firefox", "uid": 1000}])
-        nft_calls = [c for c in self.runner.calls if c[0] == "nft"]
-        self.assertEqual(nft_calls[-2:], [["nft", "-c", "-f", "/etc/nftables.conf"], ["nft", "-f", "/etc/nftables.conf"]])
-        # User: the override starts every Exec in the slice, and says why.
-        self.apply("firefox does not go online", scope="user")
+        self.assertEqual([(s.action, s.params, s.scope) for s in plan.steps], [("app.offline", {"app": "firefox"}, "user")])
+        entry, journal = self.apply("firefox does not go online", scope="user")
         override = (self.home / ".local/share/applications/firefox-esr.desktop").read_text()
         self.assertIn("X-DAi-Offline=true", override)
         self.assertEqual(override.count("Exec=dai-offline-run firefox -- /usr/lib/firefox-esr/firefox-esr"), 2)
         self.assertIn("Name=Firefox ESR", override)
+        self.assertFalse(any(c[0] in ("nft", "sudo") for c in self.runner.calls))   # nothing needs root
         # Hebrew, an alias, and the summary in both languages.
         plan = self.plan("פיירפוקס לא יוצא לאינטרנט")
-        self.assertEqual(plan.steps[1].params, {"app": "firefox"})
-        self.assertIn("firefox נפתח בלי גישה לרשת", catalog.CATALOG["app.offline"].summary(plan.steps[1].params, "he"))
-        self.assertIn("cannot reach the network", catalog.CATALOG["network.app_offline"].summary(plan.steps[0].params, "en"))
-        # Back online: the rule goes, the override goes, and undo of the first entry restores both files.
-        self.apply("firefox goes online again")
-        self.assertNotIn("firefox", (self.root / "etc/dai/firewall-offline.nft").read_text().split("\n", 1)[1])
+        self.assertEqual(plan.steps[0].params, {"app": "firefox"})
+        self.assertIn("firefox נפתח בלי גישה לרשת", catalog.CATALOG["app.offline"].summary(plan.steps[0].params, "he"))
+        self.assertIn("google-chrome", self.plan("google chrome doesn't go online").errors[0])   # two words, one app, not installed here
+        # Back online removes the override; undo of "offline" removes it too.
         self.apply("אפשר אינטרנט לפיירפוקס", scope="user")
         self.assertFalse((self.home / ".local/share/applications/firefox-esr.desktop").exists())
+        self.apply("firefox does not go online", scope="user")
         executor.undo_entry(entry, self.ctx, journal)
-        self.assertFalse((self.root / "etc/dai/firewall-offline.nft").exists())
+        self.assertFalse((self.home / ".local/share/applications/firefox-esr.desktop").exists())
         # Unknown apps and bad names are refused before anything runs.
         self.assertFalse(self.plan("no internet for nosuchapp").ok)
         with self.assertRaises(ValidationError):
-            catalog.CATALOG["network.app_offline"].validate({"app": "x; rm", "uid": 1000}, self.ctx)
-        with self.assertRaises(ValidationError):
-            catalog.CATALOG["network.app_offline"].validate({"app": "firefox", "uid": 0}, self.ctx)
-        self.assertEqual(catalog.offline_slice("google-chrome"), "offline_google_chrome.slice")
+            catalog.CATALOG["app.offline"].validate({"app": "x; rm"}, self.ctx)
 
     def test_memory_saver_on_and_off(self):
         """docs/BEYOND.md §14: sysctl now, zram at the next boot, the mark, Diamond's small model; off removes all."""
@@ -349,10 +328,6 @@ class ExecutorTests(TuneTestCase):
         self.assertFalse((self.root / "etc/dai/memory-saver").exists())
 
     def test_app_offline_flatpak_uses_the_sandbox(self):
-        with mock.patch("os.getuid", return_value=1000):
-            self._app_offline_flatpak()
-
-    def _app_offline_flatpak(self):
         (self.home / ".local/share/flatpak/app/org.telegram.desktop").mkdir(parents=True)
         plan = self.plan("keep org.telegram.desktop offline")
         self.assertTrue(plan.ok, plan.errors)

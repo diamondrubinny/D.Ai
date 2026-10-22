@@ -319,7 +319,7 @@
           ],
           [
             "«Firefox no sale a internet»",
-            "una frase deja una aplicación sin red: una regla del cortafuegos sobre su propio cgroup y un lanzador que la abre ahí. Deshacer, también en una frase."
+            "una frase deja una aplicación sin red: su lanzador la abre en una caja de arena sin red (bubblewrap, sin root); archivos, pantalla, sonido y GPU se mantienen. Deshacer, también en una frase."
           ],
           [
             "Subtítulos en vivo y ahorro de memoria",

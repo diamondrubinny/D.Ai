@@ -1761,12 +1761,10 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
-# "This app does not go online" (docs/BEYOND.md §12): an nftables rule on the
-# app's cgroup (system) and a launcher that starts the app in that cgroup (user)
+# "This app does not go online" (docs/BEYOND.md §12): the app's launcher starts
+# it in a bubblewrap network namespace (no root, nothing at boot to go wrong)
 # --------------------------------------------------------------------------
 
-OFFLINE_STATE = "/etc/dai/firewall-offline.json"
-OFFLINE_RULES = "/etc/dai/firewall-offline.nft"
 APP_RE = re.compile(r"^[a-z0-9][a-z0-9._+-]{0,63}$")
 USER_APPS = ".local/share/applications"
 SYSTEM_APPS = ("/usr/local/share/applications", "/usr/share/applications")
@@ -1783,11 +1781,6 @@ APP_ALIASES = {
 }
 
 
-def offline_slice(app: str) -> str:
-    """The systemd slice (and so the cgroup) an offline app runs in: letters, digits and _ only."""
-    return "offline_" + re.sub(r"[^a-z0-9]", "_", app) + ".slice"
-
-
 def _app_param(value: Any) -> str:
     if not isinstance(value, str):
         raise ValidationError("app: expected a name")
@@ -1796,77 +1789,6 @@ def _app_param(value: Any) -> str:
     if not APP_RE.match(app):
         raise ValidationError("app: letters, digits, dots and dashes only")
     return app
-
-
-def load_offline_rules(ctx: Context) -> list[dict]:
-    try:
-        rules = json.loads(read_text(ctx.path(OFFLINE_STATE), "[]"))
-    except json.JSONDecodeError:
-        return []
-    return [r for r in rules if isinstance(r, dict) and isinstance(r.get("uid"), int) and isinstance(r.get("app"), str)]
-
-
-def render_offline(rules: list[dict]) -> str:
-    lines = ['# Managed by dai-tune. Do not edit; use: dai-tune "APP goes online again"']
-    for rule in sorted(rules, key=lambda r: (r["uid"], r["app"])):
-        uid, app = int(rule["uid"]), rule["app"]
-        cgroup = f"user.slice/user-{uid}.slice/user@{uid}.service/{offline_slice(app)}"
-        lines.append(f'oifname != "lo" socket cgroupv2 level 4 "{cgroup}" counter reject comment "dai-tune offline {app}"')
-    return "\n".join(lines) + "\n"
-
-
-def _offline_validate(params: Params, ctx: Context) -> Params:
-    _only_keys(params, {"app", "uid"})
-    return {"app": _app_param(params.get("app")), "uid": _int(params.get("uid"), 1000, 59999, "uid")}
-
-
-def _offline_write_and_reload(rules: list[dict], ctx: Context) -> None:
-    write_file(ctx.path(OFFLINE_STATE), json.dumps(rules, indent=2) + "\n")
-    write_file(ctx.path(OFFLINE_RULES), render_offline(rules))
-    ctx.run(["nft", "-c", "-f", NFT_CONF])
-    ctx.run(["nft", "-f", NFT_CONF])
-
-
-def _offline_apply(params: Params, ctx: Context) -> None:
-    rules = [r for r in load_offline_rules(ctx) if (r["app"], r["uid"]) != (params["app"], params["uid"])]
-    rules.append({"app": params["app"], "uid": params["uid"]})
-    _offline_write_and_reload(rules, ctx)
-
-
-def _online_apply(params: Params, ctx: Context) -> None:
-    rules = [r for r in load_offline_rules(ctx) if (r["app"], r["uid"]) != (params["app"], params["uid"])]
-    _offline_write_and_reload(rules, ctx)
-
-
-register(ActionSpec(
-    id="network.app_offline",
-    scope="system",
-    validate=_offline_validate,
-    apply=_offline_apply,
-    risk=lambda p: "low",
-    effect=lambda p: "hardens",
-    summary=lambda p, lang: _t(lang, "Firewall: {app} started by this user cannot reach the network",
-                               "חומת אש: {app} שנפתח על ידי המשתמש הזה לא מגיע לרשת", app=p["app"]),
-    files=lambda p, c: [c.path(OFFLINE_STATE), c.path(OFFLINE_RULES)],
-    restore=_fw_reload,
-    note=lambda p, lang: _t(lang, "Connections fail at once; local services (sound, D-Bus) still work. "
-                                  "A copy already running stays connected until it is opened again.",
-                            "חיבורים נכשלים מיד; שירותים מקומיים (צליל, D-Bus) ממשיכים לעבוד. "
-                            "עותק שכבר רץ נשאר מחובר עד שפותחים אותו מחדש."),
-))
-
-register(ActionSpec(
-    id="network.app_online",
-    scope="system",
-    validate=_offline_validate,
-    apply=_online_apply,
-    risk=lambda p: "low",
-    effect=lambda p: "weakens",
-    summary=lambda p, lang: _t(lang, "Firewall: {app} can reach the network again",
-                               "חומת אש: {app} מגיע לרשת שוב", app=p["app"]),
-    files=lambda p, c: [c.path(OFFLINE_STATE), c.path(OFFLINE_RULES)],
-    restore=_fw_reload,
-))
 
 
 def _flatpak_id(app: str, ctx: Context) -> str | None:
@@ -1984,8 +1906,11 @@ register(ActionSpec(
     summary=lambda p, lang: _t(lang, "{app} opens without network access from now on",
                                "{app} נפתח בלי גישה לרשת מעכשיו", app=p["app"]),
     files=_app_offline_files,
-    note=lambda p, lang: _t(lang, "The menu, the command bar and the taskbar all start it that way.",
-                            "התפריט, שורת הפקודה וסרגל המשימות פותחים אותו כך."),
+    note=lambda p, lang: _t(lang, "The menu, the command bar and the taskbar all start it that way; connections fail at once "
+                                  "and local services (sound, display) still work. A copy already running stays connected until "
+                                  "it is opened again.",
+                            "התפריט, שורת הפקודה וסרגל המשימות פותחים אותו כך; חיבורים נכשלים מיד ושירותים מקומיים (צליל, "
+                            "תצוגה) ממשיכים לעבוד. עותק שכבר רץ נשאר מחובר עד שפותחים אותו מחדש."),
 ))
 
 register(ActionSpec(

@@ -251,11 +251,8 @@ def _first_group(m: re.Match) -> str:
 
 
 def _offline_requests(app: str, clause: str, offline: bool) -> list[Request]:
-    import os
     app = re.sub(r"^(?:the|ה|את\s+ה?)\s*", "", app.strip().lower())
-    verb = "offline" if offline else "online"
-    return [Request(f"network.app_{verb}", {"app": app, "uid": os.getuid()}, clause),
-            Request(f"app.{verb}", {"app": app}, clause)]
+    return [Request("app.offline" if offline else "app.online", {"app": app}, clause)]
 
 
 def parse_clause(clause: str) -> list[Request]:
