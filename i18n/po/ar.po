@@ -6710,3 +6710,32 @@ msgstr "يبدأ التبديل المضغوط الأكبر عند الإقلا�
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
 msgstr "القائمة وشريط الأوامر وشريط المهام تشغّله كلها بهذه الطريقة؛ تفشل الاتصالات فورًا وتستمر الخدمات المحلية (الصوت، الشاشة) في العمل. النسخة التي تعمل بالفعل تبقى متصلة حتى تُفتح من جديد."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "Diamond's Way — {name}"
+msgstr "طريق الماسة — {name}"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter"
+msgstr "طريق الماسة: حاسوب كامل في ملف واحد (check, plan, apply, export) · Enter"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "No examples in {dir}."
+msgstr "لا أمثلة في {dir}."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✓ Written: {path}. Check it: dai-way check {path}"
+msgstr "✓ كُتب: {path}. للتحقق: dai-way check {path}"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✓ {name}: {n} steps, every line understood ({files})."
+msgstr "✓ {name}: {n} خطوات، كل الأسطر مفهومة ({files})."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✗ {name}: {n} problem(s); nothing was changed."
+msgstr "✗ {name}: {n} مشكلة/مشكلات؛ لم يتغير شيء."

@@ -230,6 +230,12 @@ build_apps() {
   install -m 0755 "$captions/data/dai-captions" "$root/usr/bin/dai-captions"
   install -m 0644 "$captions/data/dai-captions.desktop" "$root/usr/share/applications/"
 
+  local way="$REPO_ROOT/apps/dai-way"
+  copy_package "$way/dai_way" "$root"
+  install -m 0755 "$way/data/dai-way" "$root/usr/bin/dai-way"
+  install -d "$root/usr/share/dai/way"
+  install -m 0644 "$way"/data/examples/*.dway "$root/usr/share/dai/way/"
+
   local store="$REPO_ROOT/apps/dai-store"
   copy_package "$store/dai_store" "$root"
   install -m 0755 "$store/data/dai-store" "$root/usr/bin/dai-store"

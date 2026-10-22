@@ -494,6 +494,17 @@ def main() -> int:
          "test -e /etc/dai/memory-saver || echo MARK_GONE", True,
          lambda o: "RC=0" in o and "RC2=0" in o and "\n180" in o and "MARK" in o and "SMALL True" in o and "MARK_GONE" in o
          and o.strip().splitlines()[-2] != "180", 60),
+        # Diamond's Way (docs/WAY.md): the built-in examples check, a user-scope file applies and undoes, export checks back.
+        ("way: a computer in one file", "dai-way --version; dai-way examples | wc -l; "
+         "for f in /usr/share/dai/way/*.dway; do dai-way check \"$f\" || echo CHECK_FAILED; done; "
+         "printf 'diamond: vm desk\\nsetup:\\n  lock the screen after 7 minutes\\n  firefox does not go online\\n' > /tmp/desk.dway; "
+         "dai-way plan /tmp/desk.dway | grep -c 'dry run'; dai-way apply /tmp/desk.dway --yes; echo APPLY_RC=$?; "
+         "grep -c DAI_LOCK_TIMEOUT_SECONDS=420 ~/.config/dai/session.env; test -f ~/.local/share/applications/firefox-esr.desktop && echo OFFLINE_SET; "
+         "dai-way undo; echo UNDO_RC=$?; test -e ~/.local/share/applications/firefox-esr.desktop || echo OFFLINE_GONE; "
+         "dai-way export /tmp/this.dway; dai-way check /tmp/this.dway; grep -c '^  @ ' /tmp/this.dway | sed 's/^/EXACT=/'", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "CHECK_FAILED" not in o and "APPLY_RC=0" in o and "OFFLINE_SET" in o
+         and "UNDO_RC=0" in o and "OFFLINE_GONE" in o and re.search(r"EXACT=([5-9]|\d\d)", o) is not None
+         and o.count("every line understood") >= 4, 120),
         # D.Ai Captions (docs/BEYOND.md §13): whisper's test file through the chunk pipeline, with the real model.
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "

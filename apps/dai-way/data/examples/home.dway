@@ -1,0 +1,13 @@
+# A family computer: safe by default, the apps a home needs, and a quiet evening (docs/WAY.md)
+diamond: family computer
+let minutes = 10
+
+setup:
+  lock the screen after $minutes minutes
+  enable automatic updates
+  memory saver on
+
+apps:
+  antivirus
+  video-player
+  printer

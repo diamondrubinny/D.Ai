@@ -6710,3 +6710,32 @@ msgstr "Больший сжатый своп заработает после с�
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
 msgstr "Меню, командная строка и панель задач запускают его именно так; подключения сразу обрываются, а локальные службы (звук, экран) продолжают работать. Уже запущенная копия остаётся в сети, пока её не откроют заново."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "Diamond's Way — {name}"
+msgstr "Путь Алмаза — {name}"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter"
+msgstr "Путь Алмаза: весь компьютер в одном файле (check, plan, apply, export) · Enter"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "No examples in {dir}."
+msgstr "В {dir} нет примеров."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✓ Written: {path}. Check it: dai-way check {path}"
+msgstr "✓ Записано: {path}. Проверить: dai-way check {path}"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✓ {name}: {n} steps, every line understood ({files})."
+msgstr "✓ {name}: шагов: {n}, каждая строка понята ({files})."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✗ {name}: {n} problem(s); nothing was changed."
+msgstr "✗ {name}: проблем: {n}; ничего не изменено."

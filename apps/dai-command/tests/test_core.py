@@ -288,6 +288,11 @@ class HealLanguageTests(unittest.TestCase):
         self.assertFalse(core.STORE_WORDS.search("grocery store list"))
         self.assertFalse(core.STORE_WORDS.search("install vlc"))
 
+    def test_way_words(self):
+        for text in ("way", "Diamond's way", "dai-way", "דרך היהלום"):
+            self.assertTrue(core.WAY_WORDS.search(text), text)
+        self.assertFalse(core.WAY_WORDS.search("the way home"))
+
     def test_captions_words(self):
         for text in ("captions", "live captions", "subtitles", "כתוביות", "כתוביות חיות", "תמלול חי"):
             with self.subTest(text):

@@ -6710,3 +6710,32 @@ msgstr "Der größere komprimierte Swap startet beim nächsten Booten; der Rest 
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again."
 msgstr "Menü, Befehlsleiste und Taskleiste starten es alle so; Verbindungen scheitern sofort und lokale Dienste (Ton, Bildschirm) laufen weiter. Eine bereits laufende Kopie bleibt verbunden, bis sie erneut geöffnet wird."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "Diamond's Way — {name}"
+msgstr "Der Weg des Diamanten — {name}"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter"
+msgstr "Der Weg des Diamanten: der ganze Computer in einer Datei (check, plan, apply, export) · Enter"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "No examples in {dir}."
+msgstr "Keine Beispiele in {dir}."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✓ Written: {path}. Check it: dai-way check {path}"
+msgstr "✓ Geschrieben: {path}. Prüfen: dai-way check {path}"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✓ {name}: {n} steps, every line understood ({files})."
+msgstr "✓ {name}: {n} Schritte, jede Zeile verstanden ({files})."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✗ {name}: {n} problem(s); nothing was changed."
+msgstr "✗ {name}: {n} Problem(e); nichts wurde geändert."
