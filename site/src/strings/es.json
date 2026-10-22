@@ -300,6 +300,32 @@
             "modo táctil en cada ventana de D.Ai; una imagen arm64 con Phosh para teléfonos Linux y la edición de tele para cajas ARM se construyen y arrancan en la CI. No sustituye al teléfono de tu bolsillo."
           ]
         ]
+      },
+      {
+        "icon": "🪟",
+        "title": "Viniendo de Windows",
+        "items": [
+          [
+            "Enfoque y modo juego",
+            "«enfoque durante 25 minutos»: ventanas emergentes ocultas, luz más cálida, un temporizador; el modo juego da todo el rendimiento y silencio, y lo devuelve todo al terminar."
+          ],
+          [
+            "Ajustes, tienda y tu teléfono",
+            "una ventana de ajustes sobre el catálogo de D.Ai Tune, cada cambio muestra primero su plan y se puede deshacer; una tienda sin cuenta; KDE Connect enlaza tu teléfono solo por la red local."
+          ],
+          [
+            "Buscar dentro de los documentos",
+            "«el archivo sobre el alquiler»: un índice local de tus documentos (texto, Office, PDF) construido cuando el equipo está libre y que nunca sale de él."
+          ],
+          [
+            "«Firefox no sale a internet»",
+            "una frase deja una aplicación sin red: una regla del cortafuegos sobre su propio cgroup y un lanzador que la abre ahí. Deshacer, también en una frase."
+          ],
+          [
+            "Subtítulos en vivo y ahorro de memoria",
+            "subtítulos para lo que reproduce el equipo, leídos por whisper.cpp en este equipo; y un ahorro de memoria para equipos antiguos: primero el swap comprimido, Diamond con su modelo más pequeño, MOM dice qué pesa."
+          ]
+        ]
       }
     ]
   },

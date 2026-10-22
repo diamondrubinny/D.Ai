@@ -23,6 +23,7 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 - **Hebrew and RTL done properly.** HE/EN indicator, wrong-layout fixer (`akuo` becomes `שלום`), Hebrew app names and Hebrew voice dictation.
 - **Secure by default.** Default-deny firewall, AppArmor, kernel hardening, locked root, automatic security updates, full-disk encryption in the installer; and "firefox does not go online" in one sentence (a firewall rule per app).
 - **Eight languages.** Hebrew, English, Arabic, Russian, Spanish, French, German and Portuguese: the interface, the sentences D.Ai understands, the boot menu and the website.
+- **Coming from Windows.** Focus and game mode in one sentence, a Settings window whose every change shows its plan and can be undone, a Store without an account, your phone through KDE Connect, search inside the documents, "firefox does not go online", live captions and a memory saver for old computers (`docs/BEYOND.md`).
 - **Beautiful from the first second.** A D.Ai boot menu, a loading screen where the encrypted disk asks for its passphrase, a D.Ai login screen, and three themes (Night, Day, high contrast) that every window follows.
 - **PDFs in a sandbox.** D.Ai PDF opens every file in a bubblewrap sandbox, shows what the file wants to do (JavaScript, launching programs, sending forms) and never does it; pages, forms, notes, a stamped signature, real redaction, OCR and a smaller file, all edited inside the sandbox.
 - **Windows in a window.** D.Ai VM runs Windows from your own installation media with your own key (KVM, UEFI with Secure Boot, TPM 2.0), with no shared folder, clipboard or USB until you flip each switch. D.Ai never ships Windows.
@@ -214,6 +215,7 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **PDF בארגז חול:** ‏D.Ai PDF פותח כל קובץ בארגז חול, מראה מה הקובץ "רוצה" לעשות (JavaScript, הרצת תוכניות, שליחת טפסים) ולא עושה זאת לעולם; עריכה של עמודים, טפסים, הערות, חתימה מוטבעת, השחרה אמיתית, OCR וקובץ קטן יותר, הכול בתוך ארגז החול.
 - **Windows בחלון:** ‏D.Ai VM מריץ Windows מהמדיה ומהמפתח שלכם (KVM, ‏UEFI עם Secure Boot, ‏TPM 2.0), בלי תיקייה משותפת, לוח או USB עד שתפעילו כל אחד מהם. D.Ai לא מפיץ Windows.
 - **בטלוויזיה, בטלפון ועל ARM:** מהדורת tv עולה ל-Kodi בעברית ונשלטת מהשלט; תמונות arm64 ניסיוניות של הטלפון (Phosh) ושל הטלוויזיה נבנות ועולות ב-QEMU ב-CI.
+- **מגיעים מ־Windows:** פוקוס ומצב משחק במשפט, מצב חיסכון בזיכרון למחשבים ישנים, ו"פיירפוקס לא יוצא לאינטרנט" במשפט אחד; הכול ב־`docs/BEYOND.md`.
 - **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏D.Ai Store (חנות בלי חשבון: מה זה מקים מוצג קודם; חיבור לטלפון עם KDE Connect), ‏D.Ai Find שמחפש גם בתוך המסמכים ("מסמך שמדבר על שכירות"), כתוביות חיות למה שהמחשב משמיע (Super+Alt+C), ‏D.Ai Settings (חלון הגדרות אחד, כל שינוי עם תוכנית וביטול), ‏D.Ai Focus ("פוקוס ל־25 דקות"), ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
 
 | | | |

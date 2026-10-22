@@ -300,6 +300,32 @@
             "Touch-Modus in jedem D.Ai-Fenster; ein arm64-Abbild mit Phosh für Linux-Telefone und die TV-Edition für ARM-Boxen werden in der CI gebaut und gestartet. Kein Ersatz für das Telefon in deiner Tasche."
           ]
         ]
+      },
+      {
+        "icon": "🪟",
+        "title": "Von Windows kommend",
+        "items": [
+          [
+            "Fokus und Spielmodus",
+            "„Fokus für 25 Minuten“: Pop-ups ausgeblendet, wärmeres Licht, ein Timer; der Spielmodus gibt volle Leistung und Ruhe und stellt alles wieder her, wenn Sie fertig sind."
+          ],
+          [
+            "Einstellungen, Store und Ihr Telefon",
+            "ein Einstellungsfenster über dem Katalog von D.Ai Tune, jede Änderung zeigt zuerst ihren Plan und lässt sich rückgängig machen; ein Store ohne Konto; KDE Connect verbindet Ihr Telefon nur über das lokale Netzwerk."
+          ],
+          [
+            "In den Dokumenten suchen",
+            "„die Datei über den Mietvertrag“: ein lokaler Index Ihrer Dokumente (Text, Office, PDF), erstellt, wenn der Computer frei ist, und der ihn nie verlässt."
+          ],
+          [
+            "„Firefox geht nicht ins Internet“",
+            "ein Satz nimmt eine App vom Netz: eine Firewall-Regel auf ihrer eigenen cgroup und ein Starter, der sie dort startet. Rückgängig ebenfalls in einem Satz."
+          ],
+          [
+            "Live-Untertitel und Speichersparmodus",
+            "Untertitel für alles, was der Computer abspielt, gelesen von whisper.cpp auf diesem Computer; und ein Speichersparmodus für alte Computer: komprimierter Swap zuerst, Diamond auf dem kleinsten Modell, MOM sagt, was schwer ist."
+          ]
+        ]
       }
     ]
   },

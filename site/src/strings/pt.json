@@ -300,6 +300,32 @@
             "modo de toque em cada janela do D.Ai; uma imagem arm64 com Phosh para celulares Linux e a edição de TV para caixas ARM são construídas e iniciadas na CI. Não substitui o celular no seu bolso."
           ]
         ]
+      },
+      {
+        "icon": "🪟",
+        "title": "A vir do Windows",
+        "items": [
+          [
+            "Foco e modo de jogo",
+            "«foco durante 25 minutos»: janelas pop-up escondidas, luz mais quente, um temporizador; o modo de jogo dá todo o desempenho e silêncio, e repõe tudo quando termina."
+          ],
+          [
+            "Definições, loja e o seu telemóvel",
+            "uma janela de definições sobre o catálogo do D.Ai Tune, cada alteração mostra primeiro o plano e pode ser desfeita; uma loja sem conta; o KDE Connect liga o seu telemóvel só pela rede local."
+          ],
+          [
+            "Procurar dentro dos documentos",
+            "«o ficheiro sobre o arrendamento»: um índice local dos seus documentos (texto, Office, PDF) construído quando o computador está livre e que nunca sai dele."
+          ],
+          [
+            "«O Firefox não vai à Internet»",
+            "uma frase deixa uma aplicação sem rede: uma regra de firewall no seu próprio cgroup e um lançador que a abre aí. Desfazer, também numa frase."
+          ],
+          [
+            "Legendas ao vivo e poupança de memória",
+            "legendas para tudo o que o computador reproduz, lidas pelo whisper.cpp neste computador; e uma poupança de memória para computadores antigos: swap comprimido primeiro, Diamond no modelo mais pequeno, MOM diz o que pesa."
+          ]
+        ]
       }
     ]
   },

@@ -300,6 +300,32 @@
             "mode tactile dans chaque fenêtre D.Ai ; une image arm64 avec Phosh pour les téléphones Linux et l'édition télé pour les boîtiers ARM sont construites et démarrées en CI. Pas un remplaçant du téléphone dans votre poche."
           ]
         ]
+      },
+      {
+        "icon": "🪟",
+        "title": "Venir de Windows",
+        "items": [
+          [
+            "Concentration et mode jeu",
+            "« concentration pendant 25 minutes » : fenêtres surgissantes masquées, lumière plus chaude, minuteur ; le mode jeu donne toute la performance et le calme, et remet tout en place quand vous avez fini."
+          ],
+          [
+            "Réglages, boutique et votre téléphone",
+            "une fenêtre de réglages au-dessus du catalogue de D.Ai Tune, chaque changement montre d'abord son plan et peut être annulé ; une boutique sans compte ; KDE Connect relie votre téléphone sur le réseau local seulement."
+          ],
+          [
+            "Chercher dans les documents",
+            "« le fichier à propos du bail » : un index local de vos documents (texte, Office, PDF) construit quand l'ordinateur est libre, et qui ne le quitte jamais."
+          ],
+          [
+            "« Firefox ne va pas sur Internet »",
+            "une phrase met une application hors ligne : une règle de pare-feu sur son propre cgroup et un lanceur qui la démarre là. L'annulation aussi, en une phrase."
+          ],
+          [
+            "Sous-titres en direct et économie de mémoire",
+            "des sous-titres pour tout ce que l'ordinateur joue, lus par whisper.cpp sur cet ordinateur ; et une économie de mémoire pour les vieux ordinateurs : swap compressé d'abord, Diamond sur son plus petit modèle, MOM dit ce qui pèse."
+          ]
+        ]
       }
     ]
   },

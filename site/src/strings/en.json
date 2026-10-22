@@ -300,6 +300,32 @@
             "touch mode in every D.Ai window; an arm64 image with Phosh for Linux phones, and the TV edition for ARM boxes, build and boot in CI. Not a replacement for the phone in your pocket."
           ]
         ]
+      },
+      {
+        "icon": "🪟",
+        "title": "Coming from Windows",
+        "items": [
+          [
+            "Focus and game mode",
+            "\"focus for 25 minutes\": pop-ups hidden, a warmer light, a timer; game mode gives full performance and quiet, and puts everything back when you are done."
+          ],
+          [
+            "Settings, Store and your phone",
+            "one Settings window over D.Ai Tune's catalog, every change shows its plan first and can be undone; a Store without an account; KDE Connect links your phone over the local network only."
+          ],
+          [
+            "Find inside the documents",
+            "\"the file about the lease\": a local index of your documents (text, Office, PDF) built when the computer is idle, never leaving it."
+          ],
+          [
+            "\"Firefox does not go online\"",
+            "one sentence makes an app offline: a firewall rule on its own cgroup and a launcher that starts it there. Undo in one sentence too."
+          ],
+          [
+            "Live captions and a memory saver",
+            "subtitles for whatever the computer plays, read by whisper.cpp on this computer; and a memory saver for old computers: compressed swap first, Diamond on its smallest model, MOM says what is heavy."
+          ]
+        ]
       }
     ]
   },
