@@ -106,7 +106,7 @@ class ModelTests(SettingsTestCase):
         samples = {"lock": "10", "updates": False, "usb": True, "camera": False, "ssh": True, "antivirus": "daily",
                    "snapshots": True, "theme": "contrast", "touch": "on", "sounds": "quiet", "language": "ar",
                    "layouts": "us, il", "timezone": "Europe/Berlin", "hostname": "office-pc", "power": "performance",
-                   "clean": True}
+                   "clean": True, "saver": True}
         for setting in model.SETTINGS:
             with self.subTest(setting.key):
                 plan = build_plan(setting.request(samples[setting.key]), self.ctx)

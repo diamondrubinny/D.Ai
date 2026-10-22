@@ -490,6 +490,15 @@ def main() -> int:
         ("phone link: the recipe opens the range", "dai-forge --dry-run 'connect my phone' </dev/null; "
          "dai-tune --dry-run 'open ports 1714 to 1764 udp' </dev/null; dai-store list | grep -A3 -i 'phone'", True,
          lambda o: "kdeconnect" in o and o.count("1714-1764") >= 3 and "udp" in o and "tcp" in o),
+        # Memory saver (docs/BEYOND.md §14): sysctl applied now, zram for the next boot, the mark, and off again.
+        ("memory saver: sysctl, zram and the mark", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver on' >/dev/null; echo RC=$?; "
+         "sysctl -n vm.swappiness; test -f /etc/dai/memory-saver && echo MARK; "
+         "grep -c 'min(ram, 8192)' /etc/systemd/zram-generator.conf.d/dai-memory-saver.conf; "
+         "python3 -c 'import json; print(\"SMALL\", json.load(open(\"/home/dai/.config/dai/ai.json\")).get(\"prefer_small\"))'; "
+         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver off' >/dev/null; echo RC2=$?; sysctl -n vm.swappiness; "
+         "test -e /etc/dai/memory-saver || echo MARK_GONE", True,
+         lambda o: "RC=0" in o and "RC2=0" in o and "\n180" in o and "MARK" in o and "SMALL True" in o and "MARK_GONE" in o
+         and o.strip().splitlines()[-2] != "180", 60),
         # D.Ai Captions (docs/BEYOND.md §13): whisper's test file through the chunk pipeline, with the real model.
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "
@@ -719,7 +728,7 @@ def main() -> int:
          "dai-settings list --json | python3 -c 'import json, sys; v = json.load(sys.stdin); "
          "print(\"KEYS\", len(v), \"HOST\", v[\"hostname\"], \"THEME\", v[\"theme\"], \"LOCK\", v[\"lock\"])'; "
          "test -f /usr/share/applications/dai-settings.desktop && echo DESKTOP_ENTRY", True,
-         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 16" in o and "HOST dai-os" in o and "THEME night" in o
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 17" in o and "HOST dai-os" in o and "THEME night" in o
          and re.search(r"LOCK (?:0|1|5|10|30|custom)", o) is not None and "DESKTOP_ENTRY" in o
          and "Computer name: dai-os" in o, 60),
         # D.Ai Focus (docs/BEYOND.md §5): a session hides pop-ups, arms a user timer and warms the light; stopping it

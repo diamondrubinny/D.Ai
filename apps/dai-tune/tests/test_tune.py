@@ -321,6 +321,32 @@ class ExecutorTests(TuneTestCase):
             catalog.CATALOG["network.app_offline"].validate({"app": "firefox", "uid": 0}, self.ctx)
         self.assertEqual(catalog.offline_slice("google-chrome"), "offline_google_chrome.slice")
 
+    def test_memory_saver_on_and_off(self):
+        """docs/BEYOND.md §14: sysctl now, zram at the next boot, the mark, Diamond's small model; off removes all."""
+        plan = self.plan("memory saver on")
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        self.assertEqual([(s.action, s.params) for s in plan.steps],
+                         [("memory.saver", {"enabled": True}), ("diamond.small_model", {"enabled": True})])
+        self.assertEqual([s.scope for s in plan.steps], ["system", "user"])
+        self.assertEqual(self.plan("מצב חיסכון בזיכרון").steps[0].params, {"enabled": True})
+        for text in ("memory saver off", "חיסכון בזיכרון כבוי", "stop saving memory"):
+            self.assertEqual(self.plan(text).steps[0].params, {"enabled": False}, text)
+        entry, journal = self.apply("memory saver on")
+        self.assertIn("vm.swappiness = 180", (self.root / "etc/sysctl.d/60-dai-memory-saver.conf").read_text())
+        self.assertIn("zram-size = min(ram, 8192)", (self.root / "etc/systemd/zram-generator.conf.d/dai-memory-saver.conf").read_text())
+        self.assertTrue((self.root / "etc/dai/memory-saver").exists())
+        self.assertIn(["sysctl", "--system", "-q"], self.runner.calls)
+        self.assertTrue(catalog.saver_on(self.ctx))
+        self.apply("memory saver on", scope="user")
+        self.assertEqual(json.loads((self.home / ".config/dai/ai.json").read_text()), {"prefer_small": True})
+        self.apply("memory saver off", scope="user")
+        self.assertEqual(json.loads((self.home / ".config/dai/ai.json").read_text()), {})
+        self.apply("memory saver off")
+        self.assertFalse((self.root / "etc/sysctl.d/60-dai-memory-saver.conf").exists())
+        self.assertFalse(catalog.saver_on(self.ctx))
+        executor.undo_entry(entry, self.ctx, journal)   # undoing "on" leaves nothing behind either
+        self.assertFalse((self.root / "etc/dai/memory-saver").exists())
+
     def test_app_offline_flatpak_uses_the_sandbox(self):
         with mock.patch("os.getuid", return_value=1000):
             self._app_offline_flatpak()

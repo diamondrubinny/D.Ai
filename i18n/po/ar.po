@@ -6691,3 +6691,36 @@ msgstr "ترجمة نصية لكل ما يشغّله الحاسوب · على ه
 #: apps/dai-captions/dai_captions/gui.py
 msgid "The first words appear a few seconds after they are said."
 msgstr "تظهر الكلمات الأولى بعد ثوانٍ قليلة من قولها."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Compressed swap first, Diamond on its smallest model, MOM says what is heavy."
+msgstr "التبديل المضغوط أولًا، Diamond على أصغر نموذج، وMOM يقول ما الثقيل."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Diamond answers with its smallest installed model"
+msgstr "يجيب Diamond بأصغر نموذج مثبّت"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Diamond uses the chosen model again"
+msgstr "يستخدم Diamond النموذج المختار من جديد"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Memory saver (old computers)"
+msgstr "توفير الذاكرة (حواسيب قديمة)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Memory saver is on and little is left. The heaviest: {apps}."
+msgstr "توفير الذاكرة مفعّل وبقي القليل. الأثقل: {apps}."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Memory saver off: the usual memory settings"
+msgstr "توفير الذاكرة متوقف: إعدادات الذاكرة المعتادة"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Memory saver on: compressed swap first, tuned for little RAM"
+msgstr "توفير الذاكرة مفعّل: التبديل المضغوط أولًا، مضبوط لذاكرة قليلة"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The larger compressed swap starts at the next boot; the rest applies now."
+msgstr "يبدأ التبديل المضغوط الأكبر عند الإقلاع التالي؛ والباقي يسري الآن."

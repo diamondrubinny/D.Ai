@@ -23,6 +23,8 @@ STRINGS = {
     "slow": ("Why is it slow?", "למה המחשב איטי?"),
     "ask_diamond": ("Ask Diamond", "שאלו את Diamond"),
     "guard_title": ("{name} is working very hard", "‏{name} עובדת קשה מאוד"),
+    "guard_low_title": ("Memory is almost full", "הזיכרון כמעט מלא"),
+    "guard_low": ("Memory saver is on and little is left. The heaviest: {apps}.", "חיסכון בזיכרון דולק ונשאר מעט. הכי כבדים: {apps}."),
     "guard_cpu": ("{name} has kept a whole processor core busy for {minutes} minutes.",
                   "‏{name} מעסיקה ליבת מעבד שלמה כבר {minutes} דקות."),
     "guard_memory": ("{name} has grown by {grown} in {minutes} minutes and keeps growing.",

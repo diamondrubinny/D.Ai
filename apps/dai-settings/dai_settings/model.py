@@ -164,6 +164,11 @@ def _choice(action: str, name: str, convert: Callable[[str], Any] = str) -> Requ
     return lambda value: _one(action, **{name: convert(str(value))})
 
 
+def _saver(value: Value) -> list[Request]:
+    """One toggle, two steps (docs/BEYOND.md §14): the system's memory settings and Diamond's model."""
+    return _one("memory.saver", enabled=bool(value)) + _one("diamond.small_model", enabled=bool(value))
+
+
 def _antivirus(value: Value) -> list[Request]:
     if value == "off":
         return _one("antivirus.schedule", enabled=False)
@@ -184,6 +189,7 @@ TITLES = {
     "ssh": ("Remote login (SSH)", "כניסה מרחוק (SSH)"),
     "antivirus": ("Virus scans of your files", "סריקות וירוסים לקבצים שלכם"),
     "snapshots": ("A snapshot before every update", "תמונת מצב לפני כל עדכון"),
+    "saver": ("Memory saver (old computers)", "חיסכון בזיכרון (מחשבים ישנים)"),
     "theme": ("Theme", "ערכת נושא"),
     "touch": ("Touch mode", "מצב מגע"),
     "sounds": ("System sounds", "צלילי המערכת"),
@@ -199,6 +205,7 @@ HINTS = {
     "updates": ("Turning them off needs a typed confirmation.", "כיבוי דורש אישור מוקלד."),
     "ssh": ("Opens port 22 to the local network.", "פותח את פורט 22 לרשת המקומית."),
     "snapshots": ("Needs a Btrfs system disk; the way back is D.Ai Rescue.", "דורש דיסק Btrfs; הדרך חזרה היא D.Ai Rescue."),
+    "saver": ("Compressed swap first, Diamond on its smallest model, MOM says what is heavy.", "החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד."),
     "language": ("From the next login.", "מהכניסה הבאה."),
     "layouts": ("Up to four, separated by commas: us,il,ru. Alt+Shift switches.",
                 "עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף."),
@@ -253,6 +260,7 @@ SETTINGS: tuple[Setting, ...] = (
     Setting("hostname", "system", "text", TITLES["hostname"], read_hostname, _choice("system.hostname", "hostname"),
             placeholder="my-computer"),
     Setting("power", "system", "choice", TITLES["power"], read_power, _choice("power.profile", "profile"), _choices("power")),
+    Setting("saver", "system", "toggle", TITLES["saver"], catalog.saver_on, _saver, hint=HINTS["saver"]),
     Setting("clean", "system", "button", TITLES["clean"], lambda c: "", lambda value: _one("system.clean"), hint=HINTS["clean"]),
 )
 

@@ -152,10 +152,12 @@ def default_model_id(models: dict[str, Model], task: str = "general") -> str | N
         if suited:
             return min(suited, key=lambda m: m.ram_mb).id
     chat_models = {k: m for k, m in models.items() if "general" in m.tasks}
+    installed = [m for m in chat_models.values() if m.installed]
+    if _configured_flag("prefer_small"):  # memory saver (docs/BEYOND.md §14): the smallest, whatever was chosen
+        return min(installed, key=lambda m: m.ram_mb).id if installed else None
     chosen = _configured("model")
     if chosen in chat_models and chat_models[chosen].installed:
         return chosen
-    installed = [m for m in chat_models.values() if m.installed]
     return min(installed, key=lambda m: m.ram_mb).id if installed else None
 
 
@@ -165,6 +167,13 @@ def _configured(key: str) -> str | None:
     except (OSError, json.JSONDecodeError, AttributeError):
         return None
     return value if isinstance(value, str) else None
+
+
+def _configured_flag(key: str) -> bool:
+    try:
+        return json.loads(config_file().read_text(encoding="utf-8")).get(key) is True
+    except (OSError, json.JSONDecodeError, AttributeError):
+        return False
 
 
 def set_default(model_id: str, key: str = "model") -> None:

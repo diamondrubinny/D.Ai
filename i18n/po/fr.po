@@ -6691,3 +6691,36 @@ msgstr "Sous-titres pour tout ce que l'ordinateur joue · sur cet ordinateur seu
 #: apps/dai-captions/dai_captions/gui.py
 msgid "The first words appear a few seconds after they are said."
 msgstr "Les premiers mots apparaissent quelques secondes après avoir été dits."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Compressed swap first, Diamond on its smallest model, MOM says what is heavy."
+msgstr "Le swap compressé d'abord, Diamond sur son plus petit modèle, MOM dit ce qui pèse."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Diamond answers with its smallest installed model"
+msgstr "Diamond répond avec son plus petit modèle installé"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Diamond uses the chosen model again"
+msgstr "Diamond utilise de nouveau le modèle choisi"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Memory saver (old computers)"
+msgstr "Économie de mémoire (vieux ordinateurs)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Memory saver is on and little is left. The heaviest: {apps}."
+msgstr "L'économie de mémoire est active et il en reste peu. Les plus lourds : {apps}."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Memory saver off: the usual memory settings"
+msgstr "Économie de mémoire désactivée : les réglages mémoire habituels"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Memory saver on: compressed swap first, tuned for little RAM"
+msgstr "Économie de mémoire activée : swap compressé d'abord, réglé pour peu de RAM"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The larger compressed swap starts at the next boot; the rest applies now."
+msgstr "Le swap compressé plus grand démarre au prochain démarrage ; le reste s'applique maintenant."

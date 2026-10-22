@@ -33,6 +33,9 @@ MEMORY_GROWTH = 512 * 2**20
 MEMORY_RATIO = 0.5
 SLACK = 16 * 2**20         # memory may dip this much and still count as growing
 IGNORED = {"dai-mom"}      # MOM itself
+SAVER_MARK = "/etc/dai/memory-saver"   # docs/BEYOND.md §14: D.Ai Tune's memory saver is on
+LOW_MEMORY = 0.15                       # available memory below this share: say what is heavy, once
+LOW_MEMORY_CLEAR = 0.25                 # ...and not again until it is back above this
 
 
 @dataclass
@@ -56,6 +59,7 @@ class Guard:
         self.cores = cores or os.cpu_count() or 1
         self.cpu_seconds = cpu_seconds
         self.tracks: dict[str, Track] = {}
+        self.low_told = False
 
     def observe(self, found: list[apps_mod.App], now: float) -> tuple[list[str], list[Alert]]:
         """The names to show on the diamond now, and the alerts to send now (once per run)."""
@@ -78,6 +82,27 @@ class Guard:
         for gone in set(self.tracks) - seen:
             del self.tracks[gone]
         return shown, alerts
+
+    def low_memory(self, found: list[apps_mod.App], totals: dict[str, int], saver: bool) -> Alert | None:
+        """Memory saver on and little memory left: the heaviest apps, once, until memory is back."""
+        total, available = totals.get("MemTotal", 0), totals.get("MemAvailable", 0)
+        if not saver or total <= 0:
+            return None
+        share = available / total
+        if share >= LOW_MEMORY_CLEAR:
+            self.low_told = False
+            return None
+        if share > LOW_MEMORY or self.low_told:
+            return None
+        from .text import size
+
+        heavy = sorted((a for a in found if a.key not in IGNORED and a.processes and not a.protected),
+                       key=lambda a: a.memory, reverse=True)[:3]
+        if not heavy:
+            return None
+        self.low_told = True
+        names = ", ".join(f"{a.name} ({size(a.memory, self.lang)})" for a in heavy)
+        return Alert("memory", t("guard_low_title", self.lang), "low", t("guard_low", self.lang, apps=names))
 
     def _cpu(self, app: apps_mod.App, track: Track, now: float) -> str | None:
         cores_busy = app.cpu * self.cores / 100
@@ -113,7 +138,8 @@ def notify(alert: Alert, lang: str, run: Callable = subprocess.run) -> None:
     """One quiet notification; Do not disturb (lxqt-notificationd) hides it, the diamond still shows."""
     if not shutil.which("notify-send"):
         return
-    run(["notify-send", "-a", "D.Ai", "-i", "dai-mom", "-u", "low", t("guard_title", lang, name=alert.name),
+    title = alert.name if alert.reason == "low" else t("guard_title", lang, name=alert.name)
+    run(["notify-send", "-a", "D.Ai", "-i", "dai-mom", "-u", "low", title,
          alert.detail + "\n" + t("guard_hint", lang)], capture_output=True, check=False, timeout=10)
 
 
@@ -145,6 +171,9 @@ def run_forever(lang: str, root: Path = Path("/"), interval: float = INTERVAL,
         found = apps_mod.group(snap, desktop, recording=recording_now())
         names, alerts = guard.observe(found, time.monotonic())
         mirror(names)
+        low = guard.low_memory(found, procs.memory_totals(root), (root / SAVER_MARK.lstrip("/")).exists())
+        if low is not None:
+            alerts.append(low)
         for alert in alerts:
             print(f"{alert.reason} {alert.key}: {alert.detail}", flush=True)  # the journal keeps names only
             notify(alert, lang)

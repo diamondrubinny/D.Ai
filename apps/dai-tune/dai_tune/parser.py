@@ -224,6 +224,8 @@ def _package_names(raw: str) -> list[str]:
 # --------------------------------------------------------------------------
 
 
+SAVER = r"(?:\b(?:memory|ram)\s+saver\b|\bsav(?:e|ing)\s+(?:memory|ram)\b|\blow[\s-]+memory\s+mode\b|(?:מצב\s+)?חיסכון\s+בזיכרון|חסוך\s+(?:ב)?זיכרון)"
+SAVER_OFF = r"(?:\boff\b|\bstop\b|\bdisable\b|\bno\s+more\b|כבוי|כבה|בטל|תבטל|לבטל|הפסק|תפסיק|בלי)"
 NET = r"(?:the\s+)?(?:internet|network|online|web)"
 APP = r"([\w.+'-]+(?:\s+[\w.+'-]+)?)"   # one or two words: "firefox", "google chrome", "org.telegram.desktop"
 APP_OFFLINE = (
@@ -273,6 +275,12 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("snapshots.undo_update", {}, clause)]
     if _has(SNAPSHOTS_ON, c):
         return [Request("snapshots.enable", {}, clause)]
+
+    # Memory saver (docs/BEYOND.md §14): one sentence, a system step and a user step.
+    if _has(SAVER, c):
+        enabled = not _has(SAVER_OFF, c)
+        return [Request("memory.saver", {"enabled": enabled}, clause),
+                Request("diamond.small_model", {"enabled": enabled}, clause)]
 
     # Maintenance and power (D.Ai Doctor suggests these sentences).
     if _has(CLEAN, c):
@@ -516,6 +524,7 @@ EXAMPLES = {
         "מקלדת עברית אנגלית רוסית",
         "שפה רוסית",
         "פיירפוקס לא יוצא לאינטרנט",
+        "מצב חיסכון בזיכרון",
         "אפשר אינטרנט לפיירפוקס",
         "אזור זמן ירושלים",
         "שנה שם מחשב ל office-pc",

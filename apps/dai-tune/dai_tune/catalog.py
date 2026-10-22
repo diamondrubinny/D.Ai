@@ -1998,3 +1998,90 @@ register(ActionSpec(
     summary=lambda p, lang: _t(lang, "{app} opens with network access again", "{app} נפתח עם גישה לרשת שוב", app=p["app"]),
     files=_app_offline_files,
 ))
+
+
+# --------------------------------------------------------------------------
+# Memory saver for old computers (docs/BEYOND.md §14): zram tightened, Diamond
+# on its smallest model, MOM says what is heavy
+# --------------------------------------------------------------------------
+
+SAVER_MARK = "/etc/dai/memory-saver"
+SAVER_SYSCTL = "/etc/sysctl.d/60-dai-memory-saver.conf"
+SAVER_ZRAM = "/etc/systemd/zram-generator.conf.d/dai-memory-saver.conf"
+AI_CONFIG = ".config/dai/ai.json"
+
+
+def _saver_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"enabled"})
+    return {"enabled": _bool(params.get("enabled"))}
+
+
+def _saver_apply(params: Params, ctx: Context) -> None:
+    mark, sysctl, zram = ctx.path(SAVER_MARK), ctx.path(SAVER_SYSCTL), ctx.path(SAVER_ZRAM)
+    if params["enabled"]:
+        write_file(sysctl, (
+            "# Managed by dai-tune: memory saver (docs/BEYOND.md §14). Values recommended for zram swap.\n"
+            "vm.swappiness = 180\n"
+            "vm.page-cluster = 0\n"
+            "vm.watermark_boost_factor = 0\n"
+            "vm.watermark_scale_factor = 125\n"
+        ))
+        write_file(zram, (
+            "# Managed by dai-tune: memory saver (docs/BEYOND.md §14). Takes effect at the next boot.\n"
+            "[zram0]\n"
+            "zram-size = min(ram, 8192)\n"
+            "compression-algorithm = zstd\n"
+        ))
+        write_file(mark, json.dumps({"on": True}) + "\n")
+    else:
+        for path in (sysctl, zram, mark):
+            path.unlink(missing_ok=True)
+    ctx.run(["sysctl", "--system", "-q"], check=False)
+
+
+def saver_on(ctx: Context) -> bool:
+    return ctx.path(SAVER_MARK).exists()
+
+
+register(ActionSpec(
+    id="memory.saver",
+    scope="system",
+    validate=_saver_validate,
+    apply=_saver_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Memory saver on: compressed swap first, tuned for little RAM",
+                                "מצב חיסכון בזיכרון: החלפה דחוסה קודם, מכוון למעט זיכרון") if p["enabled"]
+                             else _t(lang, "Memory saver off: the usual memory settings", "חיסכון בזיכרון כבוי: הגדרות הזיכרון הרגילות")),
+    files=lambda p, c: [c.path(SAVER_MARK), c.path(SAVER_SYSCTL), c.path(SAVER_ZRAM)],
+    restore=lambda p, c, e: c.run(["sysctl", "--system", "-q"], check=False),
+    note=lambda p, lang: _t(lang, "The larger compressed swap starts at the next boot; the rest applies now.",
+                            "ההחלפה הדחוסה הגדולה יותר מתחילה באתחול הבא; השאר חל עכשיו.") if p["enabled"] else "",
+))
+
+
+def _small_model_apply(params: Params, ctx: Context) -> None:
+    path = ctx.user_path(AI_CONFIG)
+    try:
+        data = json.loads(read_text(path, "{}"))
+    except json.JSONDecodeError:
+        data = {}
+    data = data if isinstance(data, dict) else {}
+    if params["enabled"]:
+        data["prefer_small"] = True
+    else:
+        data.pop("prefer_small", None)
+    write_file(path, json.dumps(data, indent=2) + "\n", mode=0o600)
+
+
+register(ActionSpec(
+    id="diamond.small_model",
+    scope="user",
+    validate=_saver_validate,
+    apply=_small_model_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Diamond answers with its smallest installed model", "Diamond עונה עם המודל הקטן ביותר שמותקן")
+                             if p["enabled"] else _t(lang, "Diamond uses the chosen model again", "Diamond משתמש שוב במודל שנבחר")),
+    files=lambda p, c: [c.user_path(AI_CONFIG)],
+))

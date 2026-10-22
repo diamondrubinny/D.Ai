@@ -163,6 +163,16 @@ class TaskTests(EnvTestCase):
             model.path.write_bytes(b"x")
         self.assertEqual(models.default_model_id(catalog), "qwen2.5-0.5b")  # smallest for general use
         self.assertEqual(models.default_model_id(catalog, "code"), "qwen2.5-coder-1.5b")
+        # Memory saver (docs/BEYOND.md §14): prefer_small wins over the chosen model, and only while it is set.
+        larger = max((m for m in catalog.values() if "general" in m.tasks), key=lambda m: m.ram_mb).id
+        models.set_default(larger)
+        self.assertEqual(models.default_model_id(catalog), larger)
+        path = models.config_file()
+        data = json.loads(path.read_text())
+        path.write_text(json.dumps({**data, "prefer_small": True}))
+        self.assertEqual(models.default_model_id(catalog), "qwen2.5-0.5b")
+        path.write_text(json.dumps(data))
+        self.assertEqual(models.default_model_id(catalog), larger)
 
     def test_task_is_validated(self):
         base = {"op": "chat", "messages": [{"role": "user", "content": "x"}]}

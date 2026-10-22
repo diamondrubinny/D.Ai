@@ -56,6 +56,30 @@ class CpuTests(unittest.TestCase):
         self.assertEqual(g.observe([app("dai-mom", "MOM", cpu=100.0)], 300), ([], []))
 
 
+class LowMemoryTests(unittest.TestCase):
+    """Memory saver on (docs/BEYOND.md §14): the heaviest apps, once, until memory is back; never when off."""
+
+    def test_tells_the_heaviest_once_and_again_after_recovery(self):
+        g = guard.Guard("en", cores=1)
+        found = [app("firefox", "Firefox", memory=900 * 2**20), app("zoom", "Zoom", memory=400 * 2**20),
+                 app("x", "X", memory=100 * 2**20, protected=True)]
+        totals = {"MemTotal": 4 * 2**30, "MemAvailable": 400 * 2**20}   # under 15%
+        self.assertIsNone(g.low_memory(found, totals, saver=False))
+        alert = g.low_memory(found, totals, saver=True)
+        self.assertEqual((alert.reason, alert.name), ("low", "Memory is almost full"))
+        self.assertIn("Firefox", alert.detail)
+        self.assertIn("900 MB", alert.detail)
+        self.assertNotIn("X", alert.detail.replace("Memory", ""))
+        self.assertIsNone(g.low_memory(found, totals, saver=True))                          # not twice
+        self.assertIsNone(g.low_memory(found, {"MemTotal": 4 * 2**30, "MemAvailable": 2 * 2**30}, saver=True))
+        self.assertIsNotNone(g.low_memory(found, totals, saver=True))                       # again after recovery
+        self.assertIsNone(g.low_memory([], totals, saver=True))
+        calls = []
+        with mock.patch("shutil.which", return_value="/usr/bin/notify-send"):
+            guard.notify(guard.Alert("memory", "הזיכרון כמעט מלא", "low", "x"), "he", run=lambda argv, **kw: calls.append(argv))
+        self.assertEqual(calls[0][7], "הזיכרון כמעט מלא")   # the title is the alert's own, not "{name} is working hard"
+
+
 class MemoryTests(unittest.TestCase):
     def test_growing_for_ten_minutes_tells_once(self):
         g = guard.Guard("en", cores=1)

@@ -190,7 +190,7 @@ msgid "(page removed)"
 msgstr ""
 
 #. he: ‏+{seconds} שנ' בכניסה
-#: apps/dai-mom/dai_mom/text.py:32
+#: apps/dai-mom/dai_mom/text.py:34
 #, python-brace-format
 msgid "+{seconds} s at login"
 msgstr ""
@@ -222,7 +222,7 @@ msgid "/dev/kvm is missing: virtualization is off in the BIOS, or the kvm module
 msgstr ""
 
 #. he: תהליך אחד
-#: apps/dai-mom/dai_mom/text.py:55
+#: apps/dai-mom/dai_mom/text.py:57
 msgid "1 process"
 msgstr ""
 
@@ -328,7 +328,7 @@ msgid "A question for Diamond"
 msgstr ""
 
 #. he: תמונת מצב לפני כל עדכון
-#: apps/dai-settings/dai_settings/model.py:186
+#: apps/dai-settings/dai_settings/model.py:191
 msgid "A snapshot before every update"
 msgstr ""
 
@@ -521,7 +521,7 @@ msgid "Allow {kind}"
 msgstr ""
 
 #. he: מדיניות ארגונית יכולה להגביל את זה.
-#: apps/dai-settings/dai_settings/model.py:198
+#: apps/dai-settings/dai_settings/model.py:204
 msgid "An organization policy may cap this."
 msgstr ""
 
@@ -648,7 +648,7 @@ msgid "Ask what? dai-tv ask QUESTION"
 msgstr ""
 
 #. he: ביקשנו מ־{name} להיסגר.
-#: apps/dai-mom/dai_mom/text.py:77
+#: apps/dai-mom/dai_mom/text.py:79
 #, python-brace-format
 msgid "Asked {name} to close."
 msgstr ""
@@ -685,7 +685,7 @@ msgid "At least 8 characters."
 msgstr ""
 
 #. he: בהפעלה
-#: apps/dai-mom/dai_mom/text.py:88
+#: apps/dai-mom/dai_mom/text.py:90
 msgid "At login"
 msgstr ""
 
@@ -721,7 +721,7 @@ msgid "Automatic backups are off. The backup on the drive and the key (~/.config
 msgstr ""
 
 #. he: עדכוני אבטחה אוטומטיים
-#: apps/dai-settings/dai_settings/model.py:181
+#: apps/dai-settings/dai_settings/model.py:186
 #: apps/dai-tune/dai_tune/posture.py:28
 msgid "Automatic security updates"
 msgstr ""
@@ -761,7 +761,7 @@ msgid "Backed up: "
 msgstr ""
 
 #. he: ברקע
-#: apps/dai-mom/dai_mom/text.py:87
+#: apps/dai-mom/dai_mom/text.py:89
 msgid "Background"
 msgstr ""
 
@@ -843,12 +843,12 @@ msgid "Black boxes (the ■ tool) make their page a picture when you save: what 
 msgstr ""
 
 #. he: חסימת התקני אחסון USB
-#: apps/dai-settings/dai_settings/model.py:182
+#: apps/dai-settings/dai_settings/model.py:187
 msgid "Block USB storage devices"
 msgstr ""
 
 #. he: חסימת המצלמה
-#: apps/dai-settings/dai_settings/model.py:183
+#: apps/dai-settings/dai_settings/model.py:188
 msgid "Block the camera"
 msgstr ""
 
@@ -926,7 +926,7 @@ msgstr ""
 #: apps/dai-chat/dai_chat/gui.py:117
 #: apps/dai-chat/dai_chat/gui.py:180
 #: apps/dai-j/dai_j/text.py:80
-#: apps/dai-mom/dai_mom/text.py:86
+#: apps/dai-mom/dai_mom/text.py:88
 #: apps/dai-pdf/dai_pdf/gui.py:397
 msgid "Cancel"
 msgstr ""
@@ -1015,7 +1015,7 @@ msgid "Checked"
 msgstr ""
 
 #. he: אפליקציות מסומנות עולות בכניסה. שינוי חל מהכניסה הבאה; הקבצים של המערכת עצמה לא משתנים.
-#: apps/dai-mom/dai_mom/text.py:110
+#: apps/dai-mom/dai_mom/text.py:112
 msgid "Checked apps start when you log in. A change takes effect at the next login; the system's own files are never changed."
 msgstr ""
 
@@ -1143,19 +1143,19 @@ msgid "Close port {port}/{proto}"
 msgstr ""
 
 #. he: לסגור את {name}
-#: apps/dai-mom/dai_mom/text.py:51
+#: apps/dai-mom/dai_mom/text.py:53
 #, python-brace-format
 msgid "Close {name}"
 msgstr ""
 
 #. he: לסגור את {name} (מפנה {memory})
-#: apps/dai-mom/dai_mom/text.py:52
+#: apps/dai-mom/dai_mom/text.py:54
 #, python-brace-format
 msgid "Close {name} (frees {memory})"
 msgstr ""
 
 #. he: לסגור את {name}?
-#: apps/dai-mom/dai_mom/text.py:62
+#: apps/dai-mom/dai_mom/text.py:64
 #, python-brace-format
 msgid "Close {name}?"
 msgstr ""
@@ -1204,9 +1204,14 @@ msgstr ""
 msgid "Compare with {name}"
 msgstr ""
 
+#. he: החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד.
+#: apps/dai-settings/dai_settings/model.py:208
+msgid "Compressed swap first, Diamond on its smallest model, MOM says what is heavy."
+msgstr ""
+
 #. he: שם המחשב
 #: apps/dai-oem/dai_oem/wizard.py:51
-#: apps/dai-settings/dai_settings/model.py:193
+#: apps/dai-settings/dai_settings/model.py:199
 msgid "Computer name"
 msgstr ""
 
@@ -1568,7 +1573,7 @@ msgid "Delete {title} and its data? [y/N] "
 msgstr ""
 
 #. he: סגירה: ⁦Delete⁩ · סגירה בכוח: ⁦Shift+Delete⁩
-#: apps/dai-mom/dai_mom/text.py:85
+#: apps/dai-mom/dai_mom/text.py:87
 msgid "Delete: close · Shift+Delete: force close"
 msgstr ""
 
@@ -1628,7 +1633,7 @@ msgid "Diamond Chat · encrypted end to end · waits on this computer until {nam
 msgstr ""
 
 #. he: ‏Diamond על {name}
-#: apps/dai-mom/dai_mom/text.py:33
+#: apps/dai-mom/dai_mom/text.py:35
 #, python-brace-format
 msgid "Diamond about {name}"
 msgstr ""
@@ -1641,6 +1646,11 @@ msgstr ""
 #. he: Diamond ענה.
 #: apps/dai-pdf/dai_pdf/gui.py:1688
 msgid "Diamond answered."
+msgstr ""
+
+#. he: Diamond עונה עם המודל הקטן ביותר שמותקן
+#: apps/dai-tune/dai_tune/catalog.py:2084
+msgid "Diamond answers with its smallest installed model"
 msgstr ""
 
 #. he: ל-Diamond לא הייתה תשובה.
@@ -1662,7 +1672,7 @@ msgid "Diamond is not available now ({why})."
 msgstr ""
 
 #. he: ‏Diamond לא זמין, ולכן זה מבוסס רק על העובדות.
-#: apps/dai-mom/dai_mom/text.py:36
+#: apps/dai-mom/dai_mom/text.py:38
 msgid "Diamond is not available, so this comes from the facts alone."
 msgstr ""
 
@@ -1693,7 +1703,7 @@ msgid "Diamond is reading the message…"
 msgstr ""
 
 #. he: ‏Diamond חושב…
-#: apps/dai-mom/dai_mom/text.py:35
+#: apps/dai-mom/dai_mom/text.py:37
 msgid "Diamond is thinking…"
 msgstr ""
 
@@ -1710,6 +1720,11 @@ msgstr ""
 #. he: Diamond לא הציע שינוי.
 #: apps/dai-code/dai_code/cli.py:117
 msgid "Diamond proposed no change."
+msgstr ""
+
+#. he: Diamond משתמש שוב במודל שנבחר
+#: apps/dai-tune/dai_tune/catalog.py:2085
+msgid "Diamond uses the chosen model again"
 msgstr ""
 
 #. he: Diamond · Enter לשאלה (רץ במחשב הזה)
@@ -1789,7 +1804,7 @@ msgid "Disk size (grows as used)"
 msgstr ""
 
 #. he: דיסק: {free} פנויים מתוך {total}
-#: apps/dai-mom/dai_mom/text.py:83
+#: apps/dai-mom/dai_mom/text.py:85
 #, python-brace-format
 msgid "Disk: {free} free of {total}"
 msgstr ""
@@ -1821,7 +1836,7 @@ msgid "Done ✓"
 msgstr ""
 
 #. he: בוצע: {name}
-#: apps/dai-mom/dai_mom/text.py:103
+#: apps/dai-mom/dai_mom/text.py:105
 #: apps/dai-tv/dai_tv/cli.py:266
 #, python-brace-format
 msgid "Done: {name}"
@@ -1844,7 +1859,7 @@ msgid "Downloaded and verified: {path}"
 msgstr ""
 
 #. he: קבצי התקנה שהורדו ויומנים ישנים. אי אפשר לבטל; שום דבר שבשימוש לא נמחק.
-#: apps/dai-settings/dai_settings/model.py:205
+#: apps/dai-settings/dai_settings/model.py:212
 msgid "Downloaded package files and old logs. Cannot be undone; nothing you use is lost."
 msgstr ""
 
@@ -2099,7 +2114,7 @@ msgid "Exposes a service on this computer to other machines."
 msgstr ""
 
 #. he: פחות אפליקציות בכניסה…
-#: apps/dai-mom/dai_mom/text.py:53
+#: apps/dai-mom/dai_mom/text.py:55
 msgid "Fewer apps at login…"
 msgstr ""
 
@@ -2295,7 +2310,7 @@ msgid "Force close"
 msgstr ""
 
 #. he: לסגור בכוח את {name}?
-#: apps/dai-mom/dai_mom/text.py:60
+#: apps/dai-mom/dai_mom/text.py:62
 #, python-brace-format
 msgid "Force close {name}?"
 msgstr ""
@@ -2306,7 +2321,7 @@ msgid "Force off"
 msgstr ""
 
 #. he: סגירה בכוח מאבדת עבודה שלא נשמרה. הוסיפו ‎--yes‎ כדי לסגור בכוח את {name}.
-#: apps/dai-mom/dai_mom/text.py:71
+#: apps/dai-mom/dai_mom/text.py:73
 #, python-brace-format
 msgid "Forcing loses unsaved work. Add --yes to force {name} closed."
 msgstr ""
@@ -2329,7 +2344,7 @@ msgid "Found: {host} (secure connection)"
 msgstr ""
 
 #. he: פינוי מקום בדיסק
-#: apps/dai-settings/dai_settings/model.py:195
+#: apps/dai-settings/dai_settings/model.py:201
 msgid "Free disk space"
 msgstr ""
 
@@ -2376,7 +2391,7 @@ msgid "From history"
 msgstr ""
 
 #. he: מהכניסה הבאה.
-#: apps/dai-settings/dai_settings/model.py:202
+#: apps/dai-settings/dai_settings/model.py:209
 msgid "From the next login."
 msgstr ""
 
@@ -2695,7 +2710,7 @@ msgid "It is in the Start menu. It runs in a sandbox: no internet and no access 
 msgstr ""
 
 #. he: היא חלק מההפעלה, וסגירה שלה יכולה לסיים את ההפעלה.
-#: apps/dai-mom/dai_mom/text.py:47
+#: apps/dai-mom/dai_mom/text.py:49
 msgid "It is part of the session; closing it can end the session."
 msgstr ""
 
@@ -2705,7 +2720,7 @@ msgid "It is set up and in the menu. D.Ai Tune recorded every step; Undo removes
 msgstr ""
 
 #. he: היא רצה בארגז חול של D.Ai Forge.
-#: apps/dai-mom/dai_mom/text.py:46
+#: apps/dai-mom/dai_mom/text.py:48
 msgid "It runs in a D.Ai Forge sandbox."
 msgstr ""
 
@@ -2721,7 +2736,7 @@ msgid "It takes two minutes. Choose a language:"
 msgstr ""
 
 #. he: היא משתמשת ב־{memory} זיכרון וב־{cpu}% מהמעבד ({processes}).
-#: apps/dai-mom/dai_mom/text.py:44
+#: apps/dai-mom/dai_mom/text.py:46
 #, python-brace-format
 msgid "It uses {memory} of memory and {cpu}% of the processor ({processes})."
 msgstr ""
@@ -2733,7 +2748,7 @@ msgid "It was given {given} of the computer's {total}; D.Ai and Windows then squ
 msgstr ""
 
 #. he: היא הותקנה עם החבילה {package}.
-#: apps/dai-mom/dai_mom/text.py:43
+#: apps/dai-mom/dai_mom/text.py:45
 #, python-brace-format
 msgid "It was installed with the package {package}."
 msgstr ""
@@ -2769,7 +2784,7 @@ msgid "Keeping the clipboard history again."
 msgstr ""
 
 #. he: שפות מקלדת
-#: apps/dai-settings/dai_settings/model.py:191
+#: apps/dai-settings/dai_settings/model.py:197
 msgid "Keyboard languages"
 msgstr ""
 
@@ -2811,7 +2826,7 @@ msgid "Language"
 msgstr ""
 
 #. he: השפה של D.Ai
-#: apps/dai-settings/dai_settings/model.py:190
+#: apps/dai-settings/dai_settings/model.py:196
 msgid "Language of D.Ai"
 msgstr ""
 
@@ -2930,7 +2945,7 @@ msgid "Loading…"
 msgstr ""
 
 #. he: נעילת המסך
-#: apps/dai-settings/dai_settings/model.py:180
+#: apps/dai-settings/dai_settings/model.py:185
 msgid "Lock the screen"
 msgstr ""
 
@@ -2968,7 +2983,7 @@ msgid "Looks like Windows media: {yes}"
 msgstr ""
 
 #. he: MOM לא רצה כ־root.
-#: apps/dai-mom/dai_mom/text.py:75
+#: apps/dai-mom/dai_mom/text.py:77
 msgid "MOM does not run as root."
 msgstr ""
 
@@ -3044,11 +3059,33 @@ msgstr ""
 
 #. he: הזיכרון כמעט מלא
 #: apps/dai-doctor/dai_doctor/diagnose.py:74
+#: apps/dai-mom/dai_mom/text.py:26
 msgid "Memory is almost full"
 msgstr ""
 
+#. he: חיסכון בזיכרון (מחשבים ישנים)
+#: apps/dai-settings/dai_settings/model.py:192
+msgid "Memory saver (old computers)"
+msgstr ""
+
+#. he: חיסכון בזיכרון דולק ונשאר מעט. הכי כבדים: {apps}.
+#: apps/dai-mom/dai_mom/text.py:27
+#, python-brace-format
+msgid "Memory saver is on and little is left. The heaviest: {apps}."
+msgstr ""
+
+#. he: חיסכון בזיכרון כבוי: הגדרות הזיכרון הרגילות
+#: apps/dai-tune/dai_tune/catalog.py:2055
+msgid "Memory saver off: the usual memory settings"
+msgstr ""
+
+#. he: מצב חיסכון בזיכרון: החלפה דחוסה קודם, מכוון למעט זיכרון
+#: apps/dai-tune/dai_tune/catalog.py:2053
+msgid "Memory saver on: compressed swap first, tuned for little RAM"
+msgstr ""
+
 #. he: זיכרון: {used} מתוך {total} בשימוש
-#: apps/dai-mom/dai_mom/text.py:81
+#: apps/dai-mom/dai_mom/text.py:83
 #, python-brace-format
 msgid "Memory: {used} of {total} in use"
 msgstr ""
@@ -3145,7 +3182,7 @@ msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it
 msgstr ""
 
 #. he: דורש דיסק Btrfs; הדרך חזרה היא D.Ai Rescue.
-#: apps/dai-settings/dai_settings/model.py:201
+#: apps/dai-settings/dai_settings/model.py:207
 msgid "Needs a Btrfs system disk; the way back is D.Ai Rescue."
 msgstr ""
 
@@ -3597,7 +3634,7 @@ msgid "Nothing about this file leaves this computer."
 msgstr ""
 
 #. he: שום דבר בשם {name} לא רץ.
-#: apps/dai-mom/dai_mom/text.py:76
+#: apps/dai-mom/dai_mom/text.py:78
 #, python-brace-format
 msgid "Nothing called {name} is running."
 msgstr ""
@@ -3659,7 +3696,7 @@ msgid "Nothing is waiting for you."
 msgstr ""
 
 #. he: כרגע שום דבר לא נראה עמוס.
-#: apps/dai-mom/dai_mom/text.py:50
+#: apps/dai-mom/dai_mom/text.py:52
 msgid "Nothing looks overloaded right now."
 msgstr ""
 
@@ -3739,7 +3776,7 @@ msgid "Nothing was changed. See what you can ask: dai-tune help"
 msgstr ""
 
 #. he: שום דבר לא נסגר. כדי לראות או לסגור: Ctrl+Shift+Esc.
-#: apps/dai-mom/dai_mom/text.py:30
+#: apps/dai-mom/dai_mom/text.py:32
 msgid "Nothing was closed. To see it or close it: Ctrl+Shift+Esc."
 msgstr ""
 
@@ -3848,7 +3885,7 @@ msgid "Only the settings are copied; the other app is not changed. J asks for ea
 msgstr ""
 
 #. he: רק העובדות האלה, במחשב הזה. סודות בשורת הפקודה מוסתרים.
-#: apps/dai-mom/dai_mom/text.py:39
+#: apps/dai-mom/dai_mom/text.py:41
 msgid "Only these facts, on this computer. Secrets in the command line are hidden."
 msgstr ""
 
@@ -3933,7 +3970,7 @@ msgid "Opened in a sandbox"
 msgstr ""
 
 #. he: פותח את פורט 22 לרשת המקומית.
-#: apps/dai-settings/dai_settings/model.py:200
+#: apps/dai-settings/dai_settings/model.py:206
 msgid "Opens port 22 to the local network."
 msgstr ""
 
@@ -4103,7 +4140,7 @@ msgid "Portuguese"
 msgstr ""
 
 #. he: צריכת חשמל
-#: apps/dai-settings/dai_settings/model.py:194
+#: apps/dai-settings/dai_settings/model.py:200
 msgid "Power"
 msgstr ""
 
@@ -4148,7 +4185,7 @@ msgid "Privacy log…"
 msgstr ""
 
 #. he: מעבד: {value}%
-#: apps/dai-mom/dai_mom/text.py:80
+#: apps/dai-mom/dai_mom/text.py:82
 #, python-brace-format
 msgid "Processor: {value}%"
 msgstr ""
@@ -4322,7 +4359,7 @@ msgid "Redo"
 msgstr ""
 
 #. he: רענון
-#: apps/dai-mom/dai_mom/text.py:97
+#: apps/dai-mom/dai_mom/text.py:99
 msgid "Refresh"
 msgstr ""
 
@@ -4342,7 +4379,7 @@ msgid "Remember the password in the keyring"
 msgstr ""
 
 #. he: כניסה מרחוק (SSH)
-#: apps/dai-settings/dai_settings/model.py:184
+#: apps/dai-settings/dai_settings/model.py:189
 msgid "Remote login (SSH)"
 msgstr ""
 
@@ -4410,7 +4447,7 @@ msgid "Reply all"
 msgstr ""
 
 #. he: הפעלה מחדש
-#: apps/dai-mom/dai_mom/text.py:96
+#: apps/dai-mom/dai_mom/text.py:98
 msgid "Restart"
 msgstr ""
 
@@ -4587,7 +4624,7 @@ msgid "Saved. Contacts on this network can now reach you directly."
 msgstr ""
 
 #. he: נשמר: {name} {state} מהכניסה הבאה.
-#: apps/dai-mom/dai_mom/text.py:113
+#: apps/dai-mom/dai_mom/text.py:115
 #, python-brace-format
 msgid "Saved: {name} {state} at the next login."
 msgstr ""
@@ -4824,7 +4861,7 @@ msgid "Server"
 msgstr ""
 
 #. he: שירות
-#: apps/dai-mom/dai_mom/text.py:92
+#: apps/dai-mom/dai_mom/text.py:94
 msgid "Service"
 msgstr ""
 
@@ -5097,7 +5134,7 @@ msgid "Stamp"
 msgstr ""
 
 #. he: הפעלה
-#: apps/dai-mom/dai_mom/text.py:94
+#: apps/dai-mom/dai_mom/text.py:96
 #: apps/dai-vm/dai_vm/gui.py:354
 msgid "Start"
 msgstr ""
@@ -5149,12 +5186,12 @@ msgid "Starting takes about {seconds} seconds."
 msgstr ""
 
 #. he: מצב
-#: apps/dai-mom/dai_mom/text.py:93
+#: apps/dai-mom/dai_mom/text.py:95
 msgid "State"
 msgstr ""
 
 #. he: עצירה
-#: apps/dai-mom/dai_mom/text.py:95
+#: apps/dai-mom/dai_mom/text.py:97
 msgid "Stop"
 msgstr ""
 
@@ -5237,7 +5274,7 @@ msgid "Super+F1 opens help"
 msgstr ""
 
 #. he: זיכרון החלפה: {used} מתוך {total} בשימוש
-#: apps/dai-mom/dai_mom/text.py:82
+#: apps/dai-mom/dai_mom/text.py:84
 #, python-brace-format
 msgid "Swap: {used} of {total} in use"
 msgstr ""
@@ -5258,12 +5295,12 @@ msgid "System changes were rolled back too."
 msgstr ""
 
 #. he: שירותי מערכת משתנים דרך D.Ai Tune (סיסמת מנהל ואפשרות ביטול).
-#: apps/dai-mom/dai_mom/text.py:108
+#: apps/dai-mom/dai_mom/text.py:110
 msgid "System services change through D.Ai Tune (administrator password, undo)."
 msgstr ""
 
 #. he: צלילי המערכת
-#: apps/dai-settings/dai_settings/model.py:189
+#: apps/dai-settings/dai_settings/model.py:195
 msgid "System sounds"
 msgstr ""
 
@@ -5551,6 +5588,11 @@ msgstr ""
 msgid "The installation ISO"
 msgstr ""
 
+#. he: ההחלפה הדחוסה הגדולה יותר מתחילה באתחול הבא; השאר חל עכשיו.
+#: apps/dai-tune/dai_tune/catalog.py:2058
+msgid "The larger compressed swap starts at the next boot; the rest applies now."
+msgstr ""
+
 #. he: העדכון האחרון ({date}) שינה {count} חבילות. 
 #: apps/dai-doctor/dai_doctor/diagnose.py:226
 #, python-brace-format
@@ -5702,7 +5744,7 @@ msgid "The system service {name} failed."
 msgstr ""
 
 #. he: של המערכת (לקריאה בלבד; משנים דרך D.Ai Tune)
-#: apps/dai-mom/dai_mom/text.py:90
+#: apps/dai-mom/dai_mom/text.py:92
 msgid "The system's (read-only; change them with D.Ai Tune)"
 msgstr ""
 
@@ -5729,7 +5771,7 @@ msgid "Their name"
 msgstr ""
 
 #. he: ערכת נושא
-#: apps/dai-settings/dai_settings/model.py:187
+#: apps/dai-settings/dai_settings/model.py:193
 msgid "Theme"
 msgstr ""
 
@@ -5939,7 +5981,7 @@ msgid "Thu"
 msgstr ""
 
 #. he: אזור זמן
-#: apps/dai-settings/dai_settings/model.py:192
+#: apps/dai-settings/dai_settings/model.py:198
 msgid "Time zone"
 msgstr ""
 
@@ -5982,7 +6024,7 @@ msgid "Tor: {tor}. Local network: {lan}. Waiting to send: {queued}. Codes waitin
 msgstr ""
 
 #. he: מצב מגע
-#: apps/dai-settings/dai_settings/model.py:188
+#: apps/dai-settings/dai_settings/model.py:194
 msgid "Touch mode"
 msgstr ""
 
@@ -6082,7 +6124,7 @@ msgid "Turn this page"
 msgstr ""
 
 #. he: כיבוי דורש אישור מוקלד.
-#: apps/dai-settings/dai_settings/model.py:199
+#: apps/dai-settings/dai_settings/model.py:205
 msgid "Turning them off needs a typed confirmation."
 msgstr ""
 
@@ -6185,7 +6227,7 @@ msgid "Unknown command: {verb}. dai-vm --help"
 msgstr ""
 
 #. he: עבודה שלא נשמרה ב־{name} תאבד.
-#: apps/dai-mom/dai_mom/text.py:61
+#: apps/dai-mom/dai_mom/text.py:63
 #, python-brace-format
 msgid "Unsaved work in {name} will be lost."
 msgstr ""
@@ -6196,7 +6238,7 @@ msgid "Up to date"
 msgstr ""
 
 #. he: עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף.
-#: apps/dai-settings/dai_settings/model.py:203
+#: apps/dai-settings/dai_settings/model.py:210
 msgid "Up to four, separated by commas: us,il,ru. Alt+Shift switches."
 msgstr ""
 
@@ -6283,7 +6325,7 @@ msgid "Virtualization (VT-x or AMD-V) is off in the computer's firmware, or /dev
 msgstr ""
 
 #. he: סריקות וירוסים לקבצים שלכם
-#: apps/dai-settings/dai_settings/model.py:185
+#: apps/dai-settings/dai_settings/model.py:190
 msgid "Virus scans of your files"
 msgstr ""
 
@@ -6371,7 +6413,7 @@ msgid "What to say? dai-tv say TEXT"
 msgstr ""
 
 #. he: מה נשלח ל־Diamond
-#: apps/dai-mom/dai_mom/text.py:38
+#: apps/dai-mom/dai_mom/text.py:40
 msgid "What was sent to Diamond"
 msgstr ""
 
@@ -6470,7 +6512,7 @@ msgid "Why is it slow?"
 msgstr ""
 
 #. he: למה המחשב איטי?
-#: apps/dai-mom/dai_mom/text.py:34
+#: apps/dai-mom/dai_mom/text.py:36
 msgid "Why is the computer slow?"
 msgstr ""
 
@@ -6642,7 +6684,7 @@ msgid "Your privacy"
 msgstr ""
 
 #. he: שלכם
-#: apps/dai-mom/dai_mom/text.py:89
+#: apps/dai-mom/dai_mom/text.py:91
 msgid "Yours"
 msgstr ""
 
@@ -6716,22 +6758,22 @@ msgid "administrator"
 msgstr ""
 
 #. he: אחרי דקה
-#: apps/dai-settings/dai_settings/model.py:209
+#: apps/dai-settings/dai_settings/model.py:216
 msgid "after 1 minute"
 msgstr ""
 
 #. he: אחרי 10 דקות
-#: apps/dai-settings/dai_settings/model.py:210
+#: apps/dai-settings/dai_settings/model.py:217
 msgid "after 10 minutes"
 msgstr ""
 
 #. he: אחרי 30 דקות
-#: apps/dai-settings/dai_settings/model.py:210
+#: apps/dai-settings/dai_settings/model.py:217
 msgid "after 30 minutes"
 msgstr ""
 
 #. he: אחרי 5 דקות
-#: apps/dai-settings/dai_settings/model.py:209
+#: apps/dai-settings/dai_settings/model.py:216
 msgid "after 5 minutes"
 msgstr ""
 
@@ -6741,7 +6783,7 @@ msgid "already installed"
 msgstr ""
 
 #. he: אפליקציה בלי תיאור
-#: apps/dai-mom/dai_mom/text.py:41
+#: apps/dai-mom/dai_mom/text.py:43
 msgid "an app without a description"
 msgstr ""
 
@@ -6772,12 +6814,12 @@ msgid "automatic: on when a touch screen is attached"
 msgstr ""
 
 #. he: מאוזן
-#: apps/dai-settings/dai_settings/model.py:213
+#: apps/dai-settings/dai_settings/model.py:220
 msgid "balanced"
 msgstr ""
 
 #. he: חיסכון בסוללה
-#: apps/dai-settings/dai_settings/model.py:213
+#: apps/dai-settings/dai_settings/model.py:220
 msgid "battery saver"
 msgstr ""
 
@@ -6870,7 +6912,7 @@ msgid "evaluates text as code"
 msgstr ""
 
 #. he: כל יום
-#: apps/dai-settings/dai_settings/model.py:212
+#: apps/dai-settings/dai_settings/model.py:219
 msgid "every day"
 msgstr ""
 
@@ -6891,7 +6933,7 @@ msgid "every time you log in"
 msgstr ""
 
 #. he: כל שבוע
-#: apps/dai-settings/dai_settings/model.py:212
+#: apps/dai-settings/dai_settings/model.py:219
 msgid "every week"
 msgstr ""
 
@@ -6914,7 +6956,7 @@ msgid "executes text as code"
 msgstr ""
 
 #. he: נכשל
-#: apps/dai-mom/dai_mom/text.py:99
+#: apps/dai-mom/dai_mom/text.py:101
 msgid "failed"
 msgstr ""
 
@@ -7084,7 +7126,7 @@ msgstr ""
 
 #. he: אף פעם
 #: apps/dai-backup/dai_backup/cli.py:55
-#: apps/dai-settings/dai_settings/model.py:211
+#: apps/dai-settings/dai_settings/model.py:218
 msgid "never"
 msgstr ""
 
@@ -7166,7 +7208,7 @@ msgstr ""
 #: apps/dai-quick/dai_quick/gui.py:35
 #: apps/dai-settings/dai_settings/cli.py:49
 #: apps/dai-settings/dai_settings/gui.py:92
-#: apps/dai-settings/dai_settings/model.py:212
+#: apps/dai-settings/dai_settings/model.py:219
 #: apps/dai-tune/dai_tune/catalog.py:838
 msgid "off"
 msgstr ""
@@ -7203,7 +7245,7 @@ msgid "page"
 msgstr ""
 
 #. he: חלק מההפעלה
-#: apps/dai-mom/dai_mom/text.py:58
+#: apps/dai-mom/dai_mom/text.py:60
 msgid "part of the session"
 msgstr ""
 
@@ -7213,7 +7255,7 @@ msgid "paused"
 msgstr ""
 
 #. he: ביצועים
-#: apps/dai-settings/dai_settings/model.py:214
+#: apps/dai-settings/dai_settings/model.py:221
 msgid "performance"
 msgstr ""
 
@@ -7243,7 +7285,7 @@ msgid "refused"
 msgstr ""
 
 #. he: פועל
-#: apps/dai-mom/dai_mom/text.py:98
+#: apps/dai-mom/dai_mom/text.py:100
 #: apps/dai-vm/dai_vm/gui.py:81
 msgid "running"
 msgstr ""
@@ -7300,7 +7342,7 @@ msgid "starred"
 msgstr ""
 
 #. he: עולה
-#: apps/dai-mom/dai_mom/text.py:101
+#: apps/dai-mom/dai_mom/text.py:103
 msgid "starting"
 msgstr ""
 
@@ -7311,7 +7353,7 @@ msgid "starts processes"
 msgstr ""
 
 #. he: עצור
-#: apps/dai-mom/dai_mom/text.py:100
+#: apps/dai-mom/dai_mom/text.py:102
 msgid "stopped"
 msgstr ""
 
@@ -7474,12 +7516,12 @@ msgid "what was changed"
 msgstr ""
 
 #. he: לא יעלה
-#: apps/dai-mom/dai_mom/text.py:115
+#: apps/dai-mom/dai_mom/text.py:117
 msgid "will not start"
 msgstr ""
 
 #. he: יעלה
-#: apps/dai-mom/dai_mom/text.py:114
+#: apps/dai-mom/dai_mom/text.py:116
 msgid "will start"
 msgstr ""
 
@@ -7531,7 +7573,7 @@ msgid "{address} · from {source} · {host}"
 msgstr ""
 
 #. he: {apps} אפליקציות · {procs} תהליכים
-#: apps/dai-mom/dai_mom/text.py:84
+#: apps/dai-mom/dai_mom/text.py:86
 #, python-brace-format
 msgid "{apps} apps · {procs} processes"
 msgstr ""
@@ -7591,7 +7633,7 @@ msgid "{count} new message(s)"
 msgstr ""
 
 #. he: {count} תהליכים
-#: apps/dai-mom/dai_mom/text.py:54
+#: apps/dai-mom/dai_mom/text.py:56
 #, python-brace-format
 msgid "{count} processes"
 msgstr ""
@@ -7695,7 +7737,7 @@ msgid "{name}  (waiting for them to add your code)"
 msgstr ""
 
 #. he: {name} שייך למערכת; MOM סוגרת רק את האפליקציות שלכם.
-#: apps/dai-mom/dai_mom/text.py:73
+#: apps/dai-mom/dai_mom/text.py:75
 #, python-brace-format
 msgid "{name} belongs to the system; MOM only closes your own apps."
 msgstr ""
@@ -7713,7 +7755,7 @@ msgid "{name} crashed{times}."
 msgstr ""
 
 #. he: {name} לא השתנה; ייתכן שצריך להתחיל את ההפעלה מחדש.
-#: apps/dai-mom/dai_mom/text.py:104
+#: apps/dai-mom/dai_mom/text.py:106
 #, python-brace-format
 msgid "{name} did not change; it may need a restart of the session."
 msgstr ""
@@ -7725,13 +7767,13 @@ msgid "{name} goes on."
 msgstr ""
 
 #. he: ‏{name} גדלה ב־{grown} ב־{minutes} דקות, וממשיכה לגדול.
-#: apps/dai-mom/dai_mom/text.py:28
+#: apps/dai-mom/dai_mom/text.py:30
 #, python-brace-format
 msgid "{name} has grown by {grown} in {minutes} minutes and keeps growing."
 msgstr ""
 
 #. he: ‏{name} מעסיקה ליבת מעבד שלמה כבר {minutes} דקות.
-#: apps/dai-mom/dai_mom/text.py:26
+#: apps/dai-mom/dai_mom/text.py:28
 #, python-brace-format
 msgid "{name} has kept a whole processor core busy for {minutes} minutes."
 msgstr ""
@@ -7743,7 +7785,7 @@ msgid "{name} has no driver loaded, so it will probably not work."
 msgstr ""
 
 #. he: {name} עדיין לא נסגר. לסגור בכוח?
-#: apps/dai-mom/dai_mom/text.py:79
+#: apps/dai-mom/dai_mom/text.py:81
 #, python-brace-format
 msgid "{name} has not closed yet. Force close?"
 msgstr ""
@@ -7769,25 +7811,25 @@ msgid "{name} is not a PDF that can be opened."
 msgstr ""
 
 #. he: {name} הוא חלק מההפעלה, ואי אפשר לסגור אותו בכוח.
-#: apps/dai-mom/dai_mom/text.py:67
+#: apps/dai-mom/dai_mom/text.py:69
 #, python-brace-format
 msgid "{name} is part of the session and cannot be forced closed."
 msgstr ""
 
 #. he: {name} הוא חלק מההפעלה, ולא עוצרים אותו מכאן.
-#: apps/dai-mom/dai_mom/text.py:106
+#: apps/dai-mom/dai_mom/text.py:108
 #, python-brace-format
 msgid "{name} is part of the session and is not stopped from here."
 msgstr ""
 
 #. he: {name} הוא חלק מההפעלה. הוסיפו ‎--yes‎ כדי לסגור בכל זאת.
-#: apps/dai-mom/dai_mom/text.py:69
+#: apps/dai-mom/dai_mom/text.py:71
 #, python-brace-format
 msgid "{name} is part of the session. Add --yes to close it anyway."
 msgstr ""
 
 #. he: {name} הוא חלק מההפעלה. סגירה שלו יכולה לסיים את ההפעלה, או לעצור את הצליל ואת שורת המשימות עד הכניסה הבאה.
-#: apps/dai-mom/dai_mom/text.py:63
+#: apps/dai-mom/dai_mom/text.py:65
 #, python-brace-format
 msgid "{name} is part of the session. Closing it can end the session or stop the sound and the taskbar until you log in again."
 msgstr ""
@@ -7823,7 +7865,7 @@ msgid "{name} is starting. Its screen opens in its own window."
 msgstr ""
 
 #. he: {name} משתמשת ב־{cpu}% מהמעבד.
-#: apps/dai-mom/dai_mom/text.py:49
+#: apps/dai-mom/dai_mom/text.py:51
 #, python-brace-format
 msgid "{name} is using {cpu}% of the processor."
 msgstr ""
@@ -7920,7 +7962,7 @@ msgid "{name} was deleted."
 msgstr ""
 
 #. he: {name} נסגר בכוח.
-#: apps/dai-mom/dai_mom/text.py:78
+#: apps/dai-mom/dai_mom/text.py:80
 #, python-brace-format
 msgid "{name} was forced closed."
 msgstr ""
@@ -7968,7 +8010,7 @@ msgid "{name}, new: dai-chat accept {name} or decline {name}"
 msgstr ""
 
 #. he: {name}, {memory} זיכרון, {cpu} אחוז מעבד
-#: apps/dai-mom/dai_mom/text.py:59
+#: apps/dai-mom/dai_mom/text.py:61
 #, python-brace-format
 msgid "{name}, {memory} memory, {cpu} percent CPU"
 msgstr ""
@@ -8124,7 +8166,7 @@ msgid "{user_caches} in the trash and picture previews"
 msgstr ""
 
 #. he: {value}% מעבד
-#: apps/dai-mom/dai_mom/text.py:116
+#: apps/dai-mom/dai_mom/text.py:118
 #, python-brace-format
 msgid "{value}% CPU"
 msgstr ""
@@ -8382,12 +8424,12 @@ msgid "🔓 Decrypted to read now. It is not saved decrypted."
 msgstr ""
 
 #. he: 🔴 מקליט
-#: apps/dai-mom/dai_mom/text.py:57
+#: apps/dai-mom/dai_mom/text.py:59
 msgid "🔴 recording"
 msgstr ""
 
 #. he: 🛡 ארגז חול
-#: apps/dai-mom/dai_mom/text.py:56
+#: apps/dai-mom/dai_mom/text.py:58
 msgid "🛡 sandbox"
 msgstr ""
 
