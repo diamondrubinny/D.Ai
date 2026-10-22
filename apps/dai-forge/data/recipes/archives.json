@@ -3,11 +3,11 @@
   "id": "archives",
   "name": {
     "en": "Archives (RAR, 7z)",
-    "he": "קבצים דחוסים (RAR, ‏7z)"
+    "he": "קבצים דחוסים (⁦RAR, 7z⁩)"
   },
   "description": {
     "en": "Open RAR and 7z archives in the file manager's archiver (unar, 7zip).",
-    "he": "פתיחת קבצי RAR ו־7z בתוכנת הקבצים הדחוסים (unar, ‏7zip)."
+    "he": "פתיחת קבצי RAR ו־7z בתוכנת הקבצים הדחוסים (⁦unar, 7zip⁩)."
   },
   "match": {
     "en": [

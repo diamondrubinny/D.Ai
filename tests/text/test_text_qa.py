@@ -40,6 +40,8 @@ def spacing_problems(text: str, french: bool = False) -> list[str]:
         found.append("space before punctuation")
     if "..." in text:
         found.append("three dots instead of …")
+    if re.search(r",\s*\u200f\d", text):
+        found.append("a right-to-left mark before a number after a comma shows reversed; isolate the run (U+2066…U+2069)")
     if text.rstrip() != text.rstrip(" ") and text.endswith("  "):
         found.append("trailing spaces")
     return found
