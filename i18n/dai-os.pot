@@ -728,7 +728,7 @@ msgid "Backup is not set up yet: dai-backup setup"
 msgstr ""
 
 #. he: מצב צריכת חשמל מאוזן
-#: apps/dai-tune/dai_tune/catalog.py:1667
+#: apps/dai-tune/dai_tune/catalog.py:1671
 msgid "Balanced power mode"
 msgstr ""
 
@@ -749,7 +749,7 @@ msgid "Battery saver"
 msgstr ""
 
 #. he: מצב חיסכון בסוללה (סוללה ארוכה יותר, קצת יותר איטי)
-#: apps/dai-tune/dai_tune/catalog.py:1665
+#: apps/dai-tune/dai_tune/catalog.py:1669
 msgid "Battery saver mode (longer battery life, a bit slower)"
 msgstr ""
 
@@ -878,7 +878,7 @@ msgid "Cancelled: the computer starts as before."
 msgstr ""
 
 #. he: אי אפשר לבטל, אבל שום דבר שאתם משתמשים בו לא נמחק (רק יומנים מעבר ל־{JOURNAL_KEEP}).
-#: apps/dai-tune/dai_tune/catalog.py:1626
+#: apps/dai-tune/dai_tune/catalog.py:1630
 #, python-brace-format
 msgid "Cannot be undone, but nothing you use is lost (logs over {JOURNAL_KEEP} only)."
 msgstr ""
@@ -2105,7 +2105,7 @@ msgid "Found: {host} (secure connection)"
 msgstr ""
 
 #. he: פינוי מקום: קבצי התקנה שהורדו ויומני מערכת ישנים
-#: apps/dai-tune/dai_tune/catalog.py:1623
+#: apps/dai-tune/dai_tune/catalog.py:1627
 msgid "Free disk space: downloaded package files and old system logs"
 msgstr ""
 
@@ -2829,7 +2829,7 @@ msgid "Name: {name}\nUser: {user} (administrator)\nComputer: {host}\n{luks}\n\nA
 msgstr ""
 
 #. he: דורש דיסק מערכת מסוג Btrfs. הקבצים האישיים (/home) לא חלק מזה. נשמרות עד 10 תמונות מצב.
-#: apps/dai-tune/dai_tune/catalog.py:1698
+#: apps/dai-tune/dai_tune/catalog.py:1702
 msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it. Up to 10 snapshots are kept."
 msgstr ""
 
@@ -3665,7 +3665,7 @@ msgid "Performance"
 msgstr ""
 
 #. he: מצב ביצועים (מהיר יותר, צורך יותר חשמל)
-#: apps/dai-tune/dai_tune/catalog.py:1668
+#: apps/dai-tune/dai_tune/catalog.py:1672
 msgid "Performance mode (faster, uses more power)"
 msgstr ""
 
@@ -3773,7 +3773,7 @@ msgid "Put the old settings back"
 msgstr ""
 
 #. he: הסגר: {AV_QUARANTINE} (root בלבד). יומן: {AV_LOG}
-#: apps/dai-tune/dai_tune/catalog.py:1597
+#: apps/dai-tune/dai_tune/catalog.py:1601
 #, python-brace-format
 msgid "Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}"
 msgstr ""
@@ -3985,7 +3985,7 @@ msgid "Restart"
 msgstr ""
 
 #. he: אחר כך מפעילים מחדש. הקבצים האישיים לא משתנים. לפני כן נשמרת תמונת מצב של עכשיו, כך שאפשר לבטל גם את זה.
-#: apps/dai-tune/dai_tune/catalog.py:1729
+#: apps/dai-tune/dai_tune/catalog.py:1733
 msgid "Restart afterwards. Personal files are not touched. A snapshot of now is taken first, so this can be undone too."
 msgstr ""
 
@@ -4183,7 +4183,7 @@ msgid "Say what to look for: a type, a time, a folder or part of the name."
 msgstr ""
 
 #. he: סריקת וירוסים ל־/home ({daily}) והעברת קבצים נגועים להסגר
-#: apps/dai-tune/dai_tune/catalog.py:1588
+#: apps/dai-tune/dai_tune/catalog.py:1592
 #, python-brace-format
 msgid "Scan /home for viruses ({frequency}) and quarantine infected files"
 msgstr ""
@@ -4689,7 +4689,7 @@ msgid "Stop remote control of the TV (Kodi's web server and remote-control servi
 msgstr ""
 
 #. he: הפסקת סריקות וירוסים מתוזמנות
-#: apps/dai-tune/dai_tune/catalog.py:1592
+#: apps/dai-tune/dai_tune/catalog.py:1596
 msgid "Stop scheduled virus scans"
 msgstr ""
 
@@ -4789,7 +4789,7 @@ msgid "Take a snapshot"
 msgstr ""
 
 #. he: צילום מצב של המערכת לפני כל עדכון תוכנה
-#: apps/dai-tune/dai_tune/catalog.py:1694
+#: apps/dai-tune/dai_tune/catalog.py:1698
 msgid "Take a snapshot of the system before every software update"
 msgstr ""
 
@@ -5566,7 +5566,7 @@ msgid "Undo it now? [y/N] "
 msgstr ""
 
 #. he: ביטול העדכון האחרון (קבצי המערכת חוזרים למצב שלפניו)
-#: apps/dai-tune/dai_tune/catalog.py:1725
+#: apps/dai-tune/dai_tune/catalog.py:1729
 msgid "Undo the last software update (system files go back to before it)"
 msgstr ""
 
