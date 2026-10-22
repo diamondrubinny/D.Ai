@@ -2,6 +2,7 @@
 
 > נכתב ב־2026-10-18 ועודכן ב־2026-10-20, אחרי "המשך הכל, תפתח כל מה שחסר". כל שורה היא שלב מתוכנית שכבר אושרה. כל שלב נבנה, נבדק (יחידה, VM, ובדיקת הנגישות של Raz), ונכנס ל־PR #2 בנפרד.
 > ⏳ = תלוי בך, ואי אפשר לסיים אותו מכאן.
+> ‏main מתעדכן ישירות מ־docs/os-plan (fast-forward) מאז 2026-10-21; אין PR.
 
 ## הסדר והמצב
 
@@ -26,7 +27,7 @@
 
 | מה | למה | איך |
 |----|-----|-----|
-| שינוי שם הענפים ב־GitHub ‏(main → main-old, ‏fix/main-identity → main) | בלי זה אי אפשר לפתוח PR מ־docs/os-plan ל־main; כל העבודה מאז נמצאת ב־docs/os-plan בלבד | בהגדרות הריפו ב־GitHub, ואז אפתח את ה־PR ואעקוב אחריו |
+| הפעלת GitHub Pages ו־DNS ל־rubinny.com | ‏main כבר נושא את כל העבודה (פורסם ב־2026-10-21: ה־main הישן נשמר כ־main-old, ‏fix/main-identity מיותר); ה־workflow של האתר רץ אבל הפריסה נכשלת: „Ensure GitHub Pages has been enabled” | ‏Settings → Pages → Source: GitHub Actions; רשומות DNS של rubinny.com לפי docs/SITE.md; ואז דחיפה ל־main או הרצת ה־workflow „Website” מפרסמת |
 | דחיפת התג `v0.1.0-alpha` | ה־proxy של הסשן חוסם דחיפת תגים (HTTP 403) | `git tag -a v0.1.0-alpha -m "D.Ai OS v0.1.0-alpha" 20ae5e8 && git push origin v0.1.0-alpha` |
 | מפתח חתימה למאגר העדכונים | בלי מפתח אין עדכוני deb חתומים | ‏`gpg --quick-gen-key`, ואז המפתח הציבורי לריפו והפרטי ל־secret ‏`DAI_APT_SIGNING_KEY` |
 | חתימת התוסף של Ruby | ‏Firefox מתקין רק תוספים חתומים | חשבון ב־addons.mozilla.org, ‏secrets ‏`AMO_JWT_ISSUER` ו־`AMO_JWT_SECRET` |
