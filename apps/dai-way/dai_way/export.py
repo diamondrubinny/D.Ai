@@ -10,6 +10,7 @@ from datetime import date
 from typing import Callable
 
 from dai_forge.recipes import Library, load_library
+from dai_i18n import pick
 from dai_settings.model import SETTINGS
 from dai_tune.context import Context
 
@@ -59,18 +60,17 @@ def installed_recipes(library: Library, packages: set[str], flatpaks: set[str]) 
 def export_text(ctx: Context, lang: str, library: Library | None = None, run: Run = _run,
                 hostname: str = "this computer", today: date | None = None) -> str:
     library = library or load_library()
-    he = lang == "he"
     lines = [
-        "# " + ("דרך היהלום: " if he else "Diamond's Way: ") + f"{hostname}, {(today or date.today()).isoformat()}",
-        "# " + ("נכתב על ידי dai-way export. בלי סיסמאות, בלי Wi-Fi, בלי מפתחות." if he
-                else "Written by dai-way export. No passwords, no Wi-Fi, no keys."),
+        "# " + pick(lang, "Diamond's Way: ", "דרך היהלום: ") + f"{hostname}, {(today or date.today()).isoformat()}",
+        "# " + pick(lang, "Written by dai-way export. No passwords, no Wi-Fi, no keys.",
+                    "נכתב על ידי dai-way export. בלי סיסמאות, בלי Wi-Fi, בלי מפתחות."),
         f"diamond: {hostname}",
         "",
-        "apps:" if not he else "אפליקציות:",
+        pick(lang, "apps:", "אפליקציות:"),
     ]
     recipes = installed_recipes(library, installed_packages(run), installed_flatpaks(run))
-    lines += [f"  {recipe}" for recipe in recipes] or ["  # " + ("אין מתכונים מותקנים" if he else "no recipes installed")]
-    lines += ["", "exact:" if not he else "מדויק:"]
+    lines += [f"  {recipe}" for recipe in recipes] or ["  # " + pick(lang, "no recipes installed", "אין מתכונים מותקנים")]
+    lines += ["", pick(lang, "exact:", "מדויק:")]
     for setting in SETTINGS:
         if setting.kind == "button":
             continue

@@ -1733,6 +1733,11 @@ msgstr ""
 msgid "Diamond's Way — {name}"
 msgstr ""
 
+#. he: דרך היהלום: 
+#: apps/dai-way/dai_way/export.py:64
+msgid "Diamond's Way: "
+msgstr ""
+
 #. he: דרך היהלום: מחשב שלם בקובץ אחד (check, plan, apply, export) · Enter
 #: apps/dai-command/dai_command/core.py:459
 msgid "Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter"
@@ -6603,6 +6608,11 @@ msgstr ""
 msgid "Written by Diamond — review every step"
 msgstr ""
 
+#. he: נכתב על ידי dai-way export. בלי סיסמאות, בלי Wi-Fi, בלי מפתחות.
+#: apps/dai-way/dai_way/export.py:65
+msgid "Written by dai-way export. No passwords, no Wi-Fi, no keys."
+msgstr ""
+
 #. he: אפשר לבטל את העדכון האחרון
 #: apps/dai-doctor/dai_doctor/diagnose.py:229
 msgid "You can undo the last update"
@@ -6808,6 +6818,11 @@ msgstr ""
 msgid "and {n} more in D.Ai Command (Super+Space)"
 msgstr ""
 
+#. he: אפליקציות:
+#: apps/dai-way/dai_way/export.py:69
+msgid "apps:"
+msgstr ""
+
 #. he: אוטומטי: פועל כשמחובר מסך מגע
 #: apps/dai-tune/dai_tune/catalog.py:838
 msgid "automatic: on when a touch screen is attached"
@@ -6947,6 +6962,11 @@ msgstr ""
 #: apps/dai-forge/dai_forge/schedule.py:77
 #, python-brace-format
 msgid "every {every} minutes"
+msgstr ""
+
+#. he: מדויק:
+#: apps/dai-way/dai_way/export.py:73
+msgid "exact:"
 msgstr ""
 
 #. he: מריץ טקסט כקוד
@@ -7154,6 +7174,11 @@ msgstr ""
 #. he: אין iio-sensor-proxy (אין חיישן שאפשר לעקוב אחריו)
 #: apps/dai-rotate/dai_rotate/cli.py:40
 msgid "no iio-sensor-proxy (no accelerometer follows)"
+msgstr ""
+
+#. he: אין מתכונים מותקנים
+#: apps/dai-way/dai_way/export.py:72
+msgid "no recipes installed"
 msgstr ""
 
 #. he: לא נמצא לוח זמנים

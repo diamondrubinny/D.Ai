@@ -6739,3 +6739,23 @@ msgstr "✓ {name} : {n} étapes, chaque ligne comprise ({files})."
 #, python-brace-format
 msgid "✗ {name}: {n} problem(s); nothing was changed."
 msgstr "✗ {name} : {n} problème(s) ; rien n'a été changé."
+
+#: apps/dai-way/dai_way/export.py
+msgid "Diamond's Way: "
+msgstr "La Voie du Diamant : "
+
+#: apps/dai-way/dai_way/export.py
+msgid "Written by dai-way export. No passwords, no Wi-Fi, no keys."
+msgstr "Écrit par dai-way export. Sans mots de passe, sans Wi-Fi, sans clés."
+
+#: apps/dai-way/dai_way/export.py
+msgid "apps:"
+msgstr "apps:"
+
+#: apps/dai-way/dai_way/export.py
+msgid "exact:"
+msgstr "exact:"
+
+#: apps/dai-way/dai_way/export.py
+msgid "no recipes installed"
+msgstr "aucune recette installée"
