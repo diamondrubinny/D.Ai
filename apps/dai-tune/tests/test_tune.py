@@ -336,6 +336,7 @@ class ExecutorTests(TuneTestCase):
         self.assertIn("zram-size = min(ram, 8192)", (self.root / "etc/systemd/zram-generator.conf.d/dai-memory-saver.conf").read_text())
         self.assertTrue((self.root / "etc/dai/memory-saver").exists())
         self.assertIn(["sysctl", "--system", "-q"], self.runner.calls)
+        self.assertEqual(self.runner.calls[-2][:3], ["sysctl", "-q", "-w"])   # the defaults first: a removed file undoes nothing by itself
         self.assertTrue(catalog.saver_on(self.ctx))
         self.apply("memory saver on", scope="user")
         self.assertEqual(json.loads((self.home / ".config/dai/ai.json").read_text()), {"prefer_small": True})

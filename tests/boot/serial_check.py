@@ -505,7 +505,7 @@ def main() -> int:
          "ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; "
          "grep -c 'W-A-c' ~/.config/labwc/rc.xml", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "RC=0" in o and "country" in o.lower()
-         and "DESKTOP_ENTRY" in o and o.strip().splitlines()[-1] == "1", 400),
+         and "DESKTOP_ENTRY" in o and o.strip().splitlines()[-1] == "1", 900),  # three whisper runs without KVM
         # D.Ai Doctor: plain-language answers; its fixes are real D.Ai Tune plans.
         ("doctor: diagnosis", "dai-doctor --version; dai-doctor --json slow disk battery | python3 -c "
          "'import json,sys; f=json.load(sys.stdin); print(\"FINDINGS\", len(f), sorted({x[\"key\"].split(\":\")[0] for x in f}))'; "

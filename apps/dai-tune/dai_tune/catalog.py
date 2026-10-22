@@ -2036,6 +2036,15 @@ def _saver_apply(params: Params, ctx: Context) -> None:
     else:
         for path in (sysctl, zram, mark):
             path.unlink(missing_ok=True)
+    _saver_reload(ctx)
+
+
+SAVER_DEFAULTS = ("vm.swappiness=60", "vm.page-cluster=3", "vm.watermark_boost_factor=15000", "vm.watermark_scale_factor=10")
+
+
+def _saver_reload(ctx: Context) -> None:
+    """The kernel's own defaults first (removing a sysctl file does not undo its values), then every file."""
+    ctx.run(["sysctl", "-q", "-w", *SAVER_DEFAULTS], check=False)
     ctx.run(["sysctl", "--system", "-q"], check=False)
 
 
@@ -2054,7 +2063,7 @@ register(ActionSpec(
                                 "מצב חיסכון בזיכרון: החלפה דחוסה קודם, מכוון למעט זיכרון") if p["enabled"]
                              else _t(lang, "Memory saver off: the usual memory settings", "חיסכון בזיכרון כבוי: הגדרות הזיכרון הרגילות")),
     files=lambda p, c: [c.path(SAVER_MARK), c.path(SAVER_SYSCTL), c.path(SAVER_ZRAM)],
-    restore=lambda p, c, e: c.run(["sysctl", "--system", "-q"], check=False),
+    restore=lambda p, c, e: _saver_reload(c),
     note=lambda p, lang: _t(lang, "The larger compressed swap starts at the next boot; the rest applies now.",
                             "ההחלפה הדחוסה הגדולה יותר מתחילה באתחול הבא; השאר חל עכשיו.") if p["enabled"] else "",
 ))
