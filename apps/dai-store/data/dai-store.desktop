@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Store
+Name[he]=חנות D.Ai
+GenericName=Software
+GenericName[he]=תוכנות
+Comment=Find and set up software: what it does and what it sets up, shown before anything changes; no account
+Comment[he]=מוצאים ומקימים תוכנות: מה זה עושה ומה זה מקים מוצג לפני שמשהו משתנה; בלי חשבון
+Exec=dai-store
+TryExec=dai-store
+Icon=system-software-install
+StartupWMClass=dai-store
+Categories=System;
+Keywords=store;apps;software;install;flathub;חנות;אפליקציות;תוכנות;התקנה;

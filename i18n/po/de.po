@@ -6499,3 +6499,95 @@ msgstr "der Computer läuft mit voller Leistung"
 #, python-brace-format
 msgid "the power profile is back to {p}"
 msgstr "das Energieprofil ist wieder {p}"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "All"
+msgstr "Alle"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Back to the store"
+msgstr "Zurück zum Store"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "D.Ai Store"
+msgstr "D.Ai Store"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Find and set up software · what it sets up is shown first · no account · Enter"
+msgstr "Software finden und einrichten · was eingerichtet wird, steht vorher da · kein Konto · Enter"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Flathub's own index, as flatpak keeps it on this computer; flatpak refreshes it from Flathub when it is a day old."
+msgstr "Flathubs eigener Index, wie flatpak ihn auf diesem Computer hält; flatpak erneuert ihn von Flathub, wenn er einen Tag alt ist."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Games and Windows programs"
+msgstr "Spiele und Windows-Programme"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "It is set up and in the menu. D.Ai Tune recorded every step; Undo removes them."
+msgstr "Es ist eingerichtet und im Menü. D.Ai Tune hat jeden Schritt aufgezeichnet; Rückgängig entfernt sie."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Languages"
+msgstr "Sprachen"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "More"
+msgstr "Mehr"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Music, video and pictures"
+msgstr "Musik, Video und Bilder"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing found (is Flathub set up? dai-store list)."
+msgstr "Nichts gefunden (ist Flathub eingerichtet? dai-store list)."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing matches. Ask D.Ai Forge for anything else: Super+B."
+msgstr "Nichts passt. Alles andere fragst du D.Ai Forge: Super+B."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing on Flathub for that, or Flathub is not set up yet (it is in \"More\")."
+msgstr "Nichts auf Flathub dafür, oder Flathub ist noch nicht eingerichtet (es steht unter \"Mehr\")."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Only an administrator can set software up; you can look."
+msgstr "Nur ein Administrator kann Software einrichten; schauen kannst du."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Printers and devices"
+msgstr "Drucker und Geräte"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Safety and network"
+msgstr "Sicherheit und Netzwerk"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search Flathub"
+msgstr "Flathub durchsuchen"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search: messenger, office, vpn…"
+msgstr "Suchen: Messenger, Office, VPN…"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Sets up:"
+msgstr "Richtet ein:"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Talk and meet"
+msgstr "Reden und treffen"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "What it does and what it sets up, shown before anything changes. No account, nothing sent."
+msgstr "Was es tut und was es einrichtet, steht da, bevor sich etwas ändert. Kein Konto, nichts wird gesendet."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Work and documents"
+msgstr "Arbeit und Dokumente"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "installed"
+msgstr "installiert"

@@ -6499,3 +6499,95 @@ msgstr "o computador roda com desempenho total"
 #, python-brace-format
 msgid "the power profile is back to {p}"
 msgstr "o perfil de energia voltou a {p}"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "All"
+msgstr "Tudo"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Back to the store"
+msgstr "Voltar à loja"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "D.Ai Store"
+msgstr "Loja D.Ai"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Find and set up software · what it sets up is shown first · no account · Enter"
+msgstr "Encontre e configure programas · o que será configurado aparece antes · sem conta · Enter"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Flathub's own index, as flatpak keeps it on this computer; flatpak refreshes it from Flathub when it is a day old."
+msgstr "O próprio índice do Flathub, como o flatpak o guarda neste computador; o flatpak o atualiza do Flathub quando tem um dia."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Games and Windows programs"
+msgstr "Jogos e programas do Windows"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "It is set up and in the menu. D.Ai Tune recorded every step; Undo removes them."
+msgstr "Está configurado e no menu. O D.Ai Tune registrou cada passo; Desfazer os remove."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Languages"
+msgstr "Idiomas"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "More"
+msgstr "Mais"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Music, video and pictures"
+msgstr "Música, vídeo e imagens"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing found (is Flathub set up? dai-store list)."
+msgstr "Nada encontrado (o Flathub está configurado? dai-store list)."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing matches. Ask D.Ai Forge for anything else: Super+B."
+msgstr "Nada corresponde. Peça qualquer outra coisa ao D.Ai Forge: Super+B."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing on Flathub for that, or Flathub is not set up yet (it is in \"More\")."
+msgstr "Nada no Flathub para isso, ou o Flathub ainda não está configurado (está em \"Mais\")."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Only an administrator can set software up; you can look."
+msgstr "Só um administrador pode configurar programas; você pode olhar."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Printers and devices"
+msgstr "Impressoras e dispositivos"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Safety and network"
+msgstr "Segurança e rede"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search Flathub"
+msgstr "Pesquisar no Flathub"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search: messenger, office, vpn…"
+msgstr "Pesquisar: mensageiro, office, vpn…"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Sets up:"
+msgstr "Configura:"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Talk and meet"
+msgstr "Conversar e reunir"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "What it does and what it sets up, shown before anything changes. No account, nothing sent."
+msgstr "O que faz e o que configura, mostrado antes de qualquer mudança. Sem conta, nada é enviado."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Work and documents"
+msgstr "Trabalho e documentos"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "installed"
+msgstr "instalado"

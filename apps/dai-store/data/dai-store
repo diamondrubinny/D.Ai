@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Store: find and set up software, with the plan first (docs/BEYOND.md §9). Installed as /usr/bin/dai-store.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_store.cli import main; sys.exit(main(["dai-store", *sys.argv[1:]]))' "$@"

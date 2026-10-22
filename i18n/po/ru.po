@@ -6499,3 +6499,95 @@ msgstr "компьютер работает на полной производи
 #, python-brace-format
 msgid "the power profile is back to {p}"
 msgstr "профиль питания снова {p}"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "All"
+msgstr "Все"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Back to the store"
+msgstr "Назад в магазин"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "D.Ai Store"
+msgstr "Магазин D.Ai"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Find and set up software · what it sets up is shown first · no account · Enter"
+msgstr "Найти и установить программы · что будет установлено показано заранее · без учётной записи · Enter"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Flathub's own index, as flatpak keeps it on this computer; flatpak refreshes it from Flathub when it is a day old."
+msgstr "Собственный индекс Flathub, как flatpak хранит его на этом компьютере; flatpak обновляет его с Flathub, когда ему больше суток."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Games and Windows programs"
+msgstr "Игры и программы Windows"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "It is set up and in the menu. D.Ai Tune recorded every step; Undo removes them."
+msgstr "Установлено и есть в меню. D.Ai Tune записал каждый шаг; «Отменить» их уберёт."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Languages"
+msgstr "Языки"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "More"
+msgstr "Ещё"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Music, video and pictures"
+msgstr "Музыка, видео и фото"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing found (is Flathub set up? dai-store list)."
+msgstr "Ничего не найдено (Flathub настроен? dai-store list)."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing matches. Ask D.Ai Forge for anything else: Super+B."
+msgstr "Ничего не найдено. Всё остальное попросите у D.Ai Forge: Super+B."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing on Flathub for that, or Flathub is not set up yet (it is in \"More\")."
+msgstr "На Flathub ничего такого нет, или Flathub ещё не настроен (он в разделе «Ещё»)."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Only an administrator can set software up; you can look."
+msgstr "Только администратор может устанавливать программы; смотреть можно всем."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Printers and devices"
+msgstr "Принтеры и устройства"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Safety and network"
+msgstr "Безопасность и сеть"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search Flathub"
+msgstr "Искать на Flathub"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search: messenger, office, vpn…"
+msgstr "Поиск: мессенджер, офис, vpn…"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Sets up:"
+msgstr "Устанавливает:"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Talk and meet"
+msgstr "Общение и встречи"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "What it does and what it sets up, shown before anything changes. No account, nothing sent."
+msgstr "Что делает и что устанавливает, показано до любых изменений. Без учётной записи, ничего не отправляется."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Work and documents"
+msgstr "Работа и документы"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "installed"
+msgstr "установлено"

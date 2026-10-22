@@ -221,6 +221,12 @@ build_apps() {
   install -m 0755 "$settings/data/dai-settings" "$root/usr/bin/dai-settings"
   install -m 0644 "$settings/data/dai-settings.desktop" "$root/usr/share/applications/"
 
+  # D.Ai Store (docs/BEYOND.md §9): find and set up software, with the plan first.
+  local store="$REPO_ROOT/apps/dai-store"
+  copy_package "$store/dai_store" "$root"
+  install -m 0755 "$store/data/dai-store" "$root/usr/bin/dai-store"
+  install -m 0644 "$store/data/dai-store.desktop" "$root/usr/share/applications/"
+
   # D.Ai VM (docs/VM.md): Windows in a window with the person's own media and key; the stack itself is a package list.
   local vm="$REPO_ROOT/apps/dai-vm"
   copy_package "$vm/dai_vm" "$root"

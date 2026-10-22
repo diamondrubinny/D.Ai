@@ -453,6 +453,9 @@ _STRINGS = {
     "heal_title": ("Help & repair: what is not working?", "עזרה ותיקון: מה לא עובד?"),
     "heal_hint": ("D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter",
                   "D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter"),
+    "store_title": ("D.Ai Store", "חנות D.Ai"),
+    "store_hint": ("Find and set up software · what it sets up is shown first · no account · Enter",
+                   "מוצאים ומקימים תוכנות · מה זה מקים מוצג קודם · בלי חשבון · Enter"),
     "settings_title": ("D.Ai Settings", "הגדרות D.Ai"),
     "settings_hint": ("Security, appearance, language and this computer, in one window · every change has a plan and undo · Enter",
                       "אבטחה, מראה, שפה והמחשב הזה, בחלון אחד · לכל שינוי תוכנית וביטול · Enter"),
@@ -567,6 +570,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return focus
     if SETTINGS_WORDS.search(text.strip()) and shutil.which("dai-settings"):
         return [Action("settings", tr("settings_title"), tr("settings_hint"), "preferences-system", "")]
+    if STORE_WORDS.search(text.strip()) and shutil.which("dai-store"):
+        return [Action("store", tr("store_title"), tr("store_hint"), "system-software-install", "")]
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -753,6 +758,8 @@ FOCUS_MINUTES = re.compile(r"\b(\d{1,3})\b")
 GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IGNORECASE)
 # D.Ai Settings (docs/BEYOND.md §6): "settings", "הגדרות", "security settings".
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
+# D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
+STORE_WORDS = re.compile(r"^(?:(?:open |show |d\.?ai )?(?:app |apps |software )?store|software|apps|(?:פתח |הצג )?(?:ה)?חנות(?: (?:ה)?(?:אפליקציות|תוכנות))?|תוכנות)$", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
 
 

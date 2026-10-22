@@ -658,6 +658,13 @@ def main() -> int:
          "grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and '"wifi"' in o and '"volume"' in o and '"security"' in o
          and re.search(r"CLOCK=[1-9]", o) is not None and "DND_ON True" in o and "DND_OFF False" in o, 60),
+        # D.Ai Store (docs/BEYOND.md §9): the recipes on the image are listed by category with what each sets up, the
+        # desktop entry is there; Flathub search without a network says so instead of failing.
+        ("store: the recipes by category", "dai-store --version; dai-store list | tee /tmp/store.txt | head -n 12; "
+         "grep -c '^  [^ ]' /tmp/store.txt | sed 's/^/ITEMS=/'; grep -c '^[A-Z]' /tmp/store.txt | sed 's/^/GROUPS=/'; "
+         "test -f /usr/share/applications/dai-store.desktop && echo DESKTOP_ENTRY; dai-store search vlc; echo SEARCH_RC=$?", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and re.search(r"ITEMS=(2[5-9]|[3-9]\d)", o) is not None
+         and re.search(r"GROUPS=[5-8]", o) is not None and "DESKTOP_ENTRY" in o and "SEARCH_RC=" in o, 60),
         # D.Ai Settings (docs/BEYOND.md §6): the readers see the live system (the lock delay, the theme, the computer's
         # name) and the desktop entry is there; the window itself is audited by Raz in the unit tests.
         ("settings: the window's readers see this computer", "dai-settings --version; dai-settings list; "

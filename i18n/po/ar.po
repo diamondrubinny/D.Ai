@@ -6499,3 +6499,95 @@ msgstr "يعمل الحاسوب بأداء كامل"
 #, python-brace-format
 msgid "the power profile is back to {p}"
 msgstr "عاد وضع الطاقة إلى {p}"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "All"
+msgstr "الكل"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Back to the store"
+msgstr "العودة إلى المتجر"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "D.Ai Store"
+msgstr "متجر D.Ai"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Find and set up software · what it sets up is shown first · no account · Enter"
+msgstr "ابحث عن برامج وجهّزها · ما يجهّزه يظهر أولاً · بلا حساب · Enter"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Flathub's own index, as flatpak keeps it on this computer; flatpak refreshes it from Flathub when it is a day old."
+msgstr "فهرس Flathub نفسه كما يحفظه flatpak على هذا الحاسوب؛ يحدّثه flatpak من Flathub عندما يبلغ عمره يوماً."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Games and Windows programs"
+msgstr "الألعاب وبرامج ويندوز"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "It is set up and in the menu. D.Ai Tune recorded every step; Undo removes them."
+msgstr "تم تجهيزه وهو في القائمة. سجّل D.Ai Tune كل خطوة؛ التراجع يزيلها."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Languages"
+msgstr "اللغات"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "More"
+msgstr "المزيد"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Music, video and pictures"
+msgstr "الموسيقى والفيديو والصور"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing found (is Flathub set up? dai-store list)."
+msgstr "لا نتائج (هل Flathub مجهّز؟ dai-store list)."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing matches. Ask D.Ai Forge for anything else: Super+B."
+msgstr "لا نتائج. اطلب أي شيء آخر من D.Ai Forge: ‏Super+B."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Nothing on Flathub for that, or Flathub is not set up yet (it is in \"More\")."
+msgstr "لا شيء على Flathub لذلك، أو أن Flathub لم يُجهَّز بعد (موجود في \"المزيد\")."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Only an administrator can set software up; you can look."
+msgstr "يمكن للمسؤول فقط تجهيز البرامج؛ يمكنك التصفح."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Printers and devices"
+msgstr "الطابعات والأجهزة"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Safety and network"
+msgstr "الأمان والشبكة"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search Flathub"
+msgstr "البحث في Flathub"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Search: messenger, office, vpn…"
+msgstr "بحث: مراسلة، أوفيس، vpn…"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Sets up:"
+msgstr "يجهّز:"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Talk and meet"
+msgstr "التحدث واللقاء"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "What it does and what it sets up, shown before anything changes. No account, nothing sent."
+msgstr "ما يفعله وما يجهّزه، معروض قبل أن يتغير أي شيء. بلا حساب، ولا يُرسل شيء."
+
+#: apps/dai-store/dai_store/gui.py
+msgid "Work and documents"
+msgstr "العمل والمستندات"
+
+#: apps/dai-store/dai_store/gui.py
+msgid "installed"
+msgstr "مثبّت"

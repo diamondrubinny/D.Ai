@@ -11,6 +11,9 @@ First public alpha, built on Debian 13 (trixie). User and developer editions.
 - D.Ai Settings (`docs/BEYOND.md` §6): one window for sixteen settings (security, appearance and language, this
   computer), each a D.Ai Tune action: the plan is shown first, applied through polkit and the journal, undone with
   one button; the value shown is read back from the system; "settings" and "הגדרות" in D.Ai Command.
+- D.Ai Store (`docs/BEYOND.md` §9): find and set up software: Forge's recipes in eight categories and Flathub's
+  apps (flatpak's own index), what each one sets up shown before anything changes, the same plan, polkit, journal
+  and undo as Forge; no account, no ratings, nothing sent; "store" and "חנות" in D.Ai Command.
 - Window layouts (`docs/BEYOND.md` §7): thirds on Super+Shift+arrows, quarters on Super+Ctrl+arrows, halves on
   Super+arrows; dragging a window with Super drops it into those regions, and dragging to a screen edge shows a
   preview first (labwc's own regions and overlay).

@@ -281,6 +281,13 @@ class HealLanguageTests(unittest.TestCase):
         with mock.patch("shutil.which", lambda name: None):
             self.assertIsNone(core.focus_actions("focus for 40 minutes"))  # not installed: no row
 
+    def test_store_words(self):
+        for text in ("store", "app store", "open store", "software", "חנות", "חנות אפליקציות", "תוכנות"):
+            with self.subTest(text):
+                self.assertTrue(core.STORE_WORDS.search(text.strip()))
+        self.assertFalse(core.STORE_WORDS.search("grocery store list"))
+        self.assertFalse(core.STORE_WORDS.search("install vlc"))
+
     def test_settings_words(self):
         for text in ("settings", "Settings", "open settings", "security settings", "הגדרות", "הגדרות אבטחה"):
             with self.subTest(text):
