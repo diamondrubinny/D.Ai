@@ -658,6 +658,15 @@ def main() -> int:
          "grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and '"wifi"' in o and '"volume"' in o and '"security"' in o
          and re.search(r"CLOCK=[1-9]", o) is not None and "DND_ON True" in o and "DND_OFF False" in o, 60),
+        # D.Ai Settings (docs/BEYOND.md §6): the readers see the live system (the lock delay, the theme, the computer's
+        # name) and the desktop entry is there; the window itself is audited by Raz in the unit tests.
+        ("settings: the window's readers see this computer", "dai-settings --version; dai-settings list; "
+         "dai-settings list --json | python3 -c 'import json, sys; v = json.load(sys.stdin); "
+         "print(\"KEYS\", len(v), \"HOST\", v[\"hostname\"], \"THEME\", v[\"theme\"], \"LOCK\", v[\"lock\"])'; "
+         "test -f /usr/share/applications/dai-settings.desktop && echo DESKTOP_ENTRY", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 16" in o and "HOST dai-os" in o and "THEME night" in o
+         and re.search(r"LOCK (?:0|1|5|10|30|custom)", o) is not None and "DESKTOP_ENTRY" in o
+         and "Computer name: dai-os" in o, 60),
         # D.Ai Focus (docs/BEYOND.md §5): a session hides pop-ups, arms a user timer and warms the light; stopping it
         # puts everything back. "Do not disturb" is checked in the same file Quick writes.
         ("focus: a session hides pop-ups and ends", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-focus --version; "

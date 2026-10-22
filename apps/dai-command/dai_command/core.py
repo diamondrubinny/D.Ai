@@ -453,6 +453,9 @@ _STRINGS = {
     "heal_title": ("Help & repair: what is not working?", "עזרה ותיקון: מה לא עובד?"),
     "heal_hint": ("D.Ai Heal · explains and fixes with your OK · Super+F1 · Enter",
                   "D.Ai Heal · מסביר ומתקן באישורכם · Super+F1 · Enter"),
+    "settings_title": ("D.Ai Settings", "הגדרות D.Ai"),
+    "settings_hint": ("Security, appearance, language and this computer, in one window · every change has a plan and undo · Enter",
+                      "אבטחה, מראה, שפה והמחשב הזה, בחלון אחד · לכל שינוי תוכנית וביטול · Enter"),
     "focus_title": ("Focus for {n} minutes", "פוקוס ל־{n} דקות"),
     "focus_hint": ("D.Ai Focus · pop-ups hidden and a warmer light until the timer ends · Enter",
                    "D.Ai Focus · ההתראות מוסתרות והתאורה חמה עד שהטיימר נגמר · Enter"),
@@ -556,6 +559,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("ocr", tr("ocr_title"), tr("ocr_hint"), "edit-copy", "")]
     if (focus := focus_actions(text)) is not None:
         return focus
+    if SETTINGS_WORDS.search(text.strip()) and shutil.which("dai-settings"):
+        return [Action("settings", tr("settings_title"), tr("settings_hint"), "preferences-system", "")]
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -739,6 +744,8 @@ OCR_WORDS = re.compile(r"\bocr\b|\btext (?:from|on|in) (?:the |my |this )?(?:scr
 FOCUS_WORDS = re.compile(r"\bfocus(?: mode| session| time)?\b|(?:מצב )?(?:פוקוס|ריכוז)\b|בלי הפרעות", re.IGNORECASE)
 FOCUS_STOP = re.compile(r"\b(?:stop|end|cancel)\b|סיים|סיימי|עצור|עצרי|הפסק|הפסיקי|בטל", re.IGNORECASE)
 FOCUS_MINUTES = re.compile(r"\b(\d{1,3})\b")
+# D.Ai Settings (docs/BEYOND.md §6): "settings", "הגדרות", "security settings".
+SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
 
 

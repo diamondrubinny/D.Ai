@@ -215,6 +215,12 @@ build_apps() {
   copy_package "$focus/dai_focus" "$root"
   install -m 0755 "$focus/data/dai-focus" "$root/usr/bin/dai-focus"
 
+  # D.Ai Settings (docs/BEYOND.md §6): one window for the settings D.Ai Tune knows.
+  local settings="$REPO_ROOT/apps/dai-settings"
+  copy_package "$settings/dai_settings" "$root"
+  install -m 0755 "$settings/data/dai-settings" "$root/usr/bin/dai-settings"
+  install -m 0644 "$settings/data/dai-settings.desktop" "$root/usr/share/applications/"
+
   # D.Ai VM (docs/VM.md): Windows in a window with the person's own media and key; the stack itself is a package list.
   local vm="$REPO_ROOT/apps/dai-vm"
   copy_package "$vm/dai_vm" "$root"

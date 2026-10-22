@@ -399,6 +399,12 @@ sleep 8
 monitor "screendump $ARTIFACT_DIR/vm.png -f png" || log "warning: screenshot failed"
 type_keys alt-f4
 sleep 2
+log "interactive: D.Ai Settings (the list, the security score)"
+command_bar shift-4 spc d a i minus s e t t i n g s ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/settings.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
 log "interactive: the on-screen keyboard (Super+Alt+K)"
 type_keys meta_l-alt-k
 sleep 4

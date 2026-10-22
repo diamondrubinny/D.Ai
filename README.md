@@ -75,6 +75,7 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **Raz** | Checks the system before and after every update; every D.Ai window passes an accessibility check in three themes before release | `docs/RAZ.md` |
 | **D.Ai Rescue** | From the USB stick: when the installed system no longer starts after an update, go back to before it | `docs/BASICS.md` |
 | **D.Ai sounds** | "The diamond family": crystal sounds from one musical family, soft and short, for login, notifications, USB devices, the charger, screenshots and copied text; "quiet sounds" or "turn off sounds" in one sentence | `docs/SOUNDS.md` |
+| **D.Ai Settings** | Security, appearance, language and this computer in one window; every row is a D.Ai Tune action: the plan first, polkit, a journal and undo; the value shown is read back from the system | `docs/BEYOND.md` |
 | **D.Ai Focus** | "Focus for 25 minutes", or a tile in Quick: pop-ups hidden and a warmer light until a timer ends, then everything is put back | `docs/BEYOND.md` |
 | **D.Ai OCR** | Super+Shift+T: choose an area of the screen and its text is copied, read on this computer in eight languages | `docs/V2.md` |
 | **D.Ai PDF** | The PDF reader and editor: every file opens in a bubblewrap sandbox, and what the file wants to do (JavaScript, launching programs, sending forms, attachments) is shown in a bar and never done. Links ask first. Hebrew made readable, search, outline, print; pages turned, moved, removed, merged and split; forms filled and flattened; highlights, notes, text and a stamped signature; every edit saved by the sandbox | `docs/PDF.md` |
@@ -211,7 +212,7 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **PDF בארגז חול:** ‏D.Ai PDF פותח כל קובץ בארגז חול, מראה מה הקובץ "רוצה" לעשות (JavaScript, הרצת תוכניות, שליחת טפסים) ולא עושה זאת לעולם; עריכה של עמודים, טפסים, הערות, חתימה מוטבעת, השחרה אמיתית, OCR וקובץ קטן יותר, הכול בתוך ארגז החול.
 - **Windows בחלון:** ‏D.Ai VM מריץ Windows מהמדיה ומהמפתח שלכם (KVM, ‏UEFI עם Secure Boot, ‏TPM 2.0), בלי תיקייה משותפת, לוח או USB עד שתפעילו כל אחד מהם. D.Ai לא מפיץ Windows.
 - **בטלוויזיה, בטלפון ועל ARM:** מהדורת tv עולה ל-Kodi בעברית ונשלטת מהשלט; תמונות arm64 ניסיוניות של הטלפון (Phosh) ושל הטלוויזיה נבנות ועולות ב-QEMU ב-CI.
-- **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏D.Ai Focus ("פוקוס ל־25 דקות"), ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
+- **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏D.Ai Settings (חלון הגדרות אחד, כל שינוי עם תוכנית וביטול), ‏D.Ai Focus ("פוקוס ל־25 דקות"), ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
 
 | | | |
 |---|---|---|

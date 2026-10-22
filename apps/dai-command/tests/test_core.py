@@ -279,6 +279,13 @@ class HealLanguageTests(unittest.TestCase):
         with mock.patch("shutil.which", lambda name: None):
             self.assertIsNone(core.focus_actions("focus for 40 minutes"))  # not installed: no row
 
+    def test_settings_words(self):
+        for text in ("settings", "Settings", "open settings", "security settings", "הגדרות", "הגדרות אבטחה"):
+            with self.subTest(text):
+                self.assertTrue(core.SETTINGS_WORDS.search(text.strip()))
+        self.assertFalse(core.SETTINGS_WORDS.search("backup settings"))
+        self.assertFalse(core.SETTINGS_WORDS.search("what are the settings of firefox"))
+
 
 if __name__ == "__main__":
     unittest.main()

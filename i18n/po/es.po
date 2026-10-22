@@ -6225,3 +6225,223 @@ msgstr "los avisos han vuelto"
 #: apps/dai-focus/dai_focus/cli.py
 msgid "the light is normal again"
 msgstr "la luz vuelve a ser normal"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "(action)"
+msgstr "(acción)"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Appearance and language"
+msgstr "Apariencia e idioma"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Apply"
+msgstr "Aplicar"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Applying. Enter the administrator password when asked."
+msgstr "Aplicando. Escribe la contraseña de administrador cuando se pida."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Back to settings"
+msgstr "Volver a los ajustes"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Change"
+msgstr "Cambiar"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "D.Ai Settings"
+msgstr "Ajustes de D.Ai"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Done"
+msgstr "Hecho"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Every change shows its plan first, goes through D.Ai Tune, and can be undone."
+msgstr "Cada cambio muestra primero su plan, pasa por D.Ai Tune y se puede deshacer."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "No change: that is already the value."
+msgstr "Sin cambios: ese ya es el valor."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Nothing matches. Everything else is a sentence away: dai-tune help"
+msgstr "Nada coincide. Todo lo demás está a una frase: dai-tune help"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Only an administrator can change the system's settings; your own account's settings still work."
+msgstr "Solo un administrador puede cambiar los ajustes del sistema; los de tu cuenta siguen funcionando."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Run"
+msgstr "Ejecutar"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Search settings"
+msgstr "Buscar ajustes"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Search: lock, theme, language…"
+msgstr "Buscar: bloqueo, tema, idioma…"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Security and privacy"
+msgstr "Seguridad y privacidad"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Security, appearance, language and this computer, in one window · every change has a plan and undo · Enter"
+msgstr "Seguridad, apariencia, idioma y este equipo en una ventana · cada cambio tiene plan y deshacer · Intro"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "That did not work"
+msgstr "Eso no funcionó"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "The setting is in place. D.Ai Tune recorded it; Undo puts it back."
+msgstr "El ajuste está hecho. D.Ai Tune lo registró; Deshacer lo revierte."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "This computer"
+msgstr "Este equipo"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "This weakens security. Type \"yes\" to continue."
+msgstr "Esto debilita la seguridad. Escribe \"yes\" para continuar."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Turn on"
+msgstr "Activar"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Undo the last change"
+msgstr "Deshacer el último cambio"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Undone."
+msgstr "Deshecho."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "WHAT WILL HAPPEN"
+msgstr "QUÉ VA A PASAR"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "A snapshot before every update"
+msgstr "Una instantánea antes de cada actualización"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "An organization policy may cap this."
+msgstr "Una política de la organización puede limitarlo."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Block USB storage devices"
+msgstr "Bloquear dispositivos de almacenamiento USB"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Block the camera"
+msgstr "Bloquear la cámara"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Downloaded package files and old logs. Cannot be undone; nothing you use is lost."
+msgstr "Paquetes descargados y registros antiguos. No se puede deshacer; nada que uses se pierde."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Free disk space"
+msgstr "Liberar espacio en disco"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "From the next login."
+msgstr "Desde el próximo inicio de sesión."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Keyboard languages"
+msgstr "Idiomas del teclado"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Language of D.Ai"
+msgstr "Idioma de D.Ai"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Lock the screen"
+msgstr "Bloquear la pantalla"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Needs a Btrfs system disk; the way back is D.Ai Rescue."
+msgstr "Necesita un disco de sistema Btrfs; el camino de vuelta es D.Ai Rescue."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Opens port 22 to the local network."
+msgstr "Abre el puerto 22 a la red local."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Power"
+msgstr "Energía"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Remote login (SSH)"
+msgstr "Acceso remoto (SSH)"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "System sounds"
+msgstr "Sonidos del sistema"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Theme"
+msgstr "Tema"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Time zone"
+msgstr "Zona horaria"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Touch mode"
+msgstr "Modo táctil"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Turning them off needs a typed confirmation."
+msgstr "Desactivarlas requiere una confirmación escrita."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Up to four, separated by commas: us,il,ru. Alt+Shift switches."
+msgstr "Hasta cuatro, separados por comas: us,il,ru. Alt+Shift cambia."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Virus scans of your files"
+msgstr "Análisis de virus de tus archivos"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 1 minute"
+msgstr "tras 1 minuto"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 10 minutes"
+msgstr "tras 10 minutos"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 30 minutes"
+msgstr "tras 30 minutos"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 5 minutes"
+msgstr "tras 5 minutos"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "balanced"
+msgstr "equilibrado"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "battery saver"
+msgstr "ahorro de batería"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "every day"
+msgstr "cada día"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "every week"
+msgstr "cada semana"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "performance"
+msgstr "rendimiento"

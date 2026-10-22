@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Settings
+Name[he]=הגדרות D.Ai
+GenericName=Settings
+GenericName[he]=הגדרות
+Comment=Security, appearance, language and system in one window; every change shows its plan first and can be undone
+Comment[he]=אבטחה, מראה, שפה ומערכת בחלון אחד; כל שינוי מראה קודם את התוכנית ואפשר לבטל אותו
+Exec=dai-settings
+TryExec=dai-settings
+Icon=preferences-system
+StartupWMClass=dai-settings
+Categories=Settings;System;
+Keywords=settings;preferences;security;theme;language;lock;updates;הגדרות;העדפות;אבטחה;ערכת נושא;שפה;נעילה;עדכונים;

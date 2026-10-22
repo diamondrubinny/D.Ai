@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Settings: one window for the settings D.Ai Tune knows (docs/BEYOND.md §6). Installed as /usr/bin/dai-settings.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_settings.cli import main; sys.exit(main(["dai-settings", *sys.argv[1:]]))' "$@"

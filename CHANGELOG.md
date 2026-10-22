@@ -8,6 +8,9 @@ pre-releases are marked `-alpha`, `-beta` or `-rc`.
 First public alpha, built on Debian 13 (trixie). User and developer editions.
 
 ### Added
+- D.Ai Settings (`docs/BEYOND.md` §6): one window for sixteen settings (security, appearance and language, this
+  computer), each a D.Ai Tune action: the plan is shown first, applied through polkit and the journal, undone with
+  one button; the value shown is read back from the system; "settings" and "הגדרות" in D.Ai Command.
 - D.Ai Focus (`docs/BEYOND.md` §5): "focus for 25 minutes" in D.Ai Command, or a tile in D.Ai Quick: pop-ups
   hidden, a warmer light, a user timer that ends it, and everything put back as it was; nothing needs root.
 - D.Ai PDF: the PDF reader. Every file opens through a bubblewrap helper (no network, no home folder, memory and

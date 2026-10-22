@@ -6225,3 +6225,223 @@ msgstr "Hinweise sind zurück"
 #: apps/dai-focus/dai_focus/cli.py
 msgid "the light is normal again"
 msgstr "das Licht ist wieder normal"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "(action)"
+msgstr "(Aktion)"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Appearance and language"
+msgstr "Aussehen und Sprache"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Apply"
+msgstr "Anwenden"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Applying. Enter the administrator password when asked."
+msgstr "Wird angewendet. Gib das Administrator-Passwort ein, wenn du gefragt wirst."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Back to settings"
+msgstr "Zurück zu den Einstellungen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Change"
+msgstr "Ändern"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "D.Ai Settings"
+msgstr "D.Ai-Einstellungen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Done"
+msgstr "Fertig"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Every change shows its plan first, goes through D.Ai Tune, and can be undone."
+msgstr "Jede Änderung zeigt zuerst ihren Plan, läuft über D.Ai Tune und lässt sich rückgängig machen."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "No change: that is already the value."
+msgstr "Keine Änderung: das ist bereits der Wert."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Nothing matches. Everything else is a sentence away: dai-tune help"
+msgstr "Nichts passt. Alles andere ist einen Satz entfernt: dai-tune help"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Only an administrator can change the system's settings; your own account's settings still work."
+msgstr "Nur ein Administrator kann Systemeinstellungen ändern; die deines Kontos funktionieren weiter."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Run"
+msgstr "Ausführen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Search settings"
+msgstr "Einstellungen durchsuchen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Search: lock, theme, language…"
+msgstr "Suchen: Sperre, Design, Sprache…"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Security and privacy"
+msgstr "Sicherheit und Privatsphäre"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Security, appearance, language and this computer, in one window · every change has a plan and undo · Enter"
+msgstr "Sicherheit, Aussehen, Sprache und dieser Computer in einem Fenster · jede Änderung hat Plan und Rückgängig · Enter"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "That did not work"
+msgstr "Das hat nicht geklappt"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "The setting is in place. D.Ai Tune recorded it; Undo puts it back."
+msgstr "Die Einstellung ist gesetzt. D.Ai Tune hat sie aufgezeichnet; Rückgängig stellt sie zurück."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "This computer"
+msgstr "Dieser Computer"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "This weakens security. Type \"yes\" to continue."
+msgstr "Das schwächt die Sicherheit. Tippe \"yes\", um fortzufahren."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Turn on"
+msgstr "Einschalten"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Undo the last change"
+msgstr "Letzte Änderung rückgängig machen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Undone."
+msgstr "Rückgängig gemacht."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "WHAT WILL HAPPEN"
+msgstr "WAS PASSIEREN WIRD"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "A snapshot before every update"
+msgstr "Ein Schnappschuss vor jedem Update"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "An organization policy may cap this."
+msgstr "Eine Organisationsrichtlinie kann das begrenzen."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Block USB storage devices"
+msgstr "USB-Speichergeräte sperren"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Block the camera"
+msgstr "Die Kamera sperren"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Downloaded package files and old logs. Cannot be undone; nothing you use is lost."
+msgstr "Heruntergeladene Paketdateien und alte Protokolle. Nicht rückgängig zu machen; nichts, was du nutzt, geht verloren."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Free disk space"
+msgstr "Speicherplatz freigeben"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "From the next login."
+msgstr "Ab der nächsten Anmeldung."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Keyboard languages"
+msgstr "Tastatursprachen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Language of D.Ai"
+msgstr "Sprache von D.Ai"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Lock the screen"
+msgstr "Bildschirm sperren"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Needs a Btrfs system disk; the way back is D.Ai Rescue."
+msgstr "Braucht eine Btrfs-Systemplatte; der Weg zurück ist D.Ai Rescue."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Opens port 22 to the local network."
+msgstr "Öffnet Port 22 für das lokale Netz."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Power"
+msgstr "Energie"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Remote login (SSH)"
+msgstr "Fernanmeldung (SSH)"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "System sounds"
+msgstr "Systemklänge"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Theme"
+msgstr "Design"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Time zone"
+msgstr "Zeitzone"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Touch mode"
+msgstr "Touch-Modus"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Turning them off needs a typed confirmation."
+msgstr "Das Abschalten braucht eine getippte Bestätigung."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Up to four, separated by commas: us,il,ru. Alt+Shift switches."
+msgstr "Bis zu vier, durch Kommas getrennt: us,il,ru. Alt+Shift wechselt."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Virus scans of your files"
+msgstr "Virenscans deiner Dateien"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 1 minute"
+msgstr "nach 1 Minute"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 10 minutes"
+msgstr "nach 10 Minuten"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 30 minutes"
+msgstr "nach 30 Minuten"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "after 5 minutes"
+msgstr "nach 5 Minuten"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "balanced"
+msgstr "ausgewogen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "battery saver"
+msgstr "Energiesparen"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "every day"
+msgstr "jeden Tag"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "every week"
+msgstr "jede Woche"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "performance"
+msgstr "Leistung"
