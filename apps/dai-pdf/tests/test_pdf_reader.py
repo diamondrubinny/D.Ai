@@ -64,6 +64,17 @@ class DirectReaderTests(unittest.TestCase):
         self.assertEqual((plain.metadata["title"], plain.metadata["author"]), ("A plain file", "Dana"))
         self.assertEqual(plain.title, "A plain file")
 
+    def test_der_padding_is_cut_at_the_objects_own_length(self):
+        """A signature whose DER ends with 0x00 must keep that byte; only the PDF's padding goes."""
+        from dai_pdf.signatures import der_trim
+        body = b"\x02\x01\x00"                      # INTEGER 0: the object ends with a zero byte
+        der = b"\x30\x03" + body
+        self.assertEqual(der_trim(der + b"\0" * 40), der)
+        long_body = b"\x04\x81\x80" + b"\0" * 128   # OCTET STRING of 128 zero bytes, long-form length
+        long_der = b"\x30\x81\x83" + long_body
+        self.assertEqual(der_trim(long_der + b"\0" * 9), long_der)
+        self.assertEqual(der_trim(b"\x05\x00\0\0"), b"\x05")   # not a SEQUENCE: the old behaviour
+
     @unittest.skipUnless(fixtures.openssl_available(), "openssl is needed to make and check a signature")
     def test_digital_signatures_are_checked_not_trusted(self):
         """docs/PDF.md §15: intact and covering the file; intact but something added after; a kind not checked."""

@@ -86,6 +86,27 @@ def _openssl(argv: list[str], cwd: str) -> subprocess.CompletedProcess:
                           env={"PATH": "/usr/bin:/bin", "LANG": "C"})
 
 
+def der_trim(contents: bytes) -> bytes:
+    """The DER object at the start of /Contents, without the zero padding PDF writers add after it.
+
+    Stripping every trailing zero byte is wrong once in a while: a signature or certificate can itself end
+    with 0x00, and then the DER came back one byte short and a sound signature read as broken.
+    """
+    if len(contents) >= 2 and contents[0] == 0x30:
+        first = contents[1]
+        if first < 0x80:
+            length, header = first, 2
+        else:
+            count = first & 0x7F
+            if 0 < count <= 4 and len(contents) >= 2 + count:
+                length, header = int.from_bytes(contents[2:2 + count], "big"), 2 + count
+            else:
+                return contents.rstrip(b"\0")
+        if header + length <= len(contents):
+            return contents[:header + length]
+    return contents.rstrip(b"\0")
+
+
 def verify(path: str, byte_range: list[int], contents: bytes, subfilter: str) -> dict:
     """{"status": "intact" | "broken" | "unchecked", "why": "", "signer": "", "covers_all": bool}."""
     out: dict = {"status": "unchecked", "why": "", "signer": "", "covers_all": False}
@@ -99,7 +120,7 @@ def verify(path: str, byte_range: list[int], contents: bytes, subfilter: str) ->
         out["why"] = f"the signature kind {subfilter.lstrip('/') or '?'} is not checked here"
     with tempfile.TemporaryDirectory(prefix="dai-pdf-sig-") as tmp:
         sig = Path(tmp) / "sig.der"
-        sig.write_bytes(contents.rstrip(b"\0"))
+        sig.write_bytes(der_trim(contents))
         certs = _openssl(["pkcs7", "-inform", "DER", "-in", str(sig), "-print_certs", "-noout"], tmp)
         out["signer"] = _subject_cn(certs.stdout) if certs.returncode == 0 else ""
         if out["why"]:

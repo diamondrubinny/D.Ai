@@ -45,6 +45,7 @@ ACCENT, ACCENT_STRONG, ACCENT_2, WARN, OK, DANGER = (color(r) for r in ("accent"
                                                                         "ok", "danger"))
 DISABLED = color("disabled")
 STYLE = f"""
+QCheckBox {{ color: {TEXT}; }}
 QWidget#Window, QDialog {{ background: {BG}; color: {TEXT}; }}
 QLabel {{ color: {TEXT}; }}
 #AppTitle {{ font-size: 12pt; font-weight: 700; color: {MUTED}; }}
