@@ -104,5 +104,10 @@
       <action name="MoveToEdge" direction="down" snapWindows="no" />
       <action name="MoveToEdge" direction="left" snapWindows="no" />
     </windowRule>
+    <!-- D.Ai Captions: a bar at the bottom of the screen, above every window (docs/BEYOND.md §13) -->
+    <windowRule identifier="dai-captions">
+      <action name="MoveToEdge" direction="down" snapWindows="no" />
+      <action name="ToggleAlwaysOnTop" />
+    </windowRule>
   </windowRules>
 </labwc_config>

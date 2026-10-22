@@ -38,6 +38,8 @@ D.Ai OS é um sistema operacional gratuito e de código aberto baseado no Debian
 | **D.Ai TV**: Kodi em hebraico, nada escuta na rede | **D.Ai Phone** (experimental): Phosh em arm64, iniciado no QEMU | **D.Ai TV em arm64** (experimental): o mesmo Kodi, uma imagem UEFI genérica |
 | ![D.Ai PDF: um arquivo aberto na caixa de areia, seu JavaScript e anexo listados na barra e nunca executados](../screenshots/pdf.png) | ![D.Ai VM: a verificação honesta do hardware e o que o Windows vê](../screenshots/vm.png) | |
 | **D.Ai PDF**: o que o arquivo quer aparece na barra e nunca é feito | **D.Ai VM**: a verificação do hardware, e o que o Windows vê | |
+| ![Definições D.Ai: a pontuação de segurança e depois cada definição como interruptor ou escolha](../screenshots/settings.png) | ![Loja D.Ai: as receitas por categoria e o que cada uma configura](../screenshots/store.png) | ![Legendas ao vivo D.Ai: o ficheiro de teste do whisper lido no computador](../screenshots/captions.png) |
+| **Definições D.Ai**: uma janela, cada alteração com plano e desfazer | **Loja D.Ai**: encontrar e configurar software, sem conta | **Legendas D.Ai**: legendas para tudo o que o computador reproduz, no computador |
 
 ## ⚠️ Status
 

@@ -47,6 +47,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **D.Ai TV**: Kodi in Hebrew on the TV, nothing listening | **D.Ai Phone** (experimental): Phosh on arm64, booted in QEMU | **D.Ai TV on arm64** (experimental): the same Kodi, a generic UEFI image |
 | ![D.Ai PDF: a file opened in the sandbox, its JavaScript and attachment listed in the bar and never run](docs/screenshots/pdf.png) | ![D.Ai VM: the honest hardware check and what Windows can see](docs/screenshots/vm.png) | |
 | **D.Ai PDF**: what the file wants is shown in the bar, never done | **D.Ai VM**: the hardware check, and what Windows can see | |
+| ![D.Ai Settings: the security score, then every setting as a toggle or a choice](docs/screenshots/settings.png) | ![D.Ai Store: the recipes by category, what each one sets up](docs/screenshots/store.png) | ![D.Ai Live Captions: whisper's test file read on the computer](docs/screenshots/captions.png) |
+| **D.Ai Settings**: one window, every change with its plan and undo | **D.Ai Store**: find and set up software, no account | **D.Ai Captions**: subtitles for whatever the computer plays, on the computer |
 
 ## What's included
 
@@ -224,6 +226,8 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 | **D.Ai TV**: ‏Kodi בעברית, שום דבר לא מאזין לרשת | **D.Ai Phone** (ניסיוני): ‏Phosh על arm64, עולה ב-QEMU | **D.Ai TV על arm64** (ניסיוני): אותו Kodi, תמונת UEFI גנרית |
 | ![D.Ai PDF: קובץ שנפתח בארגז חול, ה-JavaScript והקובץ המצורף שלו רשומים בסרגל ולא מורצים](docs/screenshots/pdf.png) | ![D.Ai VM: בדיקת החומרה הכנה ומה Windows רואה](docs/screenshots/vm.png) | |
 | **D.Ai PDF**: מה שהקובץ רוצה מוצג בסרגל, ולא מבוצע | **D.Ai VM**: בדיקת החומרה, ומה Windows רואה | |
+| ![הגדרות D.Ai: ציון האבטחה, ואז כל הגדרה כמתג או בחירה](docs/screenshots/settings.png) | ![חנות D.Ai: המתכונים לפי קטגוריה, מה כל אחד מקים](docs/screenshots/store.png) | ![כתוביות חיות D.Ai: קובץ הבדיקה של whisper נקרא על המחשב](docs/screenshots/captions.png) |
+| **הגדרות D.Ai**: חלון אחד, כל שינוי עם תוכנית וביטול | **חנות D.Ai**: מוצאים ומקימים תוכנות, בלי חשבון | **כתוביות D.Ai**: כתוביות למה שהמחשב משמיע, על המחשב |
 
 **אתר:** [rubinny.com](https://rubinny.com) · **הורדה:** [הגרסה האחרונה](https://github.com/diamondrubinny/D.Ai/releases/latest)
 

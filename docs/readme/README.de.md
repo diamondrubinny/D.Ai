@@ -38,6 +38,8 @@ D.Ai OS ist ein freies Open-Source-Betriebssystem auf Basis von Debian 13, entwi
 | **D.Ai TV**: Kodi auf Hebräisch, nichts lauscht im Netz | **D.Ai Phone** (experimentell): Phosh auf arm64, in QEMU gestartet | **D.Ai TV auf arm64** (experimentell): dasselbe Kodi, ein generisches UEFI-Abbild |
 | ![D.Ai PDF: eine Datei in der Sandbox, ihr JavaScript und Anhang in der Leiste aufgeführt und nie ausgeführt](../screenshots/pdf.png) | ![D.Ai VM: die ehrliche Hardware-Prüfung und was Windows sieht](../screenshots/vm.png) | |
 | **D.Ai PDF**: was die Datei will, steht in der Leiste und wird nie getan | **D.Ai VM**: die Hardware-Prüfung, und was Windows sieht | |
+| ![D.Ai Einstellungen: der Sicherheitswert, dann jede Einstellung als Schalter oder Auswahl](../screenshots/settings.png) | ![D.Ai Store: die Rezepte nach Kategorie und was jedes einrichtet](../screenshots/store.png) | ![D.Ai Live-Untertitel: whispers Testdatei, auf dem Computer gelesen](../screenshots/captions.png) |
+| **D.Ai Einstellungen**: ein Fenster, jede Änderung mit Plan und Rückgängig | **D.Ai Store**: Software finden und einrichten, ohne Konto | **D.Ai Untertitel**: Untertitel für alles, was der Computer abspielt, auf dem Computer |
 
 ## ⚠️ Status
 
