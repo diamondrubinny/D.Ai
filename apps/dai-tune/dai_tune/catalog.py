@@ -1758,3 +1758,243 @@ register(ActionSpec(
                             "אחר כך מפעילים מחדש. הקבצים האישיים לא משתנים. "
                             "לפני כן נשמרת תמונת מצב של עכשיו, כך שאפשר לבטל גם את זה."),
 ))
+
+
+# --------------------------------------------------------------------------
+# "This app does not go online" (docs/BEYOND.md §12): an nftables rule on the
+# app's cgroup (system) and a launcher that starts the app in that cgroup (user)
+# --------------------------------------------------------------------------
+
+OFFLINE_STATE = "/etc/dai/firewall-offline.json"
+OFFLINE_RULES = "/etc/dai/firewall-offline.nft"
+APP_RE = re.compile(r"^[a-z0-9][a-z0-9._+-]{0,63}$")
+USER_APPS = ".local/share/applications"
+SYSTEM_APPS = ("/usr/local/share/applications", "/usr/share/applications")
+FLATPAK_OVERRIDES = ".local/share/flatpak/overrides"
+FLATPAK_APPS = (".local/share/flatpak/app", "/var/lib/flatpak/app")
+OFFLINE_MARK = "X-DAi-Offline=true"
+# Hebrew and generic names for the apps people say most (any .desktop id or name works too).
+APP_ALIASES = {
+    "פיירפוקס": "firefox", "דפדפן": "firefox", "browser": "firefox", "כרום": "chromium", "chrome": "chromium",
+    "google-chrome": "google-chrome", "גוגל-כרום": "google-chrome",
+    "טלגרם": "telegram", "סיגנל": "signal", "דיסקורד": "discord", "זום": "zoom", "ספוטיפיי": "spotify",
+    "סטים": "steam", "קודי": "kodi", "ליברה": "libreoffice", "אופיס": "libreoffice", "office": "libreoffice",
+    "vlc": "vlc", "וי אל סי": "vlc", "thunderbird": "thunderbird", "ת'אנדרבירד": "thunderbird",
+}
+
+
+def offline_slice(app: str) -> str:
+    """The systemd slice (and so the cgroup) an offline app runs in: letters, digits and _ only."""
+    return "offline_" + re.sub(r"[^a-z0-9]", "_", app) + ".slice"
+
+
+def _app_param(value: Any) -> str:
+    if not isinstance(value, str):
+        raise ValidationError("app: expected a name")
+    app = re.sub(r"\s+", "-", value.strip().lower())
+    app = APP_ALIASES.get(app, app)
+    if not APP_RE.match(app):
+        raise ValidationError("app: letters, digits, dots and dashes only")
+    return app
+
+
+def load_offline_rules(ctx: Context) -> list[dict]:
+    try:
+        rules = json.loads(read_text(ctx.path(OFFLINE_STATE), "[]"))
+    except json.JSONDecodeError:
+        return []
+    return [r for r in rules if isinstance(r, dict) and isinstance(r.get("uid"), int) and isinstance(r.get("app"), str)]
+
+
+def render_offline(rules: list[dict]) -> str:
+    lines = ['# Managed by dai-tune. Do not edit; use: dai-tune "APP goes online again"']
+    for rule in sorted(rules, key=lambda r: (r["uid"], r["app"])):
+        uid, app = int(rule["uid"]), rule["app"]
+        cgroup = f"user.slice/user-{uid}.slice/user@{uid}.service/{offline_slice(app)}"
+        lines.append(f'oifname != "lo" socket cgroupv2 level 4 "{cgroup}" counter reject comment "dai-tune offline {app}"')
+    return "\n".join(lines) + "\n"
+
+
+def _offline_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"app", "uid"})
+    return {"app": _app_param(params.get("app")), "uid": _int(params.get("uid"), 1000, 59999, "uid")}
+
+
+def _offline_write_and_reload(rules: list[dict], ctx: Context) -> None:
+    write_file(ctx.path(OFFLINE_STATE), json.dumps(rules, indent=2) + "\n")
+    write_file(ctx.path(OFFLINE_RULES), render_offline(rules))
+    ctx.run(["nft", "-c", "-f", NFT_CONF])
+    ctx.run(["nft", "-f", NFT_CONF])
+
+
+def _offline_apply(params: Params, ctx: Context) -> None:
+    rules = [r for r in load_offline_rules(ctx) if (r["app"], r["uid"]) != (params["app"], params["uid"])]
+    rules.append({"app": params["app"], "uid": params["uid"]})
+    _offline_write_and_reload(rules, ctx)
+
+
+def _online_apply(params: Params, ctx: Context) -> None:
+    rules = [r for r in load_offline_rules(ctx) if (r["app"], r["uid"]) != (params["app"], params["uid"])]
+    _offline_write_and_reload(rules, ctx)
+
+
+register(ActionSpec(
+    id="network.app_offline",
+    scope="system",
+    validate=_offline_validate,
+    apply=_offline_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "hardens",
+    summary=lambda p, lang: _t(lang, "Firewall: {app} started by this user cannot reach the network",
+                               "חומת אש: {app} שנפתח על ידי המשתמש הזה לא מגיע לרשת", app=p["app"]),
+    files=lambda p, c: [c.path(OFFLINE_STATE), c.path(OFFLINE_RULES)],
+    restore=_fw_reload,
+    note=lambda p, lang: _t(lang, "Connections fail at once; local services (sound, D-Bus) still work. "
+                                  "A copy already running stays connected until it is opened again.",
+                            "חיבורים נכשלים מיד; שירותים מקומיים (צליל, D-Bus) ממשיכים לעבוד. "
+                            "עותק שכבר רץ נשאר מחובר עד שפותחים אותו מחדש."),
+))
+
+register(ActionSpec(
+    id="network.app_online",
+    scope="system",
+    validate=_offline_validate,
+    apply=_online_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "weakens",
+    summary=lambda p, lang: _t(lang, "Firewall: {app} can reach the network again",
+                               "חומת אש: {app} מגיע לרשת שוב", app=p["app"]),
+    files=lambda p, c: [c.path(OFFLINE_STATE), c.path(OFFLINE_RULES)],
+    restore=_fw_reload,
+))
+
+
+def _flatpak_id(app: str, ctx: Context) -> str | None:
+    """The Flatpak app id when the name is one (org.x.Y, installed for the user or the system)."""
+    if app.count(".") < 2:
+        return None
+    for base in FLATPAK_APPS:
+        root = ctx.user_path(base) if base.startswith(".") else ctx.path(base)
+        for found in root.glob("*") if root.is_dir() else []:
+            if found.name.lower() == app:
+                return found.name
+    return None
+
+
+def find_desktop_file(app: str, ctx: Context) -> Path | None:
+    """The system .desktop file for a name: exact id, then an id starting with it, then its Name."""
+    candidates: list[Path] = []
+    for base in SYSTEM_APPS:
+        folder = ctx.path(base)
+        if folder.is_dir():
+            candidates.extend(sorted(folder.glob("*.desktop")))
+    for path in candidates:
+        if path.stem.lower() == app:
+            return path
+    for path in candidates:
+        if path.stem.lower().startswith(app) or path.stem.lower().split(".")[-1] == app:
+            return path
+    for path in candidates:
+        try:
+            names = re.findall(r"^Name(?:\[[^\]]*\])?=(.*)$", path.read_text(encoding="utf-8", errors="replace"), re.M)
+        except OSError:
+            continue
+        if any(name.strip().lower() == app for name in names):
+            return path
+    return None
+
+
+def offline_desktop_text(original: str, app: str) -> str:
+    """The override: every Exec= starts the program in the offline slice, and the file says why."""
+    lines = []
+    for line in original.splitlines():
+        if line.startswith("Exec="):
+            command = line[len("Exec="):].strip()
+            if not command.startswith("dai-offline-run "):
+                line = f"Exec=dai-offline-run {app} -- {command}"
+        if line.startswith("X-DAi-Offline="):
+            continue
+        lines.append(line)
+        if line.strip() == "[Desktop Entry]":
+            lines.append(OFFLINE_MARK)
+    return "\n".join(lines) + "\n"
+
+
+def _app_offline_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"app"})
+    app = _app_param(params.get("app"))
+    if _flatpak_id(app, ctx) is None and find_desktop_file(app, ctx) is None:
+        raise ValidationError(f"app: no application called {app} is installed")
+    return {"app": app}
+
+
+def _app_offline_files(params: Params, ctx: Context) -> list[Path]:
+    app = params["app"]
+    flatpak = _flatpak_id(app, ctx)
+    if flatpak:
+        return [ctx.user_path(f"{FLATPAK_OVERRIDES}/{flatpak}")]
+    source = find_desktop_file(app, ctx)
+    return [ctx.user_path(f"{USER_APPS}/{source.name}")] if source else []
+
+
+def _app_offline_apply(params: Params, ctx: Context) -> None:
+    app = params["app"]
+    flatpak = _flatpak_id(app, ctx)
+    if flatpak:
+        path = ctx.user_path(f"{FLATPAK_OVERRIDES}/{flatpak}")
+        current = read_text(path, "")
+        if "shared=" in current:
+            current = re.sub(r"^shared=.*$", "shared=!network;", current, flags=re.M)
+        elif "[Context]" in current:
+            current = current.replace("[Context]", "[Context]\nshared=!network;", 1)
+        else:
+            current = current.rstrip("\n") + ("\n" if current.strip() else "") + "[Context]\nshared=!network;\n"
+        write_file(path, current, mode=0o600)
+        return
+    source = find_desktop_file(app, ctx)
+    if source is None:
+        raise ActionError(f"no application called {app}")
+    write_file(ctx.user_path(f"{USER_APPS}/{source.name}"), offline_desktop_text(source.read_text(encoding="utf-8"), app))
+
+
+def _app_online_apply(params: Params, ctx: Context) -> None:
+    app = params["app"]
+    flatpak = _flatpak_id(app, ctx)
+    if flatpak:
+        path = ctx.user_path(f"{FLATPAK_OVERRIDES}/{flatpak}")
+        current = read_text(path, "")
+        if current:
+            write_file(path, re.sub(r"^shared=!network;\n?", "", current, flags=re.M), mode=0o600)
+        return
+    source = find_desktop_file(app, ctx)
+    if source is None:
+        return
+    override = ctx.user_path(f"{USER_APPS}/{source.name}")
+    if override.is_file() and OFFLINE_MARK in read_text(override, ""):
+        override.unlink()
+
+
+register(ActionSpec(
+    id="app.offline",
+    scope="user",
+    validate=_app_offline_validate,
+    apply=_app_offline_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "hardens",
+    summary=lambda p, lang: _t(lang, "{app} opens without network access from now on",
+                               "{app} נפתח בלי גישה לרשת מעכשיו", app=p["app"]),
+    files=_app_offline_files,
+    note=lambda p, lang: _t(lang, "The menu, the command bar and the taskbar all start it that way.",
+                            "התפריט, שורת הפקודה וסרגל המשימות פותחים אותו כך."),
+))
+
+register(ActionSpec(
+    id="app.online",
+    scope="user",
+    validate=_app_offline_validate,
+    apply=_app_online_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "weakens",
+    summary=lambda p, lang: _t(lang, "{app} opens with network access again", "{app} נפתח עם גישה לרשת שוב", app=p["app"]),
+    files=_app_offline_files,
+))

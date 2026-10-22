@@ -21,7 +21,7 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 - **Extend the system by asking.** Ask for an antivirus, file sync, or a custom app. D.Ai Forge builds it, you review it, and it is installed.
 - **A system that develops and repairs itself.** Every app the AI builds is tested in a sandbox and repaired before you see it; ask for an automation and it runs on a schedule; it notices what you are missing and suggests it; when something crashes, a chat explains it and fixes it with your OK.
 - **Hebrew and RTL done properly.** HE/EN indicator, wrong-layout fixer (`akuo` becomes `שלום`), Hebrew app names and Hebrew voice dictation.
-- **Secure by default.** Default-deny firewall, AppArmor, kernel hardening, locked root, automatic security updates, full-disk encryption in the installer.
+- **Secure by default.** Default-deny firewall, AppArmor, kernel hardening, locked root, automatic security updates, full-disk encryption in the installer; and "firefox does not go online" in one sentence (a firewall rule per app).
 - **Eight languages.** Hebrew, English, Arabic, Russian, Spanish, French, German and Portuguese: the interface, the sentences D.Ai understands, the boot menu and the website.
 - **Beautiful from the first second.** A D.Ai boot menu, a loading screen where the encrypted disk asks for its passphrase, a D.Ai login screen, and three themes (Night, Day, high contrast) that every window follows.
 - **PDFs in a sandbox.** D.Ai PDF opens every file in a bubblewrap sandbox, shows what the file wants to do (JavaScript, launching programs, sending forms) and never does it; pages, forms, notes, a stamped signature, real redaction, OCR and a smaller file, all edited inside the sandbox.
@@ -207,7 +207,7 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **D.Ai Forge:** כותבים `+ תתקין אנטי וירוס`, והמערכת בונה תוכנית, אתם בודקים, והיא מותקנת. אפשר גם לבקש בניית אפליקציה.
 - **מערכת שמפתחת ומתקנת את עצמה:** כל אפליקציה שה-AI בונה נבדקת בארגז חול ומתוקנת לפני שאתם רואים אותה; אוטומציות רצות לפי לוח זמנים; וכשמשהו קורס, נפתח צ'אט שמסביר ומתקן באישורכם.
 - **עברית ו-RTL:** מחוון HE/EN, תיקון הקלדה בפריסה שגויה (`akuo` ל-`שלום`), הכתבה בעברית וחיפוש קבצים בעברית.
-- **אבטחה כברירת מחדל:** חומת אש, AppArmor, הצפנת דיסק מלאה בהתקנה, גיבוי מוצפן ועדכוני אבטחה אוטומטיים.
+- **אבטחה כברירת מחדל:** חומת אש, AppArmor, הצפנת דיסק מלאה בהתקנה, גיבוי מוצפן ועדכוני אבטחה; ו"פיירפוקס לא יוצא לאינטרנט" במשפט אחד אוטומטיים.
 - **שמונה שפות:** עברית, אנגלית, ערבית, רוסית, ספרדית, צרפתית, גרמנית ופורטוגזית.
 - **יפה מהשנייה הראשונה:** תפריט אתחול, מסך טעינה ומסך כניסה בעיצוב של D.Ai, ושלוש ערכות נושא (כהה, בהירה וניגודיות גבוהה).
 - **PDF בארגז חול:** ‏D.Ai PDF פותח כל קובץ בארגז חול, מראה מה הקובץ "רוצה" לעשות (JavaScript, הרצת תוכניות, שליחת טפסים) ולא עושה זאת לעולם; עריכה של עמודים, טפסים, הערות, חתימה מוטבעת, השחרה אמיתית, OCR וקובץ קטן יותר, הכול בתוך ארגז החול.

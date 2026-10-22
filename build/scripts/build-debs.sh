@@ -124,6 +124,7 @@ build_apps() {
   install -m 0755 "$tune/data/dai-tune" "$root/usr/bin/dai-tune"
   install -m 0755 "$tune/data/dai-rescue" "$root/usr/bin/dai-rescue"  # docs/BASICS.md: undo an update from the USB
   install -m 0755 "$tune/data/dai-tune-helper" "$root/usr/lib/dai/dai-tune-helper"
+  install -m 0755 "$tune/data/dai-offline-run" "$root/usr/bin/dai-offline-run"  # docs/BEYOND.md §12: an app without network
   install -m 0644 "$tune/data/io.github.diamondrubinny.dai.tune.policy" "$root/usr/share/polkit-1/actions/"
   # Organization policies (docs/EDU.md): applied at boot and when /etc/dai/policy.d changes.
   install -d "$root/usr/lib/systemd/system" "$root/usr/share/dai/policy-examples"

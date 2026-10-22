@@ -1,0 +1,15 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# dai-offline-run APP -- COMMAND...: start a program in the cgroup the firewall keeps off the network
+# (docs/BEYOND.md §12). D.Ai Tune writes this into the app's .desktop override; the nftables rule matches
+# the slice offline_APP.slice of this user. Without systemd-run the program still starts, online, and says so.
+app="$1"
+if [ "$2" = "--" ]; then shift 2; else shift 1; fi
+if [ -z "$app" ] || [ $# -eq 0 ]; then echo "usage: dai-offline-run APP -- COMMAND..." >&2; exit 2; fi
+slice="offline_$(printf '%s' "$app" | tr -c 'a-z0-9\n' '_').slice"
+if command -v systemd-run >/dev/null 2>&1; then
+  exec systemd-run --user --quiet --scope --slice="$slice" -- "$@"
+fi
+echo "dai-offline-run: systemd-run is missing; $app starts with network access" >&2
+exec "$@"

@@ -78,7 +78,8 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | מזהה | דוגמה בעברית | scope | השפעה |
 |------|--------------|-------|-------|
 | `device.block` / `device.allow` (usb_storage, camera, bluetooth) | "חסום דיסק און קי", "חסום מצלמה" | מערכת | מחזק / מחליש |
-| `firewall.open_port` / `firewall.close_port` | "פתח פורט 8080", "סגור פורט 8080" | מערכת | מחליש / מחזק |
+| `firewall.open_port` / `firewall.close_port` | "פתח פורט 8080", "סגור פורט 8080", "פתח פורטים 1714 עד 1764 udp" (טווח) | מערכת | מחליש / מחזק |
+| `network.app_offline` / `network.app_online` + `app.offline` / `app.online` | "פיירפוקס לא יוצא לאינטרנט", "אפשר אינטרנט לפיירפוקס" (docs/BEYOND.md §12: כלל nftables על ה־cgroup של האפליקציה + קובץ ‎.desktop חופף שמריץ אותה שם) | מערכת + משתמש | מחזק / מחליש |
 | `updates.auto` | "הפעל עדכונים אוטומטיים" | מערכת | מחזק / מחליש |
 | `service.ssh` | "הפעל ssh" (מוסיף פורט 22 לרשת מקומית) | מערכת | מחליש / מחזק |
 | `packages.install` / `packages.remove` | "התקן vlc gimp", "הסר vlc" | מערכת | ניטרלי |

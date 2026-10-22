@@ -6617,3 +6617,31 @@ msgstr "Es gibt keinen Inhaltsindex."
 #, python-brace-format
 msgid "{n} documents in the content index."
 msgstr "{n} Dokumente im Inhaltsindex."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Connections fail at once; local services (sound, D-Bus) still work. A copy already running stays connected until it is opened again."
+msgstr "Verbindungen scheitern sofort; lokale Dienste (Ton, D-Bus) laufen weiter. Eine bereits laufende Kopie bleibt verbunden, bis sie erneut geöffnet wird."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Firewall: {app} can reach the network again"
+msgstr "Firewall: {app} erreicht das Netzwerk wieder"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Firewall: {app} started by this user cannot reach the network"
+msgstr "Firewall: {app}, von diesem Benutzer gestartet, erreicht das Netzwerk nicht"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "The menu, the command bar and the taskbar all start it that way."
+msgstr "Menü, Befehlsleiste und Taskleiste starten es alle so."
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "{app} opens with network access again"
+msgstr "{app} öffnet sich wieder mit Netzwerkzugriff"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "{app} opens without network access from now on"
+msgstr "{app} öffnet sich ab jetzt ohne Netzwerkzugriff"

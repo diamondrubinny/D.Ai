@@ -1229,6 +1229,11 @@ msgstr ""
 msgid "Connected, but printing is not installed yet."
 msgstr ""
 
+#. he: חיבורים נכשלים מיד; שירותים מקומיים (צליל, D-Bus) ממשיכים לעבוד. עותק שכבר רץ נשאר מחובר עד שפותחים אותו מחדש.
+#: apps/dai-tune/dai_tune/catalog.py:1852
+msgid "Connections fail at once; local services (sound, D-Bus) still work. A copy already running stays connected until it is opened again."
+msgstr ""
+
 #. he: שקלו להחליף סוללה
 #: apps/dai-doctor/dai_doctor/diagnose.py:169
 msgid "Consider replacing the battery"
@@ -2135,6 +2140,18 @@ msgstr ""
 #. he: חומת האש חוסמת תעבורה נכנסת לא מבוקשת
 #: apps/dai-tune/dai_tune/posture.py:26
 msgid "Firewall blocks unsolicited incoming traffic"
+msgstr ""
+
+#. he: חומת אש: {app} מגיע לרשת שוב
+#: apps/dai-tune/dai_tune/catalog.py:1865
+#, python-brace-format
+msgid "Firewall: {app} can reach the network again"
+msgstr ""
+
+#. he: חומת אש: {app} שנפתח על ידי המשתמש הזה לא מגיע לרשת
+#: apps/dai-tune/dai_tune/catalog.py:1848
+#, python-brace-format
+msgid "Firewall: {app} started by this user cannot reach the network"
 msgstr ""
 
 #. he: קודם בחרו את השם שאנשי הקשר יראו (לא שם המשתמש שלכם): dai-chat name NAME
@@ -5508,6 +5525,11 @@ msgstr ""
 msgid "The media could not be used: {why}"
 msgstr ""
 
+#. he: התפריט, שורת הפקודה וסרגל המשימות פותחים אותו כך.
+#: apps/dai-tune/dai_tune/catalog.py:1987
+msgid "The menu, the command bar and the taskbar all start it that way."
+msgstr ""
+
 #. he: ההודעה לא נשלחה. היא עדיין כאן; נסו שוב.
 #: apps/dai-j/dai_j/text.py:112
 msgid "The message was not sent. It is still here; try again."
@@ -7451,6 +7473,18 @@ msgstr ""
 #: apps/dai-mom/dai_mom/text.py:84
 #, python-brace-format
 msgid "{apps} apps · {procs} processes"
+msgstr ""
+
+#. he: {app} נפתח עם גישה לרשת שוב
+#: apps/dai-tune/dai_tune/catalog.py:1998
+#, python-brace-format
+msgid "{app} opens with network access again"
+msgstr ""
+
+#. he: {app} נפתח בלי גישה לרשת מעכשיו
+#: apps/dai-tune/dai_tune/catalog.py:1984
+#, python-brace-format
+msgid "{app} opens without network access from now on"
 msgstr ""
 
 #. he: {app} הפסיק להשתמש ב{device}

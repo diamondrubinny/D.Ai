@@ -266,6 +266,77 @@ class ExecutorTests(TuneTestCase):
         self.assertFalse((self.root / "etc/dai/firewall-allow.json").exists())
         self.assertEqual(journal.entries(), [])
 
+    def _desktop(self, name, text):
+        folder = self.root / "usr/share/applications"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / name).write_text(text)
+
+    def test_app_offline_rule_and_launcher(self):
+        """"firefox does not go online" (docs/BEYOND.md §12): the cgroup rule and the .desktop override."""
+        with mock.patch("os.getuid", return_value=1000):   # the parser names the user whose apps go offline
+            self._app_offline_rule_and_launcher()
+
+    def _app_offline_rule_and_launcher(self):
+        self._desktop("firefox-esr.desktop", "[Desktop Entry]\nName=Firefox ESR\nExec=/usr/lib/firefox-esr/firefox-esr %u\n"
+                                             "[Desktop Action new-window]\nExec=/usr/lib/firefox-esr/firefox-esr --new-window\n")
+        plan = self.plan("firefox does not go online")
+        self.assertTrue(plan.ok, plan.errors + plan.unknown)
+        self.assertEqual([s.action for s in plan.steps], ["network.app_offline", "app.offline"])
+        self.assertEqual(plan.steps[0].params, {"app": "firefox", "uid": 1000})
+        self.assertEqual(plan.steps[1].params, {"app": "firefox"})
+        self.assertEqual(plan.steps[0].scope, "system")
+        self.assertEqual(plan.steps[1].scope, "user")
+        # System: the rule file, checked and loaded.
+        entry, journal = self.apply("firefox does not go online")
+        rules = (self.root / "etc/dai/firewall-offline.nft").read_text()
+        self.assertIn('socket cgroupv2 level 4 "user.slice/user-1000.slice/user@1000.service/offline_firefox.slice" '
+                      'counter reject comment "dai-tune offline firefox"', rules)
+        self.assertIn('oifname != "lo"', rules)
+        self.assertEqual(json.loads((self.root / "etc/dai/firewall-offline.json").read_text()), [{"app": "firefox", "uid": 1000}])
+        nft_calls = [c for c in self.runner.calls if c[0] == "nft"]
+        self.assertEqual(nft_calls[-2:], [["nft", "-c", "-f", "/etc/nftables.conf"], ["nft", "-f", "/etc/nftables.conf"]])
+        # User: the override starts every Exec in the slice, and says why.
+        self.apply("firefox does not go online", scope="user")
+        override = (self.home / ".local/share/applications/firefox-esr.desktop").read_text()
+        self.assertIn("X-DAi-Offline=true", override)
+        self.assertEqual(override.count("Exec=dai-offline-run firefox -- /usr/lib/firefox-esr/firefox-esr"), 2)
+        self.assertIn("Name=Firefox ESR", override)
+        # Hebrew, an alias, and the summary in both languages.
+        plan = self.plan("פיירפוקס לא יוצא לאינטרנט")
+        self.assertEqual(plan.steps[1].params, {"app": "firefox"})
+        self.assertIn("firefox נפתח בלי גישה לרשת", catalog.CATALOG["app.offline"].summary(plan.steps[1].params, "he"))
+        self.assertIn("cannot reach the network", catalog.CATALOG["network.app_offline"].summary(plan.steps[0].params, "en"))
+        # Back online: the rule goes, the override goes, and undo of the first entry restores both files.
+        self.apply("firefox goes online again")
+        self.assertNotIn("firefox", (self.root / "etc/dai/firewall-offline.nft").read_text().split("\n", 1)[1])
+        self.apply("אפשר אינטרנט לפיירפוקס", scope="user")
+        self.assertFalse((self.home / ".local/share/applications/firefox-esr.desktop").exists())
+        executor.undo_entry(entry, self.ctx, journal)
+        self.assertFalse((self.root / "etc/dai/firewall-offline.nft").exists())
+        # Unknown apps and bad names are refused before anything runs.
+        self.assertFalse(self.plan("no internet for nosuchapp").ok)
+        with self.assertRaises(ValidationError):
+            catalog.CATALOG["network.app_offline"].validate({"app": "x; rm", "uid": 1000}, self.ctx)
+        with self.assertRaises(ValidationError):
+            catalog.CATALOG["network.app_offline"].validate({"app": "firefox", "uid": 0}, self.ctx)
+        self.assertEqual(catalog.offline_slice("google-chrome"), "offline_google_chrome.slice")
+
+    def test_app_offline_flatpak_uses_the_sandbox(self):
+        with mock.patch("os.getuid", return_value=1000):
+            self._app_offline_flatpak()
+
+    def _app_offline_flatpak(self):
+        (self.home / ".local/share/flatpak/app/org.telegram.desktop").mkdir(parents=True)
+        plan = self.plan("keep org.telegram.desktop offline")
+        self.assertTrue(plan.ok, plan.errors)
+        self.apply("keep org.telegram.desktop offline", scope="user")
+        override = self.home / ".local/share/flatpak/overrides/org.telegram.desktop"
+        self.assertEqual(override.read_text(), "[Context]\nshared=!network;\n")
+        self.assertEqual(oct(override.stat().st_mode & 0o777), "0o600")
+        self.apply("org.telegram.desktop goes online again", scope="user")
+        self.assertNotIn("!network", override.read_text())
+        self.assertFalse((self.home / ".local/share/applications").exists())
+
     def test_user_lock_and_layouts(self):
         entry, journal = self.apply("נעל מסך אחרי 5 דקות ומקלדת עברית אנגלית", scope="user")
         env = self.home / ".config/dai/session.env"

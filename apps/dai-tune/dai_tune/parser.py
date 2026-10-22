@@ -224,6 +224,38 @@ def _package_names(raw: str) -> list[str]:
 # --------------------------------------------------------------------------
 
 
+NET = r"(?:the\s+)?(?:internet|network|online|web)"
+APP = r"([\w.+'-]+(?:\s+[\w.+'-]+)?)"   # one or two words: "firefox", "google chrome", "org.telegram.desktop"
+APP_OFFLINE = (
+    rf"^\s*(?:{APP}\s+(?:does\s*n[o']t|doesn't|must\s+not|cannot|can't|should\s+not|shouldn't|no\s+longer|never)\s+"
+    rf"(?:go(?:es)?\s+online|(?:use|reach|access|touch)\s+{NET}|connect(?:\s+to\s+{NET})?)|"
+    rf"(?:no|block|cut|disable|deny)\s+(?:the\s+)?(?:internet|network)\s+(?:access\s+)?(?:for|to)\s+{APP}|"
+    rf"(?:keep\s+)?{APP}\s+(?:offline|without\s+(?:the\s+)?(?:internet|network))|"
+    rf"{APP}\s+(?:לא\s+(?:יוצא(?:ת)?|יוצאים|מתחבר(?:ת)?|מתחברים|ניגש(?:ת)?|מגיע(?:ה)?)\s+ל(?:אינטרנט|רשת)|בלי\s+(?:אינטרנט|רשת))|"
+    rf"(?:בלי|חסום|תחסום|לחסום|חסימת|אין|בטל|תבטל)\s+(?:את\s+ה)?(?:אינטרנט|רשת)\s+(?:ל|של\s+|עבור\s+)?{APP})\s*[.!]?\s*$"
+)
+APP_ONLINE = (
+    rf"^\s*(?:{APP}\s+(?:goes|can\s+go|may\s+go|is|back)\s+online(?:\s+again)?|"
+    rf"(?:allow|enable|restore|give|return)\s+(?:the\s+)?(?:internet|network)\s+(?:access\s+)?(?:for|to|back\s+to)\s+{APP}|"
+    rf"{APP}\s+(?:with\s+(?:the\s+)?(?:internet|network)|online\s+again)|"
+    rf"{APP}\s+(?:חוזר(?:ת)?|חוזרים|יוצא(?:ת)?|מתחבר(?:ת)?)\s+ל(?:אינטרנט|רשת)(?:\s+שוב)?|"
+    rf"{APP}\s+עם\s+(?:אינטרנט|רשת)|"
+    rf"(?:אפשר|תאפשר|לאפשר|החזר|תחזיר|להחזיר)\s+(?:את\s+ה)?(?:אינטרנט|רשת)\s+(?:ל|של\s+|עבור\s+)?{APP})\s*[.!]?\s*$"
+)
+
+
+def _first_group(m: re.Match) -> str:
+    return next(g for g in m.groups() if g)
+
+
+def _offline_requests(app: str, clause: str, offline: bool) -> list[Request]:
+    import os
+    app = re.sub(r"^(?:the|ה|את\s+ה?)\s*", "", app.strip().lower())
+    verb = "offline" if offline else "online"
+    return [Request(f"network.app_{verb}", {"app": app, "uid": os.getuid()}, clause),
+            Request(f"app.{verb}", {"app": app}, clause)]
+
+
 def parse_clause(clause: str) -> list[Request]:
     c = clause
 
@@ -271,6 +303,12 @@ def parse_clause(clause: str) -> list[Request]:
         if _has(OPEN_PORT, c):
             source = "any" if _has(ANYWHERE, c) else "lan"
             return [Request("firewall.open_port", {"port": port, "proto": proto, "source": source}, clause)]
+
+    # "firefox does not go online" / "firefox goes online again" (docs/BEYOND.md §12).
+    if m := re.match(APP_OFFLINE, c, re.IGNORECASE):
+        return _offline_requests(_first_group(m), clause, offline=True)
+    if m := re.match(APP_ONLINE, c, re.IGNORECASE):
+        return _offline_requests(_first_group(m), clause, offline=False)
 
     # SSH server.
     if _has(r"\bssh\b", c):
@@ -477,6 +515,8 @@ EXAMPLES = {
         "נעל מסך אחרי 5 דקות",
         "מקלדת עברית אנגלית רוסית",
         "שפה רוסית",
+        "פיירפוקס לא יוצא לאינטרנט",
+        "אפשר אינטרנט לפיירפוקס",
         "אזור זמן ירושלים",
         "שנה שם מחשב ל office-pc",
         "מצב ציבורי",
