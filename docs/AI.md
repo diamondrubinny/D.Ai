@@ -54,6 +54,8 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 - `dai-models list | install <id> | verify <id> | remove <id>`
 - D.Ai Command: `?` ואז שאלה; התשובה מוצגת בזרימה בתוך החלון.
 - D.Ai Tune: אם הכללים לא הבינו משפט ויש מודל מותקן, מוצעת "פרשנות AI" (‎`--ai` מפעיל ישירות).
+- **ספק חיצוני במפתח שלך** (docs/PROVIDERS.md): `dai-models provider add anthropic`, `… key anthropic`, `… use anthropic
+  --tasks code,general` (הסכמה מוקלדת). `dai-ai where` אומר מי משרת כל משימה; דיבור תמיד מקומי; כבוי כברירת מחדל.
 
 ## 5. מגבלות ידועות
 

@@ -408,6 +408,7 @@ _STRINGS = {
     "history": ("From history", "מההיסטוריה"),
     "ask": ("Ask D.Ai…", "שאלו את D.Ai…"),
     "ai_soon": ("Diamond · Enter to ask (runs on this computer)", "Diamond · Enter לשאלה (רץ במחשב הזה)"),
+    "ai_remote": ("Diamond · Enter to ask (sent to {provider}, your own key)", "Diamond · Enter לשאלה (נשלח ל־{provider}, במפתח שלך)"),
     "ai_missing": ("Diamond is not ready. Install a model: dai-models install qwen2.5-0.5b",
                    "Diamond לא מוכן. התקינו מודל: dai-models install qwen2.5-0.5b"),
     "ai_thinking": ("Thinking…", "חושב…"),
@@ -537,7 +538,7 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
             Action(
                 "ai",
                 question or tr("ask"),
-                tr("ai_soon"),
+                ai_where_label(),
                 "dialog-information",
                 question,
             )
@@ -810,6 +811,16 @@ def backup_actions(text: str) -> list[Action] | None:
     return [Action("backup", tr("backup_now"), state, "document-save", "now"),
             Action("backup", f"{tr('backup_last')} {when}", f"{settings.repo} · {tr('backup_details')}",
                    "document-open-recent", "status")]
+
+
+def ai_where_label() -> str:
+    """"runs on this computer", or the provider the person chose for general questions (docs/PROVIDERS.md)."""
+    try:
+        from dai_ai.client import where
+        provider = where("general")
+    except Exception:  # noqa: BLE001 - no dai_ai on the path: the local wording
+        provider = "local"
+    return tr("ai_soon") if provider == "local" else tr("ai_remote").format(provider=provider)
 
 
 def tune_actions(request: str) -> list[Action]:

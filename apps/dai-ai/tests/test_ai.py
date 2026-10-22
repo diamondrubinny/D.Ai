@@ -2,6 +2,7 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 import hashlib
 import io
+from contextlib import redirect_stderr, redirect_stdout
 import json
 import os
 import tempfile
@@ -204,3 +205,139 @@ class TaskTests(EnvTestCase):
         with self.assertRaises(models.ModelError):
             models.load_catalog(path)
 
+
+
+class ProviderTests(EnvTestCase):
+    """External providers with your own key (docs/PROVIDERS.md)."""
+
+    def setUp(self):
+        super().setUp()
+        from dai_ai import providers
+        self.providers = providers
+
+    def test_config_round_trip_is_private_and_masks_the_key(self):
+        p = self.providers
+        config = p.Config()
+        config.providers["anthropic"] = p.make("anthropic")
+        config.providers["anthropic"].key = "sk-ant-secret-key-1234"
+        path = p.save(config)
+        self.assertEqual(oct(path.stat().st_mode & 0o777), "0o600")
+        again = p.load(path)
+        self.assertEqual(again.providers["anthropic"].key, "sk-ant-secret-key-1234")
+        self.assertEqual(again.providers["anthropic"].masked_key(), "sk-…34")
+        self.assertNotIn("secret", json.dumps(again.providers["anthropic"].public()))
+        self.assertEqual(again.active, "")
+        with mock.patch.dict(os.environ, {"DAI_PROVIDER_KEY_ANTHROPIC": "env-key"}):
+            self.assertEqual(again.providers["anthropic"].resolved_key(), "env-key")
+
+    def test_make_validates_names_kinds_and_urls(self):
+        p = self.providers
+        self.assertEqual(p.make("openai").kind, "openai")
+        self.assertEqual(p.make("google").kind, "gemini")
+        custom = p.make("lab", "openai", "http://192.168.1.20:11434/v1/", "llama3")
+        self.assertEqual(custom.base_url, "http://192.168.1.20:11434/v1")
+        for bad in (("Bad Name",), ("x", "openai", "http://example.com/v1", "m"), ("x", "weird", "https://a/v1", "m"), ("custom",)):
+            with self.assertRaises(p.ProviderError):
+                p.make(*bad)
+
+    def test_requests_per_kind_and_json_schema(self):
+        p = self.providers
+        messages = [{"role": "system", "content": "Be brief."}, {"role": "user", "content": "hi"}]
+        schema = {"type": "object"}
+        with mock.patch.dict(os.environ, {"DAI_PROVIDER_KEY_ANTHROPIC": "k1", "DAI_PROVIDER_KEY_OPENAI": "k2", "DAI_PROVIDER_KEY_GOOGLE": "k3"}):
+            url, headers, body = p.build_request(p.make("anthropic"), messages, schema, 100)
+            self.assertEqual(url, "https://api.anthropic.com/v1/messages")
+            self.assertEqual(headers["x-api-key"], "k1")
+            self.assertIn("JSON schema", body["system"])
+            self.assertEqual(body["messages"], [{"role": "user", "content": "hi"}])
+            url, headers, body = p.build_request(p.make("openai"), messages, None, 100)
+            self.assertEqual(url, "https://api.openai.com/v1/chat/completions")
+            self.assertEqual(headers["authorization"], "Bearer k2")
+            self.assertEqual(body["messages"][0], {"role": "system", "content": "Be brief."})
+            self.assertNotIn("response_format", body)
+            url, headers, body = p.build_request(p.make("google"), messages, schema, 100)
+            self.assertTrue(url.endswith("/models/gemini-2.5-flash:generateContent"))
+            self.assertEqual(body["generationConfig"]["responseMimeType"], "application/json")
+            self.assertEqual(body["contents"][0]["role"], "user")
+        with self.assertRaises(p.ProviderError):
+            p.build_request(p.make("openai"), messages, None, 100)   # no key anywhere
+        self.assertEqual(p.parse_reply("anthropic", {"content": [{"type": "text", "text": "ok"}]}), "ok")
+        self.assertEqual(p.parse_reply("gemini", {"candidates": [{"content": {"parts": [{"text": "ok"}]}}]}), "ok")
+        self.assertEqual(p.parse_reply("openai", {"choices": [{"message": {"content": "ok"}}]}), "ok")
+        with self.assertRaises(p.ProviderError):
+            p.parse_reply("openai", {"nope": 1})
+
+    def test_chat_talks_https_and_reports_failures_without_the_key(self):
+        p = self.providers
+        provider = p.make("openai")
+        provider.key = "sk-top-secret"
+        seen = {}
+
+        class Response:
+            def __init__(self, data): self.data = data
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self, n=-1): return self.data
+
+        def opener(request, timeout):
+            seen["url"], seen["auth"] = request.full_url, request.get_header("Authorization")
+            return Response(json.dumps({"choices": [{"message": {"content": "hello"}}]}).encode())
+
+        self.assertEqual(p.chat(provider, [{"role": "user", "content": "hi"}], opener=opener), "hello")
+        self.assertEqual(seen["url"], "https://api.openai.com/v1/chat/completions")
+        self.assertEqual(seen["auth"], "Bearer sk-top-secret")
+        import urllib.error
+        def failing(request, timeout):
+            raise urllib.error.HTTPError(request.full_url, 401, "x", {}, io.BytesIO(b'{"error": {"message": "bad key sk-top-secret"}}'))
+        with self.assertRaises(p.ProviderError) as caught:
+            p.chat(provider, [{"role": "user", "content": "hi"}], opener=failing)
+        self.assertIn("HTTP 401", str(caught.exception))
+
+    def test_routing_needs_consent_and_falls_back(self):
+        from dai_ai import client, providers as p
+        config = p.Config()
+        config.providers["anthropic"] = p.make("anthropic")
+        config.providers["anthropic"].key = "k"
+        config.active = "anthropic"
+        p.save(config)
+        self.assertEqual(p.where(), {"code": "local", "general": "local", "speech": "local"})   # no consent yet
+        p.record_consent(config, "anthropic")
+        config.providers["anthropic"].tasks = ("code",)
+        p.save(config)
+        self.assertEqual(p.where(), {"code": "anthropic", "general": "local", "speech": "local"})
+        self.assertEqual(client.where("code"), "anthropic")
+        with mock.patch.object(p, "chat", return_value="from the cloud"):
+            self.assertEqual("".join(client.chat([{"role": "user", "content": "x"}], task="code")), "from the cloud")
+        local = [{"delta": "local answer"}, {"done": True}]
+        with mock.patch.object(p, "chat", side_effect=p.ProviderError("anthropic: no route")), \
+                mock.patch.object(client, "_request", return_value=iter(local)), redirect_stderr(io.StringIO()) as err:
+            self.assertEqual("".join(client.chat([{"role": "user", "content": "x"}], task="code")), "local answer")
+        self.assertIn("local Diamond instead", err.getvalue())
+        config.fallback = False
+        p.save(config)
+        with mock.patch.object(p, "chat", side_effect=p.ProviderError("anthropic: no route")), self.assertRaises(client.AIUnavailable):
+            "".join(client.chat([{"role": "user", "content": "x"}], task="code"))
+
+    def test_cli(self):
+        from dai_ai import providers_cli as cli, providers as p
+        out = io.StringIO()
+        with redirect_stdout(out), redirect_stderr(io.StringIO()), mock.patch.dict(os.environ, {"LANG": "en_US.UTF-8"}):
+            self.assertEqual(cli.main(["add", "anthropic"]), 0)
+            self.assertEqual(cli.main(["key", "anthropic"], read_key=lambda prompt: "sk-ant-123456789"), 0)
+            self.assertEqual(cli.main(["use", "anthropic", "--tasks", "code"], ask=lambda prompt: "no"), 1)
+            self.assertEqual(p.load().active, "")
+            self.assertEqual(cli.main(["use", "anthropic", "--tasks", "code"], ask=lambda prompt: "כן"), 0)
+            self.assertEqual(p.where(), {"code": "anthropic", "general": "local", "speech": "local"})
+            self.assertEqual(cli.main(["list"]), 0)
+            self.assertEqual(cli.main(["use", "local"]), 0)
+            self.assertEqual(p.load().active, "")
+            self.assertEqual(cli.main(["add", "lab", "--kind", "openai", "--url", "http://10.0.0.5:11434/v1", "--model", "llama3"]), 0)
+            self.assertEqual(cli.main(["remove", "anthropic"]), 0)
+            self.assertEqual(cli.main(["remove", "anthropic"]), 1)
+            self.assertEqual(cli.main(["fallback", "off"]), 0)
+            self.assertEqual(cli.main(["dance"]), 2)
+        text = out.getvalue()
+        self.assertIn("will be sent to anthropic's servers", text)
+        self.assertNotIn("sk-ant-123456789", text)
+        self.assertIn("sk-…89", text)
+        self.assertFalse(p.load().fallback)

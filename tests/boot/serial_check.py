@@ -494,6 +494,19 @@ def main() -> int:
          "test -e /etc/dai/memory-saver || echo MARK_GONE", True,
          lambda o: "RC=0" in o and "RC2=0" in o and "\n180" in o and "MARK" in o and "SMALL True" in o and "MARK_GONE" in o
          and o.strip().splitlines()[-2] != "180", 60),
+        # External AI providers (docs/PROVIDERS.md): off by default, consent typed, a dead custom server fails clearly
+        # and the local Diamond answers instead, remove leaves nothing.
+        ("ai: providers off by default", "dai-ai where; dai-models provider list | head -n 1; "
+         "dai-models provider add lab --kind openai --url http://127.0.0.1:9/v1 --model test; "
+         "echo 'sk-test-key-000' | dai-models provider key lab >/dev/null; echo RC_KEY=$?; "
+         "echo no | dai-models provider use lab >/dev/null; echo RC_NO=$?; dai-ai where | grep -c lab | sed 's/^/LAB_BEFORE=/'; "
+         "echo yes | dai-models provider use lab --tasks general >/dev/null; echo RC_YES=$?; dai-ai where; "
+         "dai-models provider test lab; echo RC_TEST=$?; stat -c 'MODE=%a' ~/.config/dai/providers.json; "
+         "grep -c 'sk-test-key-000' ~/.config/dai/providers.json; dai-ai 'Reply with only the number 4' 2>&1 | tail -n 2; "
+         "dai-models provider use local >/dev/null; dai-models provider remove lab; dai-ai where | grep -c local", True,
+         lambda o: o.count("local") >= 3 and "RC_KEY=0" in o and "RC_NO=1" in o and "LAB_BEFORE=0" in o and "RC_YES=0" in o
+         and "general  lab" in o and "RC_TEST=1" in o and "MODE=600" in o and "local Diamond instead" in o
+         and "removed" in o and o.strip().splitlines()[-1] == "3", 300),
         # Diamond's Way (docs/WAY.md): the built-in examples check, a user-scope file applies and undoes, export checks back.
         ("way: a computer in one file", "dai-way --version; dai-way examples | wc -l; "
          "for f in /usr/share/dai/way/*.dway; do dai-way check \"$f\" || echo CHECK_FAILED; done; "

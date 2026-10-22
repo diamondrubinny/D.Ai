@@ -37,12 +37,37 @@ def _request(payload: dict[str, Any], timeout: float = 600) -> Iterator[dict[str
 
 
 def status() -> dict[str, Any]:
-    return next(_request({"op": "status"}, timeout=5))
+    """daid's status plus who serves each task (docs/PROVIDERS.md §2.5)."""
+    from . import providers
+
+    info = next(_request({"op": "status"}, timeout=5))
+    info["where"] = providers.where()
+    return info
+
+
+def where(task: str = "general") -> str:
+    """"local", or the provider's name, for this task; what a window shows next to an answer."""
+    from . import providers
+
+    return providers.where().get(task, "local")
 
 
 def chat(
     messages: list[dict[str, str]], schema: dict | None = None, max_tokens: int = 512, task: str = "general"
 ) -> Iterator[str]:
+    """An answer, as pieces of text: from the provider chosen for this task, else from the local Diamond."""
+    from . import providers
+
+    config = providers.load()
+    provider = config.for_task(task)
+    if provider is not None:
+        try:
+            yield providers.chat(provider, messages, schema, max_tokens)
+            return
+        except providers.ProviderError as exc:
+            if not config.fallback:
+                raise AIUnavailable(str(exc)) from exc
+            print(f"dai-ai: {exc}; answering with the local Diamond instead", file=sys.stderr)
     payload = {"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens, "task": task}
     for message in _request(payload):
         if message.get("done"):
@@ -61,10 +86,16 @@ def ask(question: str, max_tokens: int = 512) -> Iterator[str]:
 
 
 def main(argv: list[str]) -> int:
-    """dai-ai "question"  |  dai-ai status"""
+    """dai-ai "question"  |  dai-ai status  |  dai-ai where"""
     args = argv[1:]
     if not args or args[0] in ("-h", "--help"):
-        print('usage: dai-ai "question"  |  dai-ai status  |  dai-ai --version')
+        print('usage: dai-ai "question"  |  dai-ai status  |  dai-ai where  |  dai-ai --version')
+        return 0
+    if args[0] == "where":
+        from . import providers
+
+        for task, who in providers.where().items():
+            print(f"{task:8} {who}")
         return 0
     if args[0] == "--version":
         print(f"dai-ai {__version__} — {__author__}")
@@ -72,7 +103,10 @@ def main(argv: list[str]) -> int:
     try:
         if args[0] == "status":
             info = status()
-            print(f"model: {info.get('model') or 'none (dai-models install qwen2.5-0.5b)'}  running: {info.get('running')}")
+            served = info.get("where", {})
+            remote = sorted({who for who in served.values() if who != "local"})
+            print(f"model: {info.get('model') or 'none (dai-models install qwen2.5-0.5b)'}  running: {info.get('running')}"
+                  f"  provider: {', '.join(remote) if remote else 'local'}")
             return 0
         for delta in ask(" ".join(args)):
             sys.stdout.write(delta)

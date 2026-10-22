@@ -201,6 +201,10 @@ def main(argv: list[str]) -> int:
         print(f"dai-models: cannot read catalog: {exc}", file=sys.stderr)
         return 1
     command = args[0] if args else "list"
+    if command == "provider":
+        from .providers_cli import main as provider_main
+
+        return provider_main(args[1:])
     if command == "list":
         defaults = {default_model_id(models), default_model_id(models, "speech")}
         for model in models.values():
@@ -236,5 +240,5 @@ def main(argv: list[str]) -> int:
             print(f"\n✗ {exc}", file=sys.stderr)
             return 1
         return 0
-    print("usage: dai-models [list | install <id> | verify <id> | use <id> | remove <id>]", file=sys.stderr)
+    print("usage: dai-models [list | install <id> | verify <id> | use <id> | remove <id> | provider …]", file=sys.stderr)
     return 2

@@ -163,6 +163,8 @@ STRINGS = {
                  "אין מתכון מוכן לזה, ו־Diamond עוד לא מותקן."),
     "footer": ("Runs on this computer · system changes need the administrator password · every change can be undone",
                "רץ במחשב הזה · שינויי מערכת דורשים סיסמת מנהל · אפשר לבטל כל שינוי"),
+    "footer_remote": ("Code is written by {provider} with your own key · system changes need the administrator password · every change can be undone",
+                      "הקוד נכתב על ידי {provider} במפתח שלך · שינויי מערכת דורשים סיסמת מנהל · אפשר לבטל כל שינוי"),
     "lines": ("lines", "שורות"),
 }
 IDEAS = {
@@ -308,7 +310,7 @@ class ForgeWindow(QWidget):
         self.pages = QStackedWidget()
         root.addWidget(self.pages, 1)
         footer = QHBoxLayout()
-        for text, stretch in ((self.t("footer"), 1), (f"D.Ai Forge {__version__} · {__author__}", 0)):
+        for text, stretch in ((self._footer(), 1), (f"D.Ai Forge {__version__} · {__author__}", 0)):
             label = QLabel(text, objectName="Muted")
             label.setWordWrap(bool(stretch))
             label.setStyleSheet("font-size: 9pt;")
@@ -328,6 +330,15 @@ class ForgeWindow(QWidget):
 
     def label(self, kind: str, value: str) -> str:
         return pick(self.lang, *LABELS[kind][value])
+
+    def _footer(self) -> str:
+        """Where the code comes from: this computer, or the provider the person chose (docs/PROVIDERS.md)."""
+        try:
+            from dai_ai.client import where
+            provider = where("code")
+        except Exception:  # noqa: BLE001 - no dai_ai on the path
+            provider = "local"
+        return self.t("footer") if provider == "local" else self.t("footer_remote").format(provider=provider)
 
     def _header(self) -> QHBoxLayout:
         row = QHBoxLayout()

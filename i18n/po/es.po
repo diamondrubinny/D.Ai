@@ -6759,3 +6759,88 @@ msgstr "exact:"
 #: apps/dai-way/dai_way/export.py
 msgid "no recipes installed"
 msgstr "no hay recetas instaladas"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "API key for {name} (not shown): "
+msgstr "Clave API para {name} (no se muestra): "
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "Code is written by {provider} with your own key · system changes need the administrator password · every change can be undone"
+msgstr "El código lo escribe {provider} con su propia clave · los cambios del sistema necesitan la contraseña de administrador · todo cambio se puede deshacer"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "Diamond · Enter to ask (sent to {provider}, your own key)"
+msgstr "Diamond · Enter para preguntar (enviado a {provider}, con su clave)"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+msgid "Not agreed. Nothing was changed."
+msgstr "No aceptado. No se cambió nada."
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "The text of your requests to Diamond (questions, code, app descriptions; not files, not passwords) will be sent to {name}'s servers ({url}) under that provider's terms and privacy policy. Speech stays on the computer. Back to the local Diamond at any time: dai-models provider use local."
+msgstr "El texto de sus peticiones a Diamond (preguntas, código, descripciones de aplicaciones; no archivos ni contraseñas) se enviará a los servidores de {name} ({url}) según los términos y la política de privacidad de ese proveedor. La voz se queda en el equipo. Vuelva al Diamond local cuando quiera: dai-models provider use local."
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+msgid "Type \"yes\" to agree: "
+msgstr "Escriba \"yes\" para aceptar: "
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "active: {who}"
+msgstr "activo: {who}"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "known, not set up: {known} (dai-models provider add NAME)"
+msgstr "conocidos, sin configurar: {known} (dai-models provider add NAME)"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+msgid "no consent yet"
+msgstr "aún sin consentimiento"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+msgid "the key is empty or has spaces"
+msgstr "la clave está vacía o tiene espacios"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "unknown provider {name}"
+msgstr "proveedor desconocido {name}"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "unknown provider {name} (dai-models provider add {name})"
+msgstr "proveedor desconocido {name} (dai-models provider add {name})"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+msgid "✓ Everything runs on this computer again."
+msgstr "✓ Todo vuelve a ejecutarse en este equipo."
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "✓ key saved for {name} ({masked}), in your config only (0600)."
+msgstr "✓ clave guardada para {name} ({masked}), solo en su configuración (0600)."
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "✓ {name} and its key were removed."
+msgstr "✓ {name} y su clave se eliminaron."
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "✓ {name} answered: {reply}"
+msgstr "✓ {name} respondió: {reply}"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "✓ {name} answers for: {tasks}. Speech stays local. Back: dai-models provider use local"
+msgstr "✓ {name} responde para: {tasks}. La voz se queda local. Volver: dai-models provider use local"
+
+#: apps/dai-ai/dai_ai/providers_cli.py
+#, python-brace-format
+msgid "✓ {name}: {model} at {url}. Next: dai-models provider key {name}"
+msgstr "✓ {name}: {model} en {url}. Siguiente: dai-models provider key {name}"
