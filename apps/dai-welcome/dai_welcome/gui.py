@@ -40,11 +40,7 @@ STYLE = FORGE_STYLE.replace("QWidget#Forge", "QWidget#Welcome") + f"""
 QLabel#Dot {{ color: {color('dot')}; font-size: 12pt; }}  /* a step still to come: 3.8:1 (WCAG 1.4.11) */
 QLabel#DotOn {{ color: {ACCENT_2}; font-size: 12pt; }}
 QLabel#Hero {{ font-size: 24pt; font-weight: 700; }}
-QRadioButton {{ spacing: 10px; font-weight: 600; }}
-QRadioButton::indicator {{ width: 16px; height: 16px; border-radius: 10px; border: 2px solid {BORDER}; background: {BG_900}; }}
-QRadioButton::indicator:checked {{ border: 2px solid {ACCENT};
-    background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5, stop:0 {ACCENT}, stop:0.5 {ACCENT}, stop:0.56 {BG_900}); }}
-QRadioButton:focus, QCheckBox:focus {{ color: {ACCENT_2}; }}
+QRadioButton {{ font-weight: 600; }}
 QProgressBar {{ background: {BG_900}; border: 1px solid {BORDER}; border-radius: 6px; height: 12px; text-align: center; }}
 QProgressBar::chunk {{ border-radius: 5px; background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {ACCENT_2}); }}
 """

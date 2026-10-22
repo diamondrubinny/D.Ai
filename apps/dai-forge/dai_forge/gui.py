@@ -35,7 +35,7 @@ from dai_tune.context import Context, detect_lang
 from dai_tune.planner import Plan, build_plan
 
 from dai_i18n import pick, qt_direction
-from dai_style import color, rgba
+from dai_style import color, controls, rgba
 
 from . import __author__, __version__, apps
 from .ai import author_recipe, generate_app, partial_code
@@ -86,10 +86,6 @@ QToolButton#Mic {{ background: {SURFACE}; border: 1px solid {BORDER}; border-rad
 QToolButton#Mic:hover {{ border: 1px solid {ACCENT}; }}
 QToolButton#Mic:focus {{ border: 2px solid {ACCENT_2}; }}
 QToolButton#Mic[recording="true"] {{ background: #B4233A; border: 2px solid {DANGER}; }}
-QCheckBox {{ spacing: 8px; }}
-QCheckBox::indicator {{ width: 18px; height: 18px; border-radius: 5px; border: 1px solid {BORDER}; background: {BG_900}; }}
-QCheckBox::indicator:checked {{ background: {ACCENT}; border: 1px solid {ACCENT}; }}
-QCheckBox:focus {{ color: {ACCENT_2}; }}
 QScrollArea {{ background: transparent; border: none; }}
 QScrollBar:vertical {{ background: transparent; width: 10px; margin: 2px; }}
 QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 4px; min-height: 30px; }}
@@ -97,7 +93,7 @@ QScrollBar::handle:vertical:hover {{ background: {ACCENT}; }}
 QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::add-page, QScrollBar::sub-page {{ background: none; height: 0; }}
 QFrame#Actions {{ border-top: 1px solid {BORDER}; }}
 QScrollArea > QWidget > QWidget {{ background: transparent; }}
-"""
+""" + controls()
 
 STATUS_MARK = "\x00status:"  # progress text that is a Workshop stage, not streamed code
 

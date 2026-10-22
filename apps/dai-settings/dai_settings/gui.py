@@ -23,7 +23,7 @@ from PyQt6.QtWidgets import (
 )
 
 from dai_i18n import pick, qt_direction, text as i18n_text, ui_lang
-from dai_style import color, rgba, with_touch
+from dai_style import color, controls, rgba, with_touch
 from dai_style.panes import fit_width, touch_scrolling
 from dai_tune.catalog import CATALOG
 from dai_tune.cli import apply_plan, cmd_undo
@@ -65,17 +65,13 @@ QPushButton#Primary {{ color: #FFFFFF; font-weight: 700; border: none;
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT_STRONG}, stop:1 {PANEL}); }}
 QPushButton#Primary:hover {{ background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {ACCENT_2}); }}
 QPushButton#Primary:disabled {{ background: {SURFACE}; color: {DISABLED}; }}
-QCheckBox {{ spacing: 8px; }}
-QCheckBox::indicator {{ width: 20px; height: 20px; border-radius: 6px; border: 1px solid {BORDER}; background: {BG_900}; }}
-QCheckBox::indicator:checked {{ background: {BG_900}; border: 3px solid {ACCENT_2}; }}  /* the state is also in the text (on/off); Raz measures the text against this background */
-QCheckBox:focus {{ color: {ACCENT_2}; }}
 QScrollArea {{ background: transparent; border: none; }}
 QScrollArea > QWidget > QWidget {{ background: transparent; }}
 QScrollBar:vertical {{ background: transparent; width: 10px; margin: 2px; }}
 QScrollBar::handle:vertical {{ background: {BORDER}; border-radius: 4px; min-height: 30px; }}
 QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::add-page, QScrollBar::sub-page {{ background: none; height: 0; }}
 QFrame#Actions {{ border-top: 1px solid {BORDER}; }}
-"""
+""" + controls()
 
 STRINGS = {
     "title": ("D.Ai Settings", "הגדרות D.Ai"),

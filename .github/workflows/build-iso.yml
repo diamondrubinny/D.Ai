@@ -74,6 +74,9 @@ jobs:
       - name: Copyright notices, license, trademark policy and terms
         run: python3 -m unittest tests/legal/test_legal.py -v
 
+      - name: Texts (every en/he pair, the site's eight languages, the menu entries; docs/POLISH.md)
+        run: python3 -m unittest tests/text/test_text_qa.py -v
+
       - name: Website (Hebrew RTL, AA contrast, no trackers, links)
         run: python3 -m unittest tests/site/test_site.py -v
 

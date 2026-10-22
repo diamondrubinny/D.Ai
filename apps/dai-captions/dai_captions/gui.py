@@ -24,9 +24,9 @@ ACCENT, ACCENT_2, ACCENT_STRONG, DISABLED = color("accent"), color("accent_2"), 
 SURFACE, DANGER = color("surface"), color("danger")
 
 STYLE = f"""
-QWidget#Captions {{ background: {rgba('bg_900', 0.96)}; border: 1px solid {BORDER}; border-radius: 16px; }}
+QWidget#Captions {{ background: {rgba('bg_900', 0.96)}; border: 1px solid {BORDER}; border-top: 3px solid {ACCENT}; border-radius: 18px; }}
 QWidget {{ color: {TEXT}; font-size: 11pt; }}
-QLabel#Lines {{ font-size: 18pt; font-weight: 600; padding: 4px 8px; }}
+QLabel#Lines {{ font-size: 19pt; font-weight: 600; padding: 6px 10px; }}
 QLabel#Status {{ color: {MUTED}; font-size: 10pt; }}
 QFrame#ErrorBox {{ background: {rgba('danger', 0.14)}; border: 1px solid {DANGER}; border-radius: 10px; }}  /* the frame carries the border; Raz reads the label against the tint */
 QPushButton {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 10px; padding: 8px 16px; }}
@@ -82,6 +82,7 @@ class CaptionsWindow(QWidget):
         self.setWindowTitle(self.t("title"))
         self.setLayoutDirection(qt_direction(lang))
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)   # the bar's own tint, border and accent line
         self.setMinimumSize(520, 150)
         self.resize(900, 170)
         self.setStyleSheet(with_touch(STYLE))

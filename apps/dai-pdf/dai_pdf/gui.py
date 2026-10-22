@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFileD
                              QVBoxLayout, QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
-from dai_style import color
+from dai_style import color, controls
 from dai_style.panes import Panes, WrapRow, touch_scrolling
 
 from .edit import EditError, Editor, human_size, ocr_langs
@@ -79,13 +79,9 @@ QPushButton:disabled {{ background: {SURFACE}; color: {DISABLED}; border: 1px so
 QLineEdit:disabled, QComboBox:disabled {{ color: {DISABLED}; }}
 QPlainTextEdit {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 8px; font-size: 11pt; }}
 QPlainTextEdit:focus {{ border: 2px solid {ACCENT_2}; }}
-QCheckBox {{ color: {TEXT}; spacing: 8px; }}
-QCheckBox::indicator {{ width: 18px; height: 18px; border: 1px solid {BORDER}; border-radius: 4px; background: {SURFACE}; }}
-QCheckBox::indicator:checked {{ background: {ACCENT_STRONG}; border: 1px solid {ACCENT_STRONG}; }}
-QCheckBox:focus {{ color: {ACCENT_2}; }}
 #FormHint {{ color: {MUTED}; font-size: 10pt; }}
 #FormBody {{ background: {BG2}; }}
-"""
+""" + controls()
 
 
 def say(lang: str, en: str, he: str, **kwargs: object) -> str:

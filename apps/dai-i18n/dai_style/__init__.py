@@ -175,6 +175,33 @@ def touch(environ: dict[str, str] | None = None, home: Path | None = None, sys_i
     return touchscreen_present(sys_input) if sys_input is not None else touchscreen_present()
 
 
+def controls(theme: str | None = None) -> str:
+    """One look for check boxes and radio buttons in every D.Ai window (docs/POLISH.md §2).
+
+    A checked box is an accent tint with an accent border and a check mark (an image, so no text color is
+    involved): Raz reads the label's text against the tint in every theme. A chosen radio is an accent ring.
+    """
+    theme = theme or current()
+    dark = theme == "day"
+    mark = Path(__file__).parent / ("check-dark.png" if dark else "check-light.png")
+    dot = Path(__file__).parent / ("dot-dark.png" if dark else "dot-light.png")
+    accent, accent_2, border, bg = color("accent", theme), color("accent_2", theme), color("border", theme), color("bg_900", theme)
+    tint = rgba("accent", 0.28, theme)
+    return f"""
+QCheckBox {{ spacing: 10px; }}
+QCheckBox::indicator {{ width: 22px; height: 22px; border-radius: 6px; border: 1px solid {border}; background: {bg}; }}
+QCheckBox::indicator:hover {{ border: 1px solid {accent}; }}
+QCheckBox::indicator:checked {{ background: {tint}; border: 1px solid {accent}; image: url({mark.as_posix()}); }}
+QCheckBox::indicator:disabled {{ border: 1px solid {border}; background: {rgba("bg_800", 0.6, theme)}; }}
+QCheckBox:focus {{ color: {accent_2}; }}
+QRadioButton {{ spacing: 10px; }}
+QRadioButton::indicator {{ width: 22px; height: 22px; border-radius: 11px; border: 1px solid {border}; background: {bg}; }}
+QRadioButton::indicator:hover {{ border: 1px solid {accent}; }}
+QRadioButton::indicator:checked {{ background: {tint}; border: 1px solid {accent}; image: url({dot.as_posix()}); }}
+QRadioButton:focus {{ color: {accent_2}; }}
+"""
+
+
 def with_touch(sheet: str, on: bool | None = None) -> str:
     """A stylesheet with the touch rules appended when touch is on (default: touch())."""
     return sheet + TOUCH_SHEET if (touch() if on is None else on) else sheet
