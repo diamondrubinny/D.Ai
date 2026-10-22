@@ -396,18 +396,18 @@ def main() -> int:
          lambda o: "rc=1" in o),
         ("tune: open port (confirmed)", "echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'open port 8080' && sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["2"]),
+        ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
+         lambda o: o.strip().splitlines()[-1:] == ["0"]),
         # "firefox does not go online" (docs/BEYOND.md §12): the launcher override, and a connection that fails inside
         # the sandbox while the same command works outside it (no root involved).
         ("offline app: the launcher and the sandbox", "dai-tune --yes 'firefox does not go online' >/dev/null; echo RC=$?; "
          "grep -c '^Exec=dai-offline-run firefox -- ' ~/.local/share/applications/firefox-esr.desktop; "
          "dai-offline-run firefox -- sh -c 'echo LINKS_INSIDE=$(grep -c : /proc/net/dev); curl -s -m 5 -o /dev/null http://10.0.2.2:80/; "
          "echo INSIDE_RC=$?; test -e /dev/dri && echo GPU_SEEN; id -u'; echo LINKS_OUTSIDE=$(grep -c : /proc/net/dev); "
-         "dai-tune --yes 'firefox goes online again' >/dev/null; echo RC2=$?; "
+         "echo yes | dai-tune 'firefox goes online again' >/dev/null; echo RC2=$?; "
          "test -e ~/.local/share/applications/firefox-esr.desktop || echo OVERRIDE_GONE", True,
          lambda o: "RC=0" in o and "RC2=0" in o and "INSIDE_RC=7" in o and "OVERRIDE_GONE" in o and "LINKS_INSIDE=1" in o
          and re.search(r"LINKS_OUTSIDE=[2-9]", o) is not None and re.search(r"^1000\s*$", o, re.M) is not None, 60),
-        ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
-         lambda o: o.strip().splitlines()[-1:] == ["0"]),
         ("tune: injection refused", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'install vlc; rm -rf /tmp/x'; echo rc=$?", True,
          lambda o: "rc=2" in o),
         ("tune: security score", "dai-tune status", True, lambda o: "Security score" in o),
@@ -487,10 +487,10 @@ def main() -> int:
          lambda o: "kdeconnect" in o and o.count("1714-1764") >= 3 and "udp" in o and "tcp" in o),
         # Memory saver (docs/BEYOND.md §14): sysctl applied now, zram for the next boot, the mark, and off again.
         ("memory saver: sysctl, zram and the mark", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver on' >/dev/null; echo RC=$?; "
-         "sysctl -n vm.swappiness; test -f /etc/dai/memory-saver && echo MARK; "
+         "/usr/sbin/sysctl -n vm.swappiness; test -f /etc/dai/memory-saver && echo MARK; "
          "grep -c 'min(ram, 8192)' /etc/systemd/zram-generator.conf.d/dai-memory-saver.conf; "
          "python3 -c 'import json; print(\"SMALL\", json.load(open(\"/home/dai/.config/dai/ai.json\")).get(\"prefer_small\"))'; "
-         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver off' >/dev/null; echo RC2=$?; sysctl -n vm.swappiness; "
+         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver off' >/dev/null; echo RC2=$?; /usr/sbin/sysctl -n vm.swappiness; "
          "test -e /etc/dai/memory-saver || echo MARK_GONE", True,
          lambda o: "RC=0" in o and "RC2=0" in o and "\n180" in o and "MARK" in o and "SMALL True" in o and "MARK_GONE" in o
          and o.strip().splitlines()[-2] != "180", 60),
@@ -736,11 +736,13 @@ def main() -> int:
          "systemctl --user list-timers --all --no-legend | grep -c dai-focus-end | sed 's/^/TIMER_AFTER=/'; "
          "pgrep -x wlsunset >/dev/null && echo STILL_WARM || echo COOL; dai-focus status; "
          # Game mode (docs/BEYOND.md §8): the performance profile while it is on, the old one back after.
-         "dai-focus game; echo GAME_RC=$?; powerprofilesctl get | sed 's/^/PROFILE=/'; dai-focus status --json; "
+         "dai-focus game; echo GAME_RC=$?; powerprofilesctl list | grep -c '^..performance:' | sed 's/^/HAS_PERF=/'; "
+         "powerprofilesctl get | sed 's/^/PROFILE=/'; dai-focus status --json; "
          "dai-focus game stop; echo GAME_STOP_RC=$?; powerprofilesctl get | sed 's/^/PROFILE_AFTER=/'", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "START_RC=0" in o and "DND=1" in o and "TIMER=1" in o
          and '"active": true' in o and "STOP_RC=0" in o and "DND_AFTER=1" in o and "TIMER_AFTER=0" in o
-         and "COOL" in o and "No focus session" in o and "GAME_RC=0" in o and "PROFILE=performance" in o
+         and "COOL" in o and "No focus session" in o and "GAME_RC=0" in o
+         and ("PROFILE=performance" in o if "HAS_PERF=1" in o else "PROFILE=balanced" in o)  # QEMU offers no performance profile
          and '"kind": "game"' in o and "GAME_STOP_RC=0" in o and "PROFILE_AFTER=balanced" in o, 90),
         # Ruby (docs/BROWSER.md stage 1): Firefox ESR reads D.Ai's policies (root-owned), the menu shows one
         # browser named Ruby, the Hebrew interface is installed, and a headless start installs uBlock Origin and
