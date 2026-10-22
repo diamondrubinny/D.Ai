@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFormL
                              QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from dai_i18n import embed, qt_direction, ui_lang
-from dai_style import themed
+from dai_style import controls, themed
 from dai_style.panes import Panes, touch_scrolling
 
 from . import __author__, __version__, accounts as acc, compose, discover, engine, localmail, mail, sanitize
@@ -57,7 +57,7 @@ QLabel#Big { font-size: 16pt; font-weight: 700; }
 QGroupBox { border: 1px solid #2A3563; border-radius: 10px; margin-top: 14px; padding: 10px; }
 QGroupBox::title { subcontrol-origin: margin; padding: 0 6px; color: #B8A6FF; }
 QSplitter::handle { background: #141B33; }
-""")
+""") + controls()
 
 
 # Background work

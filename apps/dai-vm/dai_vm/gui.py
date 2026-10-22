@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog, QFileD
                              QWidget)
 
 from dai_i18n import pick, qt_direction, ui_lang
-from dai_style import color
+from dai_style import color, controls
 from dai_style.panes import Panes, WrapRow, touch_scrolling
 
 from . import control, drivers, hardware, iso, machine, usb
@@ -35,6 +35,7 @@ ACCENT, ACCENT_STRONG, ACCENT_2, WARN, OK, DANGER = (color(r) for r in ("accent"
                                                                         "ok", "danger"))
 DISABLED = color("disabled")
 STYLE = f"""
+QCheckBox {{ color: {TEXT}; }}
 QWidget#Window, QDialog {{ background: {BG}; color: {TEXT}; }}
 QLabel {{ color: {TEXT}; }}
 #AppTitle {{ font-size: 12pt; font-weight: 700; color: {MUTED}; }}
@@ -53,8 +54,6 @@ QLineEdit, QComboBox, QSpinBox {{ background: {SURFACE}; color: {TEXT}; border: 
     padding: 5px 10px; font-size: 11pt; selection-background-color: {ACCENT_STRONG}; }}
 QLineEdit:focus, QComboBox:focus, QSpinBox:focus {{ border: 2px solid {ACCENT_2}; }}
 QComboBox QAbstractItemView {{ background: {SURFACE}; color: {TEXT}; selection-background-color: {ACCENT_STRONG}; }}
-QCheckBox {{ color: {TEXT}; }}
-QCheckBox:focus {{ border: 1px solid {ACCENT_2}; border-radius: 4px; }}
 QPushButton {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 8px; padding: 6px 12px; }}
 QPushButton:hover {{ border: 1px solid {ACCENT}; }}
 QPushButton:focus {{ border: 2px solid {ACCENT_2}; }}
@@ -62,7 +61,7 @@ QPushButton#Primary {{ background: {ACCENT_STRONG}; color: #FFFFFF; border: 1px 
 QPushButton#Primary:focus {{ border: 2px solid {ACCENT_2}; }}
 QPushButton:disabled {{ background: {SURFACE}; color: {DISABLED}; border: 1px solid {BORDER}; }}
 QLineEdit:disabled, QComboBox:disabled, QSpinBox:disabled {{ color: {DISABLED}; }}
-"""
+""" + controls()
 
 
 def say(lang: str, en: str, he: str, **kwargs: object) -> str:
