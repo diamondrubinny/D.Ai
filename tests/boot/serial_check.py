@@ -634,6 +634,15 @@ def main() -> int:
          "test -f ~/Desktop/dai-install.desktop && echo ON_DESKTOP", True,
          lambda o: "/calamares" in o and "branding: dai" in o and "username: dai" in o
          and "show.qml" in o and "ON_DESKTOP" in o),
+        # The language chosen in the installer reaches the installed system (docs/I18N.md §9): Calamares' locale
+        # and keyboard pages run, localecfg writes /etc/default/locale and keyboardq /etc/default/keyboard,
+        # and the login stack reads /etc/default/locale through pam_env, which is where ui_lang() looks (LANG).
+        ("installer: the language reaches the installed system", "for m in locale keyboard localecfg keyboardq; do "
+         "grep -qE \"^\\s*-\\s*$m\\b\" /etc/calamares/settings.conf && echo SEQ_$m; done; "
+         "ls /usr/lib/*/calamares/modules/ | grep -cE '^(localecfg|keyboardq)$' | sed 's/^/MODULES=/'; "
+         "grep -rl 'default/locale' /etc/pam.d/ | wc -l | sed 's/^/PAM_ENV=/'; grep -c he_IL /usr/share/i18n/SUPPORTED | sed 's/^/HE=/'", True,
+         lambda o: "SEQ_locale" in o and "SEQ_keyboard" in o and "SEQ_localecfg" in o and "SEQ_keyboardq" in o
+         and "MODULES=2" in o and re.search(r"PAM_ENV=[1-9]", o) is not None and re.search(r"HE=[1-9]", o) is not None),
         # Encryption: cryptsetup in the image and Calamares' automatic LUKS partitioning (on unless a
         # config turns it off; Calamares' default is true).
         ("installer: LUKS available", "test -x /usr/sbin/cryptsetup && echo CRYPTSETUP_OK; "

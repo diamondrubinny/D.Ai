@@ -23,10 +23,13 @@ export XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME XDG_CONFIG_DIRS XDG_DATA_DIR
 
 # The language D.Ai speaks to this person (D.Ai Tune "language russian", docs/I18N.md §9). Only LANG and
 # LANGUAGE are read, and only values that look like the ones Tune writes; anything else is ignored.
+# Without a choice of their own, the computer's language counts: /etc/default/locale, which the installer
+# writes from its language page (docs/I18N.md §9) and which pam_env may or may not have exported already.
 language_env="$XDG_CONFIG_HOME/dai/language.env"
+[ -r "$language_env" ] || case "${LANG:-}" in ""|C|C.UTF-8|C.utf8|POSIX) language_env=/etc/default/locale ;; esac
 if [ -r "$language_env" ]; then
-	wanted_lang=$(sed -n 's/^LANG=\([a-z][a-z]_[A-Z][A-Z]\.UTF-8\)$/\1/p' "$language_env" | tail -n 1)
-	wanted_language=$(sed -n 's/^LANGUAGE=\([a-z][a-z]:en\)$/\1/p' "$language_env" | tail -n 1)
+	wanted_lang=$(sed -n 's/^LANG=["]*\([a-z][a-z]_[A-Z][A-Z]\.UTF-8\)["]*$/\1/p' "$language_env" | tail -n 1)
+	wanted_language=$(sed -n 's/^LANGUAGE=["]*\([a-z][a-z]:en\)["]*$/\1/p' "$language_env" | tail -n 1)
 	if [ -n "$wanted_lang" ] && locale -a 2>/dev/null | grep -qix "$(printf '%s' "$wanted_lang" | sed 's/UTF-8$/utf8/')"; then
 		export LANG="$wanted_lang" LC_MESSAGES="$wanted_lang"
 		[ -n "$wanted_language" ] && export LANGUAGE="$wanted_language"
