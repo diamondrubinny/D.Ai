@@ -533,11 +533,11 @@ def main() -> int:
          "dai-way check /tmp/when-bad.dway; echo BAD_RC=$?; dai-way apply /tmp/when.dway --yes; echo APPLY_RC=$?; "
          "dai-way when; NAME=$(dai-way when | awk '{print $1}' | head -n 1); echo NAME=$NAME; "
          "systemctl --user is-enabled dai-way-$NAME.timer | sed 's/^/TIMER=/'; systemctl --user list-timers --all | grep -c dai-way | sed 's/^/LISTED=/'; "
-         "if dai-way run-when $NAME; then echo RUN_RC=0; dai-tune history | head -n 1; dai-tune undo >/dev/null; echo UNDO_RUN_RC=$?; fi; "
+         "if dai-way run-when $NAME; then echo RUN_RC=0; dai-tune history | grep -c 'Way when:' | sed 's/^/JOURNALED=/'; dai-tune undo >/dev/null; echo UNDO_RUN_RC=$?; fi; "
          "dai-way export | grep -c 'dark theme' | sed 's/^/EXPORTED=/'; dai-way when remove $NAME --yes >/dev/null; echo REMOVE_RC=$?; "
          "systemctl --user is-enabled dai-way-$NAME.timer 2>&1 | sed 's/^/AFTER=/'; dai-way when", True,
          lambda o: "BAD_RC=2" in o and "administrator" in o and "APPLY_RC=0" in o and "TIMER=enabled" in o and "LISTED=1" in o
-         and "RUN_RC=0" in o and "Way when:" in o and "UNDO_RUN_RC=0" in o and "EXPORTED=1" in o and "REMOVE_RC=0" in o
+         and "RUN_RC=0" in o and "JOURNALED=1" in o and "UNDO_RUN_RC=0" in o and "EXPORTED=1" in o and "REMOVE_RC=0" in o
          and "AFTER=enabled" not in o and "No timers" in o, 120),
         # D.Ai Captions (docs/BEYOND.md §13): whisper's test file through the chunk pipeline, with the real model.
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
