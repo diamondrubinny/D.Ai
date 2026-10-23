@@ -809,6 +809,23 @@ class PolicyTests(TuneTestCase):
         executor.undo_entry(journal.entries()[0], self.ctx, journal)  # undo works like any change
         self.assertFalse((self.root / "etc/modprobe.d/dai-tune-usb_storage.conf").exists())
 
+    def test_a_dway_file_is_a_policy_too(self):
+        """docs/WAY.md: a .dway in policy.d is read through Diamond's Way; user-scope lines are refused."""
+        from dai_tune import policy
+        self.write("15-school.dway", "diamond: School way\nsetup:\n  block usb storage\n  lock the screen after 5 minutes\n")
+        self.write("16-user.dway", "when:\n  every day at 20:00: dark theme\n")
+        self.write("17-files.dway", "files:\n  Documents/x.txt: hi\n")
+        (self.root / "etc/dai/policy.d/shared.dway").write_text("setup:\n  turn off bluetooth\n")
+        self.write("18-use.dway", "setup:\n  block usb storage\nuse: shared.dway\n")
+        rows = {row["file"]: row for row in policy.status(self.ctx)}
+        self.assertEqual(rows["15-school.dway"]["state"], "pending")
+        self.assertEqual(rows["15-school.dway"]["name"], "School way")
+        self.assertEqual(rows["15-school.dway"]["steps"], ["device.block", "session.lock_max"])
+        self.assertEqual(rows["16-user.dway"]["state"], "rejected")
+        self.assertIn("only system settings", rows["16-user.dway"]["problems"][0])
+        self.assertEqual(rows["17-files.dway"]["state"], "rejected")
+        self.assertIn("use: is not allowed", rows["18-use.dway"]["problems"][0])
+
     def test_untrusted_or_invalid_policies_are_rejected(self):
         from dai_tune import policy
         self.write("20-writable.json", {"format": 1, "apply": ["block usb storage"]}, mode=0o666)

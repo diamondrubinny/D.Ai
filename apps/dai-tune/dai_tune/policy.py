@@ -8,6 +8,10 @@ folder changes, the root helper applies each policy whose plan changed:
 
   {"format": 1, "name": "School computers", "apply": ["block usb storage", "turn off bluetooth"]}
 
+or, since Diamond's Way (docs/WAY.md), a .dway file with the same meaning: setup: sentences, apps:
+recipes, exact: lines. A policy .dway may not include other files (use:) and, like the JSON form,
+only system-scope steps are allowed, so when: timers and files: are refused.
+
 "Lock the screen after N minutes" becomes a limit for every user's session
 (/etc/dai/policy-session.env): users may choose a shorter time, not a longer
 one, and not "never". Other per-user settings are rejected.
@@ -67,29 +71,35 @@ def load(ctx: Context) -> list[Policy]:
     if not directory.is_dir():
         return []
     policies = []
-    for path in sorted(directory.glob("*.json")):
+    for path in sorted(list(directory.glob("*.json")) + list(directory.glob("*.dway"))):
         policy = Policy(path)
         policies.append(policy)
         reason = _trusted(path, ctx)
         if reason:
             policy.problems.append(f"ignored: the file {reason}")
             continue
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            policy.problems.append(f"not valid JSON: {exc}")
-            continue
-        sentences = data.get("apply") if isinstance(data, dict) else None
-        if not isinstance(data, dict) or data.get("format") != 1 or not isinstance(sentences, list) \
-                or not 1 <= len(sentences) <= MAX_SENTENCES \
-                or not all(isinstance(s, str) and 0 < len(s) <= 200 for s in sentences):
-            policy.problems.append('expected {"format": 1, "name": "...", "apply": ["sentence", ...]}')
-            continue
-        policy.name = str(data.get("name", path.stem))[:80]
+        if path.suffix == ".dway":
+            requests, unknown = _way_requests(path, policy, ctx)
+            if policy.problems:
+                continue
+        else:
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                policy.problems.append(f"not valid JSON: {exc}")
+                continue
+            sentences = data.get("apply") if isinstance(data, dict) else None
+            if not isinstance(data, dict) or data.get("format") != 1 or not isinstance(sentences, list) \
+                    or not 1 <= len(sentences) <= MAX_SENTENCES \
+                    or not all(isinstance(s, str) and 0 < len(s) <= 200 for s in sentences):
+                policy.problems.append('expected {"format": 1, "name": "...", "apply": ["sentence", ...]}')
+                continue
+            policy.name = str(data.get("name", path.stem))[:80]
+            parsed = parse(", ".join(sentences))
+            requests, unknown = parsed.requests, parsed.unknown
         # Mapped before validation: the user-level check would compare against the policy being replaced.
-        parsed = parse(", ".join(sentences))
-        requests = [Request(FOR_EVERY_USER.get(r.action, r.action), r.params, r.source) for r in parsed.requests]
-        plan = build_plan(requests, ctx, parsed.unknown)
+        requests = [Request(FOR_EVERY_USER.get(r.action, r.action), r.params, r.source) for r in requests]
+        plan = build_plan(requests, ctx, unknown)
         if not plan.ok:
             policy.problems += plan.errors + [f"not understood: {u}" for u in plan.unknown]
             continue
@@ -103,6 +113,30 @@ def load(ctx: Context) -> list[Policy]:
             continue
         policy.plan = plan
     return policies
+
+
+def _way_requests(path: Path, policy: Policy, ctx: Context) -> tuple[list[Request], list[str]]:
+    """A .dway policy (docs/WAY.md): its requests, through Diamond's Way; problems go on the policy."""
+    try:
+        from dai_way.language import WayError, parse as parse_way
+        from dai_way.planner import compile_program
+    except ImportError:
+        policy.problems.append("a .dway policy needs dai-way installed")
+        return [], []
+    try:
+        program = parse_way(path)
+    except WayError as exc:
+        policy.problems.append(str(exc))
+        return [], []
+    if len(program.files) > 1:
+        policy.problems.append("use: is not allowed in a policy; one file says it all")
+        return [], []
+    policy.name = (program.name or path.stem)[:80]
+    compiled = compile_program(program, ctx, folder=path.parent)
+    if compiled.problems:
+        policy.problems += compiled.problems
+        return [], []
+    return compiled.requests, []
 
 
 def _for_every_user(steps: list[Step], ctx: Context) -> tuple[list[Step], list[str]]:

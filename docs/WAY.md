@@ -64,6 +64,14 @@ use: shared/office.dway                    ← another file, from the same folde
 - הכול הופך ל**תוכנית אחת** של D.Ai Tune: כל הצעדים, היקף (משתמש/מערכת), סיכון, מה מחליש. אין הרצה חלקית:
   משפט אחד שלא מובן, והקובץ נדחה לפני שמשהו קורה (`dai-way check`).
 
+### 2.1 מדיניות ארגונית (שלב 4)
+
+קובץ `.dway` ב־`/etc/dai/policy.d/` (docs/EDU.md §2) הוא מדיניות: `dai-policy` קורא אותו דרך דרך היהלום, עם אותם
+כללי אמון (root, לא ניתן לכתיבה, לא symlink, עד 64 KB) ואותו יומן. מותר: `setup:`, `apps:`, `exact:` בהיקף מערכת,
+ו"lock the screen after N minutes" שהופך למגבלה לכל המשתמשים. נדחה עם הסבר ב־`dai-tune policy`: ‏`use:`, שורות
+`when:` ו־`files:` (היקף משתמש), וכל משפט מערכת שלא מובן. כך בית ספר כותב קובץ אחד שמתאר את המחשב, ואותו קובץ
+משמש גם ל־`dai-way apply` על מחשב בודד וגם כמדיניות לצי שלם.
+
 ## 3. הפקודות
 
 | פקודה | מה |
@@ -100,9 +108,10 @@ Evolve, שנכתבות על ידי Diamond ואינן דטרמיניסטיות: 
 היחידות, run-when מחיל ומתעד, when_off); `files:` (תיקייה, קובץ עם טקסט, `<` מקובץ שכן, כל גבול נתיב נדחה, קיים
 עם תוכן אחר נדחה, undo מוחק); export → check חוזר (גם שורות `when:`); CLI. ‏VM: `way: a computer in one file`
 (דוגמה מובנית נבדקת, מוחלת בהיקף משתמש, מבוטלת; export נבדק); `way: when, a timer runs a sentence` (קובץ עם
-`when:`, הטיימר מופיע ב־systemctl --user, run-when מחיל, undo של ההרצה ושל הטיימר, משפט מערכת נדחה); `way: files
+`when:`, הטיימר מופיע ב־systemctl --user, run-when מחיל, undo של ההרצה ושל הטיימר, משפט מערכת נדחה); מדיניות
+`.dway` בתוך `policy: applied on drop`; `way: files
 in the home` (תיקייה וקובץ נוצרים, `..` ו־`.config` נדחים, undo מוחק).
 
 ## 7. מצב
 
-✅ שלב 1 (השפה, תוכנית אחת, export) ושלב 2 (`when:` טיימרים בהיקף משתמש) נבנו ואומתו ב־CI: ריצה 39911193558, 132 בדיקות VM עוברות כולל `way: a computer in one file` ו־`way: when, a timer runs a sentence`. שלב 3 (`files:`) אומת בריצה 40024357898 (133 בדיקות VM, 0 נכשלות); הבא: מדיניות ארגונית.
+✅ שלב 1 (השפה, תוכנית אחת, export) ושלב 2 (`when:` טיימרים בהיקף משתמש) נבנו ואומתו ב־CI: ריצה 39911193558, 132 בדיקות VM עוברות כולל `way: a computer in one file` ו־`way: when, a timer runs a sentence`. שלב 3 (`files:`) אומת בריצה 40024357898 (133 בדיקות VM, 0 נכשלות); שלב 4 (`.dway` כמדיניות ב־policy.d) נבנה.

@@ -595,9 +595,13 @@ def main() -> int:
          "sleep 8; dai-tune policy; test -f /etc/modprobe.d/dai-tune-usb_storage.conf && echo POLICY_APPLIED; "
          "cat /etc/dai/policy-session.env; cat /etc/dai/policy-ai.env; dai-tune --dry-run 'never lock the screen' </dev/null; "
          "dai-tune --dry-run 'answer with anthropic' </dev/null; echo PROVIDER_RC=$?; "
-         "sudo rm -f /etc/dai/policy.d/90-ci.json /etc/modprobe.d/dai-tune-usb_storage.conf /etc/dai/policy-session.env /etc/dai/policy-ai.env", True,
+         "printf 'diamond: CI way\nsetup:\n  block the camera\n' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/91-ci.dway; sleep 8; "
+         "dai-tune policy | grep -c 'CI way' | sed 's/^/WAY_POLICY=/'; test -f /etc/modprobe.d/dai-tune-uvcvideo.conf && echo WAY_POLICY_APPLIED; "
+         "sudo rm -f /etc/dai/policy.d/90-ci.json /etc/dai/policy.d/91-ci.dway /etc/modprobe.d/dai-tune-usb_storage.conf "
+         "/etc/modprobe.d/dai-tune-uvcvideo.conf /etc/dai/policy-session.env /etc/dai/policy-ai.env", True,
          lambda o: "POLICY_APPLIED" in o and "applied" in o and "DAI_LOCK_MAX_SECONDS=300" in o
-         and "at most 5 minutes" in o and "DAI_AI_PROVIDERS=forbidden" in o and "PROVIDER_RC=2" in o and "policy" in o, 120),
+         and "at most 5 minutes" in o and "DAI_AI_PROVIDERS=forbidden" in o and "PROVIDER_RC=2" in o and "policy" in o
+         and "WAY_POLICY=1" in o and "WAY_POLICY_APPLIED" in o, 150),
         ("office and edition", ". /etc/dai-release; echo EDITION=$EDITION; command -v libreoffice >/dev/null && echo OFFICE; "
          "if [ \"$EDITION\" = edu ]; then for app in gcompris-qt tuxpaint stellarium; do command -v $app >/dev/null && echo EDU_$app; done; fi",
          True, lambda o: "OFFICE" in o and ("EDITION=edu" not in o or o.count("EDU_") >= 2)),
