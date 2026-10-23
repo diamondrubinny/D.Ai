@@ -8,6 +8,8 @@
   dai-way undo                   undo the last change
   dai-way export [FILE.dway]     this computer as a file (to the screen without FILE)
   dai-way examples               the built-in examples
+  dai-way when                   the timers from when: lines (dai-way when remove NAME removes one)
+  dai-way run-when NAME          what a timer runs: the stored sentence, applied as you, without questions
   dai-way --version
 
 Sentences are D.Ai Tune's, apps are D.Ai Forge's recipes or Flathub ids, exact lines are the catalog's own
@@ -21,8 +23,11 @@ import sys
 from pathlib import Path
 
 from dai_i18n import pick, ui_lang
-from dai_tune.cli import cmd_undo, execute_plan
+from dai_tune.catalog import ValidationError, way_schedule, way_sentence_requests, way_timers
+from dai_tune.cli import apply_plan, cmd_undo, execute_plan
 from dai_tune.context import Context
+from dai_tune.parser import Request
+from dai_tune.planner import build_plan
 
 from . import __author__, __version__
 from .language import WayError, parse
@@ -74,6 +79,10 @@ def main(argv: list[str] | None = None, ctx: Context | None = None) -> int:
         return 0
     if command == "undo":
         return cmd_undo(rest[0] if rest else "last", ctx)
+    if command == "when":
+        return cmd_when(rest, ctx)
+    if command == "run-when" and rest:
+        return cmd_run_when(rest[0], ctx)
     if command == "export":
         from .export import export_text
         text = export_text(ctx, lang, hostname=socket.gethostname() or "this computer")
@@ -97,3 +106,53 @@ def main(argv: list[str] | None = None, ctx: Context | None = None) -> int:
                             heading=heading, label=f"Way: {program.name or Path(rest[0]).name}")
     print(__doc__.strip(), file=sys.stderr)
     return 2
+
+
+def cmd_when(rest: list[str], ctx: Context) -> int:
+    lang = ctx.lang
+    timers = way_timers(ctx)
+    assume_yes = "--yes" in rest
+    rest = [arg for arg in rest if arg != "--yes"]
+    if rest[:1] == ["remove"] and len(rest) == 2:
+        plan = build_plan([Request("way.when_off", {"name": rest[1]}, f"dai-way when remove {rest[1]}")], ctx)
+        return execute_plan(plan, ctx, assume_yes=assume_yes, heading=_say(lang, "Diamond's Way", "דרך היהלום"),
+                            label=f"Way when off: {rest[1]}")
+    if rest:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    if not timers:
+        print(_say(lang, "No timers. A when: line in a .dway file makes one.", "אין טיימרים. שורת when: בקובץ .dway יוצרת אחד."))
+        return 0
+    for name, data in timers:
+        try:
+            when = way_schedule(data.get("schedule")).describe(lang)
+        except ValidationError:
+            when = "?"
+        print(f"{name:40} {when}: {data.get('sentence', '')}")
+    return 0
+
+
+def cmd_run_when(name: str, ctx: Context) -> int:
+    """The timer's run: the stored sentence through the same catalog and journal, user scope only, no prompts."""
+    lang = ctx.lang
+    stored = dict(way_timers(ctx)).get(name)
+    if stored is None:
+        print(_say(lang, "✗ no timer called {name}", "✗ אין טיימר בשם {name}", name=name), file=sys.stderr)
+        return 2
+    sentence = str(stored.get("sentence", ""))
+    try:
+        requests = way_sentence_requests(sentence)
+    except ValidationError as exc:
+        print(f"✗ {name}: {exc}", file=sys.stderr)
+        return 2
+    plan = build_plan([Request(r.action, r.params, f"{name}: {sentence}") for r in requests], ctx)
+    if not plan.ok or any(step.scope != "user" for step in plan.steps):
+        print(_say(lang, "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed.",
+                   "✗ {name}: המשפט כבר לא יוצר תוכנית בהיקף משתמש; לא בוצע שום שינוי.", name=name), file=sys.stderr)
+        return 2
+    result = apply_plan(plan, ctx, f"Way when: {name}")
+    if not result.ok:
+        print(f"✗ {name}: {result.error}", file=sys.stderr)
+        return 1
+    print(_say(lang, "✓ {name}: {sentence}", "✓ {name}: {sentence}", name=name, sentence=sentence))
+    return 0

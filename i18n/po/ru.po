@@ -6865,3 +6865,43 @@ msgstr "Вопросы и код Diamond уходят к {name} с вашим к
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Speech stays on the computer. The consent was given at dai-models provider use."
 msgstr "Речь остаётся на компьютере. Согласие было дано в dai-models provider use."
+
+#: apps/dai-way/dai_way/cli.py
+msgid "Diamond's Way"
+msgstr "Путь Алмаза"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "No timers. A when: line in a .dway file makes one."
+msgstr "Таймеров нет. Строка when: в файле .dway создаёт его."
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "Remove the timer {name} (Diamond's Way)"
+msgstr "Удалить таймер {name} (Путь Алмаза)"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
+msgstr "Выполняется от вашего имени без вопросов; фраза разбирается заново при каждом запуске. Отменить один запуск: dai-tune undo"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "at login"
+msgstr "при входе"
+
+#: apps/dai-way/dai_way/cli.py
+msgid "when:"
+msgstr "when:"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "{when}: {sentence} (a timer, Diamond's Way)"
+msgstr "{when}: {sentence} (таймер, Путь Алмаза)"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✗ no timer called {name}"
+msgstr "✗ нет таймера с именем {name}"
+
+#: apps/dai-way/dai_way/cli.py
+#, python-brace-format
+msgid "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed."
+msgstr "✗ {name}: фраза больше не даёт план в пределах пользователя; ничего не изменено."

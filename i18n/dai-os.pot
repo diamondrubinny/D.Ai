@@ -1755,14 +1755,19 @@ msgstr ""
 msgid "Diamond · Enter to ask (sent to {provider}, your own key)"
 msgstr ""
 
+#. he: דרך היהלום
+#: apps/dai-way/dai_way/cli.py:118
+msgid "Diamond's Way"
+msgstr ""
+
 #. he: דרך היהלום — {name}
-#: apps/dai-way/dai_way/cli.py:90
+#: apps/dai-way/dai_way/cli.py:99
 #, python-brace-format
 msgid "Diamond's Way — {name}"
 msgstr ""
 
 #. he: דרך היהלום: 
-#: apps/dai-way/dai_way/export.py:64
+#: apps/dai-way/dai_way/export.py:65
 msgid "Diamond's Way: "
 msgstr ""
 
@@ -3376,7 +3381,7 @@ msgid "No edits yet."
 msgstr ""
 
 #. he: אין דוגמאות ב־{dir}.
-#: apps/dai-way/dai_way/cli.py:69
+#: apps/dai-way/dai_way/cli.py:74
 #, python-brace-format
 msgid "No examples in {dir}."
 msgstr ""
@@ -3549,6 +3554,11 @@ msgstr ""
 #. he: אין טיימר כאן: לסיים עם dai-focus stop.
 #: apps/dai-focus/dai_focus/cli.py:168
 msgid "No timer here: end it with dai-focus stop."
+msgstr ""
+
+#. he: אין טיימרים. שורת when: בקובץ .dway יוצרת אחד.
+#: apps/dai-way/dai_way/cli.py:124
+msgid "No timers. A when: line in a .dway file makes one."
 msgstr ""
 
 #. he: אין שינויים שלא נשמרו לסקירה.
@@ -4453,6 +4463,12 @@ msgstr ""
 msgid "Remove the metadata (author, program, dates) before sharing"
 msgstr ""
 
+#. he: הסרת הטיימר {name} (דרך היהלום)
+#: apps/dai-tune/dai_tune/catalog.py:2276
+#, python-brace-format
+msgid "Remove the timer {name} (Diamond's Way)"
+msgstr ""
+
 #. he: הסרת הסימון הזה
 #: apps/dai-pdf/dai_pdf/gui.py:711
 msgid "Remove this mark"
@@ -4593,6 +4609,11 @@ msgstr ""
 #. he: הפעלה ▶
 #: apps/dai-forge/dai_forge/gui.py:130
 msgid "Run ▶"
+msgstr ""
+
+#. he: רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo
+#: apps/dai-tune/dai_tune/catalog.py:2265
+msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
 msgstr ""
 
 #. he: רץ במחשב הזה · שינויי מערכת דורשים סיסמת מנהל · אפשר לבטל כל שינוי
@@ -6669,7 +6690,7 @@ msgid "Written by Diamond — review every step"
 msgstr ""
 
 #. he: נכתב על ידי dai-way export. בלי סיסמאות, בלי Wi-Fi, בלי מפתחות.
-#: apps/dai-way/dai_way/export.py:65
+#: apps/dai-way/dai_way/export.py:66
 msgid "Written by dai-way export. No passwords, no Wi-Fi, no keys."
 msgstr ""
 
@@ -6885,8 +6906,13 @@ msgid "and {n} more in D.Ai Command (Super+Space)"
 msgstr ""
 
 #. he: אפליקציות:
-#: apps/dai-way/dai_way/export.py:69
+#: apps/dai-way/dai_way/export.py:70
 msgid "apps:"
+msgstr ""
+
+#. he: בכל כניסה
+#: apps/dai-way/dai_way/export.py:97
+msgid "at login"
 msgstr ""
 
 #. he: אוטומטי: פועל כשמחובר מסך מגע
@@ -7031,7 +7057,7 @@ msgid "every {every} minutes"
 msgstr ""
 
 #. he: מדויק:
-#: apps/dai-way/dai_way/export.py:73
+#: apps/dai-way/dai_way/export.py:74
 msgid "exact:"
 msgstr ""
 
@@ -7254,7 +7280,7 @@ msgid "no iio-sensor-proxy (no accelerometer follows)"
 msgstr ""
 
 #. he: אין מתכונים מותקנים
-#: apps/dai-way/dai_way/export.py:72
+#: apps/dai-way/dai_way/export.py:73
 msgid "no recipes installed"
 msgstr ""
 
@@ -7634,6 +7660,11 @@ msgstr ""
 #. he: מה שונה
 #: apps/dai-tune/dai_tune/cli.py:321
 msgid "what was changed"
+msgstr ""
+
+#. he: כאשר:
+#: apps/dai-way/dai_way/export.py:91
+msgid "when:"
 msgstr ""
 
 #. he: לא יעלה
@@ -8292,6 +8323,12 @@ msgstr ""
 msgid "{value}% CPU"
 msgstr ""
 
+#. he: {when}: {sentence} (טיימר, דרך היהלום)
+#: apps/dai-tune/dai_tune/catalog.py:2251
+#, python-brace-format
+msgid "{when}: {sentence} (a timer, Diamond's Way)"
+msgstr ""
+
 #. he: • נכשל {failures} פעמים: {title}. {how}
 #: apps/dai-raz/dai_raz/report.py:235
 #, python-brace-format
@@ -8472,7 +8509,7 @@ msgid "✓ Worked: {title} (passed {passes} times in a row)."
 msgstr ""
 
 #. he: ✓ נכתב: {path}. לבדיקה: dai-way check {path}
-#: apps/dai-way/dai_way/cli.py:82
+#: apps/dai-way/dai_way/cli.py:91
 #, python-brace-format
 msgid "✓ Written: {path}. Check it: dai-way check {path}"
 msgstr ""
@@ -8514,7 +8551,7 @@ msgid "✓ {name}: {model} at {url}. Next: dai-models provider key {name}"
 msgstr ""
 
 #. he: ✓ {name}: {n} צעדים, כל השורות הובנו ({files}).
-#: apps/dai-way/dai_way/cli.py:92
+#: apps/dai-way/dai_way/cli.py:101
 #, python-brace-format
 msgid "✓ {name}: {n} steps, every line understood ({files})."
 msgstr ""
@@ -8561,8 +8598,20 @@ msgstr ""
 msgid "✗ bubblewrap is missing; apps never run outside the sandbox."
 msgstr ""
 
+#. he: ✗ אין טיימר בשם {name}
+#: apps/dai-way/dai_way/cli.py:140
+#, python-brace-format
+msgid "✗ no timer called {name}"
+msgstr ""
+
+#. he: ✗ {name}: המשפט כבר לא יוצר תוכנית בהיקף משתמש; לא בוצע שום שינוי.
+#: apps/dai-way/dai_way/cli.py:150
+#, python-brace-format
+msgid "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed."
+msgstr ""
+
 #. he: ✗ {name}: {n} בעיות; לא בוצע שום שינוי.
-#: apps/dai-way/dai_way/cli.py:47
+#: apps/dai-way/dai_way/cli.py:52
 #, python-brace-format
 msgid "✗ {name}: {n} problem(s); nothing was changed."
 msgstr ""

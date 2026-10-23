@@ -111,7 +111,7 @@ jobs:
 
       - name: Unit tests (dai-tune)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-ai
+          PYTHONPATH: apps/dai-i18n:apps/dai-ai:apps/dai-forge
         run: python3 -m unittest discover -s apps/dai-tune/tests -t apps/dai-tune -v
 
       - name: Unit tests (dai-forge, with a real bubblewrap sandbox when available)

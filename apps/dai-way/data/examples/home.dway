@@ -11,3 +11,7 @@ apps:
   antivirus
   video-player
   printer
+
+when:                              # user timers; the sentence runs as you, without questions
+  every evening at 20:00: dark theme
+  every morning at 7:00: light theme

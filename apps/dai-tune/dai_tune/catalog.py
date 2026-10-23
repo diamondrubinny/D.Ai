@@ -2072,3 +2072,208 @@ register(ActionSpec(
     note=lambda p, lang: "" if p["name"] == "local" else _t(lang, "Speech stays on the computer. The consent was given at dai-models provider use.",
                                                              "דיבור נשאר במחשב. ההסכמה ניתנה ב־dai-models provider use."),
 ))
+
+
+# --------------------------------------------------------------------------
+# Diamond's Way, when: (docs/WAY.md §2): a user timer that runs one D.Ai Tune sentence at a time. The sentence
+# is kept as text and parsed again at every run; only user-scope actions, because a timer cannot ask for an
+# administrator. dai-way run-when NAME is what the timer starts.
+# --------------------------------------------------------------------------
+
+WAY_DIR = ".config/dai/way"
+WAY_UNIT_DIR = ".config/systemd/user"
+WAY_NAME_RE = re.compile(r"^[a-z][a-z0-9-]{1,39}$")
+WAY_SENTENCE_MAX = 200
+
+
+def way_unit(name: str, suffix: str) -> str:
+    return f"dai-way-{name}.{suffix}"
+
+
+def way_schedule(value: Any):
+    from dai_forge.schedule import Schedule  # installed next to dai_tune in /usr/lib/dai
+    schedule = Schedule.from_json(value)
+    if schedule is None:
+        raise ValidationError("schedule: not a schedule (every day at 18:00, every monday at 9, at login …)")
+    return schedule
+
+
+def way_sentence_requests(sentence: str) -> list:
+    """The requests one sentence makes; every one must be a user-scope action."""
+    from .parser import parse as parse_sentence
+    if not isinstance(sentence, str) or not sentence.strip() or len(sentence) > WAY_SENTENCE_MAX:
+        raise ValidationError(f"sentence: 1 to {WAY_SENTENCE_MAX} characters")
+    if "\n" in sentence:
+        raise ValidationError("sentence: one line")
+    parsed = parse_sentence(sentence.strip())
+    if parsed.unknown or not parsed.requests:
+        raise ValidationError(f"sentence: not understood: {', '.join(parsed.unknown) or sentence.strip()}")
+    for request in parsed.requests:
+        spec = CATALOG.get(request.action)
+        if spec is None or spec.scope != "user":
+            raise ValidationError(f"sentence: {request.action} needs an administrator; a timer cannot ask for one")
+        if request.action in ("way.when", "way.when_off"):
+            raise ValidationError("sentence: a timer may not set timers")
+    return parsed.requests
+
+
+def _way_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"name", "schedule", "sentence"})
+    name = params.get("name")
+    if not isinstance(name, str) or not WAY_NAME_RE.match(name):
+        raise ValidationError("name: a-z, 0-9 and '-', 2 to 40 characters, starting with a letter")
+    schedule = way_schedule(params.get("schedule"))
+    way_sentence_requests(params.get("sentence"))
+    return {"name": name, "schedule": schedule.to_json(), "sentence": str(params["sentence"]).strip()}
+
+
+def _way_off_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"name"})
+    name = params.get("name")
+    if not isinstance(name, str) or not WAY_NAME_RE.match(name):
+        raise ValidationError("name: a-z, 0-9 and '-', 2 to 40 characters, starting with a letter")
+    if not ctx.user_path(f"{WAY_DIR}/{name}.json").is_file():
+        raise ValidationError(f"name: no timer called {name} (dai-way when)")
+    return {"name": name}
+
+
+def _way_files(params: Params, ctx: Context) -> list[Path]:
+    name = params["name"]
+    return [ctx.user_path(f"{WAY_DIR}/{name}.json"),
+            ctx.user_path(f"{WAY_UNIT_DIR}/{way_unit(name, 'service')}"),
+            ctx.user_path(f"{WAY_UNIT_DIR}/{way_unit(name, 'timer')}")]
+
+
+def way_unit_texts(name: str, schedule, sentence: str) -> dict[str, str]:
+    """The service and, unless the schedule is "at login", the timer."""
+    service = [
+        f"# Written by Diamond's Way (docs/WAY.md): when {schedule.describe('en')}: {sentence}. dai-way when remove {name}",
+        "[Unit]",
+        f"Description=D.Ai Way: {sentence}",
+        "",
+        "[Service]",
+        "Type=oneshot",
+        f"ExecStart=/usr/bin/dai-way run-when {name}",
+        "NoNewPrivileges=yes",
+    ]
+    files = {}
+    if schedule.kind == "login":
+        service += ["", "[Install]", "WantedBy=default.target"]
+        files[way_unit(name, "service")] = "\n".join(service) + "\n"
+        return files
+    files[way_unit(name, "service")] = "\n".join(service) + "\n"
+    files[way_unit(name, "timer")] = "\n".join([
+        f"# Written by Diamond's Way (docs/WAY.md). dai-way when remove {name}",
+        "[Unit]",
+        f"Description=D.Ai Way timer: {sentence}",
+        "",
+        "[Timer]",
+        *schedule.timer_lines(),
+        "",
+        "[Install]",
+        "WantedBy=timers.target",
+    ]) + "\n"
+    return files
+
+
+def _way_target(name: str, schedule) -> str:
+    return way_unit(name, "service" if schedule.kind == "login" else "timer")
+
+
+def _way_apply(params: Params, ctx: Context) -> None:
+    name, schedule, sentence = params["name"], way_schedule(params["schedule"]), params["sentence"]
+    for filename, content in way_unit_texts(name, schedule, sentence).items():
+        write_file(ctx.user_path(f"{WAY_UNIT_DIR}/{filename}"), content)
+    write_file(ctx.user_path(f"{WAY_DIR}/{name}.json"),
+               json.dumps({"schedule": schedule.to_json(), "sentence": sentence}, ensure_ascii=False, indent=1) + "\n", mode=0o600)
+    ctx.run(["systemctl", "--user", "daemon-reload"], check=False)
+    ctx.run(["systemctl", "--user", "enable", "--now", _way_target(name, schedule)])
+
+
+def _way_disable(name: str, ctx: Context) -> None:
+    for suffix in ("timer", "service"):
+        ctx.run(["systemctl", "--user", "disable", "--now", way_unit(name, suffix)], check=False)
+    ctx.run(["systemctl", "--user", "daemon-reload"], check=False)
+    for suffix in ("timer", "service"):
+        ctx.run(["systemctl", "--user", "reset-failed", way_unit(name, suffix)], check=False)
+
+
+def _way_off_apply(params: Params, ctx: Context) -> None:
+    name = params["name"]
+    _way_disable(name, ctx)
+    for path in _way_files(params, ctx):
+        if path.exists():
+            path.unlink()
+
+
+def _way_restore(params: Params, ctx: Context, extra: dict) -> None:
+    # The files are already back as they were (gone after an install's undo, present after a remove's undo).
+    name = params["name"]
+    _way_disable(name, ctx)
+    stored = read_text(ctx.user_path(f"{WAY_DIR}/{name}.json"), "")
+    if stored:
+        try:
+            schedule = way_schedule(json.loads(stored).get("schedule"))
+        except (ValueError, ValidationError):
+            return
+        ctx.run(["systemctl", "--user", "enable", "--now", _way_target(name, schedule)], check=False)
+
+
+def way_timers(ctx: Context) -> list[tuple[str, dict]]:
+    """(name, {"schedule": …, "sentence": …}) for every timer Diamond's Way installed."""
+    out = []
+    for path in sorted(ctx.user_path(WAY_DIR).glob("*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(data, dict) and WAY_NAME_RE.match(path.stem):
+            out.append((path.stem, data))
+    return out
+
+
+def _way_effect(params: Params) -> str:
+    try:
+        requests = way_sentence_requests(params["sentence"])
+    except ValidationError:
+        return "neutral"
+    effects = set()
+    for request in requests:
+        try:
+            effects.add(CATALOG[request.action].effect(request.params))
+        except (KeyError, TypeError, ValueError):     # the parser's raw params; validation happens at run time
+            effects.add("neutral")
+    return "weakens" if "weakens" in effects else ("hardens" if "hardens" in effects else "neutral")
+
+
+def _way_summary(params: Params, lang: str) -> str:
+    when = way_schedule(params["schedule"]).describe(lang)
+    return _t(lang, "{when}: {sentence} (a timer, Diamond's Way)", "{when}: {sentence} (טיימר, דרך היהלום)",
+              when=when, sentence=params["sentence"])
+
+
+register(ActionSpec(
+    id="way.when",
+    scope="user",
+    validate=_way_validate,
+    apply=_way_apply,
+    risk=lambda p: "low",
+    effect=_way_effect,
+    summary=_way_summary,
+    files=_way_files,
+    restore=_way_restore,
+    note=lambda p, lang: _t(lang, "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo",
+                            "רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo"),
+))
+
+register(ActionSpec(
+    id="way.when_off",
+    scope="user",
+    validate=_way_off_validate,
+    apply=_way_off_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Remove the timer {name} (Diamond's Way)", "הסרת הטיימר {name} (דרך היהלום)", name=p["name"]),
+    files=_way_files,
+    restore=_way_restore,
+))

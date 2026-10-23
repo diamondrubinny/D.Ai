@@ -307,6 +307,36 @@ class ExecutorTests(TuneTestCase):
         self.assertEqual(parser.parse("Diamond, answer on this computer").requests[0].params, {"name": "local"})
         self.assertEqual(parser.parse("תענה במחשב הזה").requests[0].params, {"name": "local"})
 
+    def test_way_when_timer_user_scope_only(self):
+        """docs/WAY.md §2: a when: line is one user timer; a system sentence or a bad schedule is refused."""
+        spec = catalog.CATALOG["way.when"]
+        good = {"name": "dark-theme-1", "schedule": {"kind": "daily", "hour": 20, "minute": 0}, "sentence": "dark theme"}
+        self.assertEqual(spec.validate(good, self.ctx)["schedule"]["kind"], "daily")
+        for bad, words in (
+            ({**good, "sentence": "memory saver on"}, "administrator"),
+            ({**good, "sentence": "dance"}, "not understood"),
+            ({**good, "schedule": {"kind": "yearly"}}, "schedule"),
+            ({**good, "name": "Bad Name"}, "name"),
+        ):
+            with self.subTest(words), self.assertRaises(ValidationError) as caught:
+                spec.validate(bad, self.ctx)
+            self.assertIn(words, str(caught.exception))
+        spec.apply(spec.validate(good, self.ctx), self.ctx)
+        units = self.home / ".config/systemd/user"
+        self.assertIn("OnCalendar=*-*-* 20:00:00", (units / "dai-way-dark-theme-1.timer").read_text())
+        self.assertIn("ExecStart=/usr/bin/dai-way run-when dark-theme-1", (units / "dai-way-dark-theme-1.service").read_text())
+        self.assertEqual([n for n, _ in catalog.way_timers(self.ctx)], ["dark-theme-1"])
+        login = catalog.CATALOG["way.when"].validate({**good, "name": "at-login", "schedule": {"kind": "login"}}, self.ctx)
+        self.assertEqual(set(catalog.way_unit_texts("at-login", catalog.way_schedule(login["schedule"]), "dark theme")),
+                         {"dai-way-at-login.service"})
+        self.assertIn("dark theme", spec.summary(good, "he"))
+        off = catalog.CATALOG["way.when_off"]
+        with self.assertRaises(ValidationError):
+            off.validate({"name": "nobody"}, self.ctx)
+        off.apply(off.validate({"name": "dark-theme-1"}, self.ctx), self.ctx)
+        self.assertFalse((units / "dai-way-dark-theme-1.timer").exists())
+        self.assertEqual(catalog.way_timers(self.ctx), [])
+
     def test_diamond_provider_choice_needs_a_consented_provider(self):
         """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""
         import sys

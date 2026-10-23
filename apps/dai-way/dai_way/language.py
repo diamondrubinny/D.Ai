@@ -8,6 +8,7 @@ not a heading, a value, an include or inside a section is an error with its line
 
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -19,6 +20,7 @@ HEADINGS = {
     "setup": "setup", "הגדרות": "setup", "settings": "setup",
     "apps": "apps", "אפליקציות": "apps", "applications": "apps",
     "exact": "exact", "מדויק": "exact",
+    "when": "when", "כאשר": "when", "מתי": "when",
 }
 NAME_KEYS = ("diamond", "יהלום")
 LET_KEYS = ("let", "יהי", "תהי")
@@ -52,11 +54,12 @@ class Program:
     setup: list[Line] = field(default_factory=list)     # D.Ai Tune sentences
     apps: list[Line] = field(default_factory=list)      # recipe ids, recipe sentences, Flathub ids
     exact: list[Line] = field(default_factory=list)     # "@ action.id key=value ..."
+    when: list[Line] = field(default_factory=list)      # "SCHEDULE: SENTENCE" (a user timer)
     files: list[str] = field(default_factory=list)      # the file and what it included, in order
 
     @property
     def empty(self) -> bool:
-        return not (self.setup or self.apps or self.exact)
+        return not (self.setup or self.apps or self.exact or self.when)
 
 
 def _split_key(line: str) -> tuple[str, str] | None:
@@ -107,7 +110,7 @@ def parse_text(text: str, file: str = "<text>", values: dict[str, str] | None = 
                 section = HEADINGS[keyword]
                 continue
         if not section:
-            raise WayError("expected a heading first: setup:, apps: or exact:", number, file)
+            raise WayError("expected a heading first: setup:, apps:, exact: or when:", number, file)
         getattr(program, section).append(Line(content, number, file))
     if not defer:
         _substitute_all(program)
@@ -115,7 +118,7 @@ def parse_text(text: str, file: str = "<text>", values: dict[str, str] | None = 
 
 
 def _substitute_all(program: Program) -> None:
-    for name in ("setup", "apps", "exact"):
+    for name in ("setup", "apps", "exact", "when"):
         lines = getattr(program, name)
         lines[:] = [Line(_substitute(line.text, program.values, line.number, line.file), line.number, line.file) for line in lines]
 
@@ -148,12 +151,32 @@ def parse(path: Path, depth: int = 0, values: dict[str, str] | None = None) -> P
         program.setup += other.setup
         program.apps += other.apps
         program.exact += other.exact
+        program.when += other.when
         program.files += other.files
         if not program.name:
             program.name = other.name
     if depth == 0:
         _substitute_all(program)
     return program
+
+
+def split_when(line: str) -> tuple[str, str]:
+    """"every day at 18:00: dark theme" → ("every day at 18:00", "dark theme"); the first colon splits."""
+    match = re.search(r":(?!\d)", line)      # the first colon that is not inside a time such as 18:00
+    schedule, sentence = (line[:match.start()], line[match.end():]) if match else (line, "")
+    if match is None or not schedule.strip() or not sentence.strip():
+        raise WayError("expected: SCHEDULE: SENTENCE (every day at 18:00: dark theme)")
+    return schedule.strip(), sentence.strip()
+
+
+def when_name(schedule_text: str, sentence: str) -> str:
+    """A stable unit name for a when line: the sentence's Latin words, or a hash for other scripts."""
+    words = re.findall(r"[a-z0-9]+", sentence.casefold())
+    base = "-".join(words)[:28].strip("-")
+    digest = hashlib.sha1(f"{schedule_text.casefold()}|{sentence.casefold()}".encode("utf-8")).hexdigest()[:8]
+    if not base or not base[0].isalpha():
+        base = "w"
+    return f"{base}-{digest}"[:40]
 
 
 def parse_exact(line: str) -> tuple[str, dict]:

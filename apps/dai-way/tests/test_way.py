@@ -215,3 +215,91 @@ class CliTests(WayTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WhenTests(WayTestCase):
+    """when: lines (docs/WAY.md §2): a schedule, a sentence, one user timer; system sentences are refused."""
+
+    def run_cli(self, *args):
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err), mock.patch.object(planner, "load_library", lambda: self.library), \
+                mock.patch.dict(os.environ, {"LANG": "en_US.UTF-8"}):
+            code = cli.main(["dai-way", *args], self.ctx)
+        return code, out.getvalue(), err.getvalue()
+
+    def test_when_lines_parse_in_both_languages_with_stable_names(self):
+        program = language.parse_text("when:\n  every evening at 20:00: dark theme\nכאשר:\n  כל בוקר ב־7: ערכת נושא בהירה\n", "w.dway")
+        self.assertEqual([l.text for l in program.when], ["every evening at 20:00: dark theme", "כל בוקר ב־7: ערכת נושא בהירה"])
+        self.assertEqual(language.split_when("every day at 18:00: dark theme"), ("every day at 18:00", "dark theme"))
+        with self.assertRaises(language.WayError):
+            language.split_when("every day at 18:00")
+        name = language.when_name("every evening at 20:00", "dark theme")
+        self.assertEqual(name, language.when_name("Every Evening at 20:00", "Dark Theme"))
+        self.assertTrue(name.startswith("dark-theme-"))
+        self.assertRegex(language.when_name("כל בוקר", "ערכת נושא בהירה"), r"^w-[0-9a-f]{8}$")
+        self.assertNotEqual(language.when_name("every day at 8", "dark theme"), name)
+
+    def test_compile_refuses_system_sentences_and_bad_schedules(self):
+        for text, words in (
+            ("when:\n  every day at 18:00: memory saver on\n", "needs an administrator"),
+            ("when:\n  whenever: dark theme\n", "not a schedule"),
+            ("when:\n  every day at 18:00: dance\n", "not understood"),
+            ("when:\n  dark theme\n", "SCHEDULE: SENTENCE"),
+        ):
+            with self.subTest(words):
+                compiled = planner.compile_program(language.parse_text(text, "w.dway"), self.ctx, self.library)
+                self.assertEqual(len(compiled.problems), 1)
+                self.assertIn("w.dway:2", compiled.problems[0])
+                self.assertIn(words, compiled.problems[0])
+        good = planner.compile_program(language.parse_text("when:\n  every evening at 20:00: dark theme\n  at login: light theme\n", "w.dway"),
+                                       self.ctx, self.library)
+        self.assertEqual(good.problems, [])
+        self.assertEqual([s.action for s in good.plan.steps], ["way.when", "way.when"])
+        self.assertEqual(good.plan.steps[0].params["schedule"]["hour"], 20)
+        self.assertEqual(good.plan.steps[1].params["schedule"]["kind"], "login")
+        self.assertTrue(all(step.scope == "user" for step in good.plan.steps))
+
+    def test_apply_writes_the_units_run_when_applies_and_export_round_trips(self):
+        path = self.write("w.dway", "diamond: evenings\nwhen:\n  every evening at 20:00: dark theme\n")
+        code, out, err = self.run_cli("apply", str(path), "--yes")
+        self.assertEqual((code, err), (0, ""), out)
+        units = self.base / "home/.config/systemd/user"
+        name = language.when_name("every evening at 20:00", "dark theme")
+        service = (units / f"dai-way-{name}.service").read_text()
+        timer = (units / f"dai-way-{name}.timer").read_text()
+        self.assertIn(f"ExecStart=/usr/bin/dai-way run-when {name}", service)
+        self.assertIn("NoNewPrivileges=yes", service)
+        self.assertIn("OnCalendar=*-*-* 20:00:00", timer)
+        self.assertIn(["systemctl", "--user", "enable", "--now", f"dai-way-{name}.timer"], self.calls)
+        stored = self.base / f"home/.config/dai/way/{name}.json"
+        self.assertEqual(oct(stored.stat().st_mode & 0o777), "0o600")
+        code, out, _ = self.run_cli("when")
+        self.assertEqual(code, 0)
+        self.assertIn("every day at 20:00: dark theme", out)
+        # the timer's run: the sentence, applied as the user, journaled under its own label
+        code, out, err = self.run_cli("run-when", name)
+        self.assertEqual((code, err), (0, ""), out)
+        self.assertIn("✓", out)
+        from dai_tune.executor import Journal
+        entry = Journal.for_user(self.ctx).find("last")
+        self.assertIn(f"Way when: {name}", str(entry.get("summaries") or entry))
+        self.assertEqual([s["action"] for s in entry["steps"]], ["appearance.theme"])
+        self.assertEqual(self.run_cli("run-when", "nobody")[0], 2)
+        # export writes the timer back as a when: line that checks
+        text = export.export_text(self.ctx, "en", self.library, run=lambda argv, **k: subprocess.CompletedProcess(argv, 0, "", ""), hostname="desk")
+        self.assertIn("when:\n  every day at 20:00: dark theme\n", text)
+        compiled = planner.compile_program(language.parse(self.write("back.dway", text)), self.ctx, self.library)
+        self.assertEqual(compiled.problems, [])
+        hebrew = export.export_text(self.ctx, "he", self.library, run=lambda argv, **k: subprocess.CompletedProcess(argv, 0, "", ""), hostname="desk")
+        self.assertIn("כאשר:\n  כל יום ב־20:00: dark theme\n", hebrew)
+        compiled = planner.compile_program(language.parse(self.write("back-he.dway", hebrew)), self.ctx, self.library)
+        self.assertEqual(compiled.problems, [])
+        # remove goes through the journal; undo brings the timer back
+        code, out, err = self.run_cli("when", "remove", name, "--yes")
+        self.assertEqual((code, err), (0, ""), out)
+        self.assertFalse(stored.exists())
+        self.assertFalse((units / f"dai-way-{name}.timer").exists())
+        self.assertIn(["systemctl", "--user", "disable", "--now", f"dai-way-{name}.timer"], self.calls)
+        self.assertEqual(self.run_cli("undo")[0], 0)
+        self.assertTrue(stored.exists())
+        self.assertTrue((units / f"dai-way-{name}.timer").exists())

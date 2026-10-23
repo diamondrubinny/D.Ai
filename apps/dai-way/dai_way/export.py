@@ -12,6 +12,7 @@ from typing import Callable
 from dai_forge.recipes import Library, load_library
 from dai_i18n import pick
 from dai_settings.model import SETTINGS
+from dai_tune.catalog import ValidationError, way_schedule, way_timers
 from dai_tune.context import Context
 
 from .language import format_exact
@@ -85,4 +86,14 @@ def export_text(ctx: Context, lang: str, library: Library | None = None, run: Ru
             continue
         lines.append(f"  # {setting.label(lang)}")
         lines += [f"  {format_exact(request.action, request.params)}" for request in requests]
+    timers = way_timers(ctx)
+    if timers:
+        lines += ["", pick(lang, "when:", "כאשר:")]
+        for _name, data in timers:
+            try:
+                schedule = way_schedule(data.get("schedule"))
+            except ValidationError:
+                continue
+            when = pick(lang, "at login", "בכל כניסה") if schedule.kind == "login" else schedule.describe(lang)
+            lines.append(f"  {when}: {data.get('sentence', '')}")
     return "\n".join(lines) + "\n"

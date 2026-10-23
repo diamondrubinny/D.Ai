@@ -11,12 +11,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from dai_forge.recipes import Library, find, install_requests, load_library
-from dai_tune.catalog import CATALOG
+from dai_forge.schedule import ScheduleError
+from dai_forge.schedule import parse as _parse_schedule
+from dai_tune.catalog import CATALOG, ValidationError, way_sentence_requests
 from dai_tune.context import Context
 from dai_tune.parser import Request, parse as parse_sentence
 from dai_tune.planner import Plan, build_plan
 
-from .language import APP_ID, Line, Program, WayError, parse_exact
+from .language import APP_ID, Line, Program, WayError, parse_exact, split_when, when_name
 
 
 @dataclass
@@ -28,6 +30,13 @@ class Compiled:
     @property
     def ok(self) -> bool:
         return not self.problems and self.plan is not None and self.plan.ok
+
+
+def parse_schedule(text: str):
+    try:
+        return _parse_schedule(text)
+    except ScheduleError:
+        return None
 
 
 def _where(line: Line) -> str:
@@ -70,6 +79,24 @@ def compile_program(program: Program, ctx: Context, library: Library | None = No
             out.problems.append(f"{_where(line)}: no such action: {action}")
             continue
         out.requests.append(Request(action, params, f"{_where(line)}: {line.text}"))
+    for line in program.when:
+        try:
+            schedule_text, sentence = split_when(line.text)
+        except WayError as exc:
+            out.problems.append(f"{_where(line)}: {exc.message}")
+            continue
+        schedule = parse_schedule(schedule_text)
+        if schedule is None:
+            out.problems.append(f"{_where(line)}: not a schedule: {schedule_text} (every day at 18:00, every monday at 9, at login)")
+            continue
+        try:
+            way_sentence_requests(sentence)
+        except ValidationError as exc:
+            out.problems.append(f"{_where(line)}: {exc}")
+            continue
+        name = when_name(schedule_text, sentence)
+        out.requests.append(Request("way.when", {"name": name, "schedule": schedule.to_json(), "sentence": sentence},
+                                    f"{_where(line)}: {line.text}"))
     if out.problems:
         return out
     if not out.requests:
