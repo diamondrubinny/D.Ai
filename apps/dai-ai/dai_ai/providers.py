@@ -19,7 +19,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 
 from .paths import config_file
 
@@ -218,22 +218,88 @@ def _open(request: urllib.request.Request, timeout: float):
     return urllib.request.urlopen(request, timeout=timeout)  # noqa: S310 - https or a LAN http chosen by the person
 
 
+def stream_request(provider: Provider, messages: list[dict[str, str]], max_tokens: int) -> tuple[str, dict, dict]:
+    """The same request, asking for the answer as server-sent events (docs/PROVIDERS.md §2b)."""
+    url, headers, body = build_request(provider, messages, None, max_tokens)
+    if provider.kind == "gemini":
+        url = url.replace(":generateContent", ":streamGenerateContent?alt=sse")
+    else:
+        body["stream"] = True
+    headers["accept"] = "text/event-stream"
+    return url, headers, body
+
+
+def parse_event(kind: str, data: Any) -> str:
+    """The text one event carries ("" for events that carry none, such as usage or stop reasons)."""
+    if not isinstance(data, dict):
+        return ""
+    try:
+        if kind == "anthropic":
+            delta = data.get("delta") or {}
+            return delta.get("text", "") if data.get("type") == "content_block_delta" and delta.get("type") == "text_delta" else ""
+        if kind == "gemini":
+            candidates = data.get("candidates") or []
+            parts = (candidates[0].get("content") or {}).get("parts") or [] if candidates else []
+            return "".join(part.get("text", "") for part in parts if isinstance(part, dict))
+        choices = data.get("choices") or []
+        delta = (choices[0].get("delta") or {}) if choices else {}
+        return delta.get("content") or ""
+    except (AttributeError, IndexError, TypeError):
+        return ""
+
+
+def _http_error(provider: Provider, exc: urllib.error.HTTPError) -> ProviderError:
+    detail = ""
+    try:
+        detail = json.loads(exc.read().decode("utf-8", "replace")).get("error", {})
+        detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
+    except Exception:  # noqa: BLE001 - the body is optional detail
+        pass
+    return ProviderError(f"{provider.name}: HTTP {exc.code}{': ' + detail[:200] if detail else ''}")
+
+
+def stream(provider: Provider, messages: list[dict[str, str]], max_tokens: int = 512, opener: Opener = _open) -> Iterator[str]:
+    """The answer as it arrives, piece by piece, from the provider's event stream (text only, no schema)."""
+    url, headers, body = stream_request(provider, messages, max_tokens)
+    request = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST")
+    total = 0
+    try:
+        with opener(request, TIMEOUT) as response:
+            for raw_line in response:
+                total += len(raw_line)
+                if total > MAX_REPLY:
+                    raise ProviderError(f"{provider.name}: the answer is too large")
+                line = raw_line.decode("utf-8", "replace").rstrip("\r\n")
+                if not line.startswith("data:"):
+                    continue
+                payload = line[5:].strip()
+                if not payload or payload == "[DONE]":
+                    continue
+                try:
+                    data = json.loads(payload)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(data, dict) and data.get("type") == "error":
+                    raise ProviderError(f"{provider.name}: {str((data.get('error') or {}).get('message', 'error'))[:200]}")
+                piece = parse_event(provider.kind, data)
+                if piece:
+                    yield piece
+    except urllib.error.HTTPError as exc:
+        raise _http_error(provider, exc) from exc
+    except (urllib.error.URLError, OSError, TimeoutError) as exc:
+        raise ProviderError(f"{provider.name}: {getattr(exc, 'reason', exc)}") from exc
+
+
 def chat(provider: Provider, messages: list[dict[str, str]], schema: dict | None = None, max_tokens: int = 512,
          opener: Opener = _open) -> str:
-    """One complete answer from the provider (no streaming in stage 1)."""
+    """One complete answer from the provider (what a JSON schema needs; plain text streams through stream())."""
     url, headers, body = build_request(provider, messages, schema, max_tokens)
     request = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers=headers, method="POST")
     try:
         with opener(request, TIMEOUT) as response:
             raw = response.read(MAX_REPLY + 1)
     except urllib.error.HTTPError as exc:
-        detail = ""
-        try:
-            detail = json.loads(exc.read().decode("utf-8", "replace")).get("error", {})
-            detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
-        except Exception:  # noqa: BLE001 - the body is optional detail
-            pass
-        raise ProviderError(f"{provider.name}: HTTP {exc.code}{': ' + detail[:200] if detail else ''}") from exc
+        raise _http_error(provider, exc) from exc
     except (urllib.error.URLError, OSError, TimeoutError) as exc:
         raise ProviderError(f"{provider.name}: {getattr(exc, 'reason', exc)}") from exc
     if len(raw) > MAX_REPLY:

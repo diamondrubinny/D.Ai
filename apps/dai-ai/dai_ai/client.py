@@ -61,11 +61,17 @@ def chat(
     config = providers.load()
     provider = config.for_task(task)
     if provider is not None:
+        started = False
         try:
-            yield providers.chat(provider, messages, schema, max_tokens)
+            if schema:
+                yield providers.chat(provider, messages, schema, max_tokens)
+            else:
+                for piece in providers.stream(provider, messages, max_tokens):
+                    started = True
+                    yield piece
             return
         except providers.ProviderError as exc:
-            if not config.fallback:
+            if started or not config.fallback:     # a half-shown answer cannot be swapped for another one
                 raise AIUnavailable(str(exc)) from exc
             print(f"dai-ai: {exc}; answering with the local Diamond instead", file=sys.stderr)
     payload = {"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens, "task": task}

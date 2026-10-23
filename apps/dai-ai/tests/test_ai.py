@@ -306,16 +306,16 @@ class ProviderTests(EnvTestCase):
         p.save(config)
         self.assertEqual(p.where(), {"code": "anthropic", "general": "local", "speech": "local"})
         self.assertEqual(client.where("code"), "anthropic")
-        with mock.patch.object(p, "chat", return_value="from the cloud"):
+        with mock.patch.object(p, "stream", return_value=iter(["from ", "the cloud"])):
             self.assertEqual("".join(client.chat([{"role": "user", "content": "x"}], task="code")), "from the cloud")
         local = [{"delta": "local answer"}, {"done": True}]
-        with mock.patch.object(p, "chat", side_effect=p.ProviderError("anthropic: no route")), \
+        with mock.patch.object(p, "stream", side_effect=p.ProviderError("anthropic: no route")), \
                 mock.patch.object(client, "_request", return_value=iter(local)), redirect_stderr(io.StringIO()) as err:
             self.assertEqual("".join(client.chat([{"role": "user", "content": "x"}], task="code")), "local answer")
         self.assertIn("local Diamond instead", err.getvalue())
         config.fallback = False
         p.save(config)
-        with mock.patch.object(p, "chat", side_effect=p.ProviderError("anthropic: no route")), self.assertRaises(client.AIUnavailable):
+        with mock.patch.object(p, "stream", side_effect=p.ProviderError("anthropic: no route")), self.assertRaises(client.AIUnavailable):
             "".join(client.chat([{"role": "user", "content": "x"}], task="code"))
 
     def test_cli(self):
@@ -341,3 +341,99 @@ class ProviderTests(EnvTestCase):
         self.assertNotIn("sk-ant-123456789", text)
         self.assertIn("sk-…89", text)
         self.assertFalse(p.load().fallback)
+
+
+class StreamingTests(unittest.TestCase):
+    """docs/PROVIDERS.md §2b: the answer piece by piece, from each provider's event stream."""
+
+    def setUp(self):
+        from dai_ai import providers
+        self.p = providers
+
+    @staticmethod
+    def response(lines: list[str]):
+        class Response:
+            def __init__(self, data): self.data = data
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def __iter__(self): return iter(self.data)
+        return Response([(line + "\n").encode("utf-8") for line in lines])
+
+    def provider(self, name):
+        provider = self.p.make(name)
+        provider.key = "k"
+        return provider
+
+    def test_stream_requests_and_events_per_kind(self):
+        p = self.p
+        url, headers, body = p.stream_request(self.provider("openai"), [{"role": "user", "content": "hi"}], 50)
+        self.assertTrue(body["stream"])
+        self.assertEqual(headers["accept"], "text/event-stream")
+        url, _, body = p.stream_request(self.provider("google"), [{"role": "user", "content": "hi"}], 50)
+        self.assertTrue(url.endswith(":streamGenerateContent?alt=sse"))
+        self.assertNotIn("stream", body)
+        self.assertEqual(p.parse_event("openai", {"choices": [{"delta": {"content": "he"}}]}), "he")
+        self.assertEqual(p.parse_event("openai", {"choices": [{"delta": {"role": "assistant"}}]}), "")
+        self.assertEqual(p.parse_event("anthropic", {"type": "content_block_delta", "delta": {"type": "text_delta", "text": "l"}}), "l")
+        self.assertEqual(p.parse_event("anthropic", {"type": "message_start", "message": {}}), "")
+        self.assertEqual(p.parse_event("gemini", {"candidates": [{"content": {"parts": [{"text": "lo"}]}}]}), "lo")
+        self.assertEqual(p.parse_event("gemini", {"usageMetadata": {}}), "")
+        self.assertEqual(p.parse_event("openai", "junk"), "")
+
+    def test_stream_yields_pieces_and_stops_on_done_or_error(self):
+        p = self.p
+        seen = {}
+
+        def opener(request, timeout):
+            seen["url"] = request.full_url
+            return self.response([
+                "event: ping", ": comment", "",
+                'data: {"choices": [{"delta": {"role": "assistant"}}]}',
+                'data: {"choices": [{"delta": {"content": "hel"}}]}',
+                "data: not json",
+                'data: {"choices": [{"delta": {"content": "lo"}}]}',
+                "data: [DONE]",
+            ])
+
+        pieces = list(p.stream(self.provider("openai"), [{"role": "user", "content": "hi"}], opener=opener))
+        self.assertEqual(pieces, ["hel", "lo"])
+        self.assertEqual(seen["url"], "https://api.openai.com/v1/chat/completions")
+
+        def erroring(request, timeout):
+            return self.response(['data: {"type": "content_block_delta", "delta": {"type": "text_delta", "text": "a"}}',
+                                  'data: {"type": "error", "error": {"type": "overloaded_error", "message": "Overloaded"}}'])
+        out = []
+        with self.assertRaises(p.ProviderError) as caught:
+            for piece in p.stream(self.provider("anthropic"), [{"role": "user", "content": "hi"}], opener=erroring):
+                out.append(piece)
+        self.assertEqual(out, ["a"])
+        self.assertIn("Overloaded", str(caught.exception))
+
+        def huge(request, timeout):
+            return self.response(['data: {"choices": [{"delta": {"content": "' + "x" * 1000 + '"}}]}'] * 300)
+        with self.assertRaises(p.ProviderError) as caught:
+            list(p.stream(self.provider("openai"), [{"role": "user", "content": "hi"}], opener=huge))
+        self.assertIn("too large", str(caught.exception))
+
+    def test_client_streams_text_and_keeps_whole_answers_for_schemas(self):
+        from dai_ai import client, providers as p
+        config = p.Config()
+        config.providers["openai"] = self.provider("openai")
+        p.record_consent(config, "openai")
+        calls = []
+        with mock.patch.object(p, "load", lambda path=None: config), \
+                mock.patch.object(p, "stream", lambda provider, messages, max_tokens=512, opener=None: (calls.append("stream"), iter(["a", "b"]))[1]), \
+                mock.patch.object(p, "chat", lambda provider, messages, schema=None, max_tokens=512, opener=None: (calls.append("chat"), '{"ok": 1}')[1]):
+            self.assertEqual(list(client.chat([{"role": "user", "content": "hi"}])), ["a", "b"])
+            self.assertEqual(list(client.chat([{"role": "user", "content": "hi"}], schema={"type": "object"})), ['{"ok": 1}'])
+        self.assertEqual(calls, ["stream", "chat"])
+
+        def half(provider, messages, max_tokens=512, opener=None):
+            yield "first"
+            raise p.ProviderError("cut")
+        with mock.patch.object(p, "load", lambda path=None: config), mock.patch.object(p, "stream", half):
+            out = []
+            with self.assertRaises(client.AIUnavailable):      # no fallback after a piece was shown
+                for piece in client.chat([{"role": "user", "content": "hi"}]):
+                    out.append(piece)
+        self.assertEqual(out, ["first"])

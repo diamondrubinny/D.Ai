@@ -49,6 +49,15 @@ Code, Tune, Heal, MOM, J, Ruby, Command) עוברים דרך אותו לקוח, 
 | openrouter | openai | `https://openrouter.ai/api/v1` | `anthropic/claude-sonnet-4.5` |
 | custom | openai | `--url` (גם `http://` לרשת מקומית, עם אזהרה) | `--model` |
 
+## 2b. זרימה (שלב 2)
+
+תשובת טקסט מגיעה חלק־חלק כמו מהמודל המקומי: אותה בקשה עם `stream: true` (OpenAI ו־Anthropic) או
+`:streamGenerateContent?alt=sse` (Gemini), והתשובה נקראת כ־server-sent events: שורות `data:` עם JSON; הטקסט
+נלקח מ־`choices[0].delta.content`, מ־`content_block_delta` עם `text_delta`, או מ־`candidates[0].content.parts`.
+מבנה האירועים **דורש אימות מול התיעוד הרשמי** של כל ספק; אירוע שלא מובן נזרק בשקט, אירוע `error` עוצר עם
+הודעה. בקשה עם סכמת JSON (Tune, Forge) נשארת תשובה שלמה. גבול הגודל (200 KB) חל על הזרם כולו. נפילה חזרה
+ל־Diamond המקומי קורית רק לפני שהגיע חלק ראשון: תשובה שכבר התחילה להופיע לא מוחלפת באחרת.
+
 ## 4b. החלפה מהירה: Settings ו־Tune
 
 אחרי שההסכמה ניתנה פעם אחת ב־`dai-models provider use NAME`, אפשר לעבור בין "במחשב הזה" לספק בלי להקליד
@@ -59,12 +68,13 @@ Code, Tune, Heal, MOM, J, Ruby, Command) עוברים דרך אותו לקוח, 
 ## 5. מה לא
 
 אין חשבון D.Ai, אין proxy של הפרויקט, אין חיוב דרכנו: המפתח והחוזה הם בינך לבין הספק. אין שליחת קבצים או
-תמונות (רק טקסט הבקשה). אין זרימה (streaming) בשלב 1: התשובה מגיעה בשלמותה.
+תמונות (רק טקסט הבקשה).
 
 ## 6. בדיקות
 
 יחידה: קובץ ההגדרות (0600, מסכת מפתח, משתנה סביבה); בניית הבקשה לכל סוג (openai / anthropic / gemini, כולל
-סכמת JSON); ניתוב לפי משימה והסכמה; נפילה חזרה; CLI (add/key/use/test/remove/list; `use` בלי "כן" לא מפעיל).
+סכמת JSON); זרימה (שלושת מבני האירועים, [DONE], אירוע error, גבול גודל, בלי נפילה חזרה אחרי חלק ראשון); ניתוב לפי
+משימה והסכמה; נפילה חזרה; CLI (add/key/use/test/remove/list; `use` בלי "כן" לא מפעיל).
 יחידה (Tune/Settings): `diamond.provider` מסרב לספק בלי הסכמה, מחליף active ושומר 0600; שורת הבחירה ב־Settings
 עוברת את Raz עם שאר החלון; משפטי הפרסר. ‏VM: `ai: providers off by default` (סטטוס "local", הוספת ספק custom על כתובת שלא קיימת, הסכמה, test נכשל
 בבירור, נפילה חזרה למקומי, remove).
