@@ -307,6 +307,17 @@ class ExecutorTests(TuneTestCase):
         self.assertEqual(parser.parse("Diamond, answer on this computer").requests[0].params, {"name": "local"})
         self.assertEqual(parser.parse("תענה במחשב הזה").requests[0].params, {"name": "local"})
 
+    def test_command_env_carries_only_the_session_bus_names(self):
+        from dai_tune import context
+        with mock.patch.dict(os.environ, {"XDG_RUNTIME_DIR": "/run/user/1000", "HOME": "/home/x", "LD_PRELOAD": "evil"}, clear=True):
+            env = context.command_env()
+        self.assertEqual(env["XDG_RUNTIME_DIR"], "/run/user/1000")
+        self.assertEqual(env["LANG"], "C.UTF-8")
+        self.assertNotIn("HOME", env)
+        self.assertNotIn("LD_PRELOAD", env)
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertNotIn("XDG_RUNTIME_DIR", context.command_env())
+
     def test_way_when_timer_user_scope_only(self):
         """docs/WAY.md §2: a when: line is one user timer; a system sentence or a bad schedule is refused."""
         spec = catalog.CATALOG["way.when"]

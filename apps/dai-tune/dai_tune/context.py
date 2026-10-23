@@ -27,14 +27,26 @@ class ActionError(RuntimeError):
     """An action failed while being applied or undone."""
 
 
+# User-scope actions talk to the user's systemd over its bus; these two name it and carry nothing else.
+SESSION_KEYS = ("XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS")
+
+
+def command_env() -> dict[str, str]:
+    env = dict(SAFE_ENV)
+    for key in SESSION_KEYS:
+        if os.environ.get(key):
+            env[key] = os.environ[key]
+    return env
+
+
 def run_command(argv: Sequence[str]) -> subprocess.CompletedProcess:
-    """Run argv (never through a shell) and capture its output."""
+    """Run argv (never through a shell) with a fixed environment and capture its output."""
     return subprocess.run(
         list(argv),
         capture_output=True,
         text=True,
         timeout=900,
-        env=SAFE_ENV,
+        env=command_env(),
         check=False,
     )
 
