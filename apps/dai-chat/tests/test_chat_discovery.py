@@ -36,6 +36,13 @@ def someone():
 
 
 class TagTests(unittest.TestCase):
+    def test_only_local_addresses_are_taken_from_the_network(self):
+        """Review finding 8: a record naming an internet host must not make us connect there outside Tor."""
+        for ok in ("192.168.1.20", "10.0.0.5", "172.16.3.4", "169.254.7.7", "fe80::1", "fd12::3"):
+            self.assertTrue(discovery.local_address(ok), ok)
+        for bad in ("8.8.8.8", "203.0.113.5", "100.64.0.1", "2001:db8::1", "127.0.0.1", "0.0.0.0", "::1", "nonsense"):
+            self.assertFalse(discovery.local_address(bad), bad)
+
     def test_tags_change_every_hour_and_differ_per_person(self):
         dana, noa = someone(), someone()
         now = 1_800_000_000
@@ -70,6 +77,8 @@ class RealMdnsTests(unittest.TestCase):
         from zeroconf import IPVersion, Zeroconf
 
         address = _address()
+        if not discovery.local_address(address):
+            self.skipTest(f"{address} is not a local network address; records naming it are ignored by design")
         alice, bob = keys.Identity.generate(), keys.Identity.generate()
         make = lambda: Zeroconf(interfaces=[address], ip_version=IPVersion.V4Only)  # noqa: E731
         one, two = discovery.Discovery(alice.public, 7714, make), discovery.Discovery(bob.public, 7715, make)

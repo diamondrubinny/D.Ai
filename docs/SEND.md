@@ -136,7 +136,7 @@
 - **Identity:** an Ed25519 key per user, created on the first run. The private key is encrypted in the keyring (gnome-keyring, which is already on the image), as in J.
 - **Each conversation:**
   - Each side creates a temporary X25519 key and signs it with its identity key. They exchange them, and both derive keys with HKDF (BLAKE2b).
-  - **Forward secrecy:** after the conversation, its keys are erased.
+  - **Forward secrecy:** after the conversation, its keys are dropped (as far as Python allows: references go, bytes are not zeroed).
   - Messages use XChaCha20-Poly1305 with a counter, so a message cannot be repeated or reordered.
 - **Pairing:** the symbols come from a hash of both identity keys (SAS), as in Signal's safety number.
 - **What we do not invent:** we use only libsodium primitives through PyNaCl. Building the protocol from them is still our own design, so **a review by a security expert is required before release**.
@@ -175,9 +175,42 @@
 | The identity of the other side | An impostor on the network (MITM) | Pairing with 6 symbols compared by people; signed ephemeral keys |
 | The computer | A malicious picture | Size and type limits, sandboxed decoding, ClamAV, quarantine |
 | Privacy | GPS in a picture, a name advertised on the network | EXIF stripping; discovery without names; only paired contacts |
-| Availability | Message flooding | Only paired contacts; a rate limit; an option to block a contact |
+| Availability | Message flooding | Only paired contacts; a handshake limit per address on the LAN and per contact through Tor, a cap on connections that never say HELLO, per-session message and byte quotas, a cap on requests from a contact you have not accepted; an option to block a contact |
 | Keys | Theft of the computer | The identity key in the keyring, the disk encrypted (LUKS) |
 | Past messages | A key stolen in the future | Ephemeral keys per conversation (forward secrecy) |
+
+## 4b. Internal security review (2026-10-23) and what it changed
+
+Before the external review (§6 item 6), an adversarial internal review of the protocol and the code was done
+(every finding verified against the code, three reproduced by running). Fixed in this round:
+
+| # | Finding | Fix |
+|---|---------|-----|
+| 1 | A locked keyring at login made Chat generate a second identity and a second onion address | `keys.load_or_create` raises `KeyringLocked` when the keyring is present but did not answer; nothing is generated; the service retries |
+| 2 | Every Tor connection arrives from loopback, so one rate-limit bucket covered all contacts: a stranger with the onion address could lock everyone out | The limit is per address on the LAN and per contact named in the HELLO through Tor; at most 16 connections may wait for a HELLO at once |
+| 3 | A JSON header that is not an object crashed the sender's service (`AttributeError` past `MessageError`); a picture file left by a crash blocked the message forever | `decode` requires an object; unexpected errors in `deliver`/`handle`/`_try` are logged and end that attempt only; the picture file is written through a temporary name |
+| 4 | PNG text chunks and JPEG comments survived the re-draw: metadata and a byte-exact covert channel through the "only pixels" boundary | The decoder rebuilds the image from its raw bits before saving; a test puts a comment in a PNG and a JPEG and sees it gone |
+| 7 | The version byte was outside the signed data and the key transcript | It is inside both now |
+| 8 | An mDNS record could name an internet host and make the computer connect there outside Tor | Only private and link-local addresses are taken from mDNS |
+| 9 | No quota on received messages | 200 messages or 64 MB per session; 50 waiting requests from a contact you have not accepted (the rest stay queued with the sender) |
+| 10 | The sender's own `time` ordered the conversation | Messages are ordered by arrival; the sender's time is shown only |
+| 13 | `dai-chat send NAME TEXT` put the message on the command line (visible in `ps`) | The text comes from stdin when it is not on the command line |
+
+Known and documented, not changed in this round (for the external review to weigh):
+
+- **5. On the local network the HELLO carries the identity key in clear, and pairing frames carry both identity
+  keys, onion keys and display names.** The hourly mDNS rotation hides the computer from strangers, but a passive
+  observer on the same Wi-Fi during a conversation or a pairing can link it to a stable key. The LAN path is opt-in;
+  on an untrusted network, use Tor only. A sealed HELLO (identity encrypted to the responder's key) is the planned
+  fix and changes the protocol version.
+- **6. A replayed HELLO makes the responder send its queue** under keys the replayer cannot compute: no
+  confidentiality loss, but amplification. Planned: the responder sends nothing until the initiator's first
+  authenticated frame.
+- **11.** Display names are cleaned of control and format characters only; look-alike scripts pass. The name you
+  typed is what is shown; theirs is shown as "calls themselves".
+- **12.** Keys cannot be zeroed in Python; the wording above says so.
+- **14.** No seccomp filter in the picture sandbox (bubblewrap with no network, no home, dropped capabilities and
+  resource limits is what there is).
 
 ## 5. Stage 2 (B): over the internet with a code
 
@@ -194,7 +227,8 @@
 3. **Pairing:** with the symbols, plus a test.
 4. **The chat window:** Qt, RTL, accessible (Raz checks it in three themes). Pictures with a sandbox.
 5. **The command field and the file manager**, and notifications with sound.
-6. **Documentation, privacy (a draft for legal review), and an external security review.**
+6. **Documentation, privacy (a draft for legal review), and an external security review.** The internal review
+   (§4b) is done; the external one is still required before release.
 
 ## 7. Not included (stage 1)
 

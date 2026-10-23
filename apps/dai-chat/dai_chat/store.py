@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS waiting (
 """
 # Columns added after the first version: an older chat.db gets them when it is opened.
 ADDED = (("contacts", "display", "TEXT NOT NULL DEFAULT ''"), ("contacts", "accepted", "INTEGER NOT NULL DEFAULT 0"),
-         ("messages", "warning", "TEXT NOT NULL DEFAULT ''"))
+         ("messages", "warning", "TEXT NOT NULL DEFAULT ''"), ("messages", "arrived", "REAL NOT NULL DEFAULT 0"))
 WAITING_STATES = ("request", "held")  # received, not shown until the person decides
 EXTENSIONS = {"image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp"}
 
@@ -84,6 +84,7 @@ def default_dir() -> Path:
 class Store:
     def __init__(self, folder: Path | None = None) -> None:
         self.folder = folder or default_dir()
+        self.clock = time.time  # when a message arrived here, the order the conversation is shown in
         self.pictures = self.folder / "pictures"
         self.pictures.mkdir(parents=True, exist_ok=True, mode=0o700)
         os.chmod(self.folder, 0o700)
@@ -173,16 +174,24 @@ class Store:
         if message.mime in MIMES:
             # the id is 32 hex digits and the prefix is hex too: a safe name, unique per contact
             path = self.pictures / f"{contact.hex()[:16]}-{message.id}{EXTENSIONS[message.mime]}"
-            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            tmp = path.with_name(path.name + ".part")
+            fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
             with os.fdopen(fd, "wb") as handle:
                 handle.write(message.body)
+            os.replace(tmp, path)  # a file left by a crash before the row was written is simply replaced
             picture = path.name
         text = message.body.decode("utf-8") if message.kind == TEXT else ""
         with self.db:
             self.db.execute("INSERT OR IGNORE INTO messages (id, contact, outgoing, kind, text, picture, time, state, "
-                            "warning) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            "warning, arrived) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             (message.id, contact, int(outgoing), message.kind, text, picture, message.time, state,
-                             warning))
+                             warning, self.clock()))
+
+    def waiting_from(self, contact: bytes) -> int:
+        """Received messages from this contact still waiting for your decision."""
+        marks = ",".join("?" * len(WAITING_STATES))
+        return self.db.execute(f"SELECT COUNT(*) FROM messages WHERE contact = ? AND outgoing = 0 AND state IN ({marks})",
+                               (contact, *WAITING_STATES)).fetchone()[0]
 
     def has_message(self, contact: bytes, message_id: str) -> bool:
         return self.db.execute("SELECT 1 FROM messages WHERE contact = ? AND id = ?",
@@ -211,7 +220,7 @@ class Store:
         marks = ",".join("?" * len(WAITING_STATES))
         where = f"state IN ({marks})" if waiting else f"state NOT IN ({marks})"
         rows = self.db.execute("SELECT id, outgoing, kind, text, picture, time, state, warning FROM messages "
-                               f"WHERE contact = ? AND {where} ORDER BY time DESC LIMIT ?",
+                               f"WHERE contact = ? AND {where} ORDER BY arrived DESC, time DESC LIMIT ?",
                                (contact, *WAITING_STATES, limit)).fetchall()
         keys = ("id", "outgoing", "kind", "text", "picture", "time", "state", "warning")
         return [dict(zip(keys, row)) for row in reversed(rows)]

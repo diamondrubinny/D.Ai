@@ -6931,3 +6931,8 @@ msgstr "ملف {path} في مجلدك الرئيسي ({size} حرفًا)"
 #, python-brace-format
 msgid "Folder {path} in your home"
 msgstr "مجلد {path} في مجلدك الرئيسي"
+
+#: apps/dai-chat/dai_chat/cli.py
+#, python-brace-format
+msgid "Nothing to send: write the text on stdin (echo hello | dai-chat send {name})."
+msgstr "لا شيء للإرسال: اكتب النص على stdin ‏(echo hello | dai-chat send {name})."

@@ -31,7 +31,7 @@ Run = Callable[..., subprocess.CompletedProcess]
 DECODER = r"""
 import sys
 from PyQt6.QtCore import QBuffer, QByteArray, QIODevice, Qt
-from PyQt6.QtGui import QGuiApplication, QImageReader
+from PyQt6.QtGui import QGuiApplication, QImage, QImageReader
 
 app = QGuiApplication(["dai-chat-picture"])
 kind, side = sys.argv[1].encode(), int(sys.argv[2])
@@ -45,6 +45,11 @@ QImageReader.setAllocationLimit(512)
 image = reader.read()
 if image.isNull():
     sys.exit(3)
+# Only pixels come out: a QImage read from a file carries its text chunks (PNG tEXt/iTXt, JPEG comments) and
+# would write them back; an image built from the raw bits carries none.
+bits = image.constBits()
+bits.setsize(image.sizeInBytes())
+image = QImage(bytes(bits), image.width(), image.height(), image.bytesPerLine(), image.format()).copy()
 if max(image.width(), image.height()) > side:
     image = image.scaled(side, side, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
 out_kind = "PNG" if image.hasAlphaChannel() else "JPEG"

@@ -227,6 +227,22 @@ class CommandLineTests(unittest.TestCase):
         self.assertIn("Nothing is waiting", self.run_cli("requests")[1])
         self.assertIn("blocked Dana", self.run_cli("decline", "Dana")[1])
 
+    def test_send_takes_the_text_from_stdin_too(self):
+        """Review finding 13: a message on the command line is visible to every user in ps."""
+        self.run_cli("name", "Me")
+        dana = keys.Identity.generate()
+        danas = invite.make(keys.Identity.generate().public, dana.public)
+        self.assertEqual(self.run_cli("add", "Dana", danas)[0], 0)
+        db = store.Store(Path(self.tmp.name) / "data" / "dai" / "chat")
+        db.paired(invite.parse(danas).fingerprint, dana.public)
+        db.close()
+        with mock.patch("sys.stdin", io.StringIO("quiet words\n")):
+            code, said = self.run_cli("send", "Dana")
+        self.assertEqual(code, 0, said)
+        self.assertIn("me: quiet words", self.run_cli("read", "Dana")[1])
+        with mock.patch("sys.stdin", io.StringIO("")):
+            self.assertEqual(self.run_cli("send", "Dana")[0], 2)
+
     def test_unknown_contact_and_help(self):
         self.assertEqual(self.run_cli("send", "Nobody", "hi")[0], 2)
         self.assertEqual(self.run_cli()[0], 0)

@@ -94,6 +94,27 @@ class RealSandboxTests(unittest.TestCase):
         self.assertNotIn(b"SECRET-PLACE", out)
         self.assertNotIn(b"Exif", out)
 
+    def test_text_chunks_and_comments_go_too(self):
+        """Review finding 4: PNG text chunks and JPEG comments are metadata as much as EXIF; only pixels come out."""
+        comment = b"SECRET-PLACE lat=32.0853"
+        chunk = struct.pack(">I", len(b"Comment\0") + len(comment)) + b"tEXt" + b"Comment\0" + comment
+        chunk += struct.pack(">I", zlib.crc32(b"tEXtComment\0" + comment) & 0xFFFFFFFF)
+        png = _png(40, 30, color=6)
+        head_end = png.index(b"IDAT") - 4
+        tainted = png[:head_end] + chunk + png[head_end:]
+        self.assertIn(b"SECRET-PLACE", tainted)
+        out, mime = pictures.clean(tainted, sandbox=sandbox)
+        self.assertEqual(mime, "image/png")
+        self.assertNotIn(b"SECRET-PLACE", out)
+        self.assertNotIn(b"tEXt", out)
+        self.assertNotIn(b"iTXt", out)
+        jpeg, _ = pictures.clean(_png(40, 30, color=2), sandbox=sandbox)
+        marked = jpeg[:2] + b"\xff\xfe" + struct.pack(">H", len(comment) + 2) + comment + jpeg[2:]
+        out, mime = pictures.clean(marked, sandbox=sandbox)
+        self.assertEqual(mime, "image/jpeg")
+        self.assertNotIn(b"SECRET-PLACE", out)
+        self.assertNotIn(b"\xff\xfe", out)
+
     def test_large_photos_are_made_smaller(self):
         out, _ = pictures.clean(_png(5000, 200, color=2), sandbox=sandbox)
         width, height = struct.unpack(">HH", out[out.index(b"\xff\xc0") + 5:out.index(b"\xff\xc0") + 9])[::-1]

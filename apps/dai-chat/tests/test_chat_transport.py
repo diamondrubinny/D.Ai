@@ -11,6 +11,7 @@ import importlib.util
 import os
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 if importlib.util.find_spec("nacl") is None:  # python3-nacl, in Debian
@@ -232,6 +233,61 @@ class RefusalTests(Base):
         self.assertTrue(limit.allow("10.0.0.6"))
         clock[0] = 61
         self.assertTrue(limit.allow("10.0.0.5"))
+
+    def test_the_table_of_addresses_is_pruned(self):
+        clock = [0.0]
+        limit = transport.RateLimit(3, clock=lambda: clock[0])
+        for n in range(5000):
+            limit.allow(f"10.0.{n // 256}.{n % 256}")
+        clock[0] = 120
+        limit.allow("10.9.9.9")
+        self.assertLess(len(limit.seen), 10)
+
+
+class ThroughTorTests(Base):
+    """Review finding 2: connections through Tor all come from loopback; the limit is per contact named in
+    the HELLO, and connections that never say HELLO are capped, so one stranger cannot lock everyone out."""
+
+    async def test_one_stranger_holding_connections_does_not_block_a_contact(self):
+        self.bob.node.limit = transport.RateLimit(2)
+        idle = []
+        for _ in range(transport.MAX_PENDING + 3):   # silent connections from "Tor" (loopback), never a HELLO
+            reader, writer = await asyncio.open_connection("127.0.0.1", self.port)
+            idle.append(writer)
+        await asyncio.sleep(0.2)
+        self.assertLessEqual(len(self.bob.node.pending), transport.MAX_PENDING)
+        self.alice.write(self.bob, message.Message.text("still gets through"))
+        result = await self.send()
+        self.assertEqual(len(result.sent), 1)
+        for writer in idle:
+            writer.close()
+
+    async def test_the_limit_counts_per_contact_over_tor(self):
+        self.bob.node.limit = transport.RateLimit(2)
+        for _ in range(2):
+            await self.send()
+        with self.assertRaises(transport.TransportError):   # the third HELLO from Alice within a minute
+            await self.send()
+        carol = Person(Path(self.tmp.name), "Carol")
+        self.addCleanup(carol.store.close)
+        carol.knows(self.bob)
+        self.bob.knows(carol)
+        result = await asyncio.wait_for(carol.node.deliver(self.bob.identity.public, transport.tcp("127.0.0.1", self.port)), 20)
+        self.assertEqual(result.peer, self.bob.identity.public)   # Carol is a different key: not limited by Alice
+
+    async def test_too_much_in_one_session_ends_it_and_requests_are_capped(self):
+        self.bob.store.add_contact(store.Contact(self.alice.identity.public, "Alice", verified=True, accepted=False))
+        for n in range(transport.MAX_WAITING_REQUESTS + 5):
+            self.alice.write(self.bob, message.Message.text(f"request {n}"))
+        result = await self.send()
+        self.assertEqual(self.bob.store.waiting_from(self.alice.identity.public), transport.MAX_WAITING_REQUESTS)
+        self.assertEqual(len(result.deferred), 5)   # the rest stay queued with Alice, for after a yes
+        with mock.patch.object(transport, "MAX_RECEIVED_PER_SESSION", 3):
+            self.bob.store.accept(self.alice.identity.public)
+            for n in range(6):
+                self.alice.write(self.bob, message.Message.text(f"more {n}"))
+            with self.assertRaises(transport.TransportError):
+                await self.send()
 
 
 class SocksTests(unittest.IsolatedAsyncioTestCase):

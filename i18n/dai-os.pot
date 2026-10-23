@@ -286,7 +286,7 @@ msgid "A message from {name} was held because {why}. These are warning signs, no
 msgstr ""
 
 #. he: הודעה מאת {name} עוכבה: היא נראית חשודה.
-#: apps/dai-chat/dai_chat/service.py:114
+#: apps/dai-chat/dai_chat/service.py:115
 #, python-brace-format
 msgid "A message from {name} was held: it looks suspicious."
 msgstr ""
@@ -307,7 +307,7 @@ msgid "A new machine"
 msgstr ""
 
 #. he: הודעה חדשה מאת {name}
-#: apps/dai-chat/dai_chat/service.py:117
+#: apps/dai-chat/dai_chat/service.py:118
 #, python-brace-format
 msgid "A new message from {name}"
 msgstr ""
@@ -1204,7 +1204,7 @@ msgid "Compare symbols"
 msgstr ""
 
 #. he: השוו קודם את ששת הסמלים עם {name} (dai-chat symbols {name}): תמונות מתקבלות רק מאנשי קשר מאומתים.
-#: apps/dai-chat/dai_chat/cli.py:287
+#: apps/dai-chat/dai_chat/cli.py:292
 #, python-brace-format
 msgid "Compare the six symbols with {name} first (dai-chat symbols {name}): pictures are only accepted from verified contacts."
 msgstr ""
@@ -1328,7 +1328,7 @@ msgid "Could not listen: {why}"
 msgstr ""
 
 #. he: אין גישה לצרור המפתחות או לתיקיית הצ'אט.
-#: apps/dai-chat/dai_chat/cli.py:341
+#: apps/dai-chat/dai_chat/cli.py:346
 msgid "Could not reach the keyring or the chat folder."
 msgstr ""
 
@@ -1596,7 +1596,7 @@ msgid "Deleted {count} messages from this computer. {name} keeps their copy."
 msgstr ""
 
 #. he: נמחקו {count} הודעות ממתינות ו־{name} נחסמו.
-#: apps/dai-chat/dai_chat/cli.py:313
+#: apps/dai-chat/dai_chat/cli.py:318
 #, python-brace-format
 msgid "Deleted {count} waiting messages and blocked {name}."
 msgstr ""
@@ -3435,7 +3435,7 @@ msgid "No hardware details available here"
 msgstr ""
 
 #. he: אין הודעה מעוכבת עם המספר הזה.
-#: apps/dai-chat/dai_chat/cli.py:320
+#: apps/dai-chat/dai_chat/cli.py:325
 msgid "No held message with that number."
 msgstr ""
 
@@ -3829,6 +3829,12 @@ msgstr ""
 #. he: אין מה להסיר במתכון הזה.
 #: apps/dai-forge/dai_forge/cli.py:92
 msgid "Nothing to remove for this recipe."
+msgstr ""
+
+#. he: אין מה לשלוח: כתבו את הטקסט ב־stdin ‏(echo שלום | dai-chat send {name}).
+#: apps/dai-chat/dai_chat/cli.py:280
+#, python-brace-format
+msgid "Nothing to send: write the text on stdin (echo hello | dai-chat send {name})."
 msgstr ""
 
 #. he: אין הצעות כרגע.
@@ -4310,18 +4316,18 @@ msgid "Quarantine: {AV_QUARANTINE} (root only). Log: {AV_LOG}"
 msgstr ""
 
 #. he: בתור, בלי המיקום ופרטי המצלמה.
-#: apps/dai-chat/dai_chat/cli.py:303
+#: apps/dai-chat/dai_chat/cli.py:308
 #: apps/dai-chat/dai_chat/gui.py:593
 msgid "Queued, without its location and camera details."
 msgstr ""
 
 #. he: בתור. הפעילו את Diamond Chat כדי לשלוח.
-#: apps/dai-chat/dai_chat/cli.py:282
+#: apps/dai-chat/dai_chat/cli.py:287
 msgid "Queued. Turn Diamond Chat on to send it."
 msgstr ""
 
 #. he: בתור; תישלח כשהמחשב של {name} יהיה מחובר.
-#: apps/dai-chat/dai_chat/cli.py:280
+#: apps/dai-chat/dai_chat/cli.py:285
 #, python-brace-format
 msgid "Queued; it goes out when {name} is online."
 msgstr ""
@@ -5513,7 +5519,7 @@ msgid "That does not look like an e-mail address."
 msgstr ""
 
 #. he: הקובץ אינו תמונת PNG, JPEG או WebP של עד 25MB.
-#: apps/dai-chat/dai_chat/cli.py:298
+#: apps/dai-chat/dai_chat/cli.py:303
 #: apps/dai-chat/dai_chat/gui.py:588
 msgid "That file is not a PNG, JPEG or WebP picture up to 25 MB."
 msgstr ""
@@ -6823,7 +6829,7 @@ msgstr ""
 
 #. he: [תמונה]
 #: apps/dai-chat/dai_chat/cli.py:141
-#: apps/dai-chat/dai_chat/cli.py:331
+#: apps/dai-chat/dai_chat/cli.py:336
 #: apps/dai-chat/dai_chat/gui.py:462
 msgid "[a picture]"
 msgstr ""
@@ -7238,7 +7244,7 @@ msgid "low risk"
 msgstr ""
 
 #. he: אני
-#: apps/dai-chat/dai_chat/cli.py:329
+#: apps/dai-chat/dai_chat/cli.py:334
 msgid "me"
 msgstr ""
 
@@ -7805,7 +7811,7 @@ msgid "{count} image(s) blocked, to stop tracking."
 msgstr ""
 
 #. he: עוד {count} ממתינות להחלטה שלכם: dai-chat requests
-#: apps/dai-chat/dai_chat/cli.py:335
+#: apps/dai-chat/dai_chat/cli.py:340
 #, python-brace-format
 msgid "{count} more wait for your decision: dai-chat requests"
 msgstr ""
@@ -8097,7 +8103,7 @@ msgid "{name} sees none of your files, by design"
 msgstr ""
 
 #. he: ‏{name} שלחו הודעה. פתחו את Diamond Chat כדי לאשר או לדחות.
-#: apps/dai-chat/dai_chat/service.py:111
+#: apps/dai-chat/dai_chat/service.py:112
 #, python-brace-format
 msgid "{name} sent a message. Open Diamond Chat to accept or decline."
 msgstr ""
@@ -8176,7 +8182,7 @@ msgid "{name} · {n} pages · opened in the sandbox"
 msgstr ""
 
 #. he: ההודעות של {name} מוצגות מעכשיו (הודעות חשודות עדיין ימתינו לכם).
-#: apps/dai-chat/dai_chat/cli.py:308
+#: apps/dai-chat/dai_chat/cli.py:313
 #, python-brace-format
 msgid "{name}'s messages are shown from now on (suspicious ones still wait for you)."
 msgstr ""

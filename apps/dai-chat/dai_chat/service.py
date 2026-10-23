@@ -17,6 +17,7 @@ socket in the user's private runtime folder.
 from __future__ import annotations
 
 import asyncio
+import logging
 import json
 import os
 import socket
@@ -175,6 +176,11 @@ class Service:
             try:
                 result = await attempt(route)
             except transport.TransportError:
+                continue
+            except asyncio.CancelledError:
+                raise
+            except Exception:  # noqa: BLE001 - one contact's surprise is logged and backed off, not fatal
+                logging.getLogger("dai-chat").exception("an attempt failed unexpectedly")
                 continue
             if getattr(result, "deferred", None):  # they are not receiving now: try again later, not at once
                 break

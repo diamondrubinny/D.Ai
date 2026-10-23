@@ -13,7 +13,7 @@
   dai-chat contacts             your contacts, and the codes still waiting
   dai-chat symbols NAME         the six symbols to compare with NAME, by phone or face to face
   dai-chat verify NAME          after the symbols matched: NAME may now send you pictures
-  dai-chat send NAME TEXT...    a message (it waits on this computer until NAME is online)
+  dai-chat send NAME [TEXT...]  a message, from stdin without TEXT (it waits here until NAME is online)
   dai-chat send-picture NAME FILE   a picture, re-drawn first: its location and camera details are removed
   dai-chat read NAME            the conversation
   dai-chat delete NAME          delete the conversation here (NAME keeps their copy)
@@ -273,8 +273,13 @@ def main(argv: list[str] | None = None, stores: Callable[[Path], tuple[list, lis
                 show(say(lang, "Deleted {count} messages from this computer. {name} keeps their copy.",
                          "נמחקו {count} הודעות מהמחשב הזה. אצל {name} העותק נשאר.", count=count, name=contact.name))
                 return 0
-            if command == "send" and len(rest) >= 2:
-                words = " ".join(rest[1:])
+            if command == "send" and len(rest) >= 1:
+                # From stdin when it is not on the command line: argv is visible to every user in `ps`.
+                words = " ".join(rest[1:]) if len(rest) >= 2 else sys.stdin.read().strip()
+                if not words:
+                    show(say(lang, "Nothing to send: write the text on stdin (echo hello | dai-chat send {name}).",
+                             "אין מה לשלוח: כתבו את הטקסט ב־stdin ‏(echo שלום | dai-chat send {name}).", name=contact.name))
+                    return 2
                 store.add_message(contact.public, Message.text(words), outgoing=True, state="queued")
                 sent = service.poke(control_path()) is not None
                 show(say(lang, "Queued; it goes out when {name} is online.", "בתור; תישלח כשהמחשב של {name} יהיה מחובר.",

@@ -18,12 +18,14 @@ Rules that hold whoever connects:
   - a broken frame ends the connection: nothing that failed its check is kept;
   - each address gets a few handshakes a minute, then is told nothing.
 
-Tor is reached through its SOCKS port (a Unix socket in the user's runtime folder, tor.py), so nothing here
+Tor is reached through its SOCKS port (a Unix socket in the user's runtime folder, tor.py); connections from
+the internet arrive from Tor on loopback (the onion service forwards to 127.0.0.1), so nothing here
 knows an IP address for an onion contact.
 """
 from __future__ import annotations
 
 import asyncio
+import logging
 import re
 import struct
 import time
@@ -75,18 +77,32 @@ class Result:
     deferred: list[str] = field(default_factory=list)  # the contact is not receiving now: still queued
 
 
+MAX_PENDING = 16          # connections waiting to say HELLO; a newcomer evicts the one that waited longest
+MAX_RECEIVED_PER_SESSION = 200
+MAX_RECEIVED_BYTES_PER_SESSION = 64 * 1024 * 1024
+MAX_WAITING_REQUESTS = 50  # messages kept from a contact you have not accepted yet
+LOOPBACK = ("127.0.0.1", "::1", "local")
+
+
 class RateLimit:
+    """A few handshakes a minute per key. The key is the address on the local network; connections through Tor
+    all arrive from loopback (the onion forwards to 127.0.0.1), so there the key is the contact the HELLO
+    names: one stranger with the onion address cannot lock every contact out, only strain one name."""
+
     def __init__(self, per_minute: int = ATTEMPTS_PER_MINUTE, clock: Callable[[], float] = time.monotonic) -> None:
         self.per_minute, self.clock = per_minute, clock
         self.seen: dict[str, deque] = defaultdict(deque)
 
-    def allow(self, address: str) -> bool:
-        now, times = self.clock(), self.seen[address]
+    def allow(self, key: str) -> bool:
+        now, times = self.clock(), self.seen[key]
         while times and now - times[0] > 60:
             times.popleft()
         if len(times) >= self.per_minute:
             return False
         times.append(now)
+        if len(self.seen) > 4096:  # forget keys whose minute passed, so the table cannot grow without end
+            for stale in [k for k, t in self.seen.items() if not t or now - t[-1] > 60]:
+                del self.seen[stale]
         return True
 
 
@@ -109,15 +125,25 @@ class Node:
         self.clean = clean or (lambda data: pictures.clean(data, scan_first=True))
         self.idle_timeout = idle_timeout
         self.limit = RateLimit()
+        self.pending: list[asyncio.StreamWriter] = []  # connections that have not said HELLO yet, oldest first
 
     # the responder side: a contact connected to us
     async def handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> Result | None:
         peer_address = writer.get_extra_info("peername")
-        address = peer_address[0] if isinstance(peer_address, tuple) else "local"  # Tor arrives on a Unix socket
+        address = peer_address[0] if isinstance(peer_address, tuple) else "local"  # Tor forwards to loopback
+        through_tor = address in LOOPBACK
+        if len(self.pending) >= MAX_PENDING:  # the one that has waited longest without a HELLO makes room
+            oldest = self.pending.pop(0)
+            oldest.transport.abort()
+        self.pending.append(writer)
         try:
-            if not self.limit.allow(address):
+            if not through_tor and not self.limit.allow(address):
                 return None
             hello = await read_frame(reader, max(HELLO_SIZE, pairing.PAIR_MAX), HANDSHAKE_TIMEOUT)
+            if writer in self.pending:
+                self.pending.remove(writer)
+            if through_tor and not self.limit.allow("tor:" + (hello[33:65].hex() if hello[:1] != pairing.MARK else "pair")):
+                return None
             if hello[:1] == pairing.MARK:
                 await self._answer_pairing(hello, writer)
                 return None
@@ -127,7 +153,12 @@ class Node:
             return await self._exchange(session, reader, writer)
         except (HandshakeError, pairing.PairingError, TransportError, ConnectionError):
             return None  # a stranger or a broken connection learns nothing more
+        except Exception:  # noqa: BLE001 - one contact's surprise must not stop the service for the others
+            logging.getLogger("dai-chat").exception("a connection failed unexpectedly")
+            return None
         finally:
+            if writer in self.pending:
+                self.pending.remove(writer)
             await _close(writer)
 
     async def _answer_pairing(self, frame: bytes, writer: asyncio.StreamWriter) -> None:
@@ -181,6 +212,11 @@ class Node:
             return await self._exchange(session, reader, writer)
         except HandshakeError as exc:
             raise TransportError("the other computer is not this contact") from exc
+        except (TransportError, asyncio.CancelledError):
+            raise
+        except Exception as exc:  # noqa: BLE001 - a surprise from one contact is a failed delivery, not a crash
+            logging.getLogger("dai-chat").exception("delivery failed unexpectedly")
+            raise TransportError(f"delivery failed ({exc.__class__.__name__})") from exc
         finally:
             await _close(writer)
 
@@ -188,6 +224,7 @@ class Node:
                         writer: asyncio.StreamWriter) -> Result:
         """Sending and reading run side by side: two queues of big pictures must not wait on each other."""
         peer, result = session.peer, Result(session.peer)
+        received_count = received_bytes = 0
         queued = self.store.queued(peer)
         waiting = set(queued)
         outbox: asyncio.Queue = asyncio.Queue()
@@ -235,6 +272,10 @@ class Node:
                         self.store.set_state(peer, incoming.id, incoming.state)
                         (result.refused if incoming.state == "refused" else result.sent).append(incoming.id)
                 else:
+                    received_count += 1
+                    received_bytes += len(incoming.body)
+                    if received_count > MAX_RECEIVED_PER_SESSION or received_bytes > MAX_RECEIVED_BYTES_PER_SESSION:
+                        raise TransportError("the contact sent too much in one session")
                     state = await self._receive(peer, incoming, result)
                     outbox.put_nowait(msg.Message.receipt(incoming.id, state))
         except SessionError as exc:
@@ -261,6 +302,8 @@ class Node:
                 return "refused"
             incoming = msg.Message(msg.PICTURE, body, incoming.id, incoming.time, mime=mime)
         if not self.store.has_message(peer, incoming.id):
+            if not (contact and contact.accepted) and self.store.waiting_from(peer) >= MAX_WAITING_REQUESTS:
+                return "deferred"  # a contact you have not accepted cannot fill the disk; they may try later
             verdict = await asyncio.to_thread(self.check, incoming.kind, incoming.body)
             state = ("request" if not (contact and contact.accepted) else
                      "held" if verdict.suspicious else "delivered")

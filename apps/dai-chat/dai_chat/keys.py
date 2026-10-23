@@ -85,6 +85,7 @@ class KeyringStore:
         """`kind` is "identity", or "onion" for the key of the Tor onion service (tor.py)."""
         self.run, self.kind = run, kind
         self.attributes = ATTRIBUTES[:3] + [kind]
+        self.answered = False
 
     def available(self) -> bool:
         try:
@@ -94,8 +95,11 @@ class KeyringStore:
         return result.returncode in (0, 1)  # 1: nothing stored yet, but the keyring answered
 
     def load(self) -> bytes | None:
+        """The seed, or None; `answered` says whether the keyring itself replied (nothing stored is an answer)."""
+        self.answered = False
         try:
             result = self.run(["secret-tool", "lookup", *self.attributes], capture_output=True, text=True, timeout=10)
+            self.answered = result.returncode in (0, 1)
             data = base64.b64decode((result.stdout or "").strip(), validate=True) if result.returncode == 0 else b""
         except (OSError, subprocess.TimeoutExpired, ValueError):
             return None
@@ -111,12 +115,22 @@ class KeyringStore:
             raise OSError("the keyring refused to store the key")
 
 
+class KeyringLocked(OSError):
+    """The keyring is there but did not answer (locked, or slow): try again later, never make a new identity."""
+
+
 def load_or_create(stores: list) -> tuple[Identity, str]:
-    """The identity from the first store that has one; otherwise a new one, saved in the first store that works."""
+    """The identity from the first store that has one; otherwise a new one, saved in the first store that works.
+
+    A store that exists but cannot be read right now (a locked keyring at login, a timeout) stops the search:
+    generating a second identity behind it would give this computer two names and two onion addresses."""
     for store in stores:
         seed = store.load()
         if seed:
             return Identity(SigningKey(seed)), store.where
+        if isinstance(store, KeyringStore) and not store.answered:
+            if store.available():
+                raise KeyringLocked("the keyring did not answer; the identity waits for it")
     identity = Identity.generate()
     for store in stores:
         try:

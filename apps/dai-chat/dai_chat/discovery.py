@@ -16,6 +16,7 @@ prove the identity (session.py).
 from __future__ import annotations
 
 import secrets
+import ipaddress
 import socket
 import time
 from dataclasses import dataclass
@@ -46,6 +47,19 @@ def tags_now(fpr: bytes, when: float | None = None) -> set[str]:
     """This hour's tag and the hours on either side, so clocks a little apart still find each other."""
     now = time.time() if when is None else when
     return {tag(fpr, now), tag(fpr, now - HOUR), tag(fpr, now + HOUR)}
+
+
+def local_address(text: str) -> bool:
+    """A private or link-local address (RFC 1918, 169.254/16, fc00::/7, fe80::/10), as a LAN neighbour has."""
+    try:
+        address = ipaddress.ip_address(text)
+    except ValueError:
+        return False
+    return any(address in network for network in LOCAL_NETWORKS)
+
+
+LOCAL_NETWORKS = tuple(ipaddress.ip_network(n) for n in
+                       ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "fc00::/7", "fe80::/10"))
 
 
 @dataclass(frozen=True)
@@ -95,13 +109,14 @@ class Discovery:
         wanted = tags_now(fpr)
         return [seen for seen in self.seen.values() if seen.tag in wanted]
 
-    # zeroconf's ServiceListener
+    # zeroconf's ServiceListener (an address from the network is only ever a local one: a record that names
+    # an internet host would make this computer connect there directly, outside Tor, with its real address)
     def add_service(self, zc, type_: str, name: str) -> None:
         info = zc.get_service_info(type_, name, timeout=3000)
         if info is None or (self.info is not None and name == self.info.name):
             return
         found = (info.properties or {}).get(b"t", b"")
-        addresses = info.parsed_addresses()
+        addresses = [a for a in info.parsed_addresses() if local_address(a)]  # never a public address from mDNS
         if isinstance(found, bytes) and len(found) == 16 and addresses and 0 < (info.port or 0) < 65536:
             self.seen[name] = Seen(found.decode("ascii", "replace"), addresses[0], info.port)
 

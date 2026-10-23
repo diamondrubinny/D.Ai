@@ -6,6 +6,7 @@ The attacks tried here: an impostor, a replayed or altered message, a message ou
 someone else, a weak ephemeral key, a forged picture, a path in a message id.
 """
 import stat
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -188,6 +189,12 @@ class MessageTests(unittest.TestCase):
         for junk in (b"", b"\x01\xff\xff\xff\xff", b"\x09\x00\x00\x00\x02{}"):
             with self.assertRaises(message.MessageError):
                 message.decode(junk)
+        # Review finding 3: a header that is JSON but not an object, or a boolean time, is malformed, not a crash.
+        good = message.Message.text("hi").encode()
+        for header in (b"[]", b'"x"', b"1", b"null", b'{"id": "' + b"a" * 32 + b'", "time": true}'):
+            frame = good[:1] + struct.pack(">I", len(header)) + header + b"hi"
+            with self.assertRaises(message.MessageError):
+                message.decode(frame)
 
 
 class StoreTests(unittest.TestCase):
@@ -219,6 +226,29 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(len(self.store.conversation(self.dana)), 2)
         self.assertEqual(self.store.delete_conversation(self.dana), 2)
         self.assertEqual(list((Path(self.tmp.name) / "chat" / "pictures").iterdir()), [])
+
+    def test_conversation_order_is_arrival_not_the_senders_clock(self):
+        """Review finding 10: a contact cannot backdate a message into old history."""
+        clock = [1000.0]
+        self.store.clock = lambda: clock[0]
+        first = message.Message.text("first")
+        self.store.add_message(self.dana, first, outgoing=False, state="delivered")
+        clock[0] = 2000.0
+        backdated = message.Message.text("looks old")
+        backdated.time = 1.0
+        self.store.add_message(self.dana, backdated, outgoing=False, state="delivered")
+        self.assertEqual([m["text"] for m in self.store.conversation(self.dana)], ["first", "looks old"])
+        self.assertEqual(self.store.waiting_from(self.dana), 0)
+        self.store.add_message(self.dana, message.Message.text("req"), outgoing=False, state="request")
+        self.assertEqual(self.store.waiting_from(self.dana), 1)
+
+    def test_a_picture_file_left_by_a_crash_does_not_block_the_message(self):
+        picture = message.Message.picture(PNG, "image/png")
+        leftover = Path(self.tmp.name) / "chat" / "pictures" / f"{self.dana.hex()[:16]}-{picture.id}.png"
+        leftover.write_bytes(b"half")
+        self.store.add_message(self.dana, picture, outgoing=False, state="delivered")
+        self.assertEqual(leftover.read_bytes(), PNG)
+        self.assertEqual(len(self.store.conversation(self.dana)), 1)
 
     def test_changing_a_contact_keeps_the_history(self):
         self.store.add_message(self.dana, message.Message.text("hi"), outgoing=True, state="queued")
@@ -271,6 +301,26 @@ class KeyStorageTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             _, where = keys.load_or_create([keys.KeyringStore(stuck), keys.FileStore(Path(tmp) / "identity")])
+            self.assertEqual(where, "file")
+
+    def test_a_locked_keyring_never_makes_a_second_identity(self):
+        """Review finding 1: a keyring that is present but did not answer stops the search; nothing is generated."""
+        def locked(argv, **kwargs):
+            if argv[1] == "search":
+                return subprocess.CompletedProcess(argv, 0, "", "")      # the keyring is there
+            raise subprocess.TimeoutExpired(argv, 10)                    # but it waits for a password
+
+        with tempfile.TemporaryDirectory() as tmp:
+            file_store = keys.FileStore(Path(tmp) / "identity")
+            with self.assertRaises(keys.KeyringLocked):
+                keys.load_or_create([keys.KeyringStore(locked), file_store])
+            self.assertFalse(file_store.path.exists())
+
+        def absent(argv, **kwargs):
+            raise OSError("no secret-tool")                              # no keyring at all: the file is right
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _, where = keys.load_or_create([keys.KeyringStore(absent), keys.FileStore(Path(tmp) / "identity")])
             self.assertEqual(where, "file")
 
     def test_signatures(self):

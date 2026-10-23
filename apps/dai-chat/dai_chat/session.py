@@ -111,18 +111,18 @@ class Initiator:
 
     def hello(self) -> bytes:
         e = bytes(self._ephemeral.public_key)
-        return bytes([VERSION]) + e + self.me.public + self.me.sign(PROTOCOL + b"hello" + e + self.peer)
+        return bytes([VERSION]) + e + self.me.public + self.me.sign(PROTOCOL + bytes([VERSION]) + b"hello" + e + self.peer)
 
     def finish(self, reply: bytes) -> Session:
         if len(reply) != REPLY_SIZE:
             raise HandshakeError("not a Diamond Chat reply")
         e_peer, signature = reply[:32], reply[32:]
         e_mine = bytes(self._ephemeral.public_key)
-        if not verify(self.peer, PROTOCOL + b"reply" + e_peer + e_mine + self.me.public, signature):
+        if not verify(self.peer, PROTOCOL + bytes([VERSION]) + b"reply" + e_peer + e_mine + self.me.public, signature):
             raise HandshakeError("the other computer is not the contact it claims to be")
         shared = _shared(bytes(self._ephemeral), e_peer)
         self._ephemeral = None  # forward secrecy: the private half is gone after this point
-        send, receive = _keys(shared, e_mine + e_peer + self.me.public + self.peer)
+        send, receive = _keys(shared, bytes([VERSION]) + e_mine + e_peer + self.me.public + self.peer)
         return Session(send, receive, self.peer, _label_out=b"I>R", _label_in=b"R>I")
 
 
@@ -138,12 +138,12 @@ class Responder:
         e_peer, peer, signature = hello[1:33], hello[33:65], hello[65:]
         if not self.known(peer):
             raise HandshakeError("not a contact")
-        if not verify(peer, PROTOCOL + b"hello" + e_peer + self.me.public, signature):
+        if not verify(peer, PROTOCOL + bytes([VERSION]) + b"hello" + e_peer + self.me.public, signature):
             raise HandshakeError("the signature does not match the contact")
         ephemeral = PrivateKey.generate()
         e_mine = bytes(ephemeral.public_key)
-        reply = e_mine + self.me.sign(PROTOCOL + b"reply" + e_mine + e_peer + peer)
+        reply = e_mine + self.me.sign(PROTOCOL + bytes([VERSION]) + b"reply" + e_mine + e_peer + peer)
         shared = _shared(bytes(ephemeral), e_peer)
         del ephemeral
-        receive, send = _keys(shared, e_peer + e_mine + peer + self.me.public)
+        receive, send = _keys(shared, bytes([VERSION]) + e_peer + e_mine + peer + self.me.public)
         return reply, Session(send, receive, peer, _label_out=b"R>I", _label_in=b"I>R")

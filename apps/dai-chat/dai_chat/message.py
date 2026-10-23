@@ -90,11 +90,13 @@ def decode(frame: bytes) -> Message:
         header = json.loads(frame[5:5 + size].decode("utf-8"))
     except (UnicodeDecodeError, ValueError) as exc:
         raise MessageError("bad header") from exc
+    if not isinstance(header, dict):
+        raise MessageError("bad header")
     body = frame[5 + size:]
     message_id, when = header.get("id"), header.get("time")
     if not isinstance(message_id, str) or not ID.match(message_id):
         raise MessageError("bad id")
-    if not isinstance(when, (int, float)) or not 0 < when < 2 ** 33:
+    if isinstance(when, bool) or not isinstance(when, (int, float)) or not 0 < when < 2 ** 33:
         raise MessageError("bad time")
     if kind == TEXT:
         if len(body) > MAX_TEXT:
