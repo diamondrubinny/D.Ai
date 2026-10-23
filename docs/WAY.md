@@ -32,6 +32,11 @@ exact:                                     ← the catalog's own form (what expo
   @ firewall.open_port port=8080 proto=tcp source=lan
   @ appearance.theme theme=day
 
+files:                                     ← folders and small text files in the home (stage 3)
+  Documents/School/
+  Documents/Welcome.txt: Hello! This computer is yours.
+  Documents/Rules.md < rules.md            ← the text comes from a file next to this one
+
 when:                                      ← a schedule, a colon, a sentence (user scope only; stage 2)
   every evening at 20:00: dark theme
   every morning at 7:00: light theme
@@ -49,6 +54,12 @@ use: shared/office.dway                    ← another file, from the same folde
   ואותו יומן ("Way when: NAME"; `dai-tune undo` מבטל גם הרצה כזו). **רק משפטים בהיקף משתמש**: טיימר לא יכול
   לבקש סיסמת מנהל, ולכן משפט מערכת ("memory saver on") נדחה כבר ב־`check`, עם מספר השורה. אין כאן סקריפט ואין
   AI: המשפט נשמר כטקסט ומפורש מחדש בכל הרצה דרך הפרסר הדטרמיניסטי.
+- **שורת `files:`** (`קבצים:`) היא תיקייה (`Documents/School/`), קובץ טקסט עם התוכן אחרי נקודתיים, או קובץ שתוכנו
+  מגיע מקובץ שכן (`< rules.md`, מאותה תיקייה בלבד, כמו `use:`). כל שורה היא פעולה `way.file` בהיקף משתמש, עם
+  גבולות קשיחים: נתיב יחסי לבית בלבד, בלי `..`, בלי רכיבים מוסתרים (לא `.config`, לא `.local`), בלי `.desktop`,
+  טקסט UTF-8 עד 64 KB, קובץ נכתב 0644 ותיקייה 0755 (לעולם לא קובץ הרצה). קובץ שכבר קיים עם תוכן אחר נדחה
+  ב־`check` ("exists with other content"); אותו תוכן הוא לא־פעולה. `undo` מוחק קובץ שנוצר ומסיר תיקייה שנוצרה
+  אם היא ריקה; תיקיות־אב שנוצרו בדרך נשארות. `export` לא כותב קבצים (הם של המשתמש, לא של המחשב).
 - **שורה מדויקת** היא פעולה מהקטלוג עם הפרמטרים שלה; מספרים ו־true/false מזוהים, רשימות מופרדות בפסיק.
 - הכול הופך ל**תוכנית אחת** של D.Ai Tune: כל הצעדים, היקף (משתמש/מערכת), סיכון, מה מחליש. אין הרצה חלקית:
   משפט אחד שלא מובן, והקובץ נדחה לפני שמשהו קורה (`dai-way check`).
@@ -78,17 +89,20 @@ use: shared/office.dway                    ← another file, from the same folde
 ## 5. מה לא (עדיין)
 
 ‏`when:` עם משפטי מערכת (טיימר לא יכול לבקש מנהל; אולי דרך מדיניות ארגונית בהמשך); אוטומציות עם סקריפט (אלה של
-Evolve, שנכתבות על ידי Diamond ואינן דטרמיניסטיות: נשארות ב־Forge); קבצים ותיקיות;
+Evolve, שנכתבות על ידי Diamond ואינן דטרמיניסטיות: נשארות ב־Forge); קבצים מחוץ לבית, קבצים מוסתרים, קבצים
+בינאריים או גדולים (העתקה היא עניין של גיבוי, לא של קובץ הגדרה);
 מדיניות ארגונית (`policy.d` כבר קיימת, docs/EDU.md); ייצוא של אפליקציות ש־Forge בנה.
 
 ## 6. בדיקות
 
 יחידה: הפרסר (שתי השפות, משתנים, כותרות, שגיאות עם מספרי שורה, `use:` ומגבלותיו); התוכנית (משפטים + מתכונים +
 שורות מדויקות → תוכנית אחת; משפט לא מובן דוחה הכול); `when:` (לוח זמנים לא מובן, משפט מערכת, שם יציב, קובצי
-היחידות, run-when מחיל ומתעד, when_off); export → check חוזר (גם שורות `when:`); CLI. ‏VM: `way: a computer in one file`
+היחידות, run-when מחיל ומתעד, when_off); `files:` (תיקייה, קובץ עם טקסט, `<` מקובץ שכן, כל גבול נתיב נדחה, קיים
+עם תוכן אחר נדחה, undo מוחק); export → check חוזר (גם שורות `when:`); CLI. ‏VM: `way: a computer in one file`
 (דוגמה מובנית נבדקת, מוחלת בהיקף משתמש, מבוטלת; export נבדק); `way: when, a timer runs a sentence` (קובץ עם
-`when:`, הטיימר מופיע ב־systemctl --user, run-when מחיל, undo של ההרצה ושל הטיימר, משפט מערכת נדחה).
+`when:`, הטיימר מופיע ב־systemctl --user, run-when מחיל, undo של ההרצה ושל הטיימר, משפט מערכת נדחה); `way: files
+in the home` (תיקייה וקובץ נוצרים, `..` ו־`.config` נדחים, undo מוחק).
 
 ## 7. מצב
 
-✅ שלב 1 (השפה, תוכנית אחת, export) ושלב 2 (`when:` טיימרים בהיקף משתמש) נבנו ואומתו ב־CI: ריצה 39911193558, 132 בדיקות VM עוברות כולל `way: a computer in one file` ו־`way: when, a timer runs a sentence`. הבא: קבצים ותיקיות, מדיניות ארגונית.
+✅ שלב 1 (השפה, תוכנית אחת, export) ושלב 2 (`when:` טיימרים בהיקף משתמש) נבנו ואומתו ב־CI: ריצה 39911193558, 132 בדיקות VM עוברות כולל `way: a computer in one file` ו־`way: when, a timer runs a sentence`. שלב 3 (`files:`) נבנה; הבא: מדיניות ארגונית.

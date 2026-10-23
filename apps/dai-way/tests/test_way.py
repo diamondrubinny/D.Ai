@@ -303,3 +303,63 @@ class WhenTests(WayTestCase):
         self.assertEqual(self.run_cli("undo")[0], 0)
         self.assertTrue(stored.exists())
         self.assertTrue((units / f"dai-way-{name}.timer").exists())
+
+
+class FilesTests(WayTestCase):
+    """files: lines (docs/WAY.md §2, stage 3): folders and small text files in the home, with hard limits."""
+
+    def run_cli(self, *args):
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err), mock.patch.object(planner, "load_library", lambda: self.library), \
+                mock.patch.dict(os.environ, {"LANG": "en_US.UTF-8"}):
+            code = cli.main(["dai-way", *args], self.ctx)
+        return code, out.getvalue(), err.getvalue()
+
+    def test_files_lines_parse_and_keep_hashes_in_content(self):
+        program = language.parse_text("files:\n  Documents/School/\n  Documents/Hi.txt: Hello # not a comment\n  Rules.md < rules.md\nקבצים:\n  Documents/שיעור/\n", "f.dway")
+        self.assertEqual([l.text for l in program.home_files], ["Documents/School/", "Documents/Hi.txt: Hello # not a comment", "Rules.md < rules.md", "Documents/שיעור/"])
+        self.assertEqual(language.split_file("Documents/School/"), ("Documents/School/", ""))
+        self.assertEqual(language.split_file("Documents/Hi.txt: Hello # x"), ("Documents/Hi.txt", "Hello # x"))
+        self.write("rules.md", "# Rules\nBe kind.\n")
+        self.assertEqual(language.split_file("Rules.md < rules.md", self.base), ("Rules.md", "# Rules\nBe kind.\n"))
+        for line, words in (("Rules.md < ../rules.md", "same folder"), ("Rules.md < missing.md", "cannot read"), ("nocolon", "expected")):
+            with self.subTest(line), self.assertRaises(language.WayError) as caught:
+                language.split_file(line, self.base)
+            self.assertIn(words, caught.exception.message)
+
+    def test_compile_refuses_escaping_hidden_and_conflicting_paths(self):
+        for text, words in (
+            ("files:\n  ../x.txt: no\n", ".."),
+            ("files:\n  /etc/x.txt: no\n", "inside your home"),
+            ("files:\n  .config/autostart/x.desktop: no\n", "hidden"),
+            ("files:\n  Desktop/run.desktop: [Desktop Entry]\n", ".desktop"),
+            ("files:\n  Documents/Dir/: text\n", "no content"),
+        ):
+            with self.subTest(words):
+                compiled = planner.compile_program(language.parse_text(text, "f.dway"), self.ctx, self.library)
+                self.assertEqual(len(compiled.problems), 1, compiled.problems)
+                self.assertIn("f.dway:2", compiled.problems[0])
+                self.assertIn(words, compiled.problems[0])
+        (self.base / "home/Documents").mkdir()
+        (self.base / "home/Documents/Hi.txt").write_text("other")
+        compiled = planner.compile_program(language.parse_text("files:\n  Documents/Hi.txt: Hello\n", "f.dway"), self.ctx, self.library)
+        self.assertIn("exists with other content", compiled.problems[0])
+        same = planner.compile_program(language.parse_text("files:\n  Documents/Hi.txt: other\n", "f.dway"), self.ctx, self.library)
+        self.assertEqual(same.problems, [])
+
+    def test_apply_creates_and_undo_removes(self):
+        self.write("rules.md", "# Rules\n")
+        path = self.write("f.dway", "diamond: files\nfiles:\n  Documents/School/\n  Documents/School/Hi.txt: Hello\n  Documents/Rules.md < rules.md\n")
+        code, out, err = self.run_cli("apply", str(path), "--yes")
+        self.assertEqual((code, err), (0, ""), out)
+        home = self.base / "home"
+        self.assertTrue((home / "Documents/School").is_dir())
+        self.assertEqual((home / "Documents/School/Hi.txt").read_text(), "Hello")
+        self.assertEqual(oct((home / "Documents/School/Hi.txt").stat().st_mode & 0o777), "0o644")
+        self.assertEqual((home / "Documents/Rules.md").read_text(), "# Rules\n")
+        self.assertIn("Folder Documents/School/", out)
+        self.assertEqual(self.run_cli("undo")[0], 0)
+        self.assertFalse((home / "Documents/School/Hi.txt").exists())
+        self.assertFalse((home / "Documents/School").exists())
+        self.assertFalse((home / "Documents/Rules.md").exists())
+        self.assertTrue((home / "Documents").is_dir())      # a parent made along the way stays

@@ -6921,3 +6921,13 @@ msgstr "المفاتيح المحفوظة تبقى في إعدادات كل مس
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
 msgstr "سياسة المؤسسة تمنع مزوّدي الذكاء الاصطناعي الخارجيين على هذا الحاسوب (dai-tune policy)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "File {path} in your home ({size} characters)"
+msgstr "ملف {path} في مجلدك الرئيسي ({size} حرفًا)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Folder {path} in your home"
+msgstr "مجلد {path} في مجلدك الرئيسي"

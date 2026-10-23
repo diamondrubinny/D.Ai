@@ -6921,3 +6921,13 @@ msgstr "Сохранённые ключи остаются в настройка
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
 msgstr "Политика организации запрещает внешних поставщиков ИИ на этом компьютере (dai-tune policy)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "File {path} in your home ({size} characters)"
+msgstr "Файл {path} в вашем домашнем каталоге ({size} символов)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Folder {path} in your home"
+msgstr "Папка {path} в вашем домашнем каталоге"

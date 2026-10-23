@@ -21,6 +21,7 @@ HEADINGS = {
     "apps": "apps", "אפליקציות": "apps", "applications": "apps",
     "exact": "exact", "מדויק": "exact",
     "when": "when", "כאשר": "when", "מתי": "when",
+    "files": "home_files", "קבצים": "home_files",
 }
 NAME_KEYS = ("diamond", "יהלום")
 LET_KEYS = ("let", "יהי", "תהי")
@@ -55,11 +56,12 @@ class Program:
     apps: list[Line] = field(default_factory=list)      # recipe ids, recipe sentences, Flathub ids
     exact: list[Line] = field(default_factory=list)     # "@ action.id key=value ..."
     when: list[Line] = field(default_factory=list)      # "SCHEDULE: SENTENCE" (a user timer)
+    home_files: list[Line] = field(default_factory=list)   # files: "Folder/", "File.txt: text", "File.md < other.md"
     files: list[str] = field(default_factory=list)      # the file and what it included, in order
 
     @property
     def empty(self) -> bool:
-        return not (self.setup or self.apps or self.exact or self.when)
+        return not (self.setup or self.apps or self.exact or self.when or self.home_files)
 
 
 def _split_key(line: str) -> tuple[str, str] | None:
@@ -80,7 +82,8 @@ def parse_text(text: str, file: str = "<text>", values: dict[str, str] | None = 
     program = Program(values=dict(values or {}), files=[file])
     section = ""
     for number, raw in enumerate(lines, 1):
-        stripped = raw.split("#", 1)[0].rstrip() if not raw.lstrip().startswith("@") else raw.rstrip()
+        keep_hash = raw.lstrip().startswith("@") or (section == "home_files" and raw[:1].isspace())
+        stripped = raw.rstrip() if keep_hash else raw.split("#", 1)[0].rstrip()
         if not stripped.strip():
             continue
         indented = stripped[:1].isspace()
@@ -110,7 +113,7 @@ def parse_text(text: str, file: str = "<text>", values: dict[str, str] | None = 
                 section = HEADINGS[keyword]
                 continue
         if not section:
-            raise WayError("expected a heading first: setup:, apps:, exact: or when:", number, file)
+            raise WayError("expected a heading first: setup:, apps:, exact:, when: or files:", number, file)
         getattr(program, section).append(Line(content, number, file))
     if not defer:
         _substitute_all(program)
@@ -118,7 +121,7 @@ def parse_text(text: str, file: str = "<text>", values: dict[str, str] | None = 
 
 
 def _substitute_all(program: Program) -> None:
-    for name in ("setup", "apps", "exact", "when"):
+    for name in ("setup", "apps", "exact", "when", "home_files"):
         lines = getattr(program, name)
         lines[:] = [Line(_substitute(line.text, program.values, line.number, line.file), line.number, line.file) for line in lines]
 
@@ -152,12 +155,40 @@ def parse(path: Path, depth: int = 0, values: dict[str, str] | None = None) -> P
         program.apps += other.apps
         program.exact += other.exact
         program.when += other.when
+        program.home_files += other.home_files
         program.files += other.files
         if not program.name:
             program.name = other.name
     if depth == 0:
         _substitute_all(program)
     return program
+
+
+def split_file(line: str, folder: Path | None = None) -> tuple[str, str]:
+    """A files: line → (relative path, content). "Dir/" is a folder; "a.txt: text"; "a.md < b.md" reads b.md next to the .dway."""
+    if line.endswith("/"):
+        return line, ""
+    source = re.search(r"\s<\s*([^\s<>]+)$", line)
+    if source:
+        path, name = line[:source.start()].strip(), source.group(1)
+        if "/" in name.replace("\\", "/") or name.startswith("."):
+            raise WayError(f"< only a file from the same folder ({name})")
+        if folder is None:
+            raise WayError("< needs a file on disk")
+        try:
+            data = (folder / name).read_bytes()
+        except OSError as exc:
+            raise WayError(f"< cannot read {name}: {exc.strerror or exc}") from exc
+        if len(data) > MAX_BYTES:
+            raise WayError(f"< {name} is larger than {MAX_BYTES // 1024} KB")
+        try:
+            return path, data.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise WayError(f"< {name} is not UTF-8 text") from exc
+    path, sep, content = line.partition(":")
+    if not sep or not path.strip():
+        raise WayError("expected: Folder/, File.txt: text, or File.md < other.md")
+    return path.strip(), content.strip()
 
 
 def split_when(line: str) -> tuple[str, str]:

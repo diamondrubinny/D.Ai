@@ -9,16 +9,17 @@ with its line number, and a Program with problems has no plan. Nothing is applie
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from dai_forge.recipes import Library, find, install_requests, load_library
 from dai_forge.schedule import ScheduleError
 from dai_forge.schedule import parse as _parse_schedule
-from dai_tune.catalog import CATALOG, ValidationError, way_sentence_requests
+from dai_tune.catalog import CATALOG, ValidationError, way_relative_path, way_sentence_requests
 from dai_tune.context import Context
 from dai_tune.parser import Request, parse as parse_sentence
 from dai_tune.planner import Plan, build_plan
 
-from .language import APP_ID, Line, Program, WayError, parse_exact, split_when, when_name
+from .language import APP_ID, Line, Program, WayError, parse_exact, split_file, split_when, when_name
 
 
 @dataclass
@@ -43,7 +44,8 @@ def _where(line: Line) -> str:
     return f"{line.file}:{line.number}"
 
 
-def compile_program(program: Program, ctx: Context, library: Library | None = None) -> Compiled:
+def compile_program(program: Program, ctx: Context, library: Library | None = None, folder: Path | None = None) -> Compiled:
+    """folder: where the .dway lives (for files: lines that read a neighbour with <)."""
     out = Compiled()
     library = library or load_library()
     for line in program.setup:
@@ -97,6 +99,14 @@ def compile_program(program: Program, ctx: Context, library: Library | None = No
         name = when_name(schedule_text, sentence)
         out.requests.append(Request("way.when", {"name": name, "schedule": schedule.to_json(), "sentence": sentence},
                                     f"{_where(line)}: {line.text}"))
+    for line in program.home_files:
+        try:
+            path, content = split_file(line.text, folder)
+            path = way_relative_path(path)
+        except (WayError, ValidationError) as exc:
+            out.problems.append(f"{_where(line)}: {getattr(exc, 'message', exc)}")
+            continue
+        out.requests.append(Request("way.file", {"path": path, "content": content}, f"{_where(line)}: {line.text[:60]}"))
     if out.problems:
         return out
     if not out.requests:

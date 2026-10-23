@@ -539,6 +539,14 @@ def main() -> int:
          lambda o: "BAD_RC=2" in o and "administrator" in o and "APPLY_RC=0" in o and "TIMER=enabled" in o and "LISTED=1" in o
          and "RUN_RC=0" in o and "JOURNALED=1" in o and "UNDO_RUN_RC=0" in o and "EXPORTED=1" in o and "REMOVE_RC=0" in o
          and "AFTER=enabled" not in o and "No timers" in o, 120),
+        # Diamond's Way, files: (docs/WAY.md §2): a folder and a text file in the home; hidden or escaping paths refused.
+        ("way: files in the home", "printf 'diamond: desk files\nfiles:\n  Documents/Way/\n  Documents/Way/hello.txt: shalom\n' > /tmp/files.dway; "
+         "printf 'files:\n  ../etc/x.txt: no\n' > /tmp/files-bad.dway; printf 'files:\n  .config/autostart/x.desktop: no\n' > /tmp/files-bad2.dway; "
+         "dai-way check /tmp/files-bad.dway; echo BAD1_RC=$?; dai-way check /tmp/files-bad2.dway; echo BAD2_RC=$?; "
+         "dai-way apply /tmp/files.dway --yes; echo APPLY_RC=$?; cat ~/Documents/Way/hello.txt; stat -c 'MODE=%a' ~/Documents/Way/hello.txt; "
+         "dai-way undo >/dev/null; echo UNDO_RC=$?; test -e ~/Documents/Way/hello.txt || echo FILE_GONE; test -d ~/Documents/Way || echo DIR_GONE", True,
+         lambda o: "BAD1_RC=2" in o and "BAD2_RC=2" in o and "hidden" in o and "APPLY_RC=0" in o and "shalom" in o
+         and "MODE=644" in o and "UNDO_RC=0" in o and "FILE_GONE" in o and "DIR_GONE" in o, 120),
         # D.Ai Captions (docs/BEYOND.md §13): whisper's test file through the chunk pipeline, with the real model.
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "

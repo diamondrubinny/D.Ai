@@ -6921,3 +6921,13 @@ msgstr "Les clés déjà enregistrées restent dans la configuration de chaque u
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
 msgstr "Une politique de l'organisation interdit les fournisseurs d'IA externes sur cet ordinateur (dai-tune policy)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "File {path} in your home ({size} characters)"
+msgstr "Fichier {path} dans votre dossier personnel ({size} caractères)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Folder {path} in your home"
+msgstr "Dossier {path} dans votre dossier personnel"

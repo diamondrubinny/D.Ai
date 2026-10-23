@@ -47,7 +47,7 @@ def load(path: str, ctx: Context):
     except WayError as exc:
         print(_say(lang, "✗ {error}", "✗ {error}", error=exc), file=sys.stderr)
         return None, None
-    compiled = compile_program(program, ctx)
+    compiled = compile_program(program, ctx, folder=Path(path).resolve().parent)
     if compiled.problems:
         print(_say(lang, "✗ {name}: {n} problem(s); nothing was changed.", "✗ {name}: {n} בעיות; לא בוצע שום שינוי.",
                    name=program.name or path, n=len(compiled.problems)), file=sys.stderr)

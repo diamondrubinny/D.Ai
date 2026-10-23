@@ -6921,3 +6921,13 @@ msgstr "As chaves já guardadas ficam na configuração de cada utilizador mas n
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
 msgstr "Uma política da organização proíbe fornecedores de IA externos neste computador (dai-tune policy)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "File {path} in your home ({size} characters)"
+msgstr "Ficheiro {path} na sua pasta pessoal ({size} caracteres)"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Folder {path} in your home"
+msgstr "Pasta {path} na sua pasta pessoal"

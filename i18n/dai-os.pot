@@ -2183,6 +2183,12 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+#. he: קובץ {path} בבית שלך ({size} תווים)
+#: apps/dai-tune/dai_tune/catalog.py:2339
+#, python-brace-format
+msgid "File {path} in your home ({size} characters)"
+msgstr ""
+
 #. he: קובץ: {name}
 #: apps/dai-pdf/dai_pdf/cli.py:99
 #, python-brace-format
@@ -2335,6 +2341,12 @@ msgstr ""
 #: apps/dai-focus/dai_focus/cli.py:169
 #, python-brace-format
 msgid "Focus: {n} minutes"
+msgstr ""
+
+#. he: תיקייה {path} בבית שלך
+#: apps/dai-tune/dai_tune/catalog.py:2338
+#, python-brace-format
+msgid "Folder {path} in your home"
 msgstr ""
 
 #. he: תיקיות
@@ -4479,7 +4491,7 @@ msgid "Remove the metadata (author, program, dates) before sharing"
 msgstr ""
 
 #. he: הסרת הטיימר {name} (דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2317
+#: apps/dai-tune/dai_tune/catalog.py:2401
 #, python-brace-format
 msgid "Remove the timer {name} (Diamond's Way)"
 msgstr ""
@@ -4627,7 +4639,7 @@ msgid "Run ▶"
 msgstr ""
 
 #. he: רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo
-#: apps/dai-tune/dai_tune/catalog.py:2306
+#: apps/dai-tune/dai_tune/catalog.py:2390
 msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
 msgstr ""
 
@@ -8344,7 +8356,7 @@ msgid "{value}% CPU"
 msgstr ""
 
 #. he: {when}: {sentence} (טיימר, דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2292
+#: apps/dai-tune/dai_tune/catalog.py:2376
 #, python-brace-format
 msgid "{when}: {sentence} (a timer, Diamond's Way)"
 msgstr ""

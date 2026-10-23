@@ -2260,6 +2260,90 @@ def _way_restore(params: Params, ctx: Context, extra: dict) -> None:
         ctx.run(["systemctl", "--user", "enable", "--now", _way_target(name, schedule)], check=False)
 
 
+# files: (docs/WAY.md §2, stage 3): a folder or a small text file in the home, never hidden, never executable.
+WAY_FILE_MAX = 64 * 1024
+WAY_PATH_RE = re.compile(r"^[^\0]{1,200}$")
+
+
+def way_relative_path(value: Any) -> str:
+    """"Documents/School/" or "Documents/Welcome.txt": relative, visible, inside the home; the error says why not."""
+    if not isinstance(value, str) or not WAY_PATH_RE.match(value) or not value.strip():
+        raise ValidationError("path: 1 to 200 characters")
+    text = value.strip().replace("\\", "/")
+    if text.startswith("/") or text.startswith("~"):
+        raise ValidationError(f"path: only inside your home, as a relative path ({text})")
+    parts = [part for part in text.split("/") if part]
+    if not parts or any(part in ("..", ".") for part in parts):
+        raise ValidationError(f"path: no .. or . in a path ({text})")
+    if any(part.startswith(".") for part in parts):
+        raise ValidationError(f"path: hidden files and folders are not written by a .dway file ({text})")
+    if parts[-1].lower().endswith(".desktop") and not text.endswith("/"):
+        raise ValidationError("path: a .desktop file is not written by a .dway file")
+    return "/".join(parts) + ("/" if text.endswith("/") else "")
+
+
+def _way_file_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"path", "content"})
+    path = way_relative_path(params.get("path"))
+    content = params.get("content", "")
+    if path.endswith("/"):
+        if content:
+            raise ValidationError("content: a folder has no content")
+        return {"path": path, "content": ""}
+    if not isinstance(content, str):
+        raise ValidationError("content: text")
+    if len(content.encode("utf-8")) > WAY_FILE_MAX:
+        raise ValidationError(f"content: larger than {WAY_FILE_MAX // 1024} KB")
+    target = ctx.user_path(path)
+    if target.is_symlink() or (target.exists() and not target.is_file()):
+        raise ValidationError(f"path: {path} exists and is not a plain file")
+    if target.is_file() and read_text(target, None) != content:
+        raise ValidationError(f"path: {path} exists with other content; it is not replaced")
+    return {"path": path, "content": content}
+
+
+def _way_file_apply(params: Params, ctx: Context) -> None:
+    target = ctx.user_path(params["path"].rstrip("/"))
+    if params["path"].endswith("/"):
+        if target.is_symlink() or (target.exists() and not target.is_dir()):
+            raise ActionError(f"{params['path']} exists and is not a folder")
+        target.mkdir(parents=True, exist_ok=True, mode=0o755)
+        return
+    if target.is_file() and read_text(target, None) == params["content"]:
+        return
+    write_file(target, params["content"], mode=0o644)
+
+
+def _way_file_capture(params: Params, ctx: Context) -> dict:
+    return {"existed": ctx.user_path(params["path"].rstrip("/")).exists()}
+
+
+def _way_file_restore(params: Params, ctx: Context, extra: dict) -> None:
+    # A file is already back from the snapshot (gone, when it was new); a new, now empty folder goes too.
+    if params["path"].endswith("/") and not extra.get("existed"):
+        target = ctx.user_path(params["path"].rstrip("/"))
+        try:
+            target.rmdir()
+        except OSError:
+            pass
+
+
+register(ActionSpec(
+    id="way.file",
+    scope="user",
+    validate=_way_file_validate,
+    apply=_way_file_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Folder {path} in your home", "תיקייה {path} בבית שלך", path=p["path"]) if p["path"].endswith("/")
+                             else _t(lang, "File {path} in your home ({size} characters)", "קובץ {path} בבית שלך ({size} תווים)",
+                                     path=p["path"], size=len(p["content"]))),
+    files=lambda p, c: [] if p["path"].endswith("/") else [c.user_path(p["path"])],
+    capture=_way_file_capture,
+    restore=_way_file_restore,
+))
+
+
 def way_timers(ctx: Context) -> list[tuple[str, dict]]:
     """(name, {"schedule": …, "sentence": …}) for every timer Diamond's Way installed."""
     out = []
