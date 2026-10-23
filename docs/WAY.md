@@ -88,3 +88,7 @@ Evolve, שנכתבות על ידי Diamond ואינן דטרמיניסטיות: 
 היחידות, run-when מחיל ומתעד, when_off); export → check חוזר (גם שורות `when:`); CLI. ‏VM: `way: a computer in one file`
 (דוגמה מובנית נבדקת, מוחלת בהיקף משתמש, מבוטלת; export נבדק); `way: when, a timer runs a sentence` (קובץ עם
 `when:`, הטיימר מופיע ב־systemctl --user, run-when מחיל, undo של ההרצה ושל הטיימר, משפט מערכת נדחה).
+
+## 7. מצב
+
+✅ שלב 1 (השפה, תוכנית אחת, export) ושלב 2 (`when:` טיימרים בהיקף משתמש) נבנו ואומתו ב־CI: ריצה 39911193558, 132 בדיקות VM עוברות כולל `way: a computer in one file` ו־`way: when, a timer runs a sentence`. הבא: קבצים ותיקיות, מדיניות ארגונית.
