@@ -192,7 +192,7 @@ in `SPONSORS.md`.
 
 ## Contributing
 
-Contributions are welcome. Please read `CONTRIBUTING.md` first. The project uses the Developer Certificate of Origin (DCO), so sign off your commits with `git commit -s`. Please follow `CODE_OF_CONDUCT.md`.
+Contributions are welcome. Please read `CONTRIBUTING.md` first. What must hold before a release leaves alpha is in `docs/PRODUCTION.md`. The project uses the Developer Certificate of Origin (DCO), so sign off your commits with `git commit -s`. Please follow `CODE_OF_CONDUCT.md`.
 
 ## License and credits
 
