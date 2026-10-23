@@ -30,3 +30,7 @@ Fusion כסגנון Qt (ה־QSS שלנו מכסה), התנהגות ומקשים.
 ב־xmllint. ‏labwc 0.8 מחפש לכל כפתור `NAME-active.svg` ו־`NAME-inactive.svg` (לא `NAME.svg`: הריצה הראשונה
 ציירה את הביטמפים המובנים), ולכן לכל יהלום יש גרסה פעילה וגרסה עמומה לחלון לא פעיל; Raz על כל חלון (הגופן משנה רוחבים); צילומי מסך ב־CI: `desktop.png`, `settings.png`, `store.png`,
 `captions.png`, ‏`login.png` — ואז לתוך ה־README.
+
+## 5. מצב
+
+✅ נדחף ואומת ב־CI (ריצה 39863732422): רקע Night 2, Inter עם Noto Sans Hebrew כנפילה, פאנל 60/28, כפתורי יהלום ב־labwc (שמות `NAME-active/-inactive.svg`), צל ופינות 12px; צילומי המסך ב־docs/screenshots רועננו מהריצה הזו.
