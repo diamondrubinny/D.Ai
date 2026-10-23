@@ -661,6 +661,15 @@ def _env_seconds(path: Path, key: str) -> int | None:
 
 # Set by an organization policy for every user (docs/EDU.md §2); read by the labwc autostart.
 POLICY_SESSION_ENV = "/etc/dai/policy-session.env"
+# Set by an organization policy (docs/PROVIDERS.md §4c): external AI providers forbidden for every user.
+POLICY_AI_ENV = "/etc/dai/policy-ai.env"
+
+
+def policy_forbids_providers(ctx: Context) -> bool:
+    for line in read_text(ctx.path(POLICY_AI_ENV)).splitlines():
+        if line.strip() == "DAI_AI_PROVIDERS=forbidden":
+            return True
+    return False
 
 
 def policy_lock_max_seconds(ctx: Context) -> int:
@@ -2041,6 +2050,8 @@ def _provider_validate(params: Params, ctx: Context) -> Params:
         raise ValidationError("name: 'local' or a provider set up with dai-models provider")
     if name == "local":
         return {"name": "local"}
+    if policy_forbids_providers(ctx):
+        raise ValidationError("name: an organization policy forbids external AI providers on this computer (dai-tune policy)")
     config = _providers_module().load(ctx.user_path(PROVIDERS_FILE))
     provider = config.providers.get(name)
     if provider is None:
@@ -2056,6 +2067,36 @@ def _provider_apply(params: Params, ctx: Context) -> None:
     config = providers.load(path)
     config.active = "" if params["name"] == "local" else params["name"]
     providers.save(config, path)
+
+
+def _providers_policy_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"allowed"})
+    return {"allowed": _bool(params.get("allowed", False))}
+
+
+def _providers_policy_apply(params: Params, ctx: Context) -> None:
+    path = ctx.path(POLICY_AI_ENV)
+    if params["allowed"]:
+        if path.exists():
+            path.unlink()
+        return
+    update_env_file(path, {"DAI_AI_PROVIDERS": "forbidden"}, mode=0o644)
+
+
+register(ActionSpec(
+    id="ai.providers_policy",
+    scope="system",
+    validate=_providers_policy_validate,
+    apply=_providers_policy_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral" if p["allowed"] else "hardens",
+    summary=lambda p, lang: (_t(lang, "Every user: external AI providers are allowed again", "כל המשתמשים: ספקי AI חיצוניים מותרים שוב") if p["allowed"]
+                             else _t(lang, "Every user: Diamond answers on this computer only, no external AI providers",
+                                     "כל המשתמשים: Diamond עונה במחשב הזה בלבד, בלי ספקי AI חיצוניים")),
+    files=lambda p, c: [c.path(POLICY_AI_ENV)],
+    note=lambda p, lang: "" if p["allowed"] else _t(lang, "Keys already saved stay in each user's config but are not used; dai-models provider use refuses.",
+                                                     "מפתחות שכבר נשמרו נשארים בהגדרות של כל משתמש אך לא בשימוש; dai-models provider use מסרב."),
+))
 
 
 register(ActionSpec(

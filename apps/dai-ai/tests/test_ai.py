@@ -437,3 +437,29 @@ class StreamingTests(unittest.TestCase):
                 for piece in client.chat([{"role": "user", "content": "hi"}]):
                     out.append(piece)
         self.assertEqual(out, ["first"])
+
+
+class PolicyTests(unittest.TestCase):
+    """docs/PROVIDERS.md §4c: under a forbidding policy every task is local and use refuses."""
+
+    def test_policy_file_routes_everything_local_and_use_refuses(self):
+        from dai_ai import providers as p, providers_cli as cli
+        with tempfile.TemporaryDirectory() as root, mock.patch.dict(os.environ, {"DAI_ROOT": root, "LANG": "en_US.UTF-8"}):
+            self.assertFalse(p.policy_forbids())
+            config = p.Config()
+            config.providers["anthropic"] = p.make("anthropic")
+            config.providers["anthropic"].key = "k"
+            p.record_consent(config, "anthropic")
+            self.assertEqual(config.for_task("general").name, "anthropic")
+            path = Path(root) / "etc/dai/policy-ai.env"
+            path.parent.mkdir(parents=True)
+            path.write_text("DAI_AI_PROVIDERS=forbidden\n")
+            self.assertTrue(p.policy_forbids())
+            self.assertIsNone(config.for_task("general"))
+            self.assertEqual(p.where(config)["general"], "local")
+            with tempfile.TemporaryDirectory() as home, mock.patch.dict(os.environ, {"HOME": home, "XDG_CONFIG_HOME": home + "/.config"}):
+                p.save(config)
+                out = io.StringIO()
+                with redirect_stdout(out), redirect_stderr(out):
+                    self.assertEqual(cli.main(["use", "anthropic"], ask=lambda prompt: "yes"), 1)
+                self.assertIn("policy", out.getvalue())

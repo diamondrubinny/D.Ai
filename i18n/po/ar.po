@@ -6905,3 +6905,19 @@ msgstr "✗ لا يوجد مؤقّت باسم {name}"
 #, python-brace-format
 msgid "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed."
 msgstr "✗ {name}: لم تعد الجملة تُنتج خطة ضمن نطاق المستخدم؛ لم يتغيّر شيء."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: Diamond answers on this computer only, no external AI providers"
+msgstr "لكل مستخدم: يجيب Diamond على هذا الحاسوب فقط، بلا مزوّدي ذكاء اصطناعي خارجيين"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: external AI providers are allowed again"
+msgstr "لكل مستخدم: مزوّدو الذكاء الاصطناعي الخارجيون مسموحون من جديد"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Keys already saved stay in each user's config but are not used; dai-models provider use refuses."
+msgstr "المفاتيح المحفوظة تبقى في إعدادات كل مستخدم لكنها لا تُستخدم؛ dai-models provider use يرفض."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
+msgstr "سياسة المؤسسة تمنع مزوّدي الذكاء الاصطناعي الخارجيين على هذا الحاسوب (dai-tune policy)"

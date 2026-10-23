@@ -230,6 +230,8 @@ def _choices(key: str) -> tuple[tuple[str, tuple[str, str]], ...]:
 
 
 def read_ai(ctx: Context) -> str:
+    if catalog.policy_forbids_providers(ctx):
+        return "local"
     try:
         from dai_ai import providers
         return providers.load(ctx.user_path(catalog.PROVIDERS_FILE)).active or "local"
@@ -240,6 +242,8 @@ def read_ai(ctx: Context) -> str:
 def _ai_choices() -> tuple[tuple[str, tuple[str, str]], ...]:
     """local, and every provider the person agreed to (read when the window opens)."""
     choices = [("local", ("on this computer (Diamond)", "במחשב הזה (Diamond)"))]
+    if catalog.policy_forbids_providers(Context()):
+        return tuple(choices)
     try:
         from dai_ai import providers
         for provider in providers.load().providers.values():

@@ -6905,3 +6905,19 @@ msgstr "✗ нет таймера с именем {name}"
 #, python-brace-format
 msgid "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed."
 msgstr "✗ {name}: фраза больше не даёт план в пределах пользователя; ничего не изменено."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: Diamond answers on this computer only, no external AI providers"
+msgstr "Для всех пользователей: Diamond отвечает только на этом компьютере, без внешних поставщиков ИИ"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: external AI providers are allowed again"
+msgstr "Для всех пользователей: внешние поставщики ИИ снова разрешены"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Keys already saved stay in each user's config but are not used; dai-models provider use refuses."
+msgstr "Сохранённые ключи остаются в настройках каждого пользователя, но не используются; dai-models provider use отказывает."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
+msgstr "Политика организации запрещает внешних поставщиков ИИ на этом компьютере (dai-tune policy)"

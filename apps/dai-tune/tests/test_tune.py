@@ -348,6 +348,27 @@ class ExecutorTests(TuneTestCase):
         self.assertFalse((units / "dai-way-dark-theme-1.timer").exists())
         self.assertEqual(catalog.way_timers(self.ctx), [])
 
+    def test_providers_policy_forbids_external_ai_for_every_user(self):
+        """docs/PROVIDERS.md §4c: a system-scope policy switch; diamond.provider then refuses anything but local."""
+        self.assertEqual(parser.parse("no external AI providers").requests[0].action, "ai.providers_policy")
+        self.assertEqual(parser.parse("no external AI providers").requests[0].params, {"allowed": False})
+        self.assertEqual(parser.parse("בלי ספקי AI חיצוניים").requests[0].params, {"allowed": False})
+        self.assertEqual(parser.parse("allow external AI providers").requests[0].params, {"allowed": True})
+        spec = catalog.CATALOG["ai.providers_policy"]
+        self.assertEqual(spec.scope, "system")
+        spec.apply(spec.validate({"allowed": False}, self.ctx), self.ctx)
+        self.assertTrue(catalog.policy_forbids_providers(self.ctx))
+        self.assertIn("DAI_AI_PROVIDERS=forbidden", self.ctx.path(catalog.POLICY_AI_ENV).read_text())
+        self.assertEqual(oct(self.ctx.path(catalog.POLICY_AI_ENV).stat().st_mode & 0o777), "0o644")
+        choice = catalog.CATALOG["diamond.provider"]
+        self.assertEqual(choice.validate({"name": "local"}, self.ctx), {"name": "local"})
+        with self.assertRaises(ValidationError) as caught:
+            choice.validate({"name": "anthropic"}, self.ctx)
+        self.assertIn("policy", str(caught.exception))
+        spec.apply(spec.validate({"allowed": True}, self.ctx), self.ctx)
+        self.assertFalse(catalog.policy_forbids_providers(self.ctx))
+        self.assertIn("ספקי AI", spec.summary({"allowed": False}, "he"))
+
     def test_diamond_provider_choice_needs_a_consented_provider(self):
         """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""
         import sys

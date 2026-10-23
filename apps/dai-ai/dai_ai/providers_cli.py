@@ -85,6 +85,9 @@ def main(args: list[str], read_key: Callable[[str], str] = _read_key, ask: Calla
             provider = config.providers.get(name)
             if provider is None:
                 raise providers.ProviderError(say("unknown provider {name}", "ספק לא מוכר {name}", name=name))
+            if providers.policy_forbids():
+                raise providers.ProviderError(say("an organization policy forbids external AI providers on this computer (dai-tune policy)",
+                                                  "מדיניות ארגונית אוסרת ספקי AI חיצוניים במחשב הזה (dai-tune policy)"))
             tasks = tuple(t for t in _option(rest, "--tasks").split(",") if t in providers.TASKS) or provider.tasks
             provider.tasks = tasks
             if not provider.consented:

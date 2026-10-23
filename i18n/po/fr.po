@@ -6905,3 +6905,19 @@ msgstr "✗ aucun minuteur nommé {name}"
 #, python-brace-format
 msgid "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed."
 msgstr "✗ {name} : la phrase ne donne plus un plan au niveau utilisateur ; rien n'a été modifié."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: Diamond answers on this computer only, no external AI providers"
+msgstr "Pour tous les utilisateurs : Diamond répond uniquement sur cet ordinateur, sans fournisseur d'IA externe"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: external AI providers are allowed again"
+msgstr "Pour tous les utilisateurs : les fournisseurs d'IA externes sont de nouveau autorisés"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Keys already saved stay in each user's config but are not used; dai-models provider use refuses."
+msgstr "Les clés déjà enregistrées restent dans la configuration de chaque utilisateur mais ne sont pas utilisées ; dai-models provider use refuse."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
+msgstr "Une politique de l'organisation interdit les fournisseurs d'IA externes sur cet ordinateur (dai-tune policy)"

@@ -6905,3 +6905,19 @@ msgstr "✗ no hay ningún temporizador llamado {name}"
 #, python-brace-format
 msgid "✗ {name}: the sentence no longer makes a user-scope plan; nothing was changed."
 msgstr "✗ {name}: la frase ya no produce un plan de alcance de usuario; no se cambió nada."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: Diamond answers on this computer only, no external AI providers"
+msgstr "Para todos los usuarios: Diamond responde solo en este ordenador, sin proveedores de IA externos"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Every user: external AI providers are allowed again"
+msgstr "Para todos los usuarios: los proveedores de IA externos vuelven a estar permitidos"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Keys already saved stay in each user's config but are not used; dai-models provider use refuses."
+msgstr "Las claves ya guardadas se quedan en la configuración de cada usuario pero no se usan; dai-models provider use se niega."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "an organization policy forbids external AI providers on this computer (dai-tune policy)"
+msgstr "Una política de la organización prohíbe los proveedores de IA externos en este ordenador (dai-tune policy)"

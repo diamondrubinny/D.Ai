@@ -17,7 +17,7 @@
 מנהל המערכת (רכז מחשוב, ספק IT) כותב קובץ אחד:
 
 ```json
-{"format": 1, "name": "מחשבי כיתה", "apply": ["block usb storage", "turn off bluetooth", "lock the screen after 5 minutes", "enable automatic updates", "install gcompris-qt"]}
+{"format": 1, "name": "מחשבי כיתה", "apply": ["block usb storage", "turn off bluetooth", "lock the screen after 5 minutes", "enable automatic updates", "install gcompris-qt", "no external AI providers"]}
 ```
 
 ומעתיק אותו ל־`/etc/dai/policy.d/10-school.json` בכל מחשב, בכל דרך שנוחה: דיסק און קי, Ansible או חבילת deb משלו. המדיניות מוחלת **מיד**, כי `dai-policy.path` עוקב אחרי התיקייה, וגם **בכל אתחול** (`dai-policy.service`). מדיניות שלא השתנתה לא מוחלת שוב.
@@ -25,7 +25,7 @@
 | בקרה | |
 |------|-|
 | מי יכול לקבוע מדיניות | רק root: הקובץ חייב להיות בבעלות root, לא ניתן לכתיבה ע"י group/others, לא symlink, ועד 64KB. אחרת הוא נדחה |
-| מה מותר | רק פעולות מערכת מהקטלוג הסגור של D.Ai Tune (חסימת התקנים, חומת אש, עדכונים, חבילות, אזור זמן, שם מחשב וכו'). מהגדרות המשתמש, רק **נעילת מסך**: ‏"lock the screen after 5 minutes" הופך למגבלה לכל המשתמשים (§2.1). הגדרות משתמש אחרות נדחות עם הסבר |
+| מה מותר | רק פעולות מערכת מהקטלוג הסגור של D.Ai Tune (חסימת התקנים, חומת אש, עדכונים, חבילות, אזור זמן, שם מחשב וכו'). מהגדרות המשתמש, רק **נעילת מסך**: ‏"lock the screen after 5 minutes" הופך למגבלה לכל המשתמשים (§2.1); ו־**"no external AI providers"** משאיר את Diamond במחשב לכל המשתמשים (docs/PROVIDERS.md §4c). הגדרות משתמש אחרות נדחות עם הסבר |
 | שקיפות | `dai-tune policy` מראה לכל משתמש איזו מדיניות פעילה, מה היא עושה ומה נדחה ולמה. כל החלה נרשמת ביומן המערכת וב־syslog |
 | ביטול | כל החלה היא רשומה רגילה ביומן של Tune, ואפשר לבטל אותה. מחיקת קובץ מדיניות **לא** מבטלת אוטומטית את מה שהוחל |
 | דוגמה | `/usr/share/dai/policy-examples/school.json` (לא פעילה) |

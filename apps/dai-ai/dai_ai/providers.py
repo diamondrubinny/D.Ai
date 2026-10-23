@@ -78,11 +78,23 @@ class Config:
     providers: dict[str, Provider] = field(default_factory=dict)
 
     def for_task(self, task: str) -> Provider | None:
-        """The provider that serves this task, or None for local Diamond."""
+        """The provider that serves this task, or None for local Diamond (always None under a forbidding policy)."""
         provider = self.providers.get(self.active)
-        if provider is None or not provider.consented or task not in provider.tasks:
+        if provider is None or not provider.consented or task not in provider.tasks or policy_forbids():
             return None
         return provider
+
+
+POLICY_AI_ENV = "/etc/dai/policy-ai.env"   # written by D.Ai Tune's ai.providers_policy (docs/PROVIDERS.md §4c)
+
+
+def policy_forbids(root: Path | None = None) -> bool:
+    """True when an organization policy forbids external providers on this computer."""
+    path = (root or Path(os.environ.get("DAI_ROOT", "/"))) / POLICY_AI_ENV.lstrip("/")
+    try:
+        return any(line.strip() == "DAI_AI_PROVIDERS=forbidden" for line in path.read_text(encoding="utf-8").splitlines())
+    except OSError:
+        return False
 
 
 def config_path() -> Path:
