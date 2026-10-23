@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: The pages match their source, and pass the site checks
         run: |
           python3 build/scripts/site-build.py --check
@@ -32,7 +32,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/public"
           rsync -a --exclude src/ --exclude README.md --exclude _headers site/ "$RUNNER_TEMP/public/"
           touch "$RUNNER_TEMP/public/.nojekyll"
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ${{ runner.temp }}/public
 
@@ -47,4 +47,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
