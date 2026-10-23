@@ -33,7 +33,7 @@
   </header>
   <main id="main" class="wrap page">
     <h1>Privacy policy</h1>
-    <p class="updated">Version 1.1 · effective 19 October 2026</p>
+    <p class="updated">Version 1.2 · effective 23 October 2026</p>
 
     <p><strong>In short:</strong> this website collects nothing about you. It has no cookies and no trackers. D.Ai OS sends us nothing: its AI, dictation and search run on your computer. The only information that reaches us is what you choose to send, such as an e-mail you write to us.</p>
 
@@ -77,6 +77,9 @@
           <tr><td>Mail in J</td><td>To show your mail</td><td>As with your mail provider</td></tr>
           <tr><td>Backups (D.Ai Backup)</td><td>To restore files. Encrypted, on a drive you choose</td><td>According to the backup policy you chose</td></tr>
           <tr><td>Diamond Chat: contacts, messages and pictures</td><td>To show your conversations. Pictures are stored without their location and camera details</td><td>Until you delete them</td></tr>
+          <tr><td>The document index (D.Ai Find)</td><td>To find files by words inside them. Words from your documents, on your computer only</td><td>Rebuilt as files change; <code>dai-find index --clear</code> deletes it</td></tr>
+          <tr><td>Live captions (D.Ai Captions)</td><td>To show what is said as text. Sound is processed in five-second pieces and discarded</td><td>Nothing is kept</td></tr>
+          <tr><td>Timers from Diamond's Way and your API keys for AI providers (if you add any)</td><td>To run a sentence on time; to use a provider you chose</td><td>Until you remove them (keys are in a file only you can read)</td></tr>
         </tbody>
       </table>
     </div>
@@ -88,6 +91,10 @@
       <li><strong>The web:</strong> websites you visit in the Ruby browser see what any website sees. Ruby is set to block tracking, with Mozilla's telemetry and studies turned off. Add-ons and their updates come from Mozilla.</li>
       <li><strong>More software:</strong> when you install software from Flathub or another provider, its developer's privacy policy applies to it.</li>
       <li><strong>Diamond Chat</strong> (off until you turn it on): messages and pictures go directly from your computer to your contact's, end-to-end encrypted, on the local network or through the Tor network. Nothing passes through us, and there is no account. While Chat is on, your computer runs Tor: the Tor network sees that you use Tor, not whom you talk to or what you say. On the local network, if you turn that on, other computers can see that Diamond Chat is running there, without your name. Your contact's computer keeps its own copy of a conversation, and deleting a conversation deletes it only on yours.</li>
+      <li><strong>An AI provider of your choice</strong> (off until you set one up): if you add your own API key for a provider such as Anthropic, OpenAI or Google, the questions and code you give Diamond for the tasks you chose are sent to that provider, under its privacy terms and your contract with it, and nothing passes through us. You type your agreement once, you can go back to the local Diamond at any time, speech and dictation always stay on the computer, and an organization can forbid providers on its computers.</li>
+      <li><strong>Phone link</strong> (off until you set it up): KDE Connect pairs your phone with the computer on your local network only, with a code you confirm on both.</li>
+      <li><strong>Setting up mail:</strong> to find your mail server's settings, J asks your provider's domain and Thunderbird's public settings database for the configuration of that domain. Your address itself is sent only to your provider's own servers.</li>
+      <li><strong>Searching Flathub:</strong> D.Ai Store searches a copy of Flathub's catalogue that flatpak keeps on the computer; the words you type are not sent anywhere. Refreshing that copy, about once a day, contacts Flathub like any download.</li>
       <li><strong>Reporting a problem:</strong> <code>dai-raz report</code> creates a text with your user name, computer name, IP addresses, e-mail addresses and personal paths removed. It is shown to you, and nothing is sent. If you choose to post it on GitHub Issues, it becomes <strong>public</strong>.</li>
     </ul>
 
