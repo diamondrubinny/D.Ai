@@ -596,9 +596,9 @@ def main() -> int:
          "cat /etc/dai/policy-session.env; cat /etc/dai/policy-ai.env; dai-tune --dry-run 'never lock the screen' </dev/null; "
          "dai-tune --dry-run 'answer with anthropic' </dev/null; echo PROVIDER_RC=$?; "
          "printf 'diamond: CI way\nsetup:\n  block the camera\n' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/91-ci.dway; sleep 8; "
-         "dai-tune policy | grep -c 'CI way' | sed 's/^/WAY_POLICY=/'; test -f /etc/modprobe.d/dai-tune-uvcvideo.conf && echo WAY_POLICY_APPLIED; "
+         "dai-tune policy | grep -c 'CI way' | sed 's/^/WAY_POLICY=/'; test -f /etc/modprobe.d/dai-tune-camera.conf && echo WAY_POLICY_APPLIED; "
          "sudo rm -f /etc/dai/policy.d/90-ci.json /etc/dai/policy.d/91-ci.dway /etc/modprobe.d/dai-tune-usb_storage.conf "
-         "/etc/modprobe.d/dai-tune-uvcvideo.conf /etc/dai/policy-session.env /etc/dai/policy-ai.env", True,
+         "/etc/modprobe.d/dai-tune-camera.conf /etc/dai/policy-session.env /etc/dai/policy-ai.env", True,
          lambda o: "POLICY_APPLIED" in o and "applied" in o and "DAI_LOCK_MAX_SECONDS=300" in o
          and "at most 5 minutes" in o and "DAI_AI_PROVIDERS=forbidden" in o and "PROVIDER_RC=2" in o and "policy" in o
          and "WAY_POLICY=1" in o and "WAY_POLICY_APPLIED" in o, 150),
@@ -635,14 +635,14 @@ def main() -> int:
          lambda o: "/calamares" in o and "branding: dai" in o and "username: dai" in o
          and "show.qml" in o and "ON_DESKTOP" in o),
         # The language chosen in the installer reaches the installed system (docs/I18N.md §9): Calamares' locale
-        # and keyboard pages run, localecfg writes /etc/default/locale and keyboardq /etc/default/keyboard,
+        # and keyboard pages run (the keyboard page writes /etc/default/keyboard itself), localecfg writes /etc/default/locale,
         # and the login stack reads /etc/default/locale through pam_env, which is where ui_lang() looks (LANG).
-        ("installer: the language reaches the installed system", "for m in locale keyboard localecfg keyboardq; do "
+        ("installer: the language reaches the installed system", "for m in locale keyboard localecfg; do "
          "grep -qE \"^\\s*-\\s*$m\\b\" /etc/calamares/settings.conf && echo SEQ_$m; done; "
-         "ls /usr/lib/*/calamares/modules/ | grep -cE '^(localecfg|keyboardq)$' | sed 's/^/MODULES=/'; "
+         "ls /usr/lib/*/calamares/modules/ | grep -cE '^localecfg$' | sed 's/^/MODULES=/'; "
          "grep -rl 'default/locale' /etc/pam.d/ | wc -l | sed 's/^/PAM_ENV=/'; grep -c he_IL /usr/share/i18n/SUPPORTED | sed 's/^/HE=/'", True,
-         lambda o: "SEQ_locale" in o and "SEQ_keyboard" in o and "SEQ_localecfg" in o and "SEQ_keyboardq" in o
-         and "MODULES=2" in o and re.search(r"PAM_ENV=[1-9]", o) is not None and re.search(r"HE=[1-9]", o) is not None),
+         lambda o: "SEQ_locale" in o and "SEQ_keyboard" in o and "SEQ_localecfg" in o
+         and "MODULES=1" in o and re.search(r"PAM_ENV=[1-9]", o) is not None and re.search(r"HE=[1-9]", o) is not None),
         # Encryption: cryptsetup in the image and Calamares' automatic LUKS partitioning (on unless a
         # config turns it off; Calamares' default is true).
         ("installer: LUKS available", "test -x /usr/sbin/cryptsetup && echo CRYPTSETUP_OK; "
