@@ -179,7 +179,7 @@
 | Keys | Theft of the computer | The identity key in the keyring, the disk encrypted (LUKS) |
 | Past messages | A key stolen in the future | Ephemeral keys per conversation (forward secrecy) |
 
-## 4b. Internal security review (2026-10-23) and what it changed
+## 4b. Internal security review (2026-10-23) and what it changed (verified in CI run 40047206790)
 
 Before the external review (§6 item 6), an adversarial internal review of the protocol and the code was done
 (every finding verified against the code, three reproduced by running). Fixed in this round:
