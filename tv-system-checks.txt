@@ -1,0 +1,1163 @@
+[INFO] edition: tv (x86_64)
+[PASS] dai-release: cat /etc/dai-release
+        # SPDX-License-Identifier: Apache-2.0
+        # Copyright (c) 2026 Diamond Rubinny (d.Ai)
+        NAME="D.Ai OS"
+        EDITION=tv
+        VERSION="0.1.0-alpha"
+        AUTHOR="Diamond Rubinny (d.Ai)"
+        LICENSE="Apache-2.0"
+        BASE="Debian 13 (trixie)"
+        HOME_URL="https://github.com/diamondrubinny/D.Ai"
+[PASS] credit: cat /etc/dai-release; dai-tune --version
+        # SPDX-License-Identifier: Apache-2.0
+        # Copyright (c) 2026 Diamond Rubinny (d.Ai)
+        NAME="D.Ai OS"
+        EDITION=tv
+        VERSION="0.1.0-alpha"
+        AUTHOR="Diamond Rubinny (d.Ai)"
+        LICENSE="Apache-2.0"
+        BASE="Debian 13 (trixie)"
+        HOME_URL="https://github.com/diamondrubinny/D.Ai"
+        dai-tune 0.1.0 — Diamond Rubinny (d.Ai)
+[PASS] graphical target: systemctl get-default
+        graphical.target
+[PASS] display manager: systemctl is-active sddm
+        active
+[PASS] labwc compositor: pgrep -a -x labwc
+        1468 labwc -C /etc/dai/tv/labwc -S dai-tv-kodi
+[WARN] lxqt session: pgrep -a -x lxqt-session
+[WARN] lxqt panel: pgrep -a -x lxqt-panel
+[WARN] desktop: pgrep -a -f 'pcmanfm-qt --desktop'
+[PASS] pipewire: pgrep -a -x pipewire
+        1465 /usr/bin/pipewire
+        1466 /usr/bin/pipewire -c filter-chain.conf
+[PASS] network manager: systemctl is-active NetworkManager
+        active
+[PASS] firewall loaded: sudo nft list tables
+        table inet dai_filter
+[PASS] firewall input policy: sudo nft list chain inet dai_filter input
+        table inet dai_filter {
+        	chain input {
+        		type filter hook input priority filter; policy drop;
+        		ct state invalid drop
+        		ct state established,related accept
+        		iif "lo" accept
+        		meta l4proto ipv6-icmp accept
+        		ip6 saddr fe80::/10 udp sport 547 udp dport 546 accept
+        	}
+        }
+[PASS] apparmor enabled: cat /sys/module/apparmor/parameters/enabled
+        Y
+[PASS] kptr_restrict: cat /proc/sys/kernel/kptr_restrict
+        2
+[PASS] root locked: sudo passwd -S root
+        root L 2026-10-24 0 99999 7 -1
+[PASS] dai theme: grep -c 'D.Ai Night' /usr/share/lxqt/themes/dai/lxqt-panel.qss
+        1
+[PASS] dai-command: dai-command --version
+        dai-command 0.1.0 — Diamond Rubinny (d.Ai)
+[PASS] zram swap: cat /proc/swaps
+        Filename				Type		Size		Used		Priority
+        /dev/zram0                              partition	3036668		0		100
+[PASS] failed units: systemctl --failed --no-legend --plain
+[PASS] tune: version: dai-tune --version
+        dai-tune 0.1.0 — Diamond Rubinny (d.Ai)
+[PASS] tune: polkit action: pkaction --action-id io.github.diamondrubinny.dai.tune.apply
+        io.github.diamondrubinny.dai.tune.apply
+[PASS] tune: hebrew dry run: LANG=he_IL.UTF-8 dai-tune --dry-run "$(printf '\xd7\x97\xd7\xa1\xd7\x95\xd7\x9d\x20\xd7\x93\xd7\x99\xd7\xa1\xd7\xa7\x20\xd7\x90\xd7\x95\xd7\x9f\x20\xd7\xa7\xd7\x99\x20\xd7\x95\xd7\xa0\xd7\xa2\xd7\x9c\x20\xd7\x9e\xd7\xa1\xd7\x9a\x20\xd7\x90\xd7\x97\xd7\xa8\xd7\x99\x20\x35\x20\xd7\x93\xd7\xa7\xd7\x95\xd7\xaa')"
+        [1mD.Ai Tune — תוכנית שינויים  #1ae7ef3597b2[0m
+          1. 🛡 חסימת התקני אחסון USB
+             [32mמערכת · סיכון נמוך · מחזק אבטחה[0m
+             ↳ חל על התקנים שיחוברו מעכשיו. אין להפעיל אם המערכת עצמה רצה מכונן USB.
+          2. 🛡 נעילת מסך אחרי 5 דקות ללא פעילות
+             [32mמשתמש · סיכון נמוך · מחזק אבטחה[0m
+        (הרצת ניסיון — לא בוצע שינוי)
+[PASS] tune: block usb: DAI_TUNE_ELEVATE=sudo dai-tune --yes 'block usb storage' && cat /etc/modprobe.d/dai-tune-usb_storage.conf
+        [1mD.Ai Tune — change plan  #273ab8fa42fc[0m
+          1. 🛡 Block USB storage devices
+             [32msystem · low risk · hardens security[0m
+             ↳ Applies to newly connected drives. Do not use if the system itself runs from a USB drive.
+        [32m✓ Applied. To undo: dai-tune undo[0m
+        # Managed by dai-tune. Undo with: dai-tune undo
+        install usb_storage /bin/false
+        blacklist usb_storage
+        install uas /bin/false
+        blacklist uas
+[PASS] tune: undo usb: DAI_TUNE_ELEVATE=sudo dai-tune undo && test ! -e /etc/modprobe.d/dai-tune-usb_storage.conf && echo UNDONE
+        [32m✓ Undone: Block USB storage devices[0m
+        UNDONE
+[PASS] tune: refuse --yes when weakening: DAI_TUNE_ELEVATE=sudo dai-tune --yes 'open port 8080'; echo rc=$?
+        [1mD.Ai Tune — change plan  #bd02cf40fe2c[0m
+          1. ⚠ Open port 8080/tcp to the local network only
+             [33msystem · medium risk · WEAKENS security[0m
+        Refusing --yes: this plan weakens security and needs explicit confirmation.
+        Cancelled. Nothing was changed.
+        rc=1
+[PASS] tune: open port (confirmed): echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'open port 8080' && sudo nft list chain inet dai_filter input | grep -c 'dport 8080'
+        [1mD.Ai Tune — change plan  #bd02cf40fe2c[0m
+          1. ⚠ Open port 8080/tcp to the local network only
+             [33msystem · medium risk · WEAKENS security[0m
+        This plan WEAKENS security. Type "yes" to apply: [32m✓ Applied. To undo: dai-tune undo[0m
+        2
+[PASS] tune: undo port: DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'
+        0
+[PASS] offline app: the launcher and the sandbox: dai-tune --yes 'firefox does not go online' >/dev/null; echo RC=$?; grep -c '^Exec=dai-offline-run firefox -- ' ~/.local/share/applications/firefox-esr.desktop; dai-offline-run firefox -- sh -c 'echo LINKS_INSIDE=$(grep -c : /proc/net/dev); curl -s -m 5 -o /dev/null http://10.0.2.2:80/; echo INSIDE_RC=$?; test -e /dev/dri && echo GPU_SEEN; id -u'; echo LINKS_OUTSIDE=$(grep -c : /proc/net/dev); echo yes | dai-tune 'firefox goes online again' >/dev/null; echo RC2=$?; test -e ~/.local/share/applications/firefox-esr.desktop || echo OVERRIDE_GONE
+        RC=0
+        3
+        LINKS_INSIDE=1
+        INSIDE_RC=7
+        GPU_SEEN
+        1000
+        LINKS_OUTSIDE=2
+        RC2=0
+        OVERRIDE_GONE
+[PASS] tune: injection refused: DAI_TUNE_ELEVATE=sudo dai-tune --yes 'install vlc; rm -rf /tmp/x'; echo rc=$?
+        [1mD.Ai Tune — change plan  #6e3f56a9c3f4[0m
+          1. • Install: vlc
+             [0msystem · medium risk · neutral[0m
+             ↳ Packages come only from the signed Debian/D.Ai repositories.
+        [31m  ✗ Not understood: “rm -rf /tmp/x”[0m
+        Nothing was changed. Please rephrase the parts above.
+        rc=2
+[PASS] tune: security score: dai-tune status
+        [1;32mSecurity score: 85/100[0m
+          [32m✓[0m Firewall blocks unsolicited incoming traffic
+          [32m✓[0m No ports open to the whole internet
+          [32m✓[0m Automatic security updates
+          [32m✓[0m AppArmor application confinement
+          [31m✗[0m Disk encryption (live session: choose encryption in the installer)
+          [32m✓[0m Screen locks within 10 minutes (10 min)
+          [32m✓[0m SSH off or limited to the local network
+[PASS] ai: llama-server: LD_LIBRARY_PATH=/opt/dai/llama /opt/dai/llama/llama-server --version 2>&1
+        version: 0.5.0-dev (build 1, commit 0bb496d)
+        built with GNU 14.2.0 for Linux x86_64
+[PASS] ai: daid socket: systemctl --user is-active dai-daid.socket
+        active
+[PASS] ai: daid status: dai-ai status
+        model: none (dai-models install qwen2.5-0.5b)  running: False  provider: local
+[PASS] ai: daid has no network: systemctl --user show dai-daid.service -p RestrictAddressFamilies
+        RestrictAddressFamilies=AF_UNIX
+[WARN] panel: lxqt-panel version: dpkg-query -W -f='${Version}' lxqt-panel
+[PASS] panel: command field loaded: grep -c libdaicommand.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps
+        grep: /proc//maps: No such file or directory
+[WARN] taskbar: living diamond: export XDG_RUNTIME_DIR=/run/user/$(id -u); echo LOADED=$(grep -c libdaistatus.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps); python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_status; dai_status.update("ideas", 1); print("STATUS", sorted(dai_status.read().items()))'; stat -c 'MODE=%a' $XDG_RUNTIME_DIR/dai/status.json $XDG_RUNTIME_DIR/dai
+        grep: /proc//maps: No such file or directory
+        LOADED=
+        STATUS [('ideas', 1)]
+        MODE=600
+        MODE=700
+[PASS] ai: install model (verified): dai-models install qwen2.5-0.5b 2>&1 | tail -n 2
+        qwen2.5-0.5b:   0%  qwen2.5-0.5b:   0%  qwen2.5-0.5b:   0%  qwen2.5-0.5b:   0%  qwen2.5-0.5b:   1%  qwen2.5-0.5b:   1%  qwen2.5-0.5b:   1%  qwen2.5-0.5b:   1%  qwen2.5-0.5b:   1%  qwen2.5-0.5b:   2%  qwen2.5-0.5b:   2%  qwen2.5-0.5b:   2%  qwen2.5-0.5b:   2%  qwen2.5-0.5b:   2%  qwen2.5-0.5b:   3%  qwen2.5-0.5b:   3%  qwen2.5-0.5b:   3%  qwen2.5-0.5b:   3%  qwen2.5-0.5b:   4%  qwen2.5-0.5b:   4%  qwen2.5-0.5b:   4%  qwen2.5-0.5b:   4%  qwen2.5-0.5b:   4%  qwen2.5-0.5b:   5%  qwen2.5-0.5b:   5%  qwen2.5-0.5b:   5%  qwen2.5-0.5b:   5%  qwen2.5-0.5b:   5%  qwen2.5-0.5b:   6%  qwen2.5-0.5b:   6%  qwen2.5-0.5b:   6%  qwen2.5-0.5b:   6%  qwen2.5-0.5b:   7%  qwen2.5-0.5b:   7%  qwen2.5-0.5b:   7%  qwen2.5-0.5b:   7%  qwen2.5-0.5b:   7%  qwen2.5-0.5b:   8%  qwen2.5-0.5b:   8%  qwen2.5-0.5b:   8%  qwen2.5-0.5b:   8%  qwen2.5-0.5b:   8%  qwen2.5-0.5b:   9%  qwen2.5-0.5b:   9%  qwen2.5-0.5b:   9%  qwen2.5-0.5b:   9%  qwen2.5-0.5b:  10%  qwen2.5-0.5b:  10%  qwen2.5-0.5b:  10%  qwen2.5-0.5b:  10%  qwen2.5-0.5b:  10%  qwen2.5-0.5b:  11%  qwen2.5-0.5b:  11%  qwen2.5-0.5b:  11%  qwen2.5-0.5b:  11%  qwen2.5-0.5b:  11%  qwen2.5-0.5b:  12%  qwen2.5-0.5b:  12%  qwen2.5-0.5b:  12%  qwen2.5-0.5b:  12%  qwen2.5-0.5b:  13%  qwen2.5-0.5b:  13%  qwen2.5-0.5b:  13%  qwen2.5-0.5b:  13%  qwen2.5-0.5b:  13%  qwen2.5-0.5b:  14%  qwen2.5-0.5b:  14%  qwen2.5-0.5b:  14%  qwen2.5-0.5b:  14%  qwen2.5-0.5b:  14%  qwen2.5-0.5b:  15%  qwen2.5-0.5b:  15%  qwen2.5-0.5b:  15%  qwen2.5-0.5b:  15%  qwen2.5-0.5b:  16%  qwen2.5-0.5b:  16%  qwen2.5-0.5b:  16%  qwen2.5-0.5b:  16%  qwen2.5-0.5b:  16%  qwen2.5-0.5b:  17%  qwen2.5-0.5b:  17%  qwen2.5-0.5b:  17%  qwen2.5-0.5b:  17%  qwen2.5-0.5b:  17%  qwen2.5-0.5b:  18%  qwen2.5-0.5b:  18%  qwen2.5-0.5b:  18%  qwen2.5-0.5b:  18%  qwen2.5-0.5b:  18%  qwen2.5-0.5b:  19%  qwen2.5-0.5b:  19%  qwen2.5-0.5b:  19%  qwen2.5-0.5b:  19%  qwen2.5-0.5b:  20%  qwen2.5-0.5b:  20%  qwen2.5-0.5b:  20%  qwen2.5-0.5b:  20%  qwen2.5-0.5b:  20%  qwen2.5-0.5b:  21%  qwen2.5-0.5b:  21%  qwen2.5-0.5b:  21%  qwen2.5-0.5b:  21%  qwen2.5-0.5b:  21%  qwen2.5-0.5b:  22%  qwen2.5-0.5b:  22%  qwen2.5-0.5b:  22%  qwen2.5-0.5b:  22%  qwen2.5-0.5b:  23%  qwen2.5-0.5b:  23%  qwen2.5-0.5b:  23%  qwen2.5-0.5b:  23%  qwen2.5-0.5b:  23%  qwen2.5-0.5b:  24%  qwen2.5-0.5b:  24%  qwen2.5-0.5b:  24%  qwen2.5-0.5b:  24%  qwen2.5-0.5b:  24%  qwen2.5-0.5b:  25%  qwen2.5-0.5b:  25%  qwen2.5-0.5b:  25%  qwen2.5-0.5b:  25%  qwen2.5-0.5b:  26%  qwen2.5-0.5b:  26%  qwen2.5-0.5b:  26%  qwen2.5-0.5b:  26%  qwen2.5-0.5b:  26%  qwen2.5-0.5b:  27%  qwen2.5-0.5b:  27%  qwen2.5-0.5b:  27%  qwen2.5-0.5b:  27%  qwen2.5-0.5b:  27%  qwen2.5-0.5b:  28%  qwen2.5-0.5b:  28%  qwen2.5-0.5b:  28%  qwen2.5-0.5b:  28%  qwen2.5-0.5b:  29%  qwen2.5-0.5b:  29%  qwen2.5-0.5b:  29%  qwen2.5-0.5b:  29%  qwen2.5-0.5b:  29%  qwen2.5-0.5b:  30%  qwen2.5-0.5b:  30%  qwen2.5-0.5b:  30%  qwen2.5-0.5b:  30%  qwen2.5-0.5b:  30%  qwen2.5-0.5b:  31%  qwen2.5-0.5b:  31%  qwen2.5-0.5b:  31%  qwen2.5-0.5b:  31%  qwen2.5-0.5b:  32%  qwen2.5-0.5b:  32%  qwen2.5-0.5b:  32%  qwen2.5-0.5b:  32%  qwen2.5-0.5b:  32%  qwen2.5-0.5b:  33%  qwen2.5-0.5b:  33%  qwen2.5-0.5b:  33%  qwen2.5-0.5b:  33%  qwen2.5-0.5b:  33%  qwen2.5-0.5b:  34%  qwen2.5-0.5b:  34%  qwen2.5-0.5b:  34%  qwen2.5-0.5b:  34%  qwen2.5-0.5b:  34%  qwen2.5-0.5b:  35%  qwen2.5-0.5b:  35%  qwen2.5-0.5b:  35%  qwen2.5-0.5b:  35%  qwen2.5-0.5b:  36%  qwen2.5-0.5b:  36%  qwen2.5-0.5b:  36%  qwen2.5-0.5b:  36%  qwen2.5-0.5b:  36%  qwen2.5-0.5b:  37%  qwen2.5-0.5b:  37%  qwen2.5-0.5b:  37%  qwen2.5-0.5b:  37%  qwen2.5-0.5b:  37%  qwen2.5-0.5b:  38%  qwen2.5-0.5b:  38%  qwen2.5-0.5b:  38%  qwen2.5-0.5b:  38%  qwen2.5-0.5b:  39%  qwen2.5-0.5b:  39%  qwen2.5-0.5b:  39%  qwen2.5-0.5b:  39%  qwen2.5-0.5b:  39%  qwen2.5-0.5b:  40%  qwen2.5-0.5b:  40%  qwen2.5-0.5b:  40%  qwen2.5-0.5b:  40%  qwen2.5-0.5b:  40%  qwen2.5-0.5b:  41%  qwen2.5-0.5b:  41%  qwen2.5-0.5b:  41%  qwen2.5-0.5b:  41%  qwen2.5-0.5b:  42%  qwen2.5-0.5b:  42%  qwen2.5-0.5b:  42%  qwen2.5-0.5b:  42%  qwen2.5-0.5b:  42%  qwen2.5-0.5b:  43%  qwen2.5-0.5b:  43%  qwen2.5-0.5b:  43%  qwen2.5-0.5b:  43%  qwen2.5-0.5b:  43%  qwen2.5-0.5b:  44%  qwen2.5-0.5b:  44%  qwen2.5-0.5b:  44%  qwen2.5-0.5b:  44%  qwen2.5-0.5b:  45%  qwen2.5-0.5b:  45%  qwen2.5-0.5b:  45%  qwen2.5-0.5b:  45%  qwen2.5-0.5b:  45%  qwen2.5-0.5b:  46%  qwen2.5-0.5b:  46%  qwen2.5-0.5b:  46%  qwen2.5-0.5b:  46%  qwen2.5-0.5b:  46%  qwen2.5-0.5b:  47%  qwen2.5-0.5b:  47%  qwen2.5-0.5b:  47%  qwen2.5-0.5b:  47%  qwen2.5-0.5b:  48%  qwen2.5-0.5b:  48%  qwen2.5-0.5b:  48%  qwen2.5-0.5b:  48%  qwen2.5-0.5b:  48%  qwen2.5-0.5b:  49%  qwen2.5-0.5b:  49%  qwen2.5-0.5b:  49%  qwen2.5-0.5b:  49%  qwen2.5-0.5b:  49%  qwen2.5-0.5b:  50%  qwen2.5-0.5b:  50%  qwen2.5-0.5b:  50%  qwen2.5-0.5b:  50%  qwen2.5-0.5b:  50%  qwen2.5-0.5b:  51%  qwen2.5-0.5b:  51%  qwen2.5-0.5b:  51%  qwen2.5-0.5b:  51%  qwen2.5-0.5b:  52%  qwen2.5-0.5b:  52%  qwen2.5-0.5b:  52%  qwen2.5-0.5b:  52%  qwen2.5-0.5b:  52%  qwen2.5-0.5b:  53%  qwen2.5-0.5b:  53%  qwen2.5-0.5b:  53%  qwen2.5-0.5b:  53%  qwen2.5-0.5b:  53%  qwen2.5-0.5b:  54%  qwen2.5-0.5b:  54%  qwen2.5-0.5b:  54%  qwen2.5-0.5b:  54%  qwen2.5-0.5b:  55%  qwen2.5-0.5b:  55%  qwen2.5-0.5b:  55%  qwen2.5-0.5b:  55%  qwen2.5-0.5b:  55%  qwen2.5-0.5b:  56%  qwen2.5-0.5b:  56%  qwen2.5-0.5b:  56%  qwen2.5-0.5b:  56%  qwen2.5-0.5b:  56%  qwen2.5-0.5b:  57%  qwen2.5-0.5b:  57%  qwen2.5-0.5b:  57%  qwen2.5-0.5b:  57%  qwen2.5-0.5b:  58%  qwen2.5-0.5b:  58%  qwen2.5-0.5b:  58%  qwen2.5-0.5b:  58%  qwen2.5-0.5b:  58%  qwen2.5-0.5b:  59%  qwen2.5-0.5b:  59%  qwen2.5-0.5b:  59%  qwen2.5-0.5b:  59%  qwen2.5-0.5b:  59%  qwen2.5-0.5b:  60%  qwen2.5-0.5b:  60%  qwen2.5-0.5b:  60%  qwen2.5-0.5b:  60%  qwen2.5-0.5b:  61%  qwen2.5-0.5b:  61%  qwen2.5-0.5b:  61%  qwen2.5-0.5b:  61%  qwen2.5-0.5b:  61%  qwen2.5-0.5b:  62%  qwen2.5-0.5b:  62%  qwen2.5-0.5b:  62%  qwen2.5-0.5b:  62%  qwen2.5-0.5b:  62%  qwen2.5-0.5b:  63%  qwen2.5-0.5b:  63%  qwen2.5-0.5b:  63%  qwen2.5-0.5b:  63%  qwen2.5-0.5b:  64%  qwen2.5-0.5b:  64%  qwen2.5-0.5b:  64%  qwen2.5-0.5b:  64%  qwen2.5-0.5b:  64%  qwen2.5-0.5b:  65%  qwen2.5-0.5b:  65%  qwen2.5-0.5b:  65%  qwen2.5-0.5b:  65%  qwen2.5-0.5b:  65%  qwen2.5-0.5b:  66%  qwen2.5-0.5b:  66%  qwen2.5-0.5b:  66%  qwen2.5-0.5b:  66%  qwen2.5-0.5b:  67%  qwen2.5-0.5b:  67%  qwen2.5-0.5b:  67%  qwen2.5-0.5b:  67%  qwen2.5-0.5b:  67%  qwen2.5-0.5b:  68%  qwen2.5-0.5b:  68%  qwen2.5-0.5b:  68%  qwen2.5-0.5b:  68%  qwen2.5-0.5b:  68%  qwen2.5-0.5b:  69%  qwen2.5-0.5b:  69%  qwen2.5-0.5b:  69%  qwen2.5-0.5b:  69%  qwen2.5-0.5b:  69%  qwen2.5-0.5b:  70%  qwen2.5-0.5b:  70%  qwen2.5-0.5b:  70%  qwen2.5-0.5b:  70%  qwen2.5-0.5b:  71%  qwen2.5-0.5b:  71%  qwen2.5-0.5b:  71%  qwen2.5-0.5b:  71%  qwen2.5-0.5b:  71%  qwen2.5-0.5b:  72%  qwen2.5-0.5b:  72%  qwen2.5-0.5b:  72%  qwen2.5-0.5b:  72%  qwen2.5-0.5b:  72%  qwen2.5-0.5b:  73%  qwen2.5-0.5b:  73%  qwen2.5-0.5b:  73%  qwen2.5-0.5b:  73%  qwen2.5-0.5b:  74%  qwen2.5-0.5b:  74%  qwen2.5-0.5b:  74%  qwen2.5-0.5b:  74%  qwen2.5-0.5b:  74%  qwen2.5-0.5b:  75%  qwen2.5-0.5b:  75%  qwen2.5-0.5b:  75%  qwen2.5-0.5b:  75%  qwen2.5-0.5b:  75%  qwen2.5-0.5b:  76%  qwen2.5-0.5b:  76%  qwen2.5-0.5b:  76%  qwen2.5-0.5b:  76%  qwen2.5-0.5b:  77%  qwen2.5-0.5b:  77%  qwen2.5-0.5b:  77%  qwen2.5-0.5b:  77%  qwen2.5-0.5b:  77%  qwen2.5-0.5b:  78%  qwen2.5-0.5b:  78%  qwen2.5-0.5b:  78%  qwen2.5-0.5b:  78%  qwen2.5-0.5b:  78%  qwen2.5-0.5b:  79%  qwen2.5-0.5b:  79%  qwen2.5-0.5b:  79%  qwen2.5-0.5b:  79%  qwen2.5-0.5b:  80%  qwen2.5-0.5b:  80%  qwen2.5-0.5b:  80%  qwen2.5-0.5b:  80%  qwen2.5-0.5b:  80%  qwen2.5-0.5b:  81%  qwen2.5-0.5b:  81%  qwen2.5-0.5b:  81%  qwen2.5-0.5b:  81%  qwen2.5-0.5b:  81%  qwen2.5-0.5b:  82%  qwen2.5-0.5b:  82%  qwen2.5-0.5b:  82%  qwen2.5-0.5b:  82%  qwen2.5-0.5b:  83%  qwen2.5-0.5b:  83%  qwen2.5-0.5b:  83%  qwen2.5-0.5b:  83%  qwen2.5-0.5b:  83%  qwen2.5-0.5b:  84%  qwen2.5-0.5b:  84%  qwen2.5-0.5b:  84%  qwen2.5-0.5b:  84%  qwen2.5-0.5b:  84%  qwen2.5-0.5b:  85%  qwen2.5-0.5b:  85%  qwen2.5-0.5b:  85%  qwen2.5-0.5b:  85%  qwen2.5-0.5b:  85%  qwen2.5-0.5b:  86%  qwen2.5-0.5b:  86%  qwen2.5-0.5b:  86%  qwen2.5-0.5b:  86%  qwen2.5-0.5b:  87%  qwen2.5-0.5b:  87%  qwen2.5-0.5b:  87%  qwen2.5-0.5b:  87%  qwen2.5-0.5b:  87%  qwen2.5-0.5b:  88%  qwen2.5-0.5b:  88%  qwen2.5-0.5b:  88%  qwen2.5-0.5b:  88%  qwen2.5-0.5b:  88%  qwen2.5-0.5b:  89%  qwen2.5-0.5b:  89%  qwen2.5-0.5b:  89%  qwen2.5-0.5b:  89%  qwen2.5-0.5b:  90%  qwen2.5-0.5b:  90%  qwen2.5-0.5b:  90%  qwen2.5-0.5b:  90%  qwen2.5-0.5b:  90%  qwen2.5-0.5b:  91%  qwen2.5-0.5b:  91%  qwen2.5-0.5b:  91%  qwen2.5-0.5b:  91%  qwen2.5-0.5b:  91%  qwen2.5-0.5b:  92%  qwen2.5-0.5b:  92%  qwen2.5-0.5b:  92%  qwen2.5-0.5b:  92%  qwen2.5-0.5b:  93%  qwen2.5-0.5b:  93%  qwen2.5-0.5b:  93%  qwen2.5-0.5b:  93%  qwen2.5-0.5b:  93%  qwen2.5-0.5b:  94%  qwen2.5-0.5b:  94%  qwen2.5-0.5b:  94%  qwen2.5-0.5b:  94%  qwen2.5-0.5b:  94%  qwen2.5-0.5b:  95%  qwen2.5-0.5b:  95%  qwen2.5-0.5b:  95%  qwen2.5-0.5b:  95%  qwen2.5-0.5b:  96%  qwen2.5-0.5b:  96%  qwen2.5-0.5b:  96%  qwen2.5-0.5b:  96%  qwen2.5-0.5b:  96%  qwen2.5-0.5b:  97%  qwen2.5-0.5b:  97%  qwen2.5-0.5b:  97%  qwen2.5-0.5b:  97%  qwen2.5-0.5b:  97%  qwen2.5-0.5b:  98%  qwen2.5-0.5b:  98%  qwen2.5-0.5b:  98%  qwen2.5-0.5b:  98%  qwen2.5-0.5b:  99%  qwen2.5-0.5b:  99%  qwen2.5-0.5b:  99%  qwen2.5-0.5b:  99%  qwen2.5-0.5b:  99%  qwen2.5-0.5b: 100%
+        ✓ qwen2.5-0.5b installed and verified (SHA-256)
+[PASS] ai: answer: dai-ai 'What is 2+2? Reply with only the number.'
+        4
+[PASS] voice: installed: dai-voice --version; cat /opt/dai/whisper/VERSION; /opt/dai/whisper/whisper-cli --help >/dev/null 2>&1 && echo WHISPER_RUNS; dai-voice status
+        dai-voice 0.1.0 — Diamond Rubinny (d.Ai)
+        v1.9.5 d1be6fde11ac6e0407606b4e42fe72d34add8037
+        WHISPER_RUNS
+        idle
+[PASS] voice: install speech model (verified): dai-models install whisper-base 2>&1 | tail -n 2
+        whisper-base:   0%  whisper-base:   1%  whisper-base:   2%  whisper-base:   2%  whisper-base:   3%  whisper-base:   4%  whisper-base:   4%  whisper-base:   5%  whisper-base:   6%  whisper-base:   7%  whisper-base:   7%  whisper-base:   8%  whisper-base:   9%  whisper-base:   9%  whisper-base:  10%  whisper-base:  11%  whisper-base:  12%  whisper-base:  12%  whisper-base:  13%  whisper-base:  14%  whisper-base:  14%  whisper-base:  15%  whisper-base:  16%  whisper-base:  17%  whisper-base:  17%  whisper-base:  18%  whisper-base:  19%  whisper-base:  19%  whisper-base:  20%  whisper-base:  21%  whisper-base:  21%  whisper-base:  22%  whisper-base:  23%  whisper-base:  24%  whisper-base:  24%  whisper-base:  25%  whisper-base:  26%  whisper-base:  26%  whisper-base:  27%  whisper-base:  28%  whisper-base:  29%  whisper-base:  29%  whisper-base:  30%  whisper-base:  31%  whisper-base:  31%  whisper-base:  32%  whisper-base:  33%  whisper-base:  34%  whisper-base:  34%  whisper-base:  35%  whisper-base:  36%  whisper-base:  36%  whisper-base:  37%  whisper-base:  38%  whisper-base:  38%  whisper-base:  39%  whisper-base:  40%  whisper-base:  41%  whisper-base:  41%  whisper-base:  42%  whisper-base:  43%  whisper-base:  43%  whisper-base:  44%  whisper-base:  45%  whisper-base:  46%  whisper-base:  46%  whisper-base:  47%  whisper-base:  48%  whisper-base:  48%  whisper-base:  49%  whisper-base:  50%  whisper-base:  51%  whisper-base:  51%  whisper-base:  52%  whisper-base:  53%  whisper-base:  53%  whisper-base:  54%  whisper-base:  55%  whisper-base:  55%  whisper-base:  56%  whisper-base:  57%  whisper-base:  58%  whisper-base:  58%  whisper-base:  59%  whisper-base:  60%  whisper-base:  60%  whisper-base:  61%  whisper-base:  62%  whisper-base:  63%  whisper-base:  63%  whisper-base:  64%  whisper-base:  65%  whisper-base:  65%  whisper-base:  66%  whisper-base:  67%  whisper-base:  68%  whisper-base:  68%  whisper-base:  69%  whisper-base:  70%  whisper-base:  70%  whisper-base:  71%  whisper-base:  72%  whisper-base:  72%  whisper-base:  73%  whisper-base:  74%  whisper-base:  75%  whisper-base:  75%  whisper-base:  76%  whisper-base:  77%  whisper-base:  77%  whisper-base:  78%  whisper-base:  79%  whisper-base:  80%  whisper-base:  80%  whisper-base:  81%  whisper-base:  82%  whisper-base:  82%  whisper-base:  83%  whisper-base:  84%  whisper-base:  85%  whisper-base:  85%  whisper-base:  86%  whisper-base:  87%  whisper-base:  87%  whisper-base:  88%  whisper-base:  89%  whisper-base:  90%  whisper-base:  90%  whisper-base:  91%  whisper-base:  92%  whisper-base:  92%  whisper-base:  93%  whisper-base:  94%  whisper-base:  94%  whisper-base:  95%  whisper-base:  96%  whisper-base:  97%  whisper-base:  97%  whisper-base:  98%  whisper-base:  99%  whisper-base:  99%  whisper-base: 100%
+        ✓ whisper-base installed and verified (SHA-256)
+[PASS] voice: transcribe (sandboxed, no network): dai-voice transcribe /opt/dai/whisper/test-jfk.wav --lang en
+        And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+[PASS] packages: installed by dpkg: dpkg-query -W -f '${Package} ${Version} ${Status}\n' 'dai-*'; dpkg -S /usr/bin/dai-code; dpkg -S /opt/dai/llama/llama-server 2>/dev/null || echo NO_RUNTIME_$(uname -m); dpkg --verify dai-apps && echo VERIFY_OK; test -L /etc/systemd/user/sockets.target.wants/dai-daid.socket && echo SOCKET_ENABLED
+        dai-apps 0.1.0~alpha+e5ef1c9 install ok installed
+        dai-llama-runtime 0.1.0~alpha+e5ef1c9 install ok installed
+        dai-panel-plugin 0.1.0~alpha+e5ef1c9 install ok installed
+        dai-ruby 0.1.0~alpha+e5ef1c9 install ok installed
+        dai-whisper-runtime 0.1.0~alpha+e5ef1c9 install ok installed
+        dai-apps: /usr/bin/dai-code
+        dai-llama-runtime: /opt/dai/llama/llama-server
+        VERIFY_OK
+        SOCKET_ENABLED
+[PASS] find: natural language: mkdir -p ~/Downloads ~/Pictures && echo x > ~/Downloads/boarding-pass.pdf && echo x > ~/Pictures/beach.jpg && touch -d '40 days ago' ~/Downloads/old-ticket.pdf; dai-find --version; dai-find 'find the pdf I downloaded today'; LANG=he_IL.UTF-8 dai-find "$(printf '\xd7\x9e\xd7\xa6\xd7\x90\x20\xd7\x90\xd7\xaa\x20\xd7\x94\x2d\x50\x44\x46\x20\xd7\xa9\xd7\x94\xd7\x95\xd7\xa8\xd7\x93\xd7\xaa\xd7\x99\x20\xd7\x94\xd7\x99\xd7\x95\xd7\x9d')"; dai-find 'find photos from today'
+        dai-find 0.1.0 — Diamond Rubinny (d.Ai)
+        2026-10-24 17:26        2 B  ~/Downloads/boarding-pass.pdf
+        2026-10-24 17:26        2 B  ~/Downloads/boarding-pass.pdf
+        2026-10-24 17:26        2 B  ~/Pictures/beach.jpg
+[PASS] find: inside the documents: mkdir -p ~/Documents && printf 'Lease agreement. The rent is 4000 shekels a month.' > ~/Documents/lease.txt && printf 'A shopping list: milk, bread.' > ~/Documents/list.txt && python3 -c "import zipfile; z=zipfile.ZipFile('/home/dai/Documents/contract.docx','w'); z.writestr('[Content_Types].xml','<Types/>'); z.writestr('word/document.xml','<w:document><w:body><w:p><w:r><w:t>\u05d7\u05d5\u05d6\u05d4 \u05d4\u05e9\u05db\u05d9\u05e8\u05d5\u05ea \u05d4\u05d5\u05d0 \u05dc\u05e9\u05e0\u05d4</w:t></w:r></w:p></w:body></w:document>'); z.close()" && printf '%%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 100]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj 4 0 obj<</Length 47>>stream\nBT /F1 12 Tf 10 50 Td (Boarding pass TLV) Tj ET\nendstream endobj 5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\ntrailer<</Root 1 0 R>>' > ~/Documents/pass.pdf; dai-find index; dai-find index --status; dai-find 'find documents about the rent'; dai-find 'find the pdf containing boarding pass'; LANG=he_IL.UTF-8 dai-find "$(printf '\xd7\x9e\xd7\xa6\xd7\x90\x20\xd7\x9e\xd7\xa1\xd7\x9e\xd7\x9a\x20\xd7\xa9\xd7\x9e\xd7\x93\xd7\x91\xd7\xa8\x20\xd7\xa2\xd7\x9c\x20\xd7\xa9\xd7\x9b\xd7\x99\xd7\xa8\xd7\x95\xd7\xaa')"; stat -c 'MODE=%a' ~/.cache/dai/find-index.sqlite; test -L /etc/systemd/user/timers.target.wants/dai-find-index.timer && echo TIMER_WANTED; export XDG_RUNTIME_DIR=/run/user/$(id -u); systemctl --user is-enabled dai-find-index.timer; systemctl --user is-active dai-find-index.timer
+        Read 6, forgot 0, 6 documents in the index.
+        6 documents in the content index.
+        2026-10-24 17:26       50 B  ~/Documents/lease.txt
+                                    “Lease agreement. The rent is 4000 shekels a month.”
+        2026-10-24 17:26      387 B  ~/Documents/pass.pdf
+                                    “Boarding pass TLV”
+        2026-10-24 17:26      368 B  ~/Documents/contract.docx
+                                    “חוזה השכירות הוא לשנה”
+        MODE=600
+        TIMER_WANTED
+        enabled
+        active
+[PASS] phone link: the recipe opens the range: dai-forge --dry-run 'connect my phone' </dev/null; dai-tune --dry-run 'open ports 1714 to 1764 udp' </dev/null; dai-store list | grep -A3 -i 'phone'
+        Phone notifications on the computer, files both ways, a shared clipboard, find my phone, a remote for slides and music. Pairs with the KDE Connect app on Android or iPhone, over the local network only, encrypted between the two devices and with no server.
+        [1mD.Ai Forge — Set up: My phone next to the computer (KDE Connect)  (built-in)  #546dedc2a5f7[0m
+          1. • Install: kdeconnect
+             [0msystem · medium risk · neutral[0m
+             ↳ Packages come only from the signed Debian/D.Ai repositories.
+          2. ⚠ Open port 1714-1764/tcp to the local network only
+             [33msystem · medium risk · WEAKENS security[0m
+          3. ⚠ Open port 1714-1764/udp to the local network only
+             [33msystem · medium risk · WEAKENS security[0m
+        (dry run — nothing was changed)
+        [1mD.Ai Tune — change plan  #26a0b3d595d4[0m
+          1. ⚠ Open port 1714-1764/udp to the local network only
+             [33msystem · medium risk · WEAKENS security[0m
+        (dry run — nothing was changed)
+          My phone next to the computer (KDE Connect): Phone notifications on the computer, files both ways, a shared clipboard, find my phone, a remote for slides and music. Pairs with the KDE Connect app on Android or iPhone, over the local network only, encrypted between the two devices and with no server.
+              • Install: kdeconnect
+              • Open port 1714-1764/tcp to the local network only
+              • Open port 1714-1764/udp to the local network only
+[PASS] memory saver: sysctl, zram and the mark: DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver on' >/dev/null; echo RC=$?; /usr/sbin/sysctl -n vm.swappiness; test -f /etc/dai/memory-saver && echo MARK; grep -c 'min(ram, 8192)' /etc/systemd/zram-generator.conf.d/dai-memory-saver.conf; python3 -c 'import json; print("SMALL", json.load(open("/home/dai/.config/dai/ai.json")).get("prefer_small"))'; DAI_TUNE_ELEVATE=sudo dai-tune --yes 'memory saver off' >/dev/null; echo RC2=$?; /usr/sbin/sysctl -n vm.swappiness; test -e /etc/dai/memory-saver || echo MARK_GONE
+        RC=0
+        180
+        MARK
+        1
+        SMALL True
+        RC2=0
+        60
+        MARK_GONE
+[PASS] look: theme, buttons and font: ls /usr/share/themes/dai/labwc/ | tr '\n' ' '; echo; grep -c '<name>dai</name>' ~/.config/labwc/rc.xml | sed 's/^/THEME=/'; fc-match Inter | sed 's/^/FONT=/'; fc-match -s Inter | head -n 4 | grep -c Hebrew | sed 's/^/HEBREW=/'; grep -c 'panelSize=60' /etc/xdg/lxqt/panel.conf | sed 's/^/PANEL=/'; python3 -c 'import xml.dom.minidom; xml.dom.minidom.parse("/usr/share/themes/dai/labwc/close-active.svg")' && echo SVG_OK
+        close-active.svg close_hover-active.svg close_hover-inactive.svg close-inactive.svg iconify-active.svg iconify_hover-active.svg iconify_hover-inactive.svg iconify-inactive.svg max-active.svg max_hover-active.svg max_hover-inactive.svg max-inactive.svg max_toggled-active.svg max_toggled_hover-active.svg max_toggled_hover-inactive.svg max_toggled-inactive.svg menu-active.svg menu_hover-active.svg menu_hover-inactive.svg menu-inactive.svg themerc 
+        THEME=1
+        FONT=Inter-Regular.otf: "Inter" "Regular"
+        HEBREW=1
+        PANEL=1
+        SVG_OK
+[PASS] ai: providers off by default: dai-ai where; dai-models provider list | head -n 1; dai-models provider add lab --kind openai --url http://127.0.0.1:9/v1 --model test; echo 'sk-test-key-000' | dai-models provider key lab >/dev/null; echo RC_KEY=$?; echo no | dai-models provider use lab >/dev/null; echo RC_NO=$?; dai-ai where | grep -c lab | sed 's/^/LAB_BEFORE=/'; echo yes | dai-models provider use lab --tasks general >/dev/null; echo RC_YES=$?; dai-ai where; dai-models provider test lab; echo RC_TEST=$?; stat -c 'MODE=%a' ~/.config/dai/providers.json; grep -c 'sk-test-key-000' ~/.config/dai/providers.json; dai-ai 'Reply with only the number 4' 2>&1 | tail -n 2; dai-models provider use local >/dev/null; dai-models provider remove lab; dai-ai where | grep -c local
+        code     local
+        general  local
+        speech   local
+        active: local (Diamond on this computer)
+        ✓ lab: test at http://127.0.0.1:9/v1. Next: dai-models provider key lab
+        RC_KEY=0
+        RC_NO=1
+        LAB_BEFORE=0
+        RC_YES=0
+        code     local
+        general  lab
+        speech   local
+        ✗ lab: [Errno 111] Connection refused
+        RC_TEST=1
+        MODE=600
+        1
+        dai-ai: lab: [Errno 111] Connection refused; answering with the local Diamond instead
+        4
+        ✓ lab and its key were removed.
+        3
+[PASS] way: a computer in one file: dai-way --version; dai-way examples | wc -l; for f in /usr/share/dai/way/*.dway; do dai-way check "$f" || echo CHECK_FAILED; done; printf 'diamond: vm desk\nsetup:\n  lock the screen after 7 minutes\n  firefox does not go online\n' > /tmp/desk.dway; dai-way plan /tmp/desk.dway | grep -c 'dry run'; dai-way apply /tmp/desk.dway --yes; echo APPLY_RC=$?; grep -c DAI_LOCK_TIMEOUT_SECONDS=420 ~/.config/dai/session.env; test -f ~/.local/share/applications/firefox-esr.desktop && echo OFFLINE_SET; dai-way undo; echo UNDO_RC=$?; test -e ~/.local/share/applications/firefox-esr.desktop || echo OFFLINE_GONE; dai-way export /tmp/this.dway; dai-way check /tmp/this.dway; grep -c '^  @ ' /tmp/this.dway | sed 's/^/EXACT=/'
+        dai-way 0.1.0 — Diamond Rubinny (d.Ai)
+        3
+        ✓ מחשב כיתה: 10 steps, every line understood (classroom.dway).
+        ✓ family computer: 12 steps, every line understood (home.dway).
+        ✓ work laptop: 8 steps, every line understood (work.dway).
+        1
+        [1mDiamond's Way — vm desk  #a80fb9e5f185[0m
+          1. 🛡 Lock the screen after 7 minutes of inactivity
+             [32muser · low risk · hardens security[0m
+          2. 🛡 firefox opens without network access from now on
+             [32muser · low risk · hardens security[0m
+             ↳ The menu, the command bar and the taskbar all start it that way; connections fail at once and local services (sound, display) still work. A copy already running stays connected until it is opened again.
+        [32m✓ Applied. To undo: dai-tune undo[0m
+        APPLY_RC=0
+        1
+        OFFLINE_SET
+        [32m✓ Undone: Way: vm desk; Lock the screen after 7 minutes of inactivity; firefox opens without network access from now on[0m
+        UNDO_RC=0
+        OFFLINE_GONE
+        ✓ Written: /tmp/this.dway. Check it: dai-way check /tmp/this.dway
+        ✓ dai-os: 17 steps, every line understood (this.dway).
+        EXACT=15
+[PASS] way: when, a timer runs a sentence: export XDG_RUNTIME_DIR=/run/user/$(id -u); printf 'diamond: evenings
+when:
+  every day at 20:00: dark theme
+' > /tmp/when.dway; printf 'when:
+  every day at 20:00: memory saver on
+' > /tmp/when-bad.dway; dai-way check /tmp/when-bad.dway; echo BAD_RC=$?; dai-way apply /tmp/when.dway --yes; echo APPLY_RC=$?; dai-way when; NAME=$(dai-way when | awk '{print $1}' | head -n 1); echo NAME=$NAME; systemctl --user is-enabled dai-way-$NAME.timer | sed 's/^/TIMER=/'; systemctl --user list-timers --all | grep -c dai-way | sed 's/^/LISTED=/'; if dai-way run-when $NAME; then echo RUN_RC=0; dai-tune history | grep -c 'Way when:' | sed 's/^/JOURNALED=/'; dai-tune undo >/dev/null; echo UNDO_RUN_RC=$?; fi; dai-way export | grep -c 'dark theme' | sed 's/^/EXPORTED=/'; dai-way when remove $NAME --yes >/dev/null; echo REMOVE_RC=$?; systemctl --user is-enabled dai-way-$NAME.timer 2>&1 | sed 's/^/AFTER=/'; dai-way when
+        dai@dai-os:~$ <E_DIR=/run/user/$(id -u); printf 'diamond: evenings
+        > when:
+        >   every day at 20:00: dark theme
+        > ' > /tmp/when.dway; printf 'when:
+        >   every day at 20:00: memory saver on
+        ✗ /tmp/when-bad.dway: 1 problem(s); nothing was changed.
+          when-bad.dway:2: sentence: memory.saver needs an administrator; a timer cannot ask for one
+        BAD_RC=2
+        [1mDiamond's Way — evenings  #5ce84e44e974[0m
+          1. • every day at 20:00: dark theme (a timer, Diamond's Way)
+             [0muser · low risk · neutral[0m
+             ↳ Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo
+        [32m✓ Applied. To undo: dai-tune undo[0m
+        APPLY_RC=0
+        dark-theme-11aba381                      every day at 20:00: dark theme
+        NAME=dark-theme-11aba381
+        TIMER=enabled
+        LISTED=1
+        ✓ dark-theme-11aba381: dark theme
+        RUN_RC=0
+        JOURNALED=1
+        UNDO_RUN_RC=0
+        EXPORTED=1
+        REMOVE_RC=0
+        AFTER=not-found
+        No timers. A when: line in a .dway file makes one.
+[PASS] way: files in the home: printf 'diamond: desk files
+files:
+  Documents/Way/
+  Documents/Way/hello.txt: shalom
+' > /tmp/files.dway; printf 'files:
+  ../etc/x.txt: no
+' > /tmp/files-bad.dway; printf 'files:
+  .config/autostart/x.desktop: no
+' > /tmp/files-bad2.dway; dai-way check /tmp/files-bad.dway; echo BAD1_RC=$?; dai-way check /tmp/files-bad2.dway; echo BAD2_RC=$?; dai-way apply /tmp/files.dway --yes; echo APPLY_RC=$?; cat ~/Documents/Way/hello.txt; stat -c 'MODE=%a' ~/Documents/Way/hello.txt; dai-way undo >/dev/null; echo UNDO_RC=$?; test -e ~/Documents/Way/hello.txt || echo FILE_GONE; test -d ~/Documents/Way || echo DIR_GONE
+        printf 'diamond: desk files
+        files:
+          Documents/Way/
+          Documents/Way/hello.txt: shalom
+        ' > /tmp/files.dway; printf 'files:
+          ../etc/x.txt: no
+        ' > /tmp/files-bad.dway; printf 'files:
+          .config/autostart/x.desktop: no
+        dai@dai-os:~$ printf 'diamond: desk files
+        > files:
+        >   Documents/Way/
+        >   Documents/Way/hello.txt: shalom
+        > ' > /tmp/files.dway; printf 'files:
+        >   ../etc/x.txt: no
+        > ' > /tmp/files-bad.dway; printf 'files:
+        >   .config/autostart/x.desktop: no
+        ✗ /tmp/files-bad.dway: 1 problem(s); nothing was changed.
+          files-bad.dway:2: path: no .. or . in a path (../etc/x.txt)
+        BAD1_RC=2
+        ✗ /tmp/files-bad2.dway: 1 problem(s); nothing was changed.
+          files-bad2.dway:2: path: hidden files and folders are not written by a .dway file (.config/autostart/x.desktop)
+        BAD2_RC=2
+        [1mDiamond's Way — desk files  #5c27f4ecd8a1[0m
+          1. • Folder Documents/Way/ in your home
+             [0muser · low risk · neutral[0m
+          2. • File Documents/Way/hello.txt in your home (6 characters)
+             [0muser · low risk · neutral[0m
+        [32m✓ Applied. To undo: dai-tune undo[0m
+        APPLY_RC=0
+        shalomMODE=644
+[PASS] captions: a file through the pipeline: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; grep -c 'W-A-c' ~/.config/labwc/rc.xml
+        dai-captions 0.1.0 — Diamond Rubinny (d.Ai)
+        And so my fellow Americans asked not What your country can do for you ask what you can do for your country.
+        RC=0
+        0
+        DESKTOP_ENTRY
+        1
+[PASS] doctor: diagnosis: dai-doctor --version; dai-doctor --json slow disk battery | python3 -c 'import json,sys; f=json.load(sys.stdin); print("FINDINGS", len(f), sorted({x["key"].split(":")[0] for x in f}))'; dai-tune --dry-run 'free up disk space' </dev/null; test -x /usr/bin/powerprofilesctl && powerprofilesctl get
+        dai-doctor 0.1.0 — Diamond Rubinny (d.Ai)
+        FINDINGS 4 ['cpu', 'disk', 'folders', 'memory']
+        [1mD.Ai Tune — change plan  #9dd42f2f7a92[0m
+          1. • Free disk space: downloaded package files and old system logs
+             [0msystem · low risk · neutral[0m
+             ↳ Cannot be undone, but nothing you use is lost (logs over 200M only).
+        (dry run — nothing was changed)
+        balanced
+[WARN] privacy: indicator running: dai-privacy --version; dai-privacy status; pgrep -f 'dai_privacy.cli import main.* tray' >/dev/null && echo TRAY_RUNNING; test -f /etc/xdg/autostart/dai-privacy.desktop && echo AUTOSTART
+        dai-privacy 0.1.0 — Diamond Rubinny (d.Ai)
+        Nothing is using the microphone or camera.
+        AUTOSTART
+[PASS] privacy: a recording is seen: export XDG_RUNTIME_DIR=/run/user/$(id -u); (timeout 8 pw-record /tmp/privacy-test.wav >/dev/null 2>&1 &); sleep 4; dai-privacy status; sleep 5; dai-privacy log | tail -n 2; rm -f /tmp/privacy-test.wav
+        🎙 pw-record is using the microphone
+        No microphone or camera use in the last 30 days.
+[PASS] backup: encrypted cycle: export XDG_RUNTIME_DIR=/run/user/$(id -u); rm -rf /tmp/drive ~/.config/dai/backup.*; mkdir -p /tmp/drive ~/Documents && echo 'version 1' > ~/Documents/vm-report.txt; dai-backup --version; dai-backup setup /tmp/drive --folders Documents | grep -c 'RECOVERY KEY'; dai-backup now; echo 'version 2' > ~/Documents/vm-report.txt; dai-backup now; dai-backup restore ~/Documents/vm-report.txt --from "$(dai-backup list | head -n1 | cut -d' ' -f1)"; cat ~/Restored/*/home/*/Documents/vm-report.txt; grep -rl 'version 1' /tmp/drive >/dev/null || echo ENCRYPTED; systemctl --user is-enabled dai-backup.timer
+        dai-backup 0.1.0 — Diamond Rubinny (d.Ai)
+        1
+        ✓ Backed up: 5 new, 0 changed, 0.0 MB
+        ✓ Backed up: 0 new, 1 changed, 0.0 MB
+        ✓ Restored into /home/dai/Restored/2026-10-24_172728
+        version 1
+        ENCRYPTED
+        enabled
+[PASS] doctor: hardware: dai-doctor hardware
+        Checking this computer…
+        [32m✓ Graphics: works[0m
+            Vendor 1234 Device 1111 (bochs-drm)
+        [32m✓ Wired network: works[0m
+            Red Hat, Inc. Virtio network device (virtio-pci)
+        [32m
+        Everything looks fine.[0m
+[PASS] move: from windows: rm -rf /tmp/win && mkdir -p /tmp/win/Users/Dana/Documents /tmp/win/Users/Dana/Pictures && echo cv > /tmp/win/Users/Dana/Documents/cv-from-windows.docx && echo j > /tmp/win/Users/Dana/Pictures/desktop.ini; dai-move --version; dai-move /tmp/win --yes; test -f ~/Documents/cv-from-windows.docx && echo COPIED; test -f ~/Pictures/desktop.ini || echo JUNK_SKIPPED
+        dai-move 0.1.0 — Diamond Rubinny (d.Ai)
+        From Windows user “Dana” (/tmp/win/Users/Dana):
+          ~/Documents: 1 files
+          Total 1 files, 0 MB
+          1/1
+        ✓ Copied 1 files.
+        COPIED
+        JUNK_SKIPPED
+[PASS] policy: applied on drop: dai-tune policy; printf '%s' '{"format": 1, "name": "CI", "apply": ["block usb storage", "lock the screen after 5 minutes", "no external AI providers"]}' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/90-ci.json; sleep 8; dai-tune policy; test -f /etc/modprobe.d/dai-tune-usb_storage.conf && echo POLICY_APPLIED; cat /etc/dai/policy-session.env; cat /etc/dai/policy-ai.env; dai-tune --dry-run 'never lock the screen' </dev/null; dai-tune --dry-run 'answer with anthropic' </dev/null; echo PROVIDER_RC=$?; printf 'diamond: CI way
+setup:
+  block the camera
+' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/91-ci.dway; sleep 8; dai-tune policy | grep -c 'CI way' | sed 's/^/WAY_POLICY=/'; test -f /etc/modprobe.d/dai-tune-camera.conf && echo WAY_POLICY_APPLIED; sudo rm -f /etc/dai/policy.d/90-ci.json /etc/dai/policy.d/91-ci.dway /etc/modprobe.d/dai-tune-usb_storage.conf /etc/modprobe.d/dai-tune-camera.conf /etc/dai/policy-session.env /etc/dai/policy-ai.env
+        dai-tune policy; printf '%s' '{"format": 1, "name": "CI", "apply": ["block usb storage", "lock the screen after 5 minutes", "no external AI providers"]}' | sudo install -m 0644 /dev/stdin /etc/dai/policy.d/90-ci.json; sleep 8; dai-tune policy; test -f /etc/modprobe.d/dai-tune-usb_storage.conf && echo POLICY_APPLIED; cat /etc/dai/policy-session.env; cat /etc/dai/policy-ai.env; dai-tune --dry-run 'never lock the screen' </dev/null; dai-tune --dry-run 'answer with anthropic' </dev/null; echo PROVIDER_RC=$?; printf 'diamond: CI way
+        setup:
+          block the camera
+        dai@dai-os:~$ </null; echo PROVIDER_RC=$?; printf 'diamond: CI way
+        > setup:
+        >   block the camera
+        No organization policies (/etc/dai/policy.d).
+        [32m✓ CI  (90-ci.json, applied)[0m
+            • device.block
+            • session.lock_max
+            • ai.providers_policy
+        POLICY_APPLIED
+        DAI_LOCK_MAX_SECONDS=300
+        DAI_AI_PROVIDERS=forbidden
+        [1mD.Ai Tune — change plan  #4f53cda18c2b[0m
+        [31m  ✗ never lock the screen: your organization's policy locks the screen after at most 5 minutes[0m
+        Nothing was changed. Please rephrase the parts above.
+        [1mD.Ai Tune — change plan  #4f53cda18c2b[0m
+        [31m  ✗ answer with anthropic: name: an organization policy forbids external AI providers on this computer (dai-tune policy)[0m
+        Nothing was changed. Please rephrase the parts above.
+        PROVIDER_RC=2
+        WAY_POLICY=1
+        WAY_POLICY_APPLIED
+[PASS] office and edition: . /etc/dai-release; echo EDITION=$EDITION; command -v libreoffice >/dev/null && echo OFFICE; if [ "$EDITION" = edu ]; then for app in gcompris-qt tuxpaint stellarium; do command -v $app >/dev/null && echo EDU_$app; done; fi
+        EDITION=tv
+        OFFICE
+[PASS] welcome: first run: dai-welcome --version; dai-welcome --first-run; test -f /etc/xdg/autostart/dai-welcome.desktop && echo AUTOSTART; test -f /usr/share/applications/dai-welcome.desktop && echo IN_MENU
+        dai-welcome 0.1.0 — Diamond Rubinny (d.Ai)
+        dai-welcome: not needed (live session)
+        AUTOSTART
+        IN_MENU
+[PASS] code: installed and confined: dai-code --version; rm -rf /tmp/demo && mkdir -p /tmp/demo/src && cd /tmp/demo && printf 'def add(a, b):\n    return a - b\n' > src/util.py && printf 'TOKEN=x\n' > .env; dai-code explain ../../etc/passwd; echo rc=$?; dai-code edit .env x --yes; echo rc=$?; cd ~
+        dai-code 0.1.0 — Diamond Rubinny (d.Ai)
+        [31m✗ ../../etc/passwd is outside the project (/tmp/demo)[0m
+        rc=1
+        [31m✗ .env looks sensitive (secrets/keys/.git); D.Ai Code does not read or edit it[0m
+        rc=1
+[PASS] ai: code assistant answers: cd /tmp/demo && dai-code ask 'what does add do and is it correct?' </dev/null; cd ~
+        The `add` function in the `src/util.py` file performs subtraction between two numbers. It takes two arguments, `a` and `b`, and returns the result of `a` minus `b`.
+[PASS] ai: forge builds an app: dai-forge --dry-run 'write a python script that prints the numbers 1 to 5' </dev/null
+        Building a terminal tool with Diamond (on this computer)…
+          writing code… 2  writing code… 3  writing code… 5  writing code… 9  writing code… 11  writing code… 13  writing code… 18  writing code… 26  writing code… 29  writing code… 30  writing code… 32  writing code… 37  writing code… 39  writing code… 41  writing code… 46  writing code… 54  writing code… 57  writing code… 58  writing code… 60  writing code… 67  writing code… 69  writing code… 75  writing code… 77  writing code… 78  writing code… 80  writing code… 89  writing code… 91  writing code… 97  writing code… 99  writing code… 100  writing code… 102  writing code… 111  writing code… 113  writing code… 119  writing code… 121  writing code… 122  writing code… 124  writing code… 128  writing code… 130  writing code… 132  writing code… 137  writing code… 139  writing code… 140  writing code… 141  writing code… 142  writing code… 143  writing code… 144  writing code… 145  writing code… 146  writing code… 147  writing code… 148  writing code… 149  writing code… 150  writing code… 151  writing code… 152  writing code… 154  writing code… 156  writing code… 157
+          Testing it in the sandbox…
+        [32m  ✓ Tested in the sandbox: it works[0m
+        
+        print([1, 2, 3, 4, 5])
+        
+        (dry run — nothing was saved)
+[PASS] ai: tune interpretation: dai-tune --dry-run --ai 'make sure nobody can plug in a flash drive'
+        Asking Diamond…
+        [1;35mAI interpretation — review it carefully:[0m
+        [1mD.Ai Tune — change plan  #273ab8fa42fc[0m
+          1. 🛡 Block USB storage devices
+             [32msystem · low risk · hardens security[0m
+             ↳ Applies to newly connected drives. Do not use if the system itself runs from a USB drive.
+        (dry run — nothing was changed)
+[PASS] forge: version: dai-forge --version
+        dai-forge 0.1.0 — Diamond Rubinny (d.Ai)
+[PASS] design: Qt can draw SVG (diamond): ls /usr/lib/x86_64-linux-gnu/qt6/plugins/iconengines/ /usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/ | grep -c 'svg'
+        2
+[PASS] installer: calamares: command -v calamares; grep '^branding:' /etc/calamares/settings.conf; grep '^username:' /etc/calamares/modules/removeuser.conf; ls /etc/calamares/branding/dai; test -f ~/Desktop/dai-install.desktop && echo ON_DESKTOP
+        /usr/bin/calamares
+        branding: dai
+        username: dai
+        branding.desc  [0m[01;35mlogo.svg[0m  show.qml  [01;35mwelcome.jpg[0m
+        ON_DESKTOP
+[PASS] installer: the language reaches the installed system: for m in locale keyboard localecfg; do grep -qE "^\s*-\s*$m\b" /etc/calamares/settings.conf && echo SEQ_$m; done; ls /usr/lib/*/calamares/modules/ | grep -cE '^localecfg$' | sed 's/^/MODULES=/'; grep -rl 'default/locale' /etc/pam.d/ | wc -l | sed 's/^/PAM_ENV=/'; grep -c he_IL /usr/share/i18n/SUPPORTED | sed 's/^/HE=/'
+        SEQ_locale
+        SEQ_keyboard
+        SEQ_localecfg
+        MODULES=1
+        PAM_ENV=6
+        HE=2
+[PASS] installer: LUKS available: test -x /usr/sbin/cryptsetup && echo CRYPTSETUP_OK; cat /etc/calamares/modules/partition.conf 2>/dev/null | grep -iE '^[^#]*luks' || echo 'luks: calamares default'
+        CRYPTSETUP_OK
+        enableLuksAutomatedPartitioning: true
+[PASS] installer: btrfs by default: grep -E '^(defaultFileSystemType|initialSwapChoice):' /etc/calamares/modules/partition.conf; systemctl is-enabled dai-snapshots-firstboot.service; test -e /etc/snapper/configs/root || echo NO_LIVE_SNAPSHOTS
+        initialSwapChoice: none
+        defaultFileSystemType: "btrfs"
+        enabled
+        NO_LIVE_SNAPSHOTS
+[PASS] forge: window installed: dai-forge-gui --version; test -f /usr/share/applications/dai-forge.desktop && echo IN_MENU; grep -c 'ownIcon=true' /etc/xdg/lxqt/panel.conf; test -f /etc/swaylock/config && echo LOCK_THEMED
+        dai-forge-gui 0.1.0 — Diamond Rubinny (d.Ai)
+        IN_MENU
+        1
+        LOCK_THEMED
+[PASS] forge: recipes: dai-forge recipe list
+        antivirus      Antivirus (ClamAV)  (built-in)
+          archives       Archives (RAR, 7z)  (built-in)
+          cisco-vpn      Cisco AnyConnect-compatible VPN (OpenConnect)  (built-in)
+          containers     Containers (Podman, rootless)  (built-in)
+          discord        Discord  (built-in)
+          ebook-reader   E-book reader  (built-in)
+          flathub        Flathub app store  (built-in)
+          image-editor   Image editor  (built-in)
+          language-ar    D.Ai in Arabic (العربية)  (built-in)
+          language-de    D.Ai in German (Deutsch)  (built-in)
+          language-es    D.Ai in Spanish (Español)  (built-in)
+          language-fr    D.Ai in French (Français)  (built-in)
+          language-pt    D.Ai in Portuguese (Português)  (built-in)
+          language-ru    D.Ai in Russian (Русский)  (built-in)
+          nextcloud      Nextcloud sync client  (built-in)
+          onlyoffice     ONLYOFFICE (Word/Excel/PowerPoint compatible)  (built-in)
+          openvpn        OpenVPN (work VPN)  (built-in)
+          phone-link     My phone next to the computer (KDE Connect)  (built-in)
+          printer        Printers  (built-in)
+          scanner        Scanners  (built-in)
+          signal         Signal messenger  (built-in)
+          spotify        Spotify  (built-in)
+          steam          Steam (games, with Proton for Windows games)  (built-in)
+          syncthing      File sync between my computers (Syncthing)  (built-in)
+          telegram       Telegram  (built-in)
+          thunderbird    Thunderbird mail  (built-in)
+          video-player   Video and music player  (built-in)
+          vscode         Visual Studio Code  (built-in)
+          windows-apps   Windows programs (Bottles)  (built-in)
+          wireguard      WireGuard VPN  (built-in)
+[PASS] forge: hebrew plan: LANG=he_IL.UTF-8 dai-forge --dry-run "$(printf '\xd7\xaa\xd7\xaa\xd7\xa7\xd7\x99\xd7\x9f\x20\xd7\x90\xd7\xa0\xd7\x98\xd7\x99\x20\xd7\x95\xd7\x99\xd7\xa8\xd7\x95\xd7\xa1')"
+        אנטי וירוס בקוד פתוח (ClamAV): חתימות מתעדכנות אוטומטית, /home נסרק כל יום וקבצים נגועים עוברים להסגר שרק root ניגש אליו.
+        [1mD.Ai Forge — הקמה: אנטי וירוס (ClamAV)  (מובנה)  #056ae1ec2d89[0m
+          1. • התקנת: clamav, clamav-freshclam
+             [0mמערכת · סיכון בינוני · ניטרלי[0m
+             ↳ החבילות מגיעות רק ממאגרי Debian/D.Ai החתומים.
+          2. • הפעלת השירות clamav-freshclam.service
+             [0mמערכת · סיכון בינוני · ניטרלי[0m
+          3. 🛡 סריקת וירוסים ל־/home (יומית) והעברת קבצים נגועים להסגר
+             [32mמערכת · סיכון נמוך · מחזק אבטחה[0m
+             ↳ הסגר: /var/lib/dai/quarantine (root בלבד). יומן: /var/log/dai-av-scan.log
+        (הרצת ניסיון — לא בוצע שינוי)
+[PASS] forge: install antivirus: DAI_TUNE_ELEVATE=sudo dai-forge --yes 'install antivirus' </dev/null 2>&1 | tail -n 3; systemctl is-enabled dai-av-scan.timer; systemctl show -p ExecStart dai-av-scan.service | grep -o 'move=[^ ]*'; test -x /usr/bin/clamscan && echo CLAMSCAN_OK
+        system · low risk · hardens security
+             ↳ Quarantine: /var/lib/dai/quarantine (root only). Log: /var/log/dai-av-scan.log
+        ✓ Applied. To undo: dai-tune undo
+        enabled
+        move=/var/lib/dai/quarantine
+        CLAMSCAN_OK
+[PASS] forge: undo antivirus: DAI_TUNE_ELEVATE=sudo dai-forge undo </dev/null >/dev/null 2>&1; systemctl is-enabled dai-av-scan.timer 2>&1; test -x /usr/bin/clamscan || echo CLAMAV_REMOVED
+        not-found
+        CLAMAV_REMOVED
+[PASS] forge: sandboxed app: mkdir -p ~/.ssh && touch ~/.ssh/canary && echo aW1wb3J0IG9zLCBzb2NrZXQKcHJpbnQoJ2hvbWU6Jywgc29ydGVkKG9zLmxpc3RkaXIob3MucGF0aC5leHBhbmR1c2VyKCd+JykpKSkKdHJ5OgogICAgc29ja2V0LmNyZWF0ZV9jb25uZWN0aW9uKCgnMS4xLjEuMScsIDgwKSwgdGltZW91dD0zKQogICAgcHJpbnQoJ25ldHdvcms6IG9wZW4nKQpleGNlcHQgT1NFcnJvcjoKICAgIHByaW50KCduZXR3b3JrOiBibG9ja2VkJykKZm9yIHBhdGggaW4gWycvYXBwL2FwcC5weScsICcvZXRjL3Bhc3N3ZCddOgogICAgdHJ5OgogICAgICAgIG9wZW4ocGF0aCwgJ2EnKS53cml0ZSgneCcpCiAgICAgICAgcHJpbnQoJ3dyaXRhYmxlOicsIHBhdGgpCiAgICBleGNlcHQgT1NFcnJvcjoKICAgICAgICBwcmludCgncmVhZC1vbmx5OicsIHBhdGgpCnByaW50KCdzc2gga2V5IHZpc2libGU6Jywgb3MucGF0aC5leGlzdHMoJy9ob21lL2RhaS8uc3NoL2NhbmFyeScpKQpwcmludCgneDExIHNvY2tldCB2aXNpYmxlOicsIG9zLnBhdGguZXhpc3RzKCcvdG1wLy5YMTEtdW5peCcpKQo= | base64 -d > /tmp/probe.py && dai-forge app add probe /tmp/probe.py --kind cli </dev/null >/dev/null && dai-forge app run probe
+        home: []
+        network: blocked
+        read-only: /app/app.py
+        read-only: /etc/passwd
+        ssh key visible: False
+        x11 socket visible: False
+[PASS] forge: example app added: dai-forge app add tasks /usr/share/dai/forge/examples/tasks.py --title Tasks </dev/null | head -n 2; dai-forge app list; test -f ~/.local/share/applications/dai-app-tasks.desktop && echo IN_MENU; grep -h '^StartupWMClass=\|^Icon=' ~/.local/share/applications/dai-app-tasks.desktop; test -f /usr/share/icons/hicolor/scalable/apps/dai-app-sandboxed.svg && echo SHIELD_ICON; python3 -I /usr/lib/dai/dai_forge/sandbox_start.py dai-app-x /etc/passwd; echo START_RC=$?
+        ✓ Tasks  (tasks, v1, 126 lines)
+          probe                v1   cli  probe  [no extra permissions]
+          tasks                v1   gui  Tasks  [no extra permissions]
+        IN_MENU
+        Icon=dai-app-sandboxed
+        StartupWMClass=dai-app-tasks
+        SHIELD_ICON
+        usage: sandbox_start.py dai-app-<name> /app/<entry>.py
+        START_RC=2
+[WARN] clip: history without secrets: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; dai-clip --version; dai-clip clear >/dev/null; pgrep -f 'wl-paste --type text --watch dai-clip _store' >/dev/null && echo WATCHING; printf 'hello from the VM clipboard' | wl-copy; sleep 1; T=gh; T="${T}p_A1b2C3d4A1b2C3d4A1b2C3d4A1b2C3d4A1b2C3d4"; printf '%s' "$T" | wl-copy; sleep 1; printf secret | wl-copy --type x-kde-passwordManagerHint; sleep 1; P=Hunter-Pm; printf '%s' "$P-Secret-77 copied by a password manager" | CLIPBOARD_STATE=data dai-clip _store; printf '\xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d\x20\xd7\x9e\xd7\x94\xd7\x9c\xd7\x95\xd7\x97\x20\xd7\xa9\xd7\x9c\x20\x44\x2e\x41\x69' | wl-copy; sleep 1; dai-clip list; dai-clip status; stat -c 'MODE=%a' "$XDG_RUNTIME_DIR/dai-clip" "$XDG_RUNTIME_DIR/dai-clip/history.json"
+        dai-clip 0.1.0 — Diamond Rubinny (d.Ai)
+        Nothing here yet. What you copy will show up here (never passwords).
+        On · 0 items · in memory only, never passwords
+        MODE=700
+        MODE=600
+[PASS] lang: switch: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; dai-lang --label; dai-lang toggle; dai-lang --label; dai-lang toggle; dai-lang --label
+        EN
+        HE
+        EN
+[PASS] fixlayout: selection: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; printf akuo | wl-copy --primary && dai-fixlayout --print
+        שלום
+[PASS] snapshots: update undo and redo: command -v snapper && truncate -s 400M /tmp/snap.img && sudo mkfs.btrfs -q /tmp/snap.img && sudo mkdir -p /mnt/dai-snap && sudo mount -o loop /tmp/snap.img /mnt/dai-snap && echo CmltcG9ydCBzeXMKc3lzLnBhdGguaW5zZXJ0KDAsICIvdXNyL2xpYi9kYWkiKQpmcm9tIHBhdGhsaWIgaW1wb3J0IFBhdGgKZnJvbSBkYWlfdHVuZSBpbXBvcnQgc25hcHNob3RzIGFzIHMKZnJvbSBkYWlfdHVuZS5jb250ZXh0IGltcG9ydCBDb250ZXh0CmN0eCwgbW50LCBjZmcgPSBDb250ZXh0KHJvb3Q9UGF0aCgiLyIpLCBob21lPVBhdGgoIi9yb290IikpLCAiL21udC9kYWktc25hcCIsICJkYWl0ZXN0IgpwcmludCgiRlMiLCBzLmZpbGVzeXN0ZW0oY3R4LCBtbnQpKQpzLmVuYWJsZShjdHgsIGNmZywgbW50KQpwcmludCgiRU5BQkxFRCIsIHMuZW5hYmxlZChjdHgsIGNmZykpCmYgPSBQYXRoKG1udCkgLyAiYXBwLmNvbmYiCmYud3JpdGVfdGV4dCgiYmVmb3JlIHVwZGF0ZSIpCnByZSA9IGN0eC5ydW4ocy5zbmFwcGVyKGNmZywgImNyZWF0ZSIsICItdCIsICJwcmUiLCAiLWQiLCAiYXB0IiwgIi1wIikpLnN0ZG91dC5zdHJpcCgpCmYud3JpdGVfdGV4dCgiYWZ0ZXIgdXBkYXRlIikKY3R4LnJ1bihzLnNuYXBwZXIoY2ZnLCAiY3JlYXRlIiwgIi10IiwgInBvc3QiLCAiLS1wcmUtbnVtYmVyIiwgcHJlLCAiLWQiLCAiYXB0IikpCnByaW50KCJMSVNUIiwgcy5saXN0aW5nKGN0eCwgY2ZnKVstMV0pCnNhZmV0eSA9IHMuY3JlYXRlX3NhZmV0eShjdHgsIGNmZykKcHJpbnQoIlVORE9ORSIsIHMudW5kb191cGRhdGUoY3R4LCBjZmcpLCBmLnJlYWRfdGV4dCgpKQpzLmJhY2tfdG8oY3R4LCBzYWZldHksIGNmZykKcHJpbnQoIlJFRE9ORSIsIGYucmVhZF90ZXh0KCkpCnMuZGlzYWJsZShjdHgsIGNmZykKcHJpbnQoIkRJU0FCTEVEIiwgbm90IHMuZW5hYmxlZChjdHgsIGNmZykpCg== | base64 -d > /tmp/snap-probe.py && sudo python3 -I /tmp/snap-probe.py; sudo umount /mnt/dai-snap; rm -f /tmp/snap.img; dai-tune --dry-run 'undo the last update' </dev/null
+        /usr/bin/snapper
+        FS btrfs
+        ENABLED True
+        LIST {'subvolume': '/mnt/dai-snap', 'number': 2, 'default': False, 'active': False, 'type': 'post', 'pre-number': 1, 'date': '2026-10-24 17:28:59', 'user': 'root', 'used-space': None, 'cleanup': '', 'description': 'apt', 'userdata': None}
+        UNDONE (1, 2) before update
+        REDONE after update
+        DISABLED True
+        [1mD.Ai Tune — change plan  #ea0231d324b6[0m
+          1. • Undo the last software update (system files go back to before it)
+             [0msystem · HIGH RISK · neutral[0m
+             ↳ Restart afterwards. Personal files are not touched. A snapshot of now is taken first, so this can be undone too.
+        (dry run — nothing was changed)
+[PASS] rescue: undo an update from the USB: ( set -e; I=/tmp/inst.img; M=/mnt/dai-inst; truncate -s 600M $I; sudo mkfs.btrfs -q $I; sudo mkdir -p $M; sudo mount -o loop $I $M; sudo btrfs -q subvolume create $M/@; sudo mkdir -p $M/@/etc; sudo cp /etc/os-release $M/@/etc/; echo before | sudo tee $M/@/app.conf >/dev/null; sudo btrfs -q subvolume create $M/@/.snapshots; sudo mkdir $M/@/.snapshots/1 $M/@/.snapshots/2; sudo btrfs -q subvolume snapshot -r $M/@ $M/@/.snapshots/1/snapshot; printf '<snapshot><type>pre</type><num>1</num><date>2026-10-17 21:00:00</date><description>apt</description></snapshot>' | sudo tee $M/@/.snapshots/1/info.xml >/dev/null; echo after | sudo tee $M/@/app.conf >/dev/null; sudo btrfs -q subvolume snapshot -r $M/@ $M/@/.snapshots/2/snapshot; printf '<snapshot><type>post</type><num>2</num><date>2026-10-17 21:01:00</date><description>apt</description><pre_num>1</pre_num></snapshot>' | sudo tee $M/@/.snapshots/2/info.xml >/dev/null; sudo umount $M; D=$(sudo losetup -f --show $I); set +e; sudo dai-rescue --device $D --undo-last-update --yes </dev/null; echo RESCUE_RC=$?; sudo mount -o subvolid=5 $D $M; printf 'FILE='; cat $M/@/app.conf; printf 'KEPT='; cat $M/@.before-rescue-*/app.conf; printf 'SNAPSHOTS='; ls $M/@/.snapshots | tr '\n' ' '; echo; sudo umount $M; sudo losetup -d $D; rm -f $I )
+        The last update was on 2026-10-17 21:01:00 (snapshots 1..2).
+        ✓ The system is back to how it was before that update. Restart without the USB. The system as it was is kept on the disk as @.before-rescue-20261024-172859.
+        RESCUE_RC=0
+        FILE=before
+        KEPT=after
+        SNAPSHOTS=1 2
+[PASS] forge: automation on a timer: export XDG_RUNTIME_DIR=/run/user/$(id -u); printf 'import shutil\nfree = shutil.disk_usage("/").free // 2**30\nprint(f"NOTIFY: {free} GB free")\n' > /tmp/disk.py; echo y | dai-forge app add disk-report /tmp/disk.py --schedule 'every day at 18:00' | tail -n 1; systemctl --user list-timers --all --no-pager | grep -q dai-auto-disk-report && echo TIMER_ACTIVE; systemctl --user start dai-auto-disk-report.service; dai-forge auto log disk-report; dai-forge auto list; echo y | dai-forge auto remove disk-report >/dev/null; test -f ~/.config/systemd/user/dai-auto-disk-report.timer || echo UNITS_GONE
+        ✓ Active: every day at 18:00. Stop: dai-forge auto pause disk-report  ·  Log: dai-forge auto log disk-report
+        TIMER_ACTIVE
+        --- 2026-10-24 17:29:00 exit 0
+        NOTIFY: 2 GB free
+        
+          disk-report          enabled        every day at 18:00       disk-report
+        UNITS_GONE
+[WARN] heal: failed service fixed: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-heal --version; pgrep -f 'dai_heal.cli import main.* watch' >/dev/null && echo WATCHING; test -f /usr/lib/systemd/coredump.conf.d/50-dai.conf && echo NO_DUMPS_KEPT; mkdir -p ~/.config/systemd/user && echo W1VuaXRdCkRlc2NyaXB0aW9uPUQuQWkgSGVhbCB0ZXN0CltTZXJ2aWNlXQpFeGVjU3RhcnQ9L2Jpbi9zaCAtYyAndGVzdCAtZSAvdG1wL2hlYWwtb2sgfHwgeyB0b3VjaCAvdG1wL2hlYWwtb2s7IGV4aXQgMTsgfTsgZXhlYyBzbGVlcCA2MDAnCg== | base64 -d > ~/.config/systemd/user/dai-heal-test.service; rm -f /tmp/heal-ok; systemctl --user daemon-reload; systemctl --user start dai-heal-test.service; sleep 1; dai-heal status | grep -A1 dai-heal-test; KEY=$(dai-heal status --json | python3 -c 'import json,sys; print(next(p["key"] for p in json.load(sys.stdin) if p["name"] == "dai-heal-test.service"))'); dai-heal fix "$KEY" --yes; echo STATE=$(systemctl --user is-active dai-heal-test.service); systemctl --user stop dai-heal-test.service; rm -f ~/.config/systemd/user/dai-heal-test.service /tmp/heal-ok; systemctl --user daemon-reload
+        dai-heal 0.1.0 — Diamond Rubinny (d.Ai)
+        NO_DUMPS_KEPT
+        ✗ Your background service dai-heal-test.service failed.  When: 24.10 17:29  [ec1631070159]
+            dai-heal-test.service: Failed with result 'exit-code'.
+        Your background service dai-heal-test.service failed.
+        Something that runs in the background for you stopped. I can start it again.
+        ✓ Fixed: it is running again.
+        STATE=active
+[PASS] heal: forge app crash: printf 'raise ValueError("heal test")\n' > /tmp/crashy.py && dai-forge app add crashy /tmp/crashy.py --kind cli </dev/null >/dev/null; dai-forge app run crashy >/dev/null 2>&1; dai-heal status; echo y | dai-forge app remove crashy >/dev/null 2>&1
+        ✗ Your app “crashy” crashed.  When: 24.10 17:29  [38f6228187d6]
+            ValueError: heal test
+[PASS] heal: program crash recorded: sleep 60 & P=$!; sleep 0.5; kill -SEGV $P; sleep 4; dai-heal status
+        [1] 3946
+        [1]+  Segmentation fault      (core dumped) sleep 60
+        ✗ sleep crashed.  When: 24.10 17:29  [246a197ef031]
+            signal 11
+        ✗ Your app “crashy” crashed.  When: 24.10 17:29  [38f6228187d6]
+            ValueError: heal test
+[PASS] evolve: notices what is missing: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-evolve --version; echo TIMER=$(systemctl --user is-enabled dai-evolve.timer); mkdir -p ~/Downloads && printf x > ~/Downloads/novel.epub; for i in 1 2 3; do python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_evolve.store import count_command; count_command(">df -h /")'; done; dai-evolve scan; stat -c 'MODE=%a' ~/.local/state/dai/evolve/commands.json; dai-forge --dry-run 'install ebook-reader' </dev/null | grep -i foliate | head -n 3; dai-evolve off; test -e ~/.local/state/dai/evolve/commands.json || echo FORGOTTEN; dai-evolve; dai-evolve on >/dev/null; rm -f ~/Downloads/novel.epub
+        dai-evolve 0.1.0 — Diamond Rubinny (d.Ai)
+        TIMER=enabled
+        ✦ Let D.Ai do it every morning  [9fad16555330]
+            You ran “df -h /” 3 times. An automation can do it and tell you the result.
+        ✦ Install an e-book reader  [d3cff0d5d30c]
+            You have 1 recent file(s) that no installed program opens.
+        ✦ Something is not working: get help  [2376d00dab90]
+            2 problem(s) noticed (crashes or failed services).
+        MODE=600
+        Foliate: reads EPUB, MOBI, FB2 and comic books (CBZ).
+          1. • Install: foliate
+        Off. What was kept has been deleted.
+        FORGOTTEN
+        D.Ai Evolve is off: nothing is noticed or kept. Turn on again: dai-evolve on
+[WARN] taskbar: quick settings: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-quick --version; dai-quick --state; echo CLOCK=$(grep -c libdaiclock.so /proc/$(pgrep -x lxqt-panel | head -n1)/maps); python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_quick.controls import Controls; c = Controls(); c.set_dnd(True); print("DND_ON", c.dnd()); c.set_dnd(False); print("DND_OFF", c.dnd())'; grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf
+        dai-quick 0.1.0 — Diamond Rubinny (d.Ai)
+        {
+          "wifi": true,
+          "bluetooth": null,
+          "dnd": false,
+          "saver": false,
+          "mic": false,
+          "focus": false,
+          "game": false,
+          "volume": 100,
+          "security": 85
+        }
+        grep: /proc//maps: No such file or directory
+        CLOCK=
+        DND_ON True
+        DND_OFF False
+        1
+[PASS] store: the recipes by category: dai-store --version; dai-store list | tee /tmp/store.txt | head -n 12; grep -c '^  [^ ]' /tmp/store.txt | sed 's/^/ITEMS=/'; grep -c '^[A-Z]' /tmp/store.txt | sed 's/^/GROUPS=/'; test -f /usr/share/applications/dai-store.desktop && echo DESKTOP_ENTRY; dai-store search vlc; echo SEARCH_RC=$?
+        dai-store 0.1.0 — Diamond Rubinny (d.Ai)
+        Talk and meet
+          Discord: Discord from Flathub (sandboxed).
+              • Add the Flathub app store
+              • Install from Flathub: com.discordapp.Discord
+          My phone next to the computer (KDE Connect): Phone notifications on the computer, files both ways, a shared clipboard, find my phone, a remote for slides and music. Pairs with the KDE Connect app on Android or iPhone, over the local network only, encrypted between the two devices and with no server.
+              • Install: kdeconnect
+              • Open port 1714-1764/tcp to the local network only
+              • Open port 1714-1764/udp to the local network only
+          Signal messenger: Signal Desktop from Flathub (sandboxed).
+              • Add the Flathub app store
+              • Install from Flathub: org.signal.Signal
+          Telegram: Telegram Desktop from Flathub (sandboxed).
+        ITEMS=31
+        GROUPS=8
+        DESKTOP_ENTRY
+        Nothing found (is Flathub set up? dai-store list).
+        SEARCH_RC=1
+[PASS] settings: the window's readers see this computer: dai-settings --version; dai-settings list; dai-settings list --json | python3 -c 'import json, sys; v = json.load(sys.stdin); print("KEYS", len(v), "HOST", v["hostname"], "THEME", v["theme"], "LOCK", v["lock"])'; test -f /usr/share/applications/dai-settings.desktop && echo DESKTOP_ENTRY
+        dai-settings 0.1.0 — Diamond Rubinny (d.Ai)
+        Security and privacy
+          Lock the screen: after 10 minutes
+          Automatic security updates: on
+          Block USB storage devices: off
+          Block the camera: off
+          A snapshot before every update: off
+        Appearance and language
+          Theme: dark (D.Ai Night)
+          Touch mode: automatic: on when a touch screen is attached
+          System sounds: on
+          Language of D.Ai: English
+          Keyboard languages: us,il
+        This computer
+          Time zone: Asia/Jerusalem
+          Computer name: dai-os
+          Power: balanced
+          Memory saver (old computers): off
+          Who answers Diamond's questions: on this computer (Diamond)
+          Free disk space: (action)
+        KEYS 18 HOST dai-os THEME night LOCK 10
+        DESKTOP_ENTRY
+[PASS] focus: a session hides pop-ups and ends: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-focus --version; dai-focus start 30; echo START_RC=$?; dai-focus status; grep -c '^doNotDisturb=true' ~/.config/lxqt/notifications.conf | sed 's/^/DND=/'; systemctl --user list-timers --all --no-legend | grep -c dai-focus-end | sed 's/^/TIMER=/'; pgrep -x wlsunset >/dev/null && echo WARM || echo NOT_WARM; dai-focus status --json; dai-focus stop; echo STOP_RC=$?; grep -c '^doNotDisturb=false' ~/.config/lxqt/notifications.conf | sed 's/^/DND_AFTER=/'; systemctl --user list-timers --all --no-legend | grep -c dai-focus-end | sed 's/^/TIMER_AFTER=/'; pgrep -x wlsunset >/dev/null && echo STILL_WARM || echo COOL; dai-focus status; dai-focus game; echo GAME_RC=$?; powerprofilesctl list | grep -c '^..performance:' | sed 's/^/HAS_PERF=/'; powerprofilesctl get | sed 's/^/PROFILE=/'; dai-focus status --json; dai-focus game stop; echo GAME_STOP_RC=$?; powerprofilesctl get | sed 's/^/PROFILE_AFTER=/'
+        dai-focus 0.1.0 — Diamond Rubinny (d.Ai)
+        Focus for 30 minutes. To end early: dai-focus stop
+        START_RC=0
+        Focus: 30 of 30 minutes left.
+        DND=1
+        TIMER=1
+        WARM
+        {"active": true, "kind": "focus", "minutes": 30, "remaining": 30}
+        Focus stopped after 1 minutes. Pop-ups are back, the light is normal again.
+        STOP_RC=0
+        DND_AFTER=1
+        TIMER_AFTER=0
+        COOL
+        No focus session. Start one: dai-focus start 25
+        Game mode on: pop-ups are hidden. To end: dai-focus game stop
+        GAME_RC=0
+        HAS_PERF=0
+        PROFILE=balanced
+        {"active": true, "kind": "game", "minutes": 0, "remaining": 0}
+        Game mode off after 1 minutes. Pop-ups are back.
+        GAME_STOP_RC=0
+        PROFILE_AFTER=balanced
+[PASS] ruby: private browsing policies: python3 -c 'import json; p = json.load(open("/etc/firefox/policies/policies.json"))["policies"]; print("POLICIES", len(p), p["HttpsOnlyMode"])'; stat -c 'OWNER %U %a' /etc/firefox/policies/policies.json; echo DIVERTED=$(dpkg-divert --list | grep -c 'firefox-esr.desktop.debian'); grep -m1 '^Name=' /usr/share/applications/firefox-esr.desktop; dpkg -s firefox-esr-l10n-he >/dev/null 2>&1 && echo HEBREW_UI; rm -rf /tmp/ruby-test; mkdir /tmp/ruby-test; (timeout 150 firefox-esr --headless --no-remote --profile /tmp/ruby-test about:blank >/tmp/ruby.log 2>&1 &); for i in $(seq 120); do grep -q '@testpilot-containers' /tmp/ruby-test/extensions.json 2>/dev/null && grep -q 'uBlock0@raymondhill.net' /tmp/ruby-test/extensions.json && break; sleep 1; done; grep -q 'uBlock0@raymondhill.net' /tmp/ruby-test/extensions.json 2>/dev/null && echo UBLOCK; grep -q '@testpilot-containers' /tmp/ruby-test/extensions.json 2>/dev/null && echo CONTAINERS; python3 -c 'import urllib.request; urllib.request.urlopen("https://addons.mozilla.org/", timeout=10)' >/dev/null 2>&1 && echo NETWORK || echo NO_NETWORK; pkill -f ruby-test; tail -n 5 /tmp/ruby.log
+        POLICIES 24 enabled
+        OWNER root 644
+        DIVERTED=1
+        Name=Ruby
+        HEBREW_UI
+        UBLOCK
+        CONTAINERS
+        NETWORK
+        *** You are running in headless mode.
+        [GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+[PASS] raz: D.Ai checks itself: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-raz check; echo RAZ_EXIT=$?; dai-raz last --json | python3 -c 'import json, sys; d = json.load(sys.stdin); print("RAZ_KEPT", len(d["results"]))'; stat -c 'RAZ_DIR %a' ~/.local/state/dai/raz
+        Raz · D.Ai
+        ✓ D.Ai commands start (21 commands)
+        – Taskbar plugins are loaded (lxqt-panel is not running)
+        ✓ Background services are on (user services)
+        ✓ Protected settings are intact (4 files)
+        ✓ D.Ai's files are as installed (dai-apps, dai-ruby, dai-panel-plugin)
+        ✓ The firewall is on (nftables active)
+        ✓ Security updates install by themselves (automatic security updates on)
+        ✓ The security score can be computed (security score 85/100)
+        ✓ Every language works (8 languages)
+        8 passed · 0 failed · 1 not applicable here
+        RAZ_EXIT=0
+        RAZ_KEPT 9
+        RAZ_DIR 700
+[PASS] raz: update guard: export XDG_RUNTIME_DIR=/run/user/$(id -u); apt-config dump | grep -c dai-raz-guard; P=/etc/firefox/policies/policies.json; sudo /usr/lib/dai/dai-raz-guard pre; sudo chmod o+w $P; sudo /usr/lib/dai/dai-raz-guard post; python3 -c 'import json; d = json.load(open("/var/lib/dai/raz/regressions.json")); print("REGRESSIONS", [r["id"] for r in d["regressions"]])'; LANG=C.UTF-8 dai-heal status | grep -c 'last update broke' | sed 's/^/HEAL_SHOWS=/'; sudo chmod o-w $P; sudo /usr/lib/dai/dai-raz-guard post; LANG=C.UTF-8 dai-heal status | grep -c 'last update broke' | sed 's/^/HEAL_AFTER=/'
+        2
+        REGRESSIONS ['files']
+        HEAL_SHOWS=1
+        HEAL_AFTER=0
+[PASS] j: imports from other mail apps: mkdir -p ~/.thunderbird/t.default; printf '%s\n' 'user_pref("mail.account.account1.server", "server1");' 'user_pref("mail.account.account1.identities", "id1");' 'user_pref("mail.identity.id1.useremail", "dana@example.org");' 'user_pref("mail.identity.id1.smtpServer", "smtp1");' 'user_pref("mail.server.server1.type", "imap");' 'user_pref("mail.server.server1.hostname", "imap.example.org");' 'user_pref("mail.server.server1.socketType", 3);' 'user_pref("mail.smtpserver.smtp1.hostname", "smtp.example.org");' 'user_pref("mail.smtpserver.smtp1.try_ssl", 2);' > ~/.thunderbird/t.default/prefs.js; S=$(md5sum ~/.thunderbird/t.default/prefs.js); dai-j import --add; grep -c password ~/.local/share/dai-j/accounts.json | sed 's/^/PASSWORDS=/'; [ "$S" = "$(md5sum ~/.thunderbird/t.default/prefs.js)" ] && echo THUNDERBIRD_UNTOUCHED; rm -rf ~/.thunderbird ~/.local/share/dai-j
+        {
+          "added": [
+            "dana@example.org"
+          ]
+        }
+        PASSWORDS=0
+        THUNDERBIRD_UNTOUCHED
+[PASS] mom: background and login apps: export XDG_RUNTIME_DIR=/run/user/$(id -u); S=$(md5sum /etc/xdg/autostart/dai-clip.desktop); dai-mom startup off dai-clip.desktop | grep dai-clip; dai-mom startup on dai-clip.desktop | grep dai-clip; test -e ~/.config/autostart/dai-clip.desktop || echo USER_FILE_GONE; [ "$S" = "$(md5sum /etc/xdg/autostart/dai-clip.desktop)" ] && echo SYSTEM_UNTOUCHED; dai-mom services > /tmp/mom-services.txt; wc -l < /tmp/mom-services.txt; grep -E '^(user +active +dai-daid[.]socket|system +active +nftables[.]service)' /tmp/mom-services.txt
+        off dai-clip.desktop  D.Ai Clip
+        on  dai-clip.desktop  D.Ai Clip
+        USER_FILE_GONE
+        SYSTEM_UNTOUCHED
+        109
+        user   active     dai-daid.socket  D.Ai local AI service socket
+        system active     nftables.service  nftables
+[PASS] j: mail client: dai-j --version; dai-j discover dana@gmail.com; command -v secret-tool >/dev/null && echo KEYRING_TOOL; ls /usr/share/dbus-1/services | grep -i secret; grep -h mailto /etc/xdg/mimeapps.list; python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_j.gui, dns.resolver; print("J_IMPORTS")'
+        dai-j 0.1.0 — Diamond Rubinny (d.Ai)
+        {
+          "address": "dana@gmail.com",
+          "incoming": {
+            "host": "imap.gmail.com",
+            "port": 993,
+            "security": "ssl",
+            "username": "dana@gmail.com",
+            "oauth_only": false
+          },
+          "outgoing": {
+            "host": "smtp.gmail.com",
+            "port": 465,
+            "security": "ssl",
+            "username": "dana@gmail.com",
+            "oauth_only": false
+          },
+          "source": "known",
+          "notes": [
+            "app_password"
+          ]
+        }
+        KEYRING_TOOL
+        org.freedesktop.impl.portal.Secret.service
+        org.freedesktop.secrets.service
+        x-scheme-handler/mailto=dai-j.desktop
+        J_IMPORTS
+[PASS] mom: closes apps, protects the session: export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-mom --version; cp /usr/bin/sleep /tmp/dai-mom-test; /tmp/dai-mom-test 300 & sleep 1; dai-mom close dai-mom-test; echo RC_CLOSE=$?; sleep 1; pgrep -x dai-mom-test || echo TEST_GONE; dai-mom close --force labwc --yes; echo RC_PROTECT=$?; pgrep -x labwc >/dev/null && echo LABWC_ALIVE; dai-mom list --json | python3 -c 'import json, sys; a = json.load(sys.stdin); print("APPS", len(a), sorted(x["key"] for x in a if x["protected"])[:6])'
+        dai-mom 0.1.0 — Diamond Rubinny (d.Ai)
+        [1] 4748
+        Asked dai-mom-test to close.
+        [1]+  Terminated              /tmp/dai-mom-test 300
+        RC_CLOSE=0
+        TEST_GONE
+        labwc is part of the session and cannot be forced closed.
+        RC_PROTECT=3
+        LABWC_ALIVE
+        APPS 20 ['proc:dbus-daemon', 'proc:labwc', 'proc:pipewire', 'proc:pipewire-pulse', 'proc:systemd', 'proc:wireplumber']
+[PASS] mom: Diamond explains, secrets hidden: export XDG_RUNTIME_DIR=/run/user/$(id -u); python3 -c 'import time; time.sleep(300)' --password hunter2 --token=abc123def456 & P=$!; sleep 1; dai-mom explain $P --facts > /tmp/mom-facts.txt; echo RC_FACTS=$?; grep -c hunter2 /tmp/mom-facts.txt || echo NO_PASSWORD; grep -c abc123def456 /tmp/mom-facts.txt || echo NO_TOKEN; grep -q '‹hidden›' /tmp/mom-facts.txt && echo HIDDEN_SHOWN; timeout 60 dai-mom explain $P > /tmp/mom-explain.txt; echo RC_EXPLAIN=$?; head -c 300 /tmp/mom-explain.txt; timeout 60 dai-mom why | head -n 5; kill $P
+        [1] 4758
+        RC_FACTS=0
+        0
+        NO_PASSWORD
+        0
+        NO_TOKEN
+        HIDDEN_SHOWN
+        RC_EXPLAIN=0
+        This app is a Python interpreter running on a system with Python 3.13 installed. It is a minimal subset of the Python language, with a memory limit of 4 MB, and is running for 0 minutes. It is not part of any session and is not sandboxed.
+        The computer may feel slow due to the high CPU usage, which is 10.0%, indicating a high workload. The memory usage is 1.6 GB and 5.8 GB, suggesting a large amount of data being processed. The busiest processes are the "MOM – Task manager" with a CPU usage of 4.6%, and the "Diamond" with a memory usage of 763 MB. The largest processes are the "Kodi" with a memory usage of 230 MB and the "labwc" with a memory usage of 54 MB.
+[PASS] mom: the guard notices, never closes: export XDG_RUNTIME_DIR=/run/user/$(id -u); test -f /etc/xdg/autostart/dai-mom-guard.desktop && echo AUTOSTART; cp "$(readlink -f /usr/bin/python3)" /tmp/dai-burn; /tmp/dai-burn -c 'while True: pass' & B=$!; timeout 90 dai-mom guard --cpu-seconds 10 --rounds 3 | head -n 5; kill -0 $B && echo STILL_RUNNING; kill $B
+        AUTOSTART
+        [1]+  Terminated              python3 -c 'import time; time.sleep(300)' --password hunter2 --token=abc123def456
+        [1] 4783
+        cpu proc:dai-burn: dai-burn has kept a whole processor core busy for 1 minutes.
+        STILL_RUNNING
+[PASS] raz: trends, week and report: export XDG_RUNTIME_DIR=/run/user/$(id -u); systemctl --user is-enabled dai-raz.timer; dai-raz check --quiet; python3 -c 'import glob, json, os; f = sorted(glob.glob(os.path.expanduser("~/.local/state/dai/raz/run-*.json")))[-1]; print("BOOT", json.load(open(f))["metrics"]["boot_seconds"])'; dai-raz week; dai-raz improve; dai-raz report 2>/dev/null > /tmp/raz-report.txt; head -n 4 /tmp/raz-report.txt; grep -cE "(^|[^[:alnum:]_.-])($(id -un)|$(hostname))([^[:alnum:]_.-]|$)" /tmp/raz-report.txt || echo NO_NAMES
+        enabled
+        [1]+  Terminated              /tmp/dai-burn -c 'while True: pass'
+        BOOT 21.5
+        This week everything worked. Starting takes about 21.5 seconds. Programs crashed 1 times; D.Ai Heal has the details (Super+F1).
+        Nothing to improve: no check failed again and again.
+        D.Ai OS problem report (made by Raz; nothing was sent)
+        - D.Ai Raz: 0.1.0
+        - System: Debian <hidden> 13 (trixie)
+        - Kernel: 6.12.113+deb13-amd64
+        0
+        NO_NAMES
+[PASS] i18n: choose the language: export XDG_RUNTIME_DIR=/run/user/$(id -u); DAI_TUNE_ELEVATE=sudo dai-tune --yes 'language russian' >/dev/null; echo RC=$?; grep -x 'ru_RU.UTF-8 UTF-8' /etc/locale.gen; locale -a | grep -ix ru_RU.utf8; cat ~/.config/dai/language.env; dai-forge recipe list 2>/dev/null | grep -c language- ; rm -f ~/.config/dai/language.env
+        RC=0
+        ru_RU.UTF-8 UTF-8
+        ru_RU.utf8
+        LANG=ru_RU.UTF-8
+        LANGUAGE=ru:en
+        6
+[PASS] i18n: boot menu languages: grep -ho 'dai-languages-[a-z]*' /run/live/medium/boot/grub/grub.cfg /run/live/medium/isolinux/live.cfg 2>/dev/null | sort -u | tr '\n' ' '; echo; grep -o 'locales=[^ ]*' /proc/cmdline
+        dai-languages-ar dai-languages-back dai-languages-de dai-languages-en dai-languages-es dai-languages-fr dai-languages-he dai-languages-pt dai-languages-ru 
+        locales=en_US.UTF-8,he_IL.UTF-8
+[PASS] j: mail kept on this computer: export XDG_RUNTIME_DIR=/run/user/$(id -u); D=~/.thunderbird/t.default; mkdir -p "$D/Mail/Local Folders"; echo 'user_pref("x", 1);' > $D/prefs.js; printf 'From a@b Mon Oct 12 10:00:00 2026\nFrom: Dana <dana@example.org>\nSubject: Kept\nMessage-ID: <k1@example.org>\nX-Mozilla-Status: 0001\n\nhello\n\nFrom a@b Mon Oct 12 10:01:00 2026\nFrom: Dana <dana@example.org>\nSubject: Gone\nMessage-ID: <k2@example.org>\nX-Mozilla-Status: 0009\n\nbye\n' > "$D/Mail/Local Folders/Inbox"; S=$(md5sum "$D/Mail/Local Folders/Inbox"); dai-j import-mail | tr -d ' \n'; echo; dai-j import-mail | tr -d ' \n'; echo; [ "$S" = "$(md5sum "$D/Mail/Local Folders/Inbox")" ] && echo SOURCE_UNTOUCHED; stat -c %a ~/.local/share/dai-j/mail.sqlite; rm -rf ~/.thunderbird
+        [{"folder":"Thunderbird/LocalFolders/Inbox","from":"thunderbird","added":1,"skipped":1}]
+        [{"folder":"Thunderbird/LocalFolders/Inbox","from":"thunderbird","added":0,"skipped":2}]
+        SOURCE_UNTOUCHED
+        600
+[PASS] os: drives mount by themselves: udisksctl status >/dev/null 2>&1 && echo UDISKS; test -x /usr/libexec/gvfsd && echo GVFS; systemctl is-enabled udisks2 2>/dev/null
+        UDISKS
+        GVFS
+        enabled
+[PASS] os: screens on Wayland: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; wlr-randr 2>&1 | head -n 8; command -v wdisplays >/dev/null && echo WDISPLAYS
+        Virtual-1 "Red Hat, Inc. QEMU Monitor (Virtual-1)"
+          Make: Red Hat, Inc.
+          Model: QEMU Monitor
+          Serial: (null)
+          Physical size: 320x200 mm
+          Enabled: yes
+          Modes:
+            1280x800 px, 74.994003 Hz (preferred, current)
+        WDISPLAYS
+[PASS] os: screenshot (Print): export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; f=$(dai-screenshot 2>/dev/null) && test -s "$f" && echo SHOT_OK; rm -f -- "$f"
+        SHOT_OK
+[PASS] os: secure boot shim: for f in $(find /run/live/medium -iname 'bootx64.efi' -o -iname 'efi.img' 2>/dev/null); do printf '%s ' "$f"; grep -c -a 'UEFI SHIM' "$f"; done; find /run/live/medium -iname 'grubx64.efi' | head -n 2
+        /run/live/medium/boot/grub/efi.img 1
+        /run/live/medium/EFI/boot/bootx64.efi 1
+        /run/live/medium/efi.img 0
+        /run/live/medium/EFI/boot/grubx64.efi
+[PASS] boot: D.Ai loading screen (Plymouth): /usr/sbin/plymouth-set-default-theme; lsinitramfs $(ls /run/live/medium/live/initrd.img* | head -n 1) 2>/dev/null | grep -c 'plymouth/themes/dai/'; grep -c 'Start D.Ai OS' /run/live/medium/isolinux/live.cfg /run/live/medium/boot/grub/grub.cfg 2>/dev/null; grep -c 'menu title D.Ai OS' /run/live/medium/isolinux/menu.cfg
+        dai
+        32
+        /run/live/medium/isolinux/live.cfg:2
+        /run/live/medium/boot/grub/grub.cfg:2
+        1
+[PASS] login: D.Ai login screen loads (SDDM): cd /tmp && QT_QPA_PLATFORM=offscreen timeout 12 sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/dai >/tmp/greeter.log 2>&1; echo GREETER_RC=$?; grep -E 'themes/dai/.*(Error|error|TypeError|ReferenceError|not installed|is not a type)' /tmp/greeter.log | head -n 5 | sed 's/^/QML_''ERROR: /'; grep 'themes/dai/' /tmp/greeter.log | head -n 3
+        GREETER_RC=124
+        Loading theme configuration from "/usr/share/sddm/themes/dai/theme.conf"
+        Loading file:///usr/share/sddm/themes/dai/Main.qml...
+[PASS] ocr: text from a picture (English and Hebrew): echo aW1wb3J0IHN5cwpmcm9tIFB5UXQ2LlF0Q29yZSBpbXBvcnQgUXQKZnJvbSBQeVF0Ni5RdEd1aSBpbXBvcnQgUUNvbG9yLCBRRm9udCwgUUd1aUFwcGxpY2F0aW9uLCBRSW1hZ2UsIFFQYWludGVyCmFwcCA9IFFHdWlBcHBsaWNhdGlvbihzeXMuYXJndikKaW1hZ2UgPSBRSW1hZ2UoMTAwMCwgMjgwLCBRSW1hZ2UuRm9ybWF0LkZvcm1hdF9SR0IzMikKaW1hZ2UuZmlsbChRQ29sb3IoJ3doaXRlJykpCnBhaW50ZXIgPSBRUGFpbnRlcihpbWFnZSkKcGFpbnRlci5zZXRQZW4oUUNvbG9yKCdibGFjaycpKQpmb250ID0gUUZvbnQoJ05vdG8gU2FucycpCmZvbnQuc2V0UGl4ZWxTaXplKDYwKQpwYWludGVyLnNldEZvbnQoZm9udCkKcGFpbnRlci5kcmF3VGV4dCg0MCwgMTAwLCAnSGVsbG8gZnJvbSAyMDI2JykKZm9udCA9IFFGb250KCdOb3RvIFNhbnMgSGVicmV3JykKZm9udC5zZXRQaXhlbFNpemUoNjApCnBhaW50ZXIuc2V0Rm9udChmb250KQpwYWludGVyLmRyYXdUZXh0KGltYWdlLnJlY3QoKS5hZGp1c3RlZCgwLCAxNTAsIC00MCwgMCksIFF0LkFsaWdubWVudEZsYWcuQWxpZ25SaWdodCB8IFF0LkFsaWdubWVudEZsYWcuQWxpZ25Ub3AsICfXqdec15XXnSDXoteV15zXnScpCnBhaW50ZXIuZW5kKCkKaW1hZ2Uuc2F2ZShzeXMuYXJndlsxXSkK | base64 -d > /tmp/ocr-picture.py && QT_QPA_PLATFORM=offscreen python3 /tmp/ocr-picture.py /tmp/ocr.png && dai-ocr --file /tmp/ocr.png --print --lang he,en > /tmp/ocr.txt; echo OCR_RC=$?; cat /tmp/ocr.txt | head -n 4; grep -c "$(printf '\xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d')" /tmp/ocr.txt; tesseract --list-langs 2>/dev/null | tr '\n' ' '
+        OCR_RC=0
+        Hello from 2026
+        
+        שלום עולם
+        1
+[WARN] sound: the diamond family plays: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; ls /usr/share/sounds/dai/stereo/ | grep -c '\.oga$'; dai-sound complete; echo PLAY_RC=$?; sleep 1; dai-sound off; dai-sound complete; echo OFF_RC=$?; dai-sound on; sleep 1; pgrep -u $(id -u) -f 'dai_sound.* watch$' >/dev/null && echo WATCH''ING; pgrep -u $(id -u) -af dai_''sound | cut -c1-60; timeout 5 pw-play --volume 0.1 /usr/share/sounds/dai/stereo/bell.oga; echo PW_RC=$?
+        15
+        PLAY_RC=0
+        OFF_RC=1
+        PW_RC=0
+[PASS] chat: no system Tor at boot: python3 -c 'import nacl.bindings, zeroconf; print("NACL" + "_OK")'; command -v tor >/dev/null && echo TOR_''INSTALLED; systemctl is-active tor.service tor@default.service; pgrep -x tor >/dev/null && echo TOR_''RUNNING || echo TOR_''IDLE
+        NACL_OK
+        TOR_INSTALLED
+        inactive
+        inactive
+        TOR_IDLE
+[PASS] chat: the service and its own Tor: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; dai-chat name 'VM test' >/dev/null; dai-chat code | grep -c '^dai1-'; systemd-analyze --user verify /usr/lib/systemd/user/dai-chat.service >/tmp/chat-unit 2>&1; echo UNIT_RC=$?; head -n 3 /tmp/chat-unit; dai-chat ''run >/tmp/chat-run.log 2>&1 & CHAT=$!; for i in $(seq 1 30); do dai-chat status >/tmp/chat-status 2>&1 && break; sleep 1; done; cat /tmp/chat-status; sleep 5; pgrep -u $(id -u) -x tor >/dev/null && echo TOR_''AS_USER; stat -c %a $XDG_RUNTIME_DIR/dai-chat; kill $CHAT; sleep 4; pgrep -x tor >/dev/null && echo TOR_''LEFT || echo TOR_''GONE; tail -n 5 /tmp/chat-run.log
+        1
+        UNIT_RC=0
+        [1] 5073
+        Tor: starting. Local network: False. Waiting to send: 0. Codes waiting: 0.
+        TOR_AS_USER
+        700
+        [1]+  Done                    dai-chat ''run > /tmp/chat-run.log 2>&1
+        TOR_GONE
+[PASS] chat: pictures are re-drawn in the sandbox: echo CmltcG9ydCBzdHJ1Y3QsIHN5cywgemxpYgpzeXMucGF0aC5pbnNlcnQoMCwgIi91c3IvbGliL2RhaSIpCmZyb20gZGFpX2NoYXQgaW1wb3J0IHBpY3R1cmVzCgpkZWYgY2h1bmsoa2luZCwgZGF0YSk6CiAgICByZXR1cm4gc3RydWN0LnBhY2soIj5JIiwgbGVuKGRhdGEpKSArIGtpbmQgKyBkYXRhICsgc3RydWN0LnBhY2soIj5JIiwgemxpYi5jcmMzMihraW5kICsgZGF0YSkpCgpwbmcgPSAoYiJceDg5UE5HXHJcblx4MWFcbiIgKyBjaHVuayhiIklIRFIiLCBzdHJ1Y3QucGFjaygiPklJQkJCQkIiLCA2NCwgNjQsIDgsIDIsIDAsIDAsIDApKQogICAgICAgKyBjaHVuayhiIklEQVQiLCB6bGliLmNvbXByZXNzKChiIlx4MDAiICsgYiJceDgwIiAqIDE5MikgKiA2NCkpICsgY2h1bmsoYiJJRU5EIiwgYiIiKSkKanBlZywgXyA9IHBpY3R1cmVzLmNsZWFuKHBuZykKc2VjcmV0ID0gYiJFeGlmXHgwMFx4MDBHUFMgU0VDUkVUIiArIGIiUExBQ0UiCnBob3RvID0ganBlZ1s6Ml0gKyBiIlx4ZmZceGUxIiArIHN0cnVjdC5wYWNrKCI+SCIsIGxlbihzZWNyZXQpICsgMikgKyBzZWNyZXQgKyBqcGVnWzI6XQpvdXQsIG1pbWUgPSBwaWN0dXJlcy5jbGVhbihwaG90bykKcHJpbnQobWltZSwgIkdPTkUiIGlmIGIiU0VDUkVUUExBQ0UiIG5vdCBpbiBvdXQgZWxzZSAiS0VQVCIpCg== | base64 -d > /tmp/chat-picture.py && python3 -I /tmp/chat-picture.py
+        image/jpeg GONE
+[PASS] pdf: opened in the sandbox, wants listed, text out: echo CmltcG9ydCBzeXMKc3lzLnBhdGguaW5zZXJ0KDAsICIvdXNyL2xpYi9kYWkiKQppbXBvcnQgcGlrZXBkZgpwZGYgPSBwaWtlcGRmLm5ldygpCnBkZi5wYWdlcy5hcHBlbmQocGlrZXBkZi5QYWdlKHBpa2VwZGYuRGljdGlvbmFyeShUeXBlPXBpa2VwZGYuTmFtZS5QYWdlLCBNZWRpYUJveD1bMCwgMCwgMzAwLCAyMDBdKSkpCnBhZ2UgPSBwZGYucGFnZXNbMF0KZm9udCA9IHBkZi5tYWtlX2luZGlyZWN0KHBpa2VwZGYuRGljdGlvbmFyeShUeXBlPXBpa2VwZGYuTmFtZS5Gb250LCBTdWJ0eXBlPXBpa2VwZGYuTmFtZS5UeXBlMSwgQmFzZUZvbnQ9cGlrZXBkZi5OYW1lLkhlbHZldGljYSkpCnBhZ2UuUmVzb3VyY2VzID0gcGlrZXBkZi5EaWN0aW9uYXJ5KEZvbnQ9cGlrZXBkZi5EaWN0aW9uYXJ5KEYxPWZvbnQpKQpwYWdlLkNvbnRlbnRzID0gcGRmLm1ha2Vfc3RyZWFtKGIiQlQgL0YxIDI0IFRmIDIwIDEwMCBUZCAoSGVsbG8gc2FuZGJveCkgVGogRVQiKQpwZGYuUm9vdC5PcGVuQWN0aW9uID0gcGlrZXBkZi5EaWN0aW9uYXJ5KFM9cGlrZXBkZi5OYW1lLkphdmFTY3JpcHQsIEpTPSJhcHAuYWxlcnQoMSkiKQpwZGYuYXR0YWNobWVudHNbImV2aWwuZXhlIl0gPSBwaWtlcGRmLkF0dGFjaGVkRmlsZVNwZWMocGRmLCBiIk1aIikKcGRmLnNhdmUoIi90bXAvd2FudHMucGRmIikKZnJvbSBkYWlfcGRmLnJlYWRlciBpbXBvcnQgUmVhZGVyCnIgPSBSZWFkZXIoIi90bXAvd2FudHMucGRmIikKZG9jID0gci5vcGVuKCkKY21kbGluZSA9IG9wZW4oZiIvcHJvYy97ci5wcm9jLnBpZH0vY21kbGluZSIsICJyYiIpLnJlYWQoKQpwcmludCgiU0FOREJPWEVEIiBpZiBiImJ3cmFwIiBpbiBjbWRsaW5lIGFuZCBiIi0tdW5zaGFyZS1hbGwiIGluIGNtZGxpbmUgZWxzZSAiTk9UX1NBTkRCT1hFRCIsIGNtZGxpbmVbOjYwXSkKcG5nLCB3LCBoID0gci5yZW5kZXIoMCwgMzAwLCAyMDApCnByaW50KCJSRU5ERVIiLCB3LCBoLCBwbmdbOjRdID09IGIiXHg4OVBORyIsICJKUyIsIGRvYy5maW5kaW5ncy5qYXZhc2NyaXB0LCAiQVRUIiwgW2FbIm5hbWUiXSBmb3IgYSBpbiBkb2MuZmluZGluZ3MuYXR0YWNobWVudHNdKQpyLmNsb3NlKCkK | base64 -d > /tmp/pdf-check.py && python3 -I /tmp/pdf-check.py; dai-pdf check /tmp/wants.pdf; echo CHECK_RC=$?; dai-pdf text /tmp/wants.pdf; xdg-mime query default application/pdf; dai-pdf merge /tmp/wants.pdf /tmp/wants.pdf -o /tmp/two.pdf; dai-pdf rotate /tmp/two.pdf --by 90 --pages 2 -o /tmp/turned.pdf; echo EDIT_RC=$?; dai-pdf info /tmp/turned.pdf | grep -E '^Pages'; dai-pdf fields /tmp/wants.pdf | head -n 3; ls -l /tmp/turned.pdf | cut -c1-10; dai-pdf redact /tmp/wants.pdf --page 1 --box 10,80,280,40 -o /tmp/black.pdf >/dev/null; echo REDACT_RC=$?; dai-pdf text /tmp/black.pdf | grep -c sandbox | sed 's/^/WORDS_LEFT=/'; dai-pdf strip /tmp/wants.pdf -o /tmp/clean.pdf >/dev/null; dai-pdf info /tmp/clean.pdf | grep -c '^Title' | sed 's/^/TITLE_LEFT=/'; dai-pdf ocr /tmp/black.pdf -o /tmp/ocr.pdf; echo OCR_RC=$?; dai-pdf export /tmp/wants.pdf --dir /tmp/pics --dpi 72 | wc -l | sed 's/^/PICS=/'; dai-pdf compress /tmp/black.pdf --check | head -c 60; echo; dai-pdf compress /tmp/black.pdf --strong -o /tmp/small.pdf >/dev/null; echo COMPRESS_RC=$?; [ $(stat -c%s /tmp/small.pdf) -lt $(stat -c%s /tmp/black.pdf) ] && echo SMALLER=yes; dai-pdf signatures /tmp/wants.pdf; echo SIG_RC=$?; dai-pdf ask /tmp/wants.pdf 'מה זה' | head -c 120; echo; echo ASK_PDF_RC=$?
+        SANDBOXED b'bwrap\x00--ro-bind\x00/usr\x00/usr\x00--symlink\x00usr/bin\x00/bin\x00--symlink\x00u'
+        RENDER 300 200 True JS 1 ATT ['evil.exe']
+        This PDF contains JavaScript (1). It is not run.
+        1 attached files. They are listed in the side panel and never opened.
+        CHECK_RC=1
+        Hello sandbox
+        dai-pdf.desktop
+        /tmp/two.pdf: 2 pages
+        /tmp/turned.pdf: 2 pages
+        EDIT_RC=0
+        Pages: 2
+        No form fields in this file.
+        -rw-------
+        REDACT_RC=0
+        WORDS_LEFT=0
+        TITLE_LEFT=0
+        1 pages got a text layer.
+        /tmp/ocr.pdf: 1 pages
+        OCR_RC=0
+        PICS=1
+        5 KB → 4 KB (1 pictures made smaller)
+        
+        COMPRESS_RC=0
+        SMALLER=yes
+        No digital signatures.
+        SIG_RC=3
+        השלום, sandbox.
+        
+        ASK_PDF_RC=0
+[PASS] phone: Phosh runs on arm64 with D.Ai in touch mode: . /etc/dai-release; if [ "$EDITION" != phone ]; then echo PHONE_NOT_THIS_EDITION; else uname -m; pgrep -a -x phoc | head -n 1 | cut -c1-60; pgrep -a -x phosh | head -n 1 | cut -c1-60; pgrep -x squeekboard >/dev/null && echo KEYBOARD_RUNNING; cat ~/.config/dai/touch | sed 's/^/TOUCH=/'; python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_style; print("MODE", dai_style.touch_mode(), "ON" if dai_style.touch() else "OFF")'; dai-tune --version | head -n 1; pgrep -x phosh >/dev/null || { grep -h Session= /etc/sddm.conf; ls /dev/dri; tail -n 15 ~/.local/share/sddm/wayland-session.log 2>/dev/null; sudo journalctl -b -o cat -t phoc -t phosh -t gnome-session -t gnome-session-binary -u sddm 2>/dev/null | grep -v '^$' | tail -n 30; }; fi
+        PHONE_NOT_THIS_EDITION
+[PASS] tv: the session, Kodi, the defaults, nothing listening: . /etc/dai-release; if [ "$EDITION" != tv ]; then echo TV_NOT_THIS_EDITION; else grep -h Session= /etc/sddm.conf /etc/sddm.conf.d/*.conf; pgrep -af 'kodi' | grep -c -v grep | sed 's/^/KODI_PROCS=/'; pgrep -x lxqt-session >/dev/null && echo LXQT_RUNNING || echo NO_LXQT; kodi --version | head -n 1; grep -cE 'id=.services.webserver.[^>]*>false' ~/.kodi/userdata/guisettings.xml | sed 's/^/WEBSERVER_OFF=/'; grep -cE 'id=.locale.language.[^>]*>resource.language.he_il' ~/.kodi/userdata/guisettings.xml | sed 's/^/HEBREW=/'; test -d ~/.kodi/addons/resource.language.he_il && echo HE_PACK; command -v cec-client >/dev/null && echo CEC_TOOL; ss -ltnH | awk '{print $4}' | grep -vE '^(127[.]|[[]::1[]])' | sed 's/^/OPEN=/'; echo LISTENERS_CHECKED; grep -iE 'Loaded language|windowing|Running on' ~/.kodi/temp/kodi.log 2>/dev/null | head -n 4; fi
+        Session=dai-tv.desktop
+        DefaultSession=dai-tv.desktop
+        KODI_PROCS=4
+        NO_LXQT
+        Kodi from Debian Media Center 21.2 Debian package version: 2:21.2+dfsg-4
+        WEBSERVER_OFF=2
+        HEBREW=1
+        HE_PACK
+        CEC_TOOL
+        LISTENERS_CHECKED
+        2026-10-24 17:25:39.353 T:1506     info <general>: Running on Debian GNU/Linux 13 (trixie), kernel: Linux x86 64-bit version 6.12.113+deb13-amd64
+        2026-10-24 17:25:39.844 T:1506     info <general>: CApplication::CreateGUI - using the wayland windowing system
+[PASS] tv: remote control from the phone, with undo: . /etc/dai-release; if [ "$EDITION" != tv ]; then echo TV_NOT_THIS_EDITION; else cp ~/.kodi/userdata/guisettings.xml /tmp/gui-before.xml; echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'שלט מהטלפון' >/tmp/tune-tv.txt 2>&1; echo TUNE_RC=$?; grep -cE 'id=.services.webserver.>true' ~/.kodi/userdata/guisettings.xml | sed 's/^/WEB_ON=/'; grep -cE 'id=.services.esallinterfaces.>true' ~/.kodi/userdata/guisettings.xml | sed 's/^/ES_ON=/'; sudo nft list chain inet dai_filter input | grep -cE 'dport (8080|9090|9777)' | sed 's/^/PORTS=/'; DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; sudo nft list chain inet dai_filter input | grep -cE 'dport (8080|9090|9777)' | sed 's/^/PORTS_AFTER=/'; cmp -s /tmp/gui-before.xml ~/.kodi/userdata/guisettings.xml && echo SETTINGS_RESTORED || diff /tmp/gui-before.xml ~/.kodi/userdata/guisettings.xml | head -n 6; tail -n 3 /tmp/tune-tv.txt; fi
+        TUNE_RC=0
+        WEB_ON=1
+        ES_ON=1
+        PORTS=6
+        PORTS_AFTER=0
+        SETTINGS_RESTORED
+          4. ⚠ Open port 9777/udp to the local network only
+             system · medium risk · WEAKENS security
+        This plan WEAKENS security. Type "yes" to apply: ✓ Applied. To undo: dai-tune undo
+[PASS] tv: night mode, the children's profile and the remote's keymap: . /etc/dai-release; if [ "$EDITION" != tv ]; then echo TV_NOT_THIS_EDITION; else cp ~/.kodi/userdata/guisettings.xml /tmp/gui-before2.xml; dai-tune --yes 'מצב לילה' >/tmp/tune-night.txt 2>&1; echo NIGHT_RC=$?; grep -c 'screensaver.xbmc.builtin.dim' ~/.kodi/userdata/guisettings.xml | sed 's/^/DIM=/'; dai-tune undo >/dev/null 2>&1; cmp -s /tmp/gui-before2.xml ~/.kodi/userdata/guisettings.xml && echo NIGHT_RESTORED; { [ -e ~/.kodi/userdata/profiles.xml ] && cp ~/.kodi/userdata/profiles.xml /tmp/prof-before.xml; } || rm -f /tmp/prof-before.xml; dai-tune --yes 'פרופיל ילדים עם קוד 2468' >/tmp/tune-kids.txt 2>&1; echo KIDS_RC=$?; grep -c '<lockcode>' ~/.kodi/userdata/profiles.xml | sed 's/^/LOCKS=/'; grep -c '<name>Children</name>' ~/.kodi/userdata/profiles.xml | sed 's/^/KIDS=/'; grep -o '<autologin>[0-9-]*</autologin>' ~/.kodi/userdata/profiles.xml; dai-tune undo >/dev/null 2>&1; if [ -e /tmp/prof-before.xml ]; then cmp -s /tmp/prof-before.xml ~/.kodi/userdata/profiles.xml && echo PROFILES_RESTORED; else test -e ~/.kodi/userdata/profiles.xml || echo PROFILES_RESTORED; fi; python3 -c "import xml.etree.ElementTree as E, os; E.parse(os.path.expanduser('~/.kodi/userdata/keymaps/dai.xml'))"; echo KEYMAP_RC=$?; dai-tv night on; echo NIGHT_LIVE_RC=$?; dai-tv night off >/dev/null; tail -n 2 /tmp/tune-night.txt /tmp/tune-kids.txt; fi
+        NIGHT_RC=0
+        DIM=1
+        NIGHT_RESTORED
+        KIDS_RC=0
+        LOCKS=2
+        KIDS=1
+        <autologin>1</autologin>
+        PROFILES_RESTORED
+        KEYMAP_RC=0
+        Night mode: on
+        NIGHT_LIVE_RC=0
+        ==> /tmp/tune-night.txt <==
+             user · low risk · neutral
+        ✓ Applied. To undo: dai-tune undo
+        
+        ==> /tmp/tune-kids.txt <==
+             ↳ Takes effect when Kodi starts again. Write the PIN down: it is what lets a grown-up out.
+        ✓ Applied. To undo: dai-tune undo
+[PASS] tv: live channels from my own playlist, nothing asked at first start: . /etc/dai-release; if [ "$EDITION" != tv ]; then echo TV_NOT_THIS_EDITION; else ls /usr/share/kodi/addons /usr/lib/x86_64-linux-gnu/kodi/addons /usr/lib/aarch64-linux-gnu/kodi/addons 2>/dev/null | grep -c -E '^(pvr.iptvsimple|inputstream.adaptive)$' | sed 's/^/ADDONS_ON_IMAGE=/'; dai-tv seed; echo SEED_RC=$?; python3 -c "import sqlite3, os; c = sqlite3.connect(os.path.expanduser('~/.kodi/userdata/Database/Addons33.db')); print('ROWS', c.execute(\"select count(*) from installed where enabled=1 and addonID in ('pvr.iptvsimple','inputstream.adaptive')\").fetchone()[0], 'VERSION', c.execute('select idVersion from version').fetchone()[0])"; python3 -c "import sys; sys.path.insert(0, '/usr/lib/dai'); from dai_tv import rpc; a = rpc.call('Addons.GetAddonDetails', {'addonid': 'pvr.iptvsimple', 'properties': ['enabled']}); print('KODI_SAYS_ENABLED', a['addon']['enabled']); w = rpc.call('GUI.GetProperties', {'properties': ['currentwindow']}); print('WINDOW', w['currentwindow']['label'])"; printf '#EXTM3U\n#EXTINF:-1,Test channel\nhttp://127.0.0.1:9/none.ts\n' > ~/channels.m3u; dai-tune --yes 'ערוצים מהרשימה שלי ~/channels.m3u' >/tmp/tune-ch.txt 2>&1; echo CH_RC=$?; grep -c 'channels.m3u' ~/.kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml | sed 's/^/INSTANCE=/'; dai-tune undo >/dev/null 2>&1; grep -c 'channels.m3u' ~/.kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml 2>/dev/null | sed 's/^/INSTANCE_AFTER=/'; test -e ~/.kodi/userdata/addon_data/pvr.iptvsimple/instance-settings-1.xml || echo INSTANCE_AFTER=0; tail -n 2 /tmp/tune-ch.txt; fi
+        ADDONS_ON_IMAGE=4
+        Add-ons ready: nothing to change
+        SEED_RC=0
+        ROWS 2 VERSION 33
+        KODI_SAYS_ENABLED True
+        WINDOW בית
+        CH_RC=0
+        INSTANCE=1
+        INSTANCE_AFTER=0
+             ↳ Kodi shows the channels when it starts again. The playlist stays where it is; only its path is kept.
+        ✓ Applied. To undo: dai-tune undo
+[PASS] tv: Ruby in TV mode and the way back: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; . /etc/dai-release; if [ "$EDITION" != tv ]; then echo TV_NOT_THIS_EDITION; else dai-tv browse file:///usr/share/dai/ruby/start.html; echo BROWSE_RC=$?; sleep 8; pgrep -f 'ruby-tv' >/dev/null && echo RUBY_TV_RUNNING || echo RUBY_TV_NOT_RUNNING; grep -c devPixelsPerPx ~/.config/dai/ruby-tv/user.js | sed 's/^/PREFS=/'; dai-tv browse --close; sleep 3; pgrep -f 'ruby-tv' >/dev/null && echo RUBY_TV_STILL_THERE || echo RUBY_TV_GONE; python3 -c "import xml.etree.ElementTree as E, os; r = E.parse(os.path.expanduser('~/.kodi/userdata/favourites.xml')).getroot(); print('FAVOURITES', len(r.findall('favourite')))"; grep -c 'dai-tv browse --close' /etc/dai/tv/labwc/rc.xml | sed 's/^/LABWC_KEYS=/'; grep -c '<mytv>' ~/.kodi/userdata/keymaps/dai.xml | sed 's/^/MYTV=/'; dai-tv status --notify | head -n 2; echo STATUS_RC=$?; systemctl --user is-enabled dai-tv-status.timer | sed 's/^/TIMER=/'; fi
+        Ruby opens file:///usr/share/dai/ruby/start.html on the TV (pid 5364).
+        BROWSE_RC=0
+        RUBY_TV_RUNNING
+        PREFS=1
+        Back to the TV.
+        RUBY_TV_GONE
+        FAVOURITES 4
+        LABWC_KEYS=3
+        MYTV=1
+        Little free space on /: 2.1 GB free of 2.9 GB.
+        STATUS_RC=0
+        TIMER=enabled
+[PASS] tv: D.Ai talks to Kodi on this computer only: . /etc/dai-release; if [ "$EDITION" != tv ]; then echo TV_NOT_THIS_EDITION; else ss -ltnH | grep 9090 | awk '{print "RPC_LISTEN=" $4}'; dai-tv ping; echo PING_RC=$?; dai-tv playing; dai-tv say 'שלום מ-D.Ai'; echo SAY_RC=$?; dai-tv do info; echo DO_RC=$?; dai-tv ask 'מה זה' | head -c 200; echo; echo ASK_RC=$?; fi
+        RPC_LISTEN=127.0.0.1:9090
+        RPC_LISTEN=[::1]:9090
+        pong
+        PING_RC=0
+        Nothing is playing.
+        Shown on the TV.
+        SAY_RC=0
+        Done: info
+        DO_RC=0
+        המה זה?
+        
+        ASK_RC=0
+[PASS] vm: the stack, the honest check, a definition libvirt accepts: if ! command -v virsh >/dev/null; then echo VM_NOT_IN_THIS_EDITION; else dai-vm check; echo CHECK_RC=$?; echo CmltcG9ydCBzeXMKZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCnN5cy5wYXRoLmluc2VydCgwLCAiL3Vzci9saWIvZGFpIikKZnJvbSBkYWlfdm0gaW1wb3J0IGNvbnRyb2wsIGhhcmR3YXJlLCBtYWNoaW5lCm1pc3NpbmcgPSBoYXJkd2FyZS5taXNzaW5nX3Rvb2xzKCkKcHJpbnQoIkZJUk1XQVJFIiBpZiBoYXJkd2FyZS5maXJtd2FyZV9wcmVzZW50KCkgZWxzZSAiTk9fRklSTVdBUkUiLCAiVE9PTFNfT0siIGlmIG5vdCBtaXNzaW5nIGVsc2UgIlRPT0xTX01JU1NJTkc9IiArICIsIi5qb2luKG1pc3NpbmcpKQpob21lID0gUGF0aC5ob21lKCkKbSA9IG1hY2hpbmUuTWFjaGluZShuYW1lPSJjaXRlc3QiLCBtZW1vcnlfbWI9MjA0OCwgY3B1cz0xLCBkaXNrX2diPTMyLCBpc289Tm9uZSwgZHJpdmVyc19pc289Tm9uZSwgd2luZG93cz0iMTEiKQpkZWZpbml0aW9uID0gbWFjaGluZS5jcmVhdGUobSwgaG9tZSkKdiA9IGNvbnRyb2wuVmlyc2goKQp0cnk6CiAgICB2LmRlZmluZShkZWZpbml0aW9uKQpleGNlcHQgY29udHJvbC5WbUVycm9yIGFzIGV4YzoKICAgICMgU2VlbiBvbmNlIG9uIHRoZSBDSSBWTSB3aXRoIGlkZW50aWNhbCBwYWNrYWdlcyBhbmQgWE1MOiBsaWJ2aXJ0J3MgZmlybXdhcmUgbWF0Y2ggZmFpbGVkIG9uIGZpcnN0IGNvbnRhY3QuCiAgICAjIFNheSB3aGF0IGxpYnZpcnQga25vd3MsIHRoZW4gYXNrIG9uY2UgbW9yZSBhZnRlciBpdHMgUUVNVSBwcm9iZSBoYWQgYSBtb21lbnQuCiAgICBpbXBvcnQgc3VicHJvY2VzcywgdGltZQogICAgcHJpbnQoIkRFRklORV9GSVJTVF9UUllfRkFJTEVEIiwgZXhjKQogICAgY2FwcyA9IHN1YnByb2Nlc3MucnVuKFsidmlyc2giLCAiLWMiLCAicWVtdTovLy9zZXNzaW9uIiwgImRvbWNhcGFiaWxpdGllcyIsICItLW1hY2hpbmUiLCAicTM1IiwgIi0tYXJjaCIsICJ4ODZfNjQiXSwKICAgICAgICAgICAgICAgICAgICAgICAgICBjYXB0dXJlX291dHB1dD1UcnVlLCB0ZXh0PVRydWUsIHRpbWVvdXQ9MTIwKQogICAgdGV4dCA9IGNhcHMuc3Rkb3V0ICsgY2Fwcy5zdGRlcnIKICAgIHN0YXJ0ID0gdGV4dC5maW5kKCI8ZmlybXdhcmUiKQogICAgcHJpbnQoIkRPTUNBUFNfUkMiLCBjYXBzLnJldHVybmNvZGUsIHRleHRbc3RhcnQ6c3RhcnQgKyA2MDBdLnJlcGxhY2UoIlxuIiwgIiAiKSBpZiBzdGFydCA+PSAwIGVsc2UgdGV4dFstNDAwOl0pCiAgICB0aW1lLnNsZWVwKDUpCiAgICB2LmRlZmluZShkZWZpbml0aW9uKQogICAgcHJpbnQoIkRFRklORURfT05fUkVUUlkiKQpwcmludCgiREVGSU5FRCIsIHYuc3RhdGUoImNpdGVzdCIpKQojIFN0YWdlIDNiOiB0aGUgbWFjaGluZSdzIG93biBsYXVuY2hlciAobWVudSBhbmQgdGFza2JhciksIE1PTSdzIG5hbWUgZm9yIGl0LCBEb2N0b3IncyBhbnN3ZXIsIHRoZSBVU0IgcnVsZS4KbGF1bmNoZXIgPSBtYWNoaW5lLmxhdW5jaGVyX3BhdGgoImNpdGVzdCIsIGhvbWUpCnByaW50KCJMQVVOQ0hFUiIsIGxhdW5jaGVyLmlzX2ZpbGUoKSBhbmQgIlgtREFpLU1hY2hpbmU9Y2l0ZXN0IiBpbiBsYXVuY2hlci5yZWFkX3RleHQoKSkKaW1wb3J0IHN1YnByb2Nlc3MKZG9jdG9yID0gc3VicHJvY2Vzcy5ydW4oWyJkYWktZG9jdG9yIiwgIm1hY2hpbmUiXSwgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwgdGV4dD1UcnVlLCB0aW1lb3V0PTEyMCkKIyBUaGUgQ0kgcnVubmVyIG1heSBvZmZlciBuZXN0ZWQgdmlydHVhbGl6YXRpb24sIHNvIEtWTSBjYW4gYmUgdXNhYmxlIGhlcmU6IHdoYXQgaXMgcmVxdWlyZWQgaXMgYW4gYW5zd2VyLCBub3QgYQojIHBhcnRpY3VsYXIgZmluZGluZyAodGhlIGZpbmRpbmdzIHNlZW4gc28gZmFyOiBubyBLVk0sIG9yIHRoZSBkaXNrKS4KcHJpbnQoIkRPQ1RPUl9SQyIsIGRvY3Rvci5yZXR1cm5jb2RlLCAiRE9DVE9SX0FOU1dFUkVEIiwgYW55KGxpbmUuc3RyaXAoKSBmb3IgbGluZSBpbiBkb2N0b3Iuc3Rkb3V0LnNwbGl0bGluZXMoKSksIGRvY3Rvci5zdGRvdXQuc3RyaXAoKS5zcGxpdGxpbmVzKClbOjJdKQp1ZGV2ID0gc3VicHJvY2Vzcy5ydW4oWyJ1ZGV2YWRtIiwgInZlcmlmeSIsICIvZXRjL3VkZXYvcnVsZXMuZC83MC1kYWktdm0tdXNiLnJ1bGVzIl0sIGNhcHR1cmVfb3V0cHV0PVRydWUsIHRleHQ9VHJ1ZSwgdGltZW91dD02MCkKcHJpbnQoIlVERVZfUkMiLCB1ZGV2LnJldHVybmNvZGUsICh1ZGV2LnN0ZG91dCArIHVkZXYuc3RkZXJyKS5zdHJpcCgpLnNwbGl0bGluZXMoKVstMTpdKQpzaGFyaW5nID0gc3VicHJvY2Vzcy5ydW4oWyJkYWktZG9jdG9yIiwgInNoYXJpbmciXSwgY2FwdHVyZV9vdXRwdXQ9VHJ1ZSwgdGV4dD1UcnVlLCB0aW1lb3V0PTEyMCkKcHJpbnQoIlNIQVJJTkdfUkMiLCBzaGFyaW5nLnJldHVybmNvZGUsICJTSEFSSU5HX1NBWVMiLCAic2VlcyBub25lIG9mIHlvdXIgZmlsZXMiIGluIHNoYXJpbmcuc3Rkb3V0KQojIFN0YWdlIDI6IGEgc2hhcmVkIGZvbGRlciwgdGhlIGNsaXBib2FyZCBhbmQgYSBVU0IgZGV2aWNlIGluIHRoZSBkZWZpbml0aW9uOyBsaWJ2aXJ0IG11c3QgYWNjZXB0IGl0IHRvby4Kc2hhcmUgPSBob21lIC8gImRhaS12bS1zaGFyZSIKc2hhcmUubWtkaXIoZXhpc3Rfb2s9VHJ1ZSkKbSA9IG1hY2hpbmUubG9hZCgiY2l0ZXN0IiwgaG9tZSkKbS5jbGlwYm9hcmQsIG0uc2hhcmVkX2ZvbGRlciwgbS51c2IgPSBUcnVlLCBzdHIoc2hhcmUpLCBbIjA3ODE6NTU4MyJdCnYucmVkZWZpbmUobWFjaGluZS51cGRhdGUobSwgaG9tZSkpCnhtbCA9IChtYWNoaW5lLm1hY2hpbmVfZGlyKCJjaXRlc3QiLCBob21lKSAvICJkb21haW4ueG1sIikucmVhZF90ZXh0KCkKcHJpbnQoIlNIQVJFRF9ERUZJTkVEIiwgdi5zdGF0ZSgiY2l0ZXN0IiksICJ2aXJ0aW9mcyIgaW4geG1sIGFuZCAibWVtZmQiIGluIHhtbCBhbmQgIjB4MDc4MSIgaW4geG1sKQp0cnk6CiAgICB2LnNuYXBzaG90X3Rha2UoImNpdGVzdCIsICJjaS1zbmFwIiwgInRha2VuIGJ5IHRoZSBib290IHRlc3QiKQogICAgcHJpbnQoIlNOQVBfVEFLRU4iLCBbc1sibGFiZWwiXSBmb3IgcyBpbiB2LnNuYXBzaG90cygiY2l0ZXN0IildKQogICAgdi5zbmFwc2hvdF9kZWxldGUoImNpdGVzdCIsICJjaS1zbmFwIikKICAgIHByaW50KCJTTkFQX0dPTkUiLCB2LnNuYXBzaG90cygiY2l0ZXN0IikpCmV4Y2VwdCBjb250cm9sLlZtRXJyb3IgYXMgZXhjOgogICAgcHJpbnQoIlNOQVBfRkFJTEVEIiwgZXhjKQojIFN0YWdlIDM6IHRoZSBtYWNoaW5lIGJ5IHNlbnRlbmNlIHRocm91Z2ggRC5BaSBUdW5lICh1c2VyIHNjb3BlLCBuZXV0cmFsLCBzbyAtLXllcyBpcyBmaW5lKSwgd2l0aCB1bmRvLgppbXBvcnQgc3VicHJvY2Vzcwp0dW5lID0gc3VicHJvY2Vzcy5ydW4oWyJkYWktdHVuZSIsICItLXllcyIsICLXpteZ15zXldedINee16bXkSDXqdecINeV15XXmdeg15PXldehINec16TXoNeZINeU16LXk9eb15XXnyJdLCBjYXB0dXJlX291dHB1dD1UcnVlLCB0ZXh0PVRydWUsIHRpbWVvdXQ9MzAwKQpwcmludCgiVFVORV9SQyIsIHR1bmUucmV0dXJuY29kZSwgKHR1bmUuc3Rkb3V0ICsgdHVuZS5zdGRlcnIpLnN0cmlwKCkuc3BsaXRsaW5lcygpWy0xOl0pCnByaW50KCJUVU5FX1NOQVAiLCBbc1sibGFiZWwiXSBmb3IgcyBpbiB2LnNuYXBzaG90cygiY2l0ZXN0IildKQp1bmRvID0gc3VicHJvY2Vzcy5ydW4oWyJkYWktdHVuZSIsICJ1bmRvIl0sIGNhcHR1cmVfb3V0cHV0PVRydWUsIHRleHQ9VHJ1ZSwgdGltZW91dD0zMDApCnByaW50KCJVTkRPX1JDIiwgdW5kby5yZXR1cm5jb2RlLCAiVFVORV9TTkFQX0FGVEVSIiwgW3NbImxhYmVsIl0gZm9yIHMgaW4gdi5zbmFwc2hvdHMoImNpdGVzdCIpXSkKdi51bmRlZmluZSgiY2l0ZXN0IikKbWFjaGluZS5yZW1vdmVfZmlsZXMoImNpdGVzdCIsIGhvbWUpCnByaW50KCJVTkRFRklORUQiLCB2LnN0YXRlKCJjaXRlc3QiKSwgIkxBVU5DSEVSX0dPTkUiLCBub3QgbGF1bmNoZXIuZXhpc3RzKCkpCg== | base64 -d > /tmp/vm-check.py && python3 -I /tmp/vm-check.py; fi
+        VM_NOT_IN_THIS_EDITION
+[PASS] os: firmware, codecs, printers: command -v fwupdmgr && echo FWUPD; ls /usr/lib/x86_64-linux-gnu/gstreamer-1.0/ 2>/dev/null | grep -c -E 'libgst(libav|isomp4|matroska)\.so'; command -v hp-setup && echo HPLIP; systemctl is-enabled ipp-usb cups-browsed 2>/dev/null
+        /usr/bin/fwupdmgr
+        FWUPD
+        3
+        /usr/bin/hp-setup
+        HPLIP
+        static
+        enabled
+[PASS] os: night light and on-screen keyboard: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; labwc --version 2>&1 | head -n 1; timeout 3 wlsunset -t 4000 -T 6500 -S 07:00 -s 19:00 >/dev/null 2>&1; echo SUNSET_RC=$?; command -v wvkbd-mobintl && echo WVKBD; test -x /usr/bin/dai-nightlight && test -x /usr/bin/dai-keyboard && echo SCRIPTS
+        labwc 0.8.3
+        SUNSET_RC=124
+        /usr/bin/wvkbd-mobintl
+        WVKBD
+        SCRIPTS
+[PASS] touch: the profile, Tune, the keyboard: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; echo CmltcG9ydCBzeXMKc3lzLnBhdGguaW5zZXJ0KDAsICIvdXNyL2xpYi9kYWkiKQppbXBvcnQgZGFpX3N0eWxlCnByaW50KCJTQ1JFRU4iIGlmIGRhaV9zdHlsZS50b3VjaHNjcmVlbl9wcmVzZW50KCkgZWxzZSAiTk9fU0NSRUVOIikKcHJpbnQoIkFVVE8iLCBkYWlfc3R5bGUudG91Y2hfbW9kZSgpLCAiT04iIGlmIGRhaV9zdHlsZS50b3VjaCgpIGVsc2UgIk9GRiIpCnByaW50KCJFTlYiLCAiT04iIGlmIGRhaV9zdHlsZS50b3VjaCh7IkRBSV9UT1VDSCI6ICIxIn0pIGVsc2UgIk9GRiIpCnByaW50KCJTSEVFVCIsIGxlbihkYWlfc3R5bGUud2l0aF90b3VjaCgiIiwgb249VHJ1ZSkpID4gMTAwKQo= | base64 -d > /tmp/touch-check.py && python3 -I /tmp/touch-check.py; dai-tune --yes 'מצב מגע' >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/touch | sed 's/^/FILE=/'; python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_style; print("NOW", "ON" if dai_style.touch() else "OFF")'; dai-tune undo >/dev/null 2>&1; test -f ~/.config/dai/touch && echo FILE_LEFT || echo FILE_GONE; wvkbd-mobintl -h 2>&1 | grep -c -- '--hidden' | sed 's/^/HIDDEN_FLAG=/'; wvkbd-mobintl -L 260 --hidden >/tmp/wvkbd.log 2>&1 & sleep 2; pgrep -x wvkbd-mobintl >/dev/null && echo KBD_RUNNING || cat /tmp/wvkbd.log; dai-keyboard & sleep 2; pgrep -x wvkbd-mobintl >/dev/null && echo KBD_STILL_RUNNING; pgrep -c -x wvkbd-mobintl | sed 's/^/KBD_PROCS=/'; pkill -x wvkbd-mobintl; grep -c 'wvkbd-mobintl -L 260 --hidden' ~/.config/labwc/autostart | sed 's/^/AUTOSTART=/'
+        NO_SCREEN
+        AUTO auto OFF
+        ENV ON
+        SHEET True
+        TUNE_RC=0
+        FILE=on
+        NOW ON
+        FILE_GONE
+        HIDDEN_FLAG=1
+        [1] 5710
+        KBD_RUNNING
+        [2] 5713
+        [2]+  Done                    dai-keyboard
+        KBD_STILL_RUNNING
+        KBD_PROCS=1
+        [1]+  Terminated              wvkbd-mobintl -L 260 --hidden > /tmp/wvkbd.log 2>&1
+        AUTOSTART=1
+[WARN] touch: the screen turns and turns back: export XDG_RUNTIME_DIR=/run/user/$(id -u); export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-? | head -n1)")"; dai-rotate status | head -n 3; dai-rotate set 90 >/dev/null; echo SET_RC=$?; wlr-randr | grep -c 'Transform: 90' | sed 's/^/TURNED=/'; dai-rotate set normal >/dev/null; wlr-randr | grep -c 'Transform: normal' | sed 's/^/BACK=/'; dai-tune --yes 'סובב את המסך' >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/rotate | sed 's/^/FILE=/'; wlr-randr | grep -c 'Transform: 90' | sed 's/^/TURNED2=/'; dai-tune undo >/dev/null 2>&1; test -f ~/.config/dai/rotate && echo FILE_LEFT || echo FILE_GONE; dai-rotate set normal >/dev/null; wlr-randr | grep -c 'Transform: normal' | sed 's/^/BACK2=/'; test -f /etc/xdg/autostart/dai-rotate.desktop && echo AUTOSTART_OK
+        Choice: auto
+        Sensor: monitor-sensor is installed
+        Screen Virtual-1: transform normal
+        SET_RC=0
+        TURNED=1
+        BACK=1
+        TUNE_RC=0
+        FILE=90
+        TURNED2=1
+        FILE_LEFT
+        BACK2=1
+        AUTOSTART_OK
+[WARN] touch: the panel and the responsive pieces: cp ~/.config/lxqt/panel.conf /tmp/panel.conf; dai-panel-touch on /tmp/panel.conf; grep -E '^(panelSize|iconSize|width|buttonWidth)=' /tmp/panel.conf | tr '\n' ' '; echo; dai-panel-touch off /tmp/panel.conf; cmp -s /tmp/panel.conf ~/.config/lxqt/panel.conf && echo PANEL_RESTORED; grep -c dai-panel-touch /usr/bin/startdai-wayland | sed 's/^/LOGIN_HOOK=/'; QT_QPA_PLATFORM=offscreen python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_style.panes import Panes, WrapRow, fit_width; print("PIECES", fit_width(720))'
+        cp: cannot stat '/home/dai/.config/lxqt/panel.conf': No such file or directory
+        grep: /tmp/panel.conf: No such file or directory
+        
+        LOGIN_HOOK=3
+        PIECES 720
+[PASS] j: outlook files: command -v readpst >/dev/null && echo READPST; printf '!BDN' > /tmp/x.pst; dai-j import-mail /tmp/x.pst >/dev/null 2>&1; echo PST_RC=$?; rm -f /tmp/x.pst
+        READPST
+        PST_RC=1
+[PASS] j: signed mail checked: export GNUPGHOME=$(mktemp -d); gpg --batch --pinentry-mode loopback --passphrase '' --quick-gen-key 'Dana VM <dana@example.org>' default default 1d 2>/dev/null; printf 'Content-Type: text/plain\r\n\r\nhello\r\n' > $GNUPGHOME/in; gpg --batch --pinentry-mode loopback --passphrase '' -a --detach-sign -o $GNUPGHOME/sig $GNUPGHOME/in; python3 -I -c 'import sys, os; sys.path.insert(0, "/usr/lib/dai"); from dai_j import pgp; h = os.environ["GNUPGHOME"]; inner = open(h + "/in", "rb").read(); sig = open(h + "/sig", "rb").read(); mk = lambda body: b"Subject: s\r\nContent-Type: multipart/signed; protocol=\"application/pgp-signature\"; boundary=\"B\"\r\n\r\n--B\r\n" + body + b"\r\n--B\r\nContent-Type: application/pgp-signature\r\n\r\n" + sig + b"\r\n--B--\r\n"; print("SIG", pgp.verify(mk(inner)).state, pgp.verify(mk(inner.replace(b"hello", b"hellO"))).state)'; gpgconf --kill all; rm -r -- "$GNUPGHOME"
+        SIG good bad
+[PASS] ruby: Diamond's native host: export XDG_RUNTIME_DIR=/run/user/$(id -u); M=/usr/lib/mozilla/native-messaging-hosts/io.github.dai_os.ruby_diamond.json; python3 -c 'import json, sys; m = json.load(open(sys.argv[1])); print("ALLOWED", m["allowed_extensions"])' $M; for req in '{"action": "shell", "text": "id"}' '{"action": "summarize", "text": "Hello"}'; do python3 -c 'import json, struct, sys; d = sys.argv[1].encode(); sys.stdout.buffer.write(struct.pack("<I", len(d)) + d)' "$req" | timeout 120 /usr/lib/dai/dai-ruby-diamond | python3 -c 'import json, struct, sys; r = sys.stdin.buffer.read(); n = struct.unpack("<I", r[:4])[0]; print("ANSWER", json.loads(r[4:4 + n]))'; done
+        ALLOWED ['ruby@dai-os.github.io']
+        ANSWER {'ok': False, 'error': 'invalid'}
+        ANSWER {'ok': True, 'text': '- The text is from a web page - It contains the phrase "Hello"'}
+[PASS] i18n: languages fall back safely: export XDG_RUNTIME_DIR=/run/user/$(id -u); for l in ru_RU ar_EG pt_BR; do echo "== $l"; LANG=$l.UTF-8 dai-heal status 2>&1 | head -n 2; LANG=$l.UTF-8 dai-tune status 2>&1 | head -n 1; done; echo '== he'; LANG=he_IL.UTF-8 dai-evolve wishes; python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); import dai_i18n; print("I18N", dai_i18n.__author__, dai_i18n.is_rtl("ar"))'
+        == ru_RU
+        ✗ sleep: сбой.  Когда: 24.10 17:29  [246a197ef031]
+            signal 11
+        Оценка безопасности: 85/100
+        == ar_EG
+        ✗ تعطّل sleep.  متى: 24.10 17:29  [246a197ef031]
+            signal 11
+        درجة الأمان: 85/100
+        == pt_BR
+        ✗ sleep travou.  Quando: 24.10 17:29  [246a197ef031]
+            signal 11
+        Pontuação de segurança: 85/100
+        == he
+        אין בקשות שלא נמצאו להן תוצאות ב־30 הימים האחרונים.
+        I18N Diamond Rubinny (d.Ai) True
+[PASS] oem: prepare, finish, cleanup: dai-oem --version; sudo useradd -m -G sudo,audio,lpadmin oemtest; sudo dai-oem prepare --remove-user oemtest --yes --allow-live; dai-oem status; grep -c '^User=dai-setup' /etc/sddm.conf; test -f /usr/local/share/wayland-sessions/dai-oem.desktop && echo SESSION_READY; printf '%s' '{"full_name": "Dana Levi", "username": "dana", "password": "correct horse 9", "hostname": "dana-pc", "language": "en"}' | sudo /usr/lib/dai/dai-oem-helper complete; id dana; sudo grep -c '^dana:[$]y[$]' /etc/shadow; cat /etc/hostname; grep -q dai-setup /etc/sddm.conf || echo SDDM_RESTORED; sudo dai-oem cleanup; getent passwd oemtest dai-setup || echo TEMP_USERS_GONE; dai-oem status; sudo userdel -r dana; sudo hostnamectl set-hostname dai-os
+        dai-oem 0.1.0 — Diamond Rubinny (d.Ai)
+        This prepares the computer for its new owner:
+          • at the next start, a short setup asks for their name, user, password, computer name
+          • the temporary user oemtest and everything in its home folder are deleted after that
+          • package caches, system logs, the machine ID and SSH host keys are reset now
+        
+        Ready. Power off and hand it over.
+        Prepared: the setup opens at the next start.
+        1
+        SESSION_READY
+        {"ok": true}
+        uid=1002(dana) gid=1002(dana) groups=1002(dana),27(sudo),29(audio),44(video),46(plugdev),100(users),101(netdev),102(scanner),106(bluetooth),108(lpadmin)
+        1
+        dana-pc
+        SDDM_RESTORED
+        TEMP_USERS_GONE
+        Not prepared.
+        userdel: dana mail spool (/var/mail/dana) not found
+[INFO] sddm config: cat /etc/sddm.conf
+        # Written at boot by /usr/lib/live/config/9000-dai-sddm-autologin (live session only)
+        [Autologin]
+        User=dai
+        Session=dai-tv.desktop
+        Relogin=false
+[INFO] session files: ls /usr/share/wayland-sessions /usr/share/xsessions
+        /usr/share/wayland-sessions:
+        dai.desktop  dai-tv.desktop  kodi-gbm.desktop  labwc.desktop
+        
+        /usr/share/xsessions:
+        kodi.desktop  lxqt.desktop
+[INFO] login sessions: loginctl list-sessions --no-legend
+        1 1000 dai seat0 1427 user    tty2  no -
+        2 1000 dai -     1432 manager -     no -
+        3 1000 dai -     1420 user    ttyS0 no -
+[INFO] session processes: ps -eo user,args | grep -Ei 'sddm|xorg|labwc|lxqt|pcmanfm' | grep -v grep
+        root     /usr/bin/sddm
+        root     /usr/lib/x86_64-linux-gnu/sddm/sddm-helper --socket /tmp/sddm-auth-4d6fe735-55e0-4cf2-af08-f0970232324b --id 1 --start startdai-tv --user dai --autologin
+        dai      labwc -C /etc/dai/tv/labwc -S dai-tv-kodi
+[INFO] sddm journal: sudo journalctl -b -u sddm --no-pager -o cat | tail -n 40
+[INFO] wayland session log: tail -n 60 ~/.local/share/sddm/wayland-session.log
+        00:00:01.811 [ERROR] [EGL] command: eglQueryDeviceStringEXT, error: EGL_BAD_PARAMETER (0x300c), message: "eglQueryDeviceStringEXT"
+        00:00:01.811 [ERROR] [EGL] command: eglQueryDeviceStringEXT, error: EGL_BAD_PARAMETER (0x300c), message: "eglQueryDeviceStringEXT"
+        pci id for fd 18: 1234:1111, driver (null)
+        pci id for fd 19: 1234:1111, driver (null)
+        kmsro: driver missing
+        00:00:01.934 [ERROR] [render/egl.c:319] Software rendering detected, please use the WLR_RENDERER_ALLOW_SOFTWARE environment variable to proceed
+        00:00:01.934 [ERROR] [render/egl.c:571] Failed to initialize EGL context
+        00:00:01.934 [ERROR] [render/gles2/renderer.c:499] Could not initialize EGL
+        Environment variable $XCURSOR_SIZE not set, ignoring.
+        Environment variable $XCURSOR_THEME not set, ignoring.
+[INFO] panel environment: tr '\0' '\n' < /proc/$(pgrep -x lxqt-panel | head -n1)/environ | grep -E '^(WAYLAND_DISPLAY|DISPLAY|QT_QPA|XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE)='
+        -bash: /proc//environ: No such file or directory
+[INFO] panel layer-shell: grep -oE '[^ ]*(LayerShell|layer-shell|wayland)[^ ]*' /proc/$(pgrep -x lxqt-panel | head -n1)/maps | sort -u
+        grep: /proc//maps: No such file or directory
+[INFO] build info: cat /usr/share/dai/build-info
+        edition=tv
+        version=0.1.0-alpha+e5ef1c9
+        grub-btrfs-available=no
+        optional-skipped=none
+[INFO] calamares btrfs: for f in /etc/calamares/modules/mount.conf /usr/share/calamares/modules/mount.conf; do test -f $f && echo "== $f" && grep -n -i -A3 'btrfs\|subvol' $f | grep -v '^[0-9]*[-:] *#' | head -n 30; done; echo "modules: $(ls /etc/calamares/modules/ | tr '\n' ' ')"
+        == /etc/calamares/modules/mount.conf
+        modules: bootloader.conf displaymanager.conf finished.conf fstab.conf luksopenswaphookcfg.conf machineid.conf mount.conf packages.conf partition.conf removeuser.conf unpackfs.conf users.conf welcome.conf
+[INFO] evolve recipe packages: apt-cache policy foliate vlc gimp unar 7zip | grep -E '^[a-z0-9]|Candidate'
+        foliate:
+          Candidate: 4.~really3.3.0-1
+        vlc:
+          Candidate: 3.0.24-0+deb13u1
+        gimp:
+          Candidate: 3.0.4-3+deb13u11
+        unar:
+          Candidate: 1.10.8+ds1-9
+        7zip:
+          Candidate: 25.01+dfsg-1~deb13u2
+[INFO] layer-shell packages: dpkg -l | grep -Ei 'layer-?shell' | cut -c1-80
+        ii  liblayershellqtinterface6:amd64       6.3.4-1                              a
