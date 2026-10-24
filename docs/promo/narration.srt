@@ -1,0 +1,39 @@
+1
+00:00:00,400 --> 00:00:04,600
+D.Ai OS. A computer that speaks your language.
+
+2
+00:00:04,600 --> 00:00:11,800
+Ask for what you want, in a sentence. Block USB storage. Lock the screen after five minutes. Diamond shows the plan, you approve, and anything can be undone.
+
+3
+00:00:11,800 --> 00:00:17,500
+Your AI runs here, on your computer. Nothing leaves it unless you say so.
+
+4
+00:00:17,500 --> 00:00:24,200
+Describe an app, and D.Ai Forge writes it, tests it, and runs it in a sandbox.
+
+5
+00:00:24,200 --> 00:00:30,400
+Safe by design: full-disk encryption, a firewall, sandboxed readers, and a security score you can read.
+
+6
+00:00:30,400 --> 00:00:36,100
+Hebrew, Arabic, Russian and more, right to left or left to right, from the very first screen.
+
+7
+00:00:36,100 --> 00:00:41,300
+Find files by what is inside them. Live captions for anything that plays.
+
+8
+00:00:41,300 --> 00:00:46,500
+Encrypted messages between your computers, with no account and no server.
+
+9
+00:00:46,500 --> 00:00:51,700
+Beautiful, fast, and free. Open source, built on Debian.
+
+10
+00:00:51,700 --> 00:00:56,900
+D.Ai OS. Download it at rubinny.com.

@@ -52,6 +52,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | ![D.Ai Settings: the security score, then every setting as a toggle or a choice](docs/screenshots/settings.png) | ![D.Ai Store: the recipes by category, what each one sets up](docs/screenshots/store.png) | ![D.Ai Live Captions: whisper's test file read on the computer](docs/screenshots/captions.png) |
 | **D.Ai Settings**: one window, every change with its plan and undo | **D.Ai Store**: find and set up software, no account | **D.Ai Captions**: subtitles for whatever the computer plays, on the computer |
 
+A one-minute promo (English captions, synthesized music, narration script): `docs/promo/dai-os-promo.mp4`, built by `build/assets/make_promo.py` from the CI screenshots.
+
 ## What's included
 
 | Component | What it does | Docs |
