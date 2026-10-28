@@ -66,9 +66,10 @@ def system_prompt(lang: str) -> str:
     )
 
 
-def user_prompt(text: str) -> str:
+def user_prompt(text: str, lang: str = "en") -> str:
     cut = text if len(text) <= MAX_TEXT else text[:MAX_TEXT] + "\n[cut]"
-    return "<<< screen text >>>\n" + cut + "\n<<< end of screen text >>>"
+    return ("<<< screen text >>>\n" + cut + "\n<<< end of screen text >>>\n"
+            f"Explain this to me in {english_name(lang)}, in 3 to 5 short sentences.")
 
 
 @dataclass
@@ -106,7 +107,7 @@ def explain(text: str, lang: str, chat: Callable | None = None, on_piece: Callab
     if chat is None:
         from dai_ai.client import chat as client_chat
         chat = client_chat
-    messages = [{"role": "system", "content": system_prompt(lang)}, {"role": "user", "content": user_prompt(text)}]
+    messages = [{"role": "system", "content": system_prompt(lang)}, {"role": "user", "content": user_prompt(text, lang)}]
     out = Explanation()
     try:
         for piece in chat(messages, max_tokens=320, task="general"):
