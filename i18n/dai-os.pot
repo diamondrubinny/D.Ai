@@ -973,6 +973,12 @@ msgstr ""
 msgid "Cannot reach the mail server. Check the Internet connection and the server name."
 msgstr ""
 
+#. he: אי אפשר לקרוא את {path}: {error}
+#: apps/dai-explain/dai_explain/cli.py:44
+#, python-brace-format
+msgid "Cannot read {path}: {error}"
+msgstr ""
+
 #. he: הכתוביות נכשלו: {error}
 #: apps/dai-captions/dai_captions/cli.py:51
 #, python-brace-format
@@ -3396,7 +3402,7 @@ msgid "No apps yet. Try: dai-forge \"build an app for a shopping list\""
 msgstr ""
 
 #. he: לא נבחר אזור.
-#: apps/dai-explain/dai_explain/cli.py:45
+#: apps/dai-explain/dai_explain/cli.py:48
 msgid "No area was chosen."
 msgstr ""
 
@@ -5417,7 +5423,7 @@ msgid "Subtitles for whatever the computer plays · on this computer only · Ent
 msgstr ""
 
 #. he: הצעה: dai-tune "{sentence}"
-#: apps/dai-explain/dai_explain/cli.py:75
+#: apps/dai-explain/dai_explain/cli.py:78
 #, python-brace-format
 msgid "Suggested: dai-tune \"{sentence}\""
 msgstr ""

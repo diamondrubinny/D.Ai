@@ -38,7 +38,10 @@ def gather_text(args: list[str], lang: str, run=subprocess.run) -> str:
     if (given := _option(args, "--text")) is not None:
         return given
     if (path := _option(args, "--file")) is not None:
-        image = Path(path).read_bytes()
+        try:
+            image = Path(path).read_bytes()
+        except OSError as exc:
+            raise ExplainError(pick(lang, "Cannot read {path}: {error}", "אי אפשר לקרוא את {path}: {error}").format(path=path, error=exc.strerror or exc)) from exc
     elif "--area" in args:
         area = choose_area(run)
         if area is None:

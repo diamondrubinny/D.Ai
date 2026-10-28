@@ -7004,3 +7004,8 @@ msgstr "Vorschlag: dai-tune \"{sentence}\""
 #, python-brace-format
 msgid "The screen text is sent to {provider} (your own key)."
 msgstr "Der Bildschirmtext geht an {provider} (mit deinem eigenen Schlüssel)."
+
+#: apps/dai-explain/dai_explain/cli.py
+#, python-brace-format
+msgid "Cannot read {path}: {error}"
+msgstr "{path} kann nicht gelesen werden: {error}"
