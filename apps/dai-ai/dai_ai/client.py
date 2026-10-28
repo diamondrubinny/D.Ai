@@ -82,12 +82,20 @@ def chat(
             yield message["delta"]
 
 
-def ask(question: str, max_tokens: int = 512) -> Iterator[str]:
+def ask(question: str, max_tokens: int = 512, lang: str | None = None) -> Iterator[str]:
+    """A question from the command bar or dai-ai: Diamond knows the system it is part of (knowledge.py)."""
+    from dai_i18n import ui_lang
+
+    from .knowledge import briefing
+
     system = (
-        "You are D.Ai, the built-in assistant of D.Ai OS (Debian based, LXQt on labwc). "
+        "You are Diamond, the built-in assistant of D.Ai OS (Debian based, LXQt on labwc). "
         "Answer briefly and accurately. Reply in the language of the question (Hebrew or English). "
         "When suggesting commands, explain what they do; never claim you ran anything."
     )
+    facts = briefing(question, lang or ui_lang())
+    if facts:
+        system += "\n\n" + facts
     return chat([{"role": "system", "content": system}, {"role": "user", "content": question}], max_tokens=max_tokens)
 
 
@@ -95,7 +103,15 @@ def main(argv: list[str]) -> int:
     """dai-ai "question"  |  dai-ai status  |  dai-ai where"""
     args = argv[1:]
     if not args or args[0] in ("-h", "--help"):
-        print('usage: dai-ai "question"  |  dai-ai status  |  dai-ai where  |  dai-ai --version')
+        print('usage: dai-ai "question"  |  dai-ai status  |  dai-ai where  |  dai-ai facts "question"  |  dai-ai --version')
+        return 0
+    if args[0] == "facts" and len(args) > 1:
+        from dai_i18n import ui_lang
+
+        from .knowledge import relevant
+
+        for fact in relevant(" ".join(args[1:]), ui_lang()):
+            print("- " + fact)
         return 0
     if args[0] == "where":
         from . import providers

@@ -463,3 +463,37 @@ class PolicyTests(unittest.TestCase):
                 with redirect_stdout(out), redirect_stderr(out):
                     self.assertEqual(cli.main(["use", "anthropic"], ask=lambda prompt: "yes"), 1)
                 self.assertIn("policy", out.getvalue())
+
+
+class KnowledgeTests(unittest.TestCase):
+    """docs/AI.md §6: Diamond knows the system it is part of, from a curated list, by keywords."""
+
+    def test_facts_are_chosen_by_keywords_in_both_languages(self):
+        from dai_ai import knowledge as k
+        self.assertIn("Super+L", k.relevant("How do I lock the screen?", "en")[0])
+        self.assertIn("Super+L", k.relevant("איך נועלים את המסך", "he")[0])
+        self.assertIn("Alt+Shift", k.relevant("how do I switch the keyboard language", "en")[0])
+        self.assertIn("Doctor", k.relevant("למה המחשב איטי", "en")[0])
+        self.assertIn("Print", k.relevant("where did my screenshot go", "en")[0])
+        self.assertIn("Super+V", k.relevant("what did I copy before", "en")[0])
+        self.assertEqual(k.relevant("what is the capital of France", "en"), [])
+        self.assertEqual(k.relevant("block usb storage", "en")[0][:4], "Sett")   # "block" is not "lock"
+        self.assertLessEqual(len(k.relevant("lock screen files mail chat help backup updates", "en")), 5)
+        self.assertTrue(all(fact.he and fact.en for fact in k.FACTS))
+
+    def test_the_briefing_goes_into_the_system_prompt_only_for_system_questions(self):
+        from dai_ai import client, knowledge as k
+        self.assertEqual(k.briefing("what is 2+2", "en"), "")
+        self.assertIn("never invent shortcuts", k.briefing("how do I lock the screen", "en"))
+        seen = {}
+
+        def fake_request(payload, timeout=600):
+            seen.update(payload)
+            yield {"delta": "ok"}
+            yield {"done": True}
+        with mock.patch.object(client, "_request", fake_request):
+            self.assertEqual("".join(client.ask("how do I lock the screen", lang="he")), "ok")
+            self.assertIn("Super+L", seen["messages"][0]["content"])
+            self.assertIn("נועל", seen["messages"][0]["content"])
+            "".join(client.ask("what is the weather like", lang="en"))
+            self.assertNotIn("Facts about D.Ai OS", seen["messages"][0]["content"])

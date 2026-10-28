@@ -416,6 +416,10 @@ def main() -> int:
          lambda o: "0bb496d" in o),
         ("ai: daid socket", "systemctl --user is-active dai-daid.socket", True, lambda o: o.strip().endswith("active")),
         ("ai: daid status", "dai-ai status", True, lambda o: "model:" in o),
+        # Diamond knows the system (docs/AI.md §6): the facts chosen for a question, without a model call.
+        ("ai: Diamond knows D.Ai", "dai-ai facts 'how do I lock the screen'; LANG=he_IL.UTF-8 dai-ai facts 'איך מחליפים שפת מקלדת'; "
+         "dai-ai facts 'what is the capital of France' | wc -l | sed 's/^/GENERAL=/'", True,
+         lambda o: "Super+L" in o and "Alt+Shift" in o and "GENERAL=0" in o),
         ("ai: daid has no network", "systemctl --user show dai-daid.service -p RestrictAddressFamilies", True,
          lambda o: "AF_UNIX" in o and "AF_INET" not in o),
         # Command field plugin: actually loaded into the running panel process.
