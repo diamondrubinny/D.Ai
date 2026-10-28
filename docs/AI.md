@@ -57,7 +57,7 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 - **ספק חיצוני במפתח שלך** (docs/PROVIDERS.md): `dai-models provider add anthropic`, `… key anthropic`, `… use anthropic
   --tasks code,general` (הסכמה מוקלדת). `dai-ai where` אומר מי משרת כל משימה; דיבור תמיד מקומי; כבוי כברירת מחדל.
 
-## 6. ‏Diamond מכיר את D.Ai (נבנה)
+## 6. ‏Diamond מכיר את D.Ai (נבנה, ירוק ב־CI: ריצה 40739201476)
 
 - `dai_ai/knowledge.py`: רשימה מסודרת של כ־30 עובדות על המערכת (קיצורים, פקודות, אפליקציות, פרטיות), כל אחת
   עם מילות מפתח באנגלית ובעברית. `relevant(question)` בוחר עד 5 עובדות לפי מילים שלמות (בעברית גם עם אות שימוש

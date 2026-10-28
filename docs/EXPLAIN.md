@@ -57,4 +57,4 @@ Diamond המקומי עונה, שורת ה־Tune, כשהיא מופיעה, מו�
 
 ## 7. מצב
 
-✅ שלב 1 נבנה ואומת ב־CI (ריצה 40716211028): 135 בדיקות VM עוברות, כולל `explain: the screen, read and explained` עם Diamond המקומי.
+✅ שלב 1 נבנה ואומת ב־CI (ריצה 40739201476): 136 בדיקות VM עוברות, כולל `explain: the screen, read and explained` עם Diamond המקומי; צילום המסך `docs/screenshots/explain.png` מהריצה הזו.
