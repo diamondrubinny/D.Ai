@@ -6936,3 +6936,71 @@ msgstr "Pasta {path} na sua pasta pessoal"
 #, python-brace-format
 msgid "Nothing to send: write the text on stdin (echo hello | dai-chat send {name})."
 msgstr "Nada para enviar: escreva o texto em stdin (echo hello | dai-chat send {name})."
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Copy"
+msgstr "Copiar"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "D.Ai Explain"
+msgstr "D.Ai explica"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "D.Ai Explain: what is on the screen"
+msgstr "D.Ai explica: o que está no ecrã"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Diamond is looking at it…"
+msgstr "O Diamond está a ver…"
+
+#: apps/dai-explain/dai_explain/gui.py
+#, python-brace-format
+msgid "Diamond is not available: {error}"
+msgstr "O Diamond não está disponível: {error}"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Diamond reads the screen and explains it in your language · Enter"
+msgstr "O Diamond lê o ecrã e explica-o na sua língua · Enter"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Diamond suggests a D.Ai Tune step. It opens in D.Ai Command, where you see the plan and approve it."
+msgstr "O Diamond sugere um passo do D.Ai Tune. Abre no D.Ai Command, onde vê o plano e o aprova."
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Diamond's explanation"
+msgstr "A explicação do Diamond"
+
+#: apps/dai-explain/dai_explain/gui.py
+#, python-brace-format
+msgid "Do it: {sentence}"
+msgstr "Fazer: {sentence}"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Explain again"
+msgstr "Explicar de novo"
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "No area was chosen."
+msgstr "Nenhuma área foi escolhida."
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "No text was found on the screen."
+msgstr "Não foi encontrado texto no ecrã."
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "On this computer: the picture and the text are not saved."
+msgstr "Neste computador: a imagem e o texto não são guardados."
+
+#: apps/dai-explain/dai_explain/gui.py
+msgid "Reading the screen…"
+msgstr "A ler o ecrã…"
+
+#: apps/dai-explain/dai_explain/gui.py
+#, python-brace-format
+msgid "Suggested: dai-tune \"{sentence}\""
+msgstr "Sugestão: dai-tune \"{sentence}\""
+
+#: apps/dai-explain/dai_explain/gui.py
+#, python-brace-format
+msgid "The screen text is sent to {provider} (your own key)."
+msgstr "O texto do ecrã é enviado para {provider} (com a sua própria chave)."

@@ -293,6 +293,13 @@ class HealLanguageTests(unittest.TestCase):
             self.assertTrue(core.WAY_WORDS.search(text), text)
         self.assertFalse(core.WAY_WORDS.search("the way home"))
 
+    def test_explain_words(self):
+        for text in ("explain this screen", "explain", "what is this error", "what is this?", "what am I looking at",
+                     "מה זה", "מה זה?", "הסבר לי את המסך", "תסביר", "מה השגיאה הזאת", "מה כתוב על המסך"):
+            self.assertTrue(core.EXPLAIN_WORDS.search(text), text)
+        for text in ("explain quantum physics", "what is linux", "מה זה לינוקס"):
+            self.assertFalse(core.EXPLAIN_WORDS.search(text), text)
+
     def test_captions_words(self):
         for text in ("captions", "live captions", "subtitles", "כתוביות", "כתוביות חיות", "תמלול חי"):
             with self.subTest(text):

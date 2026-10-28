@@ -54,7 +54,7 @@ jobs:
             apps/dai-command/data/dai-command apps/dai-command/data/dai-fixlayout apps/dai-command/data/dai-lang \
             apps/dai-tune/data/dai-tune apps/dai-tune/data/dai-tune-helper apps/dai-tune/data/dai-rescue \
             apps/dai-ai/data/daid apps/dai-ai/data/dai-ai apps/dai-ai/data/dai-models apps/dai-ruby/data/dai-ruby-diamond \
-            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code apps/dai-welcome/data/dai-welcome apps/dai-find/data/dai-find apps/dai-doctor/data/dai-doctor apps/dai-privacy/data/dai-privacy apps/dai-backup/data/dai-backup apps/dai-move/data/dai-move apps/dai-clip/data/dai-clip apps/dai-ocr/data/dai-ocr apps/dai-focus/data/dai-focus apps/dai-settings/data/dai-settings apps/dai-store/data/dai-store apps/dai-captions/data/dai-captions apps/dai-way/data/dai-way apps/dai-sound/data/dai-sound apps/dai-chat/data/dai-chat apps/dai-heal/data/dai-heal apps/dai-evolve/data/dai-evolve apps/dai-quick/data/dai-quick apps/dai-mom/data/dai-mom apps/dai-j/data/dai-j apps/dai-raz/data/dai-raz apps/dai-raz/data/dai-raz-guard apps/dai-tune/data/dai-snapshots-firstboot apps/dai-tune/data/dai-offline-run apps/dai-oem/data/dai-oem apps/dai-oem/data/dai-oem-helper apps/dai-oem/data/dai-oem-setup apps/dai-oem/data/labwc/autostart \
+            apps/dai-forge/data/dai-forge apps/dai-forge/data/dai-forge-gui apps/dai-voice/data/dai-voice apps/dai-code/data/dai-code apps/dai-welcome/data/dai-welcome apps/dai-find/data/dai-find apps/dai-doctor/data/dai-doctor apps/dai-privacy/data/dai-privacy apps/dai-backup/data/dai-backup apps/dai-move/data/dai-move apps/dai-clip/data/dai-clip apps/dai-ocr/data/dai-ocr apps/dai-focus/data/dai-focus apps/dai-settings/data/dai-settings apps/dai-store/data/dai-store apps/dai-captions/data/dai-captions apps/dai-explain/data/dai-explain apps/dai-way/data/dai-way apps/dai-sound/data/dai-sound apps/dai-chat/data/dai-chat apps/dai-heal/data/dai-heal apps/dai-evolve/data/dai-evolve apps/dai-quick/data/dai-quick apps/dai-mom/data/dai-mom apps/dai-j/data/dai-j apps/dai-raz/data/dai-raz apps/dai-raz/data/dai-raz-guard apps/dai-tune/data/dai-snapshots-firstboot apps/dai-tune/data/dai-offline-run apps/dai-oem/data/dai-oem apps/dai-oem/data/dai-oem-helper apps/dai-oem/data/dai-oem-setup apps/dai-oem/data/labwc/autostart \
             build/live-build/common/includes.chroot_after_packages/usr/bin/dai-install
           shellcheck build/scripts/build-llama.sh build/scripts/build-panel-plugin.sh build/scripts/build-whisper.sh
 
@@ -266,6 +266,12 @@ jobs:
           PYTHONPATH: apps/dai-i18n:apps/dai-voice:apps/dai-ai:apps/dai-raz
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-captions/tests -t apps/dai-captions -v
+
+      - name: Unit tests (dai-explain, the screen read and explained, with the window)
+        env:
+          PYTHONPATH: apps/dai-i18n:apps/dai-ocr:apps/dai-tune:apps/dai-ai:apps/dai-raz
+          QT_QPA_PLATFORM: offscreen
+        run: python3 -m unittest discover -s apps/dai-explain/tests -t apps/dai-explain -v
 
       - name: Unit tests (dai-store, find and set up software, with the window)
         env:

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Explain
+Name[he]=D.Ai מסביר
+GenericName=Explain the screen
+GenericName[he]=הסבר על המסך
+Comment=What is on the screen, explained in your language, with the next step
+Comment[he]=מה שעל המסך, מוסבר בשפה שלך, עם הצעד הבא
+Exec=dai-explain
+TryExec=dai-explain
+Icon=help-about
+StartupWMClass=dai-explain
+Categories=Utility;Accessibility;
+Keywords=explain;what is this;error;help;screen;הסבר;מה זה;שגיאה;עזרה;מסך;

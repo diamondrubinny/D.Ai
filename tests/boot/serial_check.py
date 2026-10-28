@@ -548,6 +548,17 @@ def main() -> int:
          lambda o: "BAD1_RC=2" in o and "BAD2_RC=2" in o and "hidden" in o and "APPLY_RC=0" in o and "shalom" in o
          and "MODE=644" in o and "UNDO_RC=0" in o and "FILE_GONE" in o and "DIR_GONE" in o, 120),
         # D.Ai Captions (docs/BEYOND.md §13): whisper's test file through the chunk pipeline, with the real model.
+        # D.Ai Explain (docs/EXPLAIN.md): the OCR picture from the check above, read and explained by the local
+        # Diamond; a Tune line, when one comes, must be a sentence dai-tune understands.
+        ("explain: the screen, read and explained", "dai-explain --version; test -f /usr/share/applications/dai-explain.desktop && echo DESKTOP_ENTRY; "
+         "grep -c 'W-S-e' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; dai-explain --print --file /tmp/ocr.png --lang en > /tmp/explain.txt 2>/tmp/explain.err; "
+         "echo EXPLAIN_RC=$?; wc -w < /tmp/explain.txt | sed 's/^/WORDS=/'; head -c 400 /tmp/explain.txt; echo; cat /tmp/explain.err; "
+         "S=$(grep -o 'Suggested: dai-tune \".*\"' /tmp/explain.txt | sed 's/^Suggested: dai-tune \"//; s/\"$//'); "
+         "if [ -n \"$S\" ]; then dai-tune --dry-run \"$S\" </dev/null >/dev/null && echo SUGGESTION_OK; else echo NO_SUGGESTION; fi; "
+         "dai-explain --print --text 'Error: disk is full. Free up disk space to continue.' --lang he | tail -n 3", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "DESKTOP_ENTRY" in o and "KEY=1" in o and "EXPLAIN_RC=0" in o
+         and re.search(r"WORDS=([1-9]\d|\d{3,})", o) is not None and "On this computer" in o
+         and ("SUGGESTION_OK" in o or "NO_SUGGESTION" in o), 600),
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "
          "ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; "

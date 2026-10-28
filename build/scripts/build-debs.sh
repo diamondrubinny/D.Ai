@@ -229,6 +229,10 @@ build_apps() {
   copy_package "$captions/dai_captions" "$root"
   install -m 0755 "$captions/data/dai-captions" "$root/usr/bin/dai-captions"
   install -m 0644 "$captions/data/dai-captions.desktop" "$root/usr/share/applications/"
+  local explain="$REPO_ROOT/apps/dai-explain"
+  copy_package "$explain/dai_explain" "$root"
+  install -m 0755 "$explain/data/dai-explain" "$root/usr/bin/dai-explain"
+  install -m 0644 "$explain/data/dai-explain.desktop" "$root/usr/share/applications/"
 
   local way="$REPO_ROOT/apps/dai-way"
   copy_package "$way/dai_way" "$root"

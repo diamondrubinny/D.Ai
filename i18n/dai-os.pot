@@ -762,7 +762,7 @@ msgid "Back to the store"
 msgstr ""
 
 #. he: גיבוי עכשיו
-#: apps/dai-command/dai_command/core.py:491
+#: apps/dai-command/dai_command/core.py:493
 msgid "Back up now"
 msgstr ""
 
@@ -782,7 +782,7 @@ msgid "Background services are on"
 msgstr ""
 
 #. he: דיסק הגיבוי מחובר · Enter
-#: apps/dai-command/dai_command/core.py:492
+#: apps/dai-command/dai_command/core.py:494
 msgid "Backup drive connected · Enter"
 msgstr ""
 
@@ -1114,7 +1114,7 @@ msgstr ""
 
 #. he: היסטוריית העתקות
 #: apps/dai-clip/dai_clip/text.py:11
-#: apps/dai-command/dai_command/core.py:486
+#: apps/dai-command/dai_command/core.py:488
 msgid "Clipboard history"
 msgstr ""
 
@@ -1126,6 +1126,7 @@ msgstr ""
 
 #. he: סגירה
 #: apps/dai-captions/dai_captions/gui.py:46
+#: apps/dai-explain/dai_explain/gui.py:49
 #: apps/dai-mom/dai_mom/text.py:21
 #: apps/dai-pdf/dai_pdf/gui.py:502
 #: apps/dai-pdf/dai_pdf/gui.py:432
@@ -1243,12 +1244,12 @@ msgid "Connect an external drive and run: dai-backup setup /media/$USER/<drive>"
 msgstr ""
 
 #. he: חברו דיסק חיצוני · Enter
-#: apps/dai-command/dai_command/core.py:490
+#: apps/dai-command/dai_command/core.py:492
 msgid "Connect an external drive · Enter"
 msgstr ""
 
 #. he: חברו קודם את דיסק הגיבוי
-#: apps/dai-command/dai_command/core.py:493
+#: apps/dai-command/dai_command/core.py:495
 msgid "Connect the backup drive first"
 msgstr ""
 
@@ -1288,6 +1289,11 @@ msgstr ""
 msgid "Copies: "
 msgstr ""
 
+#. he: העתקה
+#: apps/dai-explain/dai_explain/gui.py:48
+msgid "Copy"
+msgstr ""
+
 #. he: העתקת הקוד שלי
 #: apps/dai-chat/dai_chat/gui.py:172
 msgid "Copy my code"
@@ -1299,7 +1305,7 @@ msgid "Copy now? [y/N] "
 msgstr ""
 
 #. he: העתקת טקסט מהמסך
-#: apps/dai-command/dai_command/core.py:480
+#: apps/dai-command/dai_command/core.py:482
 #: apps/dai-ocr/dai_ocr/cli.py:158
 msgid "Copy text from the screen"
 msgstr ""
@@ -1374,17 +1380,17 @@ msgid "D.Ai Clip needs a Wayland session with wl-clipboard."
 msgstr ""
 
 #. he: D.Ai Clip · Super+V · בזיכרון בלבד, אף פעם לא סיסמאות · Enter
-#: apps/dai-command/dai_command/core.py:487
+#: apps/dai-command/dai_command/core.py:489
 msgid "D.Ai Clip · Super+V · in memory only, never passwords · Enter"
 msgstr ""
 
 #. he: שורת הפקודות של D.Ai
-#: apps/dai-command/dai_command/core.py:497
+#: apps/dai-command/dai_command/core.py:499
 msgid "D.Ai Command input"
 msgstr ""
 
 #. he: D.Ai Doctor · Enter לפרטים ולתיקון
-#: apps/dai-command/dai_command/core.py:496
+#: apps/dai-command/dai_command/core.py:498
 msgid "D.Ai Doctor · Enter for details and fixes"
 msgstr ""
 
@@ -1393,23 +1399,33 @@ msgstr ""
 msgid "D.Ai Evolve is off: nothing is noticed or kept. Turn on again: dai-evolve on"
 msgstr ""
 
+#. he: D.Ai מסביר
+#: apps/dai-explain/dai_explain/gui.py:43
+msgid "D.Ai Explain"
+msgstr ""
+
+#. he: D.Ai מסביר: מה שעל המסך
+#: apps/dai-command/dai_command/core.py:462
+msgid "D.Ai Explain: what is on the screen"
+msgstr ""
+
 #. he: D.Ai Focus · ביצועים מלאים ובלי התראות עד שתסיימו · Enter
-#: apps/dai-command/dai_command/core.py:472
+#: apps/dai-command/dai_command/core.py:474
 msgid "D.Ai Focus · full performance and no pop-ups until you end it · Enter"
 msgstr ""
 
 #. he: D.Ai Focus · ההתראות והתאורה חוזרות למה שהיו · Enter
-#: apps/dai-command/dai_command/core.py:478
+#: apps/dai-command/dai_command/core.py:480
 msgid "D.Ai Focus · pop-ups and the light go back to what they were · Enter"
 msgstr ""
 
 #. he: D.Ai Focus · ההתראות מוסתרות והתאורה חמה עד שהטיימר נגמר · Enter
-#: apps/dai-command/dai_command/core.py:469
+#: apps/dai-command/dai_command/core.py:471
 msgid "D.Ai Focus · pop-ups hidden and a warmer light until the timer ends · Enter"
 msgstr ""
 
 #. he: D.Ai Focus · פרופיל החשמל וההתראות חוזרים למה שהיו · Enter
-#: apps/dai-command/dai_command/core.py:475
+#: apps/dai-command/dai_command/core.py:477
 msgid "D.Ai Focus · the power profile and pop-ups go back to what they were · Enter"
 msgstr ""
 
@@ -1446,7 +1462,7 @@ msgstr ""
 
 #. he: כתוביות חיות D.Ai
 #: apps/dai-captions/dai_captions/gui.py:39
-#: apps/dai-command/dai_command/core.py:462
+#: apps/dai-command/dai_command/core.py:464
 msgid "D.Ai Live Captions"
 msgstr ""
 
@@ -1456,7 +1472,7 @@ msgid "D.Ai Move · shows what will be copied first · nothing is overwritten ·
 msgstr ""
 
 #. he: D.Ai OCR · בוחרים אזור והטקסט שבו מועתק · נקרא על המחשב הזה · Super+Shift+T
-#: apps/dai-command/dai_command/core.py:481
+#: apps/dai-command/dai_command/core.py:483
 msgid "D.Ai OCR · choose an area, its text is copied · read on this computer · Super+Shift+T"
 msgstr ""
 
@@ -1466,7 +1482,7 @@ msgid "D.Ai Privacy"
 msgstr ""
 
 #. he: הגדרות D.Ai
-#: apps/dai-command/dai_command/core.py:465
+#: apps/dai-command/dai_command/core.py:467
 #: apps/dai-settings/dai_settings/gui.py:77
 msgid "D.Ai Settings"
 msgstr ""
@@ -1639,7 +1655,7 @@ msgid "Diamond Chat is on. Your code: {code}"
 msgstr ""
 
 #. he: Diamond Chat · מוצפן מקצה לקצה · ממתין במחשב הזה עד שהמחשב של {name} יתחבר · Enter
-#: apps/dai-command/dai_command/core.py:484
+#: apps/dai-command/dai_command/core.py:486
 #, python-brace-format
 msgid "Diamond Chat · encrypted end to end · waits on this computer until {name} is online · Enter"
 msgstr ""
@@ -1675,6 +1691,11 @@ msgstr ""
 msgid "Diamond had no answer."
 msgstr ""
 
+#. he: Diamond מסתכל…
+#: apps/dai-explain/dai_explain/gui.py:45
+msgid "Diamond is looking at it…"
+msgstr ""
+
 #. he: Diamond לא זמין (dai-models install qwen2.5-0.5b).
 #: apps/dai-tune/dai_tune/cli.py:146
 msgid "Diamond is not available (dai-models install qwen2.5-0.5b)."
@@ -1696,6 +1717,12 @@ msgstr ""
 #. he: ‏Diamond לא זמין. התקינו מודל: בשורת הפקודה, ? והשאלה.
 #: apps/dai-j/dai_j/text.py:156
 msgid "Diamond is not available. Install a model: D.Ai Command, ? and the question."
+msgstr ""
+
+#. he: Diamond לא זמין: {error}
+#: apps/dai-explain/dai_explain/engine.py:117
+#, python-brace-format
+msgid "Diamond is not available: {error}"
 msgstr ""
 
 #. he: Diamond לא מותקן בטלוויזיה הזאת.
@@ -1739,6 +1766,16 @@ msgstr ""
 msgid "Diamond proposed no change."
 msgstr ""
 
+#. he: Diamond קורא את המסך ומסביר בשפה שלך · Enter
+#: apps/dai-command/dai_command/core.py:463
+msgid "Diamond reads the screen and explains it in your language · Enter"
+msgstr ""
+
+#. he: Diamond מציע צעד של D.Ai Tune. הוא נפתח ב־D.Ai Command, שם רואים את התוכנית ומאשרים.
+#: apps/dai-explain/dai_explain/gui.py:51
+msgid "Diamond suggests a D.Ai Tune step. It opens in D.Ai Command, where you see the plan and approve it."
+msgstr ""
+
 #. he: Diamond משתמש שוב במודל שנבחר
 #: apps/dai-tune/dai_tune/catalog.py:2028
 msgid "Diamond uses the chosen model again"
@@ -1780,6 +1817,11 @@ msgstr ""
 #: apps/dai-pdf/dai_pdf/gui.py:785
 #: apps/dai-pdf/dai_pdf/gui.py:792
 msgid "Diamond's answer"
+msgstr ""
+
+#. he: ההסבר של Diamond
+#: apps/dai-explain/dai_explain/gui.py:53
+msgid "Diamond's explanation"
 msgstr ""
 
 #. he: השאלות והקוד של Diamond נשלחים ל־{name}, במפתח שלך
@@ -1859,6 +1901,12 @@ msgstr ""
 msgid "Disk: {free} free of {total}"
 msgstr ""
 
+#. he: עשה את זה: {sentence}
+#: apps/dai-explain/dai_explain/gui.py:50
+#, python-brace-format
+msgid "Do it: {sentence}"
+msgstr ""
+
 #. he: לא להפריע
 #: apps/dai-quick/dai_quick/gui.py:29
 msgid "Do not disturb"
@@ -1874,7 +1922,8 @@ msgstr ""
 msgid "Don't ask about this again"
 msgstr ""
 
-#. he: בוצע
+#. he: הסתיים
+#: apps/dai-explain/dai_explain/gui.py:46
 #: apps/dai-settings/dai_settings/gui.py:100
 #: apps/dai-store/dai_store/gui.py:96
 msgid "Done"
@@ -2036,12 +2085,12 @@ msgid "Encryption password again"
 msgstr ""
 
 #. he: סיום מצב משחק
-#: apps/dai-command/dai_command/core.py:474
+#: apps/dai-command/dai_command/core.py:476
 msgid "End game mode"
 msgstr ""
 
 #. he: סיום סשן הפוקוס
-#: apps/dai-command/dai_command/core.py:477
+#: apps/dai-command/dai_command/core.py:479
 msgid "End the focus session"
 msgstr ""
 
@@ -2067,7 +2116,7 @@ msgid "Enough free space on {mount}"
 msgstr ""
 
 #. he: Enter לפרטים
-#: apps/dai-command/dai_command/core.py:495
+#: apps/dai-command/dai_command/core.py:497
 msgid "Enter for details"
 msgstr ""
 
@@ -2161,6 +2210,11 @@ msgstr ""
 #: apps/dai-forge/dai_forge/cli.py:536
 #: apps/dai-tune/dai_tune/cli.py:316
 msgid "Examples:"
+msgstr ""
+
+#. he: הסבר שוב
+#: apps/dai-explain/dai_explain/gui.py:47
+msgid "Explain again"
 msgstr ""
 
 #. he: ייצוא עמודים כתמונות…
@@ -2314,7 +2368,7 @@ msgid "Focus ended: {n} minutes"
 msgstr ""
 
 #. he: פוקוס ל־{n} דקות
-#: apps/dai-command/dai_command/core.py:468
+#: apps/dai-command/dai_command/core.py:470
 #, python-brace-format
 msgid "Focus for {n} minutes"
 msgstr ""
@@ -2462,7 +2516,7 @@ msgid "From: {sender}"
 msgstr ""
 
 #. he: מצב משחק
-#: apps/dai-command/dai_command/core.py:471
+#: apps/dai-command/dai_command/core.py:473
 #: apps/dai-quick/dai_quick/gui.py:33
 msgid "Game mode"
 msgstr ""
@@ -2901,7 +2955,7 @@ msgid "Languages"
 msgstr ""
 
 #. he: גיבוי אחרון:
-#: apps/dai-command/dai_command/core.py:494
+#: apps/dai-command/dai_command/core.py:496
 msgid "Last backup:"
 msgstr ""
 
@@ -3341,6 +3395,11 @@ msgstr ""
 msgid "No apps yet. Try: dai-forge \"build an app for a shopping list\""
 msgstr ""
 
+#. he: לא נבחר אזור.
+#: apps/dai-explain/dai_explain/cli.py:45
+msgid "No area was chosen."
+msgstr ""
+
 #. he: אין קבצים מצורפים
 #: apps/dai-pdf/dai_pdf/gui.py:1021
 msgid "No attached files"
@@ -3576,6 +3635,12 @@ msgstr ""
 #. he: לא נמצא טקסט
 #: apps/dai-ocr/dai_ocr/cli.py:164
 msgid "No text found"
+msgstr ""
+
+#. he: לא נמצא טקסט על המסך.
+#: apps/dai-explain/dai_explain/engine.py:105
+#: apps/dai-explain/dai_explain/gui.py:54
+msgid "No text was found on the screen."
 msgstr ""
 
 #. he: אין טיימר כאן: לסיים עם dai-focus stop.
@@ -3907,6 +3972,11 @@ msgstr ""
 #. he: על המחשב הזה בלבד: בלי רשת, בלי שמירה.
 #: apps/dai-captions/dai_captions/gui.py:48
 msgid "On this computer only: no network, nothing saved."
+msgstr ""
+
+#. he: על המחשב הזה: התמונה והטקסט לא נשמרים.
+#: apps/dai-explain/dai_explain/engine.py:136
+msgid "On this computer: the picture and the text are not saved."
 msgstr ""
 
 #. he: ב־{stamp}, {sender} כתב/ה:
@@ -4363,6 +4433,11 @@ msgstr ""
 msgid "Read {read}, forgot {gone}, {total} documents in the index{more}."
 msgstr ""
 
+#. he: קורא את המסך…
+#: apps/dai-explain/dai_explain/gui.py:44
+msgid "Reading the screen…"
+msgstr ""
+
 #. he: קורא את {name}…
 #: apps/dai-captions/dai_captions/gui.py:42
 #, python-brace-format
@@ -4566,7 +4641,7 @@ msgid "Restart when convenient"
 msgstr ""
 
 #. he: תוצאות
-#: apps/dai-command/dai_command/core.py:498
+#: apps/dai-command/dai_command/core.py:500
 msgid "Results"
 msgstr ""
 
@@ -4883,7 +4958,7 @@ msgid "Security {score}/100"
 msgstr ""
 
 #. he: אבטחה, מראה, שפה והמחשב הזה, בחלון אחד · לכל שינוי תוכנית וביטול · Enter
-#: apps/dai-command/dai_command/core.py:466
+#: apps/dai-command/dai_command/core.py:468
 msgid "Security, appearance, language and this computer, in one window · every change has a plan and undo · Enter"
 msgstr ""
 
@@ -4921,7 +4996,7 @@ msgid "Send a picture"
 msgstr ""
 
 #. he: שליחה אל {name}: {text}
-#: apps/dai-command/dai_command/core.py:483
+#: apps/dai-command/dai_command/core.py:485
 #, python-brace-format
 msgid "Send to {name}: {text}"
 msgstr ""
@@ -4978,7 +5053,7 @@ msgid "Set up"
 msgstr ""
 
 #. he: הגדרת גיבוי מוצפן אוטומטי
-#: apps/dai-command/dai_command/core.py:489
+#: apps/dai-command/dai_command/core.py:491
 msgid "Set up automatic encrypted backup"
 msgstr ""
 
@@ -5337,8 +5412,14 @@ msgid "Subject"
 msgstr ""
 
 #. he: כתוביות למה שהמחשב משמיע · על המחשב הזה בלבד · Enter
-#: apps/dai-command/dai_command/core.py:463
+#: apps/dai-command/dai_command/core.py:465
 msgid "Subtitles for whatever the computer plays · on this computer only · Enter"
+msgstr ""
+
+#. he: הצעה: dai-tune "{sentence}"
+#: apps/dai-explain/dai_explain/cli.py:75
+#, python-brace-format
+msgid "Suggested: dai-tune \"{sentence}\""
 msgstr ""
 
 #. he: סכם
@@ -5797,6 +5878,12 @@ msgstr ""
 #: apps/dai-vm/dai_vm/cli.py:162
 #, python-brace-format
 msgid "The screen of {name} opens in its own window."
+msgstr ""
+
+#. he: טקסט המסך נשלח ל־{provider} (במפתח שלך).
+#: apps/dai-explain/dai_explain/engine.py:137
+#, python-brace-format
+msgid "The screen text is sent to {provider} (your own key)."
 msgstr ""
 
 #. he: סיבוב המסך: {name}
@@ -7126,7 +7213,7 @@ msgid "friday|fri\\b"
 msgstr ""
 
 #. he: מחזק אבטחה
-#: apps/dai-command/dai_command/core.py:842
+#: apps/dai-command/dai_command/core.py:849
 #: apps/dai-forge/dai_forge/gui.py:181
 #: apps/dai-settings/dai_settings/gui.py:112
 #: apps/dai-store/dai_store/gui.py:107
@@ -7272,7 +7359,7 @@ msgid "monitor-sensor is installed"
 msgstr ""
 
 #. he: ניטרלי
-#: apps/dai-command/dai_command/core.py:844
+#: apps/dai-command/dai_command/core.py:851
 #: apps/dai-forge/dai_forge/gui.py:182
 #: apps/dai-settings/dai_settings/gui.py:114
 #: apps/dai-store/dai_store/gui.py:109
@@ -7678,7 +7765,7 @@ msgid "verified"
 msgstr ""
 
 #. he: מחליש אבטחה
-#: apps/dai-command/dai_command/core.py:843
+#: apps/dai-command/dai_command/core.py:850
 #: apps/dai-forge/dai_forge/gui.py:181
 #: apps/dai-settings/dai_settings/gui.py:113
 #: apps/dai-store/dai_store/gui.py:108

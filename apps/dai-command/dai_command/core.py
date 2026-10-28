@@ -459,6 +459,8 @@ _STRINGS = {
                    "מוצאים ומקימים תוכנות · מה זה מקים מוצג קודם · בלי חשבון · Enter"),
     "way_hint": ("Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter",
                  "דרך היהלום: מחשב שלם בקובץ אחד (check, plan, apply, export) · Enter"),
+    "explain_title": ("D.Ai Explain: what is on the screen", "D.Ai מסביר: מה שעל המסך"),
+    "explain_hint": ("Diamond reads the screen and explains it in your language · Enter", "Diamond קורא את המסך ומסביר בשפה שלך · Enter"),
     "captions_title": ("D.Ai Live Captions", "כתוביות חיות D.Ai"),
     "captions_hint": ("Subtitles for whatever the computer plays · on this computer only · Enter",
                       "כתוביות למה שהמחשב משמיע · על המחשב הזה בלבד · Enter"),
@@ -582,6 +584,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("terminal", "dai-way examples", tr("way_hint"), "text-x-script", "dai-way examples")]
     if CAPTIONS_WORDS.search(text.strip()) and shutil.which("dai-captions"):
         return [Action("captions", tr("captions_title"), tr("captions_hint"), "accessories-text-editor", "")]
+    if EXPLAIN_WORDS.search(text.strip()) and shutil.which("dai-explain"):
+        return [Action("explain", tr("explain_title"), tr("explain_hint"), "help-about", "")]
 
     actions: list[Action] = []
     if (value := calculate(text)) is not None:
@@ -772,6 +776,9 @@ GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IG
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 # D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
 WAY_WORDS = re.compile(r"^(?:(?:diamond'?s )?way|dai-way|דרך היהלום|דרך)$", re.IGNORECASE)
+# D.Ai Explain (docs/EXPLAIN.md): "explain this screen", "what is this error", "מה זה", "מה כתוב על המסך".
+EXPLAIN_WORDS = re.compile(r"^(?:explain(?: (?:this|the|my))?(?: screen| error| window| message)?|what (?:is|does) (?:this|that)(?: (?:screen|error|message|window|mean))?\??|"
+                           r"what am i (?:looking at|seeing)\??|(?:תסביר|הסבר)(?: לי)?(?: את)?(?: (?:ה)?(?:מסך|שגיאה|חלון|הודעה))?|מה זה\??|מה (?:ה)?(?:שגיאה|הודעה)(?: הזאת| הזו)?\??|מה כתוב (?:על |ב)?(?:ה)?מסך\??)$", re.IGNORECASE)
 CAPTIONS_WORDS = re.compile(r"^(?:(?:open |show |start |live |d\.?ai )?(?:live )?captions|subtitles|(?:פתח |הצג |הפעל )?(?:ה)?כתוביות(?: חיות)?|תמלול חי)$", re.IGNORECASE)
 STORE_WORDS = re.compile(r"^(?:(?:open |show |d\.?ai )?(?:app |apps |software )?store|software|apps|(?:פתח |הצג )?(?:ה)?חנות(?: (?:ה)?(?:אפליקציות|תוכנות))?|תוכנות)$", re.IGNORECASE)
 BACKUP_WORDS = re.compile(r"\bback\s?ups?\b|\bback (?:my|the) |גיבוי|לגבות|\bגבה\b|תגבה|שחזר|לשחזר|שחזור", re.IGNORECASE)
