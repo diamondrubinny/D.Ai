@@ -1726,7 +1726,7 @@ msgid "Diamond is not available. Install a model: D.Ai Command, ? and the questi
 msgstr ""
 
 #. he: Diamond לא זמין: {error}
-#: apps/dai-explain/dai_explain/engine.py:117
+#: apps/dai-explain/dai_explain/engine.py:118
 #, python-brace-format
 msgid "Diamond is not available: {error}"
 msgstr ""
@@ -3644,7 +3644,7 @@ msgid "No text found"
 msgstr ""
 
 #. he: לא נמצא טקסט על המסך.
-#: apps/dai-explain/dai_explain/engine.py:105
+#: apps/dai-explain/dai_explain/engine.py:106
 #: apps/dai-explain/dai_explain/gui.py:54
 msgid "No text was found on the screen."
 msgstr ""
@@ -3981,7 +3981,7 @@ msgid "On this computer only: no network, nothing saved."
 msgstr ""
 
 #. he: על המחשב הזה: התמונה והטקסט לא נשמרים.
-#: apps/dai-explain/dai_explain/engine.py:136
+#: apps/dai-explain/dai_explain/engine.py:137
 msgid "On this computer: the picture and the text are not saved."
 msgstr ""
 
@@ -5887,7 +5887,7 @@ msgid "The screen of {name} opens in its own window."
 msgstr ""
 
 #. he: טקסט המסך נשלח ל־{provider} (במפתח שלך).
-#: apps/dai-explain/dai_explain/engine.py:137
+#: apps/dai-explain/dai_explain/engine.py:138
 #, python-brace-format
 msgid "The screen text is sent to {provider} (your own key)."
 msgstr ""
