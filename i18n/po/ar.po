@@ -7069,17 +7069,11 @@ msgstr "يقرأ Diamond بسرعة أكبر"
 msgid "Diamond reads aloud slower"
 msgstr "يقرأ Diamond بسرعة أقل"
 
-#: apps/dai-speak/dai_speak/engine.py
-msgid "Diamond reads it on this computer · Super+Shift+S again stops · Enter"
-msgstr "يقرأه Diamond على هذا الحاسوب · Super+Shift+S مرة أخرى يوقف · Enter"
 
 #: apps/dai-speak/dai_speak/engine.py
 msgid "Read aloud"
 msgstr "قراءة بصوت عالٍ"
 
-#: apps/dai-speak/dai_speak/engine.py
-msgid "Read the selected text aloud"
-msgstr "قراءة النص المحدد بصوت عالٍ"
 
 #: apps/dai-speak/dai_speak/engine.py
 msgid "Stop reading"
