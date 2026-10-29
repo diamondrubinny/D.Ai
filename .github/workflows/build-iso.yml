@@ -302,7 +302,7 @@ jobs:
 
       - name: Unit tests (dai-command)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-tune:apps/dai-raz
+          PYTHONPATH: apps/dai-i18n:apps/dai-tune:apps/dai-raz:apps/dai-ai
         run: python3 -m unittest discover -s apps/dai-command/tests -t apps/dai-command -v
 
   llama:

@@ -7009,3 +7009,11 @@ msgstr "Текст экрана отправляется к {provider} (с ва�
 #, python-brace-format
 msgid "Cannot read {path}: {error}"
 msgstr "Не удаётся прочитать {path}: {error}"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Ask Diamond about it"
+msgstr "Спросить Diamond об этом"
+
+#: apps/dai-command/dai_command/core.py
+msgid "From D.Ai's own guide · Enter copies it"
+msgstr "Из собственного руководства D.Ai · Enter копирует"

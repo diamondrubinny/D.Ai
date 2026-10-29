@@ -293,6 +293,20 @@ class HealLanguageTests(unittest.TestCase):
             self.assertTrue(core.WAY_WORDS.search(text), text)
         self.assertFalse(core.WAY_WORDS.search("the way home"))
 
+    def test_a_question_about_the_system_is_answered_from_the_guide_at_once(self):
+        """docs/AI.md §6: no model call; the fact row copies, and "ask Diamond" follows it."""
+        rows = core.build_actions("how do I lock the screen", [])
+        self.assertEqual(rows[0].kind, "fact")
+        self.assertIn("Super+L", rows[0].title)
+        self.assertEqual(rows[0].payload, rows[0].title)
+        self.assertEqual(rows[-1].kind, "ai")
+        hebrew = core.build_actions("איך מחליפים שפת מקלדת?", [])
+        self.assertEqual(hebrew[0].kind, "fact")
+        self.assertIn("Alt+Shift", hebrew[0].title)
+        self.assertNotIn("fact", [r.kind for r in core.build_actions("what is the capital of France", [])])
+        self.assertEqual(core.build_actions("lock screen", [])[:1], [])      # not a question: the usual rows
+        self.assertEqual(core.build_actions("2+2", [])[0].kind, "calc")
+
     def test_explain_words(self):
         for text in ("explain this screen", "explain", "what is this error", "what is this?", "what am I looking at",
                      "מה זה", "מה זה?", "הסבר לי את המסך", "תסביר", "מה השגיאה הזאת", "מה כתוב על המסך"):

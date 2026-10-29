@@ -321,7 +321,7 @@ class CommandWindow(QWidget):
                 argv = ["x-terminal-emulator", "-e", *argv]
             self._spawn(argv)
             remembered = app.name
-        elif action.kind in ("calc", "layout"):
+        elif action.kind in ("calc", "layout", "fact"):
             QGuiApplication.clipboard().setText(str(action.payload))
             remembered = ""
         elif action.kind == "run":

@@ -459,6 +459,8 @@ _STRINGS = {
                    "מוצאים ומקימים תוכנות · מה זה מקים מוצג קודם · בלי חשבון · Enter"),
     "way_hint": ("Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter",
                  "דרך היהלום: מחשב שלם בקובץ אחד (check, plan, apply, export) · Enter"),
+    "fact_hint": ("From D.Ai's own guide · Enter copies it", "מהמדריך של D.Ai · Enter מעתיק"),
+    "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
     "explain_title": ("D.Ai Explain: what is on the screen", "D.Ai מסביר: מה שעל המסך"),
     "explain_hint": ("Diamond reads the screen and explains it in your language · Enter", "Diamond קורא את המסך ומסביר בשפה שלך · Enter"),
     "captions_title": ("D.Ai Live Captions", "כתוביות חיות D.Ai"),
@@ -587,7 +589,7 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
     if EXPLAIN_WORDS.search(text.strip()) and shutil.which("dai-explain"):
         return [Action("explain", tr("explain_title"), tr("explain_hint"), "help-about", "")]
 
-    actions: list[Action] = []
+    actions: list[Action] = fact_actions(text)
     if (value := calculate(text)) is not None:
         result = format_number(value)
         actions.append(Action("calc", f"= {result}", tr("copy"), "accessories-calculator", result))
@@ -818,6 +820,27 @@ def backup_actions(text: str) -> list[Action] | None:
     return [Action("backup", tr("backup_now"), state, "document-save", "now"),
             Action("backup", f"{tr('backup_last')} {when}", f"{settings.repo} · {tr('backup_details')}",
                    "document-open-recent", "status")]
+
+
+# A question about the system (docs/AI.md §6): the answer from D.Ai's own guide appears at once, no model needed.
+QUESTION_WORDS = re.compile(r"^(?:how|what|where|which|can i|why|is there|do i)\b|\?$|^(?:איך|כיצד|מה|איפה|היכן|האם|למה|אפשר)\b", re.IGNORECASE)
+
+
+def fact_actions(text: str) -> list[Action]:
+    """Up to two facts from D.Ai's guide for a question about the system, then "ask Diamond about it"."""
+    if not QUESTION_WORDS.search(text.strip()):
+        return []
+    try:
+        from dai_ai.knowledge import relevant
+        from dai_i18n import ui_lang
+    except ImportError:
+        return []
+    facts = relevant(text, ui_lang(), limit=2)
+    if not facts:
+        return []
+    rows = [Action("fact", fact, tr("fact_hint"), "help-faq", fact) for fact in facts]
+    rows.append(Action("ai", text.strip(), tr("ask_more") + " · " + ai_where_label(), "dialog-information", text.strip()))
+    return rows
 
 
 def ai_where_label() -> str:

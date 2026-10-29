@@ -7009,3 +7009,11 @@ msgstr "Le texte de l'écran est envoyé à {provider} (avec votre propre clé).
 #, python-brace-format
 msgid "Cannot read {path}: {error}"
 msgstr "Impossible de lire {path} : {error}"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Ask Diamond about it"
+msgstr "Demander à Diamond"
+
+#: apps/dai-command/dai_command/core.py
+msgid "From D.Ai's own guide · Enter copies it"
+msgstr "Du guide de D.Ai · Entrée le copie"
