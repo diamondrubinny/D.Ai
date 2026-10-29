@@ -863,7 +863,11 @@ def fact_actions(text: str) -> list[Action]:
     facts = relevant(text, ui_lang(), limit=2)
     if not facts:
         return []
-    rows = [Action("fact", fact, tr("fact_hint"), "help-faq", fact) for fact in facts]
+    rows = []
+    for fact in facts:   # the first sentence is the row, the rest its subtitle; Enter copies the whole fact
+        first, _, rest = fact.partition(". ")
+        title = first + ("." if rest else "")
+        rows.append(Action("fact", title, (rest + " · " if rest else "") + tr("fact_hint"), "help-faq", fact))
     rows.append(Action("ai", text.strip(), tr("ask_more") + " · " + ai_where_label(), "dialog-information", text.strip()))
     return rows
 
