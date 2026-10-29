@@ -80,7 +80,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `device.block` / `device.allow` (usb_storage, camera, bluetooth) | "חסום דיסק און קי", "חסום מצלמה" | מערכת | מחזק / מחליש |
 | `firewall.open_port` / `firewall.close_port` | "פתח פורט 8080", "סגור פורט 8080", "פתח פורטים 1714 עד 1764 udp" (טווח) | מערכת | מחליש / מחזק |
 | `way.file` | רק מקובץ `.dway` (שורת `files:`; docs/WAY.md §2: תיקייה או קובץ טקסט קטן בבית, לא מוסתר, לא הרצה, לא מחליף תוכן קיים) | משתמש | ניטרלי |
-| `way.when` / `way.when_off` | רק מקובץ `.dway` (שורת `when:`) או `dai-way when remove` (docs/WAY.md §2: טיימר משתמש שמריץ משפט אחד, רק פעולות בהיקף משתמש) | משתמש | לפי המשפט |
+| `way.when` / `way.when_off` | לוח זמנים לפני משפט: "every day at 20:00 dark theme", "כל בוקר ב־7 ערכת נושא בהירה", "at login: firefox does not go online" (גם מ־`!` בשורת הפקודה); או שורת `when:` ב־`.dway`; הסרה: `dai-way when remove` (docs/WAY.md §2: טיימר משתמש שמריץ משפט אחד, רק פעולות בהיקף משתמש) | משתמש | לפי המשפט |
 | `ai.providers_policy` | "no external AI providers", "בלי ספקי AI חיצוניים", "allow external AI providers" (docs/PROVIDERS.md §4c: בדרך כלל ממדיניות ארגונית) | מערכת | מחזק |
 | `diamond.provider` | "answer with anthropic", "תענה במחשב הזה" (docs/PROVIDERS.md: מקומי, או ספק שכבר הוסכם ב־`dai-models provider use`; גם בחירה ב־Settings) | משתמש | מחליש (ספק) / מחזק (מקומי) |
 | `memory.saver` + `diamond.small_model` | "מצב חיסכון בזיכרון", "memory saver off" (docs/BEYOND.md §14: sysctl ל־zram עכשיו, zram גדול מהאתחול הבא, Diamond על המודל הקטן; גם מתג ב־Settings) | מערכת + משתמש | ניטרלי |

@@ -318,6 +318,24 @@ class ExecutorTests(TuneTestCase):
         with mock.patch.dict(os.environ, {}, clear=True):
             self.assertNotIn("XDG_RUNTIME_DIR", context.command_env())
 
+    def test_a_schedule_in_front_of_a_sentence_is_a_timer(self):
+        """docs/WAY.md §2: "every day at 20:00 dark theme" from dai-tune or the command bar, no .dway needed."""
+        result = parser.parse("every day at 20:00 dark theme")
+        self.assertEqual([r.action for r in result.requests], ["way.when"])
+        self.assertEqual(result.requests[0].params["sentence"], "dark theme")
+        self.assertEqual(result.requests[0].params["schedule"]["hour"], 20)
+        hebrew = parser.parse("כל בוקר ב־7 ערכת נושא בהירה")
+        self.assertEqual(hebrew.requests[0].action, "way.when")
+        self.assertEqual(hebrew.requests[0].params["schedule"]["hour"], 7)
+        login = parser.parse("at login: firefox does not go online")
+        self.assertEqual((login.requests[0].action, login.requests[0].params["schedule"]["kind"]), ("way.when", "login"))
+        self.assertEqual(parser.parse("every day dance").requests, [])          # the sentence must be understood
+        self.assertNotEqual(parser.parse("lock the screen after 5 minutes").requests[0].action, "way.when")
+        self.assertEqual(parser.timer_name("every day at 20:00", "dark theme"), parser.timer_name("Every Day at 20:00", "Dark Theme"))
+        plan = planner.build_plan(parser.parse("every day at 22:00 memory saver on").requests, self.ctx)
+        self.assertFalse(plan.ok)
+        self.assertTrue(any("administrator" in e for e in plan.errors), plan.errors)
+
     def test_way_when_timer_user_scope_only(self):
         """docs/WAY.md §2: a when: line is one user timer; a system sentence or a bad schedule is refused."""
         spec = catalog.CATALOG["way.when"]

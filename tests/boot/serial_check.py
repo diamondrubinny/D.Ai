@@ -388,6 +388,9 @@ def main() -> int:
          lambda o: "io.github.diamondrubinny.dai.tune.apply" in o),
         ("tune: hebrew dry run", f"LANG=he_IL.UTF-8 dai-tune --dry-run \"$(printf '{_hex(HEBREW_TUNE)}')\"", True,
          lambda o: "הרצת ניסיון" in o and "נעילת מסך אחרי 5 דקות" in o),
+        ("tune: a schedule makes a timer", "dai-tune --dry-run 'every day at 20:00 dark theme' </dev/null; "
+         "LANG=he_IL.UTF-8 dai-tune --dry-run 'every day at 22:00 memory saver on' </dev/null; echo SYSTEM_RC=$?", True,
+         lambda o: "timer" in o and "dark theme" in o and "SYSTEM_RC=2" in o),
         ("tune: block usb", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'block usb storage' && cat /etc/modprobe.d/dai-tune-usb_storage.conf", True,
          lambda o: "install usb_storage /bin/false" in o),
         ("tune: undo usb", "DAI_TUNE_ELEVATE=sudo dai-tune undo && test ! -e /etc/modprobe.d/dai-tune-usb_storage.conf && echo UNDONE", True,

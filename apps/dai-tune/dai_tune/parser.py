@@ -494,8 +494,58 @@ def _only_device(clause: str) -> str | None:
     return found[0] if re.fullmatch(r"\s*(?:the|its|ה|את ה?)?\s*", rest) else None
 
 
+# "every day at 20:00 dark theme", "כל בוקר ערכת נושא בהירה", "at login firefox does not go online": a schedule in
+# front of a sentence is one way.when timer (docs/WAY.md §2, stage 2), so the command bar and dai-tune can set
+# timers without a .dway file. Only user-scope sentences are accepted; the catalog says so when they are not.
+SCHEDULE_START = re.compile(r"^(?:every|each|at (?:log ?in|login|startup|start ?up|boot)|hourly|daily|weekly|כל|בכל|ב ?כניסה)\b", re.IGNORECASE)
+
+
+def timed_request(text: str) -> Request | None:
+    """One way.when request when the text is SCHEDULE + SENTENCE and the sentence is fully understood."""
+    text = text.strip()
+    if not SCHEDULE_START.search(text):
+        return None
+    try:
+        from dai_forge.schedule import ScheduleError
+        from dai_forge.schedule import parse as parse_schedule
+    except ImportError:
+        return None
+    words = text.rstrip(":").split()
+    for cut in range(len(words) - 1, 0, -1):        # the longest schedule that leaves a whole sentence
+        head, rest = " ".join(words[:cut]).rstrip(":,"), " ".join(words[cut:]).lstrip(":, ")
+        try:
+            schedule = parse_schedule(head)
+        except ScheduleError:
+            schedule = None
+        if schedule is None or not rest:
+            continue
+        inner = ParseResult()
+        for clause in split_clauses(rest):
+            requests = parse_clause(clause)
+            if not requests:
+                inner.unknown.append(clause)
+            inner.requests += requests
+        if inner.requests and not inner.unknown:
+            return Request("way.when", {"name": timer_name(head, rest), "schedule": schedule.to_json(), "sentence": rest}, text)
+    return None
+
+
+def timer_name(schedule_text: str, sentence: str) -> str:
+    """The same stable name Diamond's Way gives a when: line (dai_way.language.when_name)."""
+    import hashlib
+    words = re.findall(r"[a-z0-9]+", sentence.casefold())
+    base = "-".join(words)[:28].strip("-")
+    digest = hashlib.sha1(f"{schedule_text.casefold()}|{sentence.casefold()}".encode("utf-8")).hexdigest()[:8]
+    if not base or not base[0].isalpha():
+        base = "w"
+    return f"{base}-{digest}"[:40]
+
+
 def parse(text: str) -> ParseResult:
     result = ParseResult()
+    if (timed := timed_request(text)) is not None:
+        result.requests.append(timed)
+        return result
     for clause in split_clauses(text):
         requests = parse_clause(clause)
         previous = result.requests[-1] if result.requests else None
