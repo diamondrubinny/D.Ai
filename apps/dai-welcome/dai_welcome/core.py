@@ -30,6 +30,7 @@ UPDATES = "enable automatic updates"
 STRICT_EXTRA = ("block usb storage", "turn off bluetooth")
 
 ASSISTANT_SMALL, CODER, VOICE = "qwen2.5-0.5b", "qwen2.5-coder-1.5b", "whisper-base"
+SIGHT_SMALL, SIGHT = "smolvlm-256m", "smolvlm-500m"     # D.Ai Explain looks at the screen (docs/EXPLAIN.md §8)
 MIN_AI_RAM_MB, CODER_RAM_MB = 4000, 8000
 
 
@@ -107,7 +108,7 @@ def ram_mb(meminfo: Path = Path("/proc/meminfo")) -> int:
 
 @dataclass
 class Option:
-    key: str            # assistant | code | voice
+    key: str            # assistant | code | voice | sight
     model_id: str
     checked: bool
     enabled: bool = True
@@ -124,7 +125,9 @@ def ai_options(ram: int, installed: set[str] = frozenset()) -> list[Option]:
     else:
         code = Option("code", CODER, False, note="" if ram >= MIN_AI_RAM_MB else "low_ram")
     voice = Option("voice", VOICE, True)
-    options = [assistant, code, voice]
+    sight = Option("sight", SIGHT if ram >= MIN_AI_RAM_MB else SIGHT_SMALL, ram >= MIN_AI_RAM_MB,
+                   note="" if ram >= MIN_AI_RAM_MB else "low_ram")
+    options = [assistant, code, voice, sight]
     for option in options:
         if option.model_id in installed:
             option.checked, option.enabled, option.note = True, False, "installed"

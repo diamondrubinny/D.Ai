@@ -85,6 +85,7 @@ STRINGS = {
     "assistant": ("Assistant — answers questions and helps with the system", "עוזר — עונה על שאלות ועוזר במערכת"),
     "code": ("Coding — explains and edits code (D.Ai Code, D.Ai Forge)", "קוד — מסביר ועורך קוד (D.Ai Code, ‏D.Ai Forge)"),
     "voice": ("Voice typing — dictate in Hebrew and English (Super+H)", "הקלדה קולית — הכתבה בעברית ובאנגלית (Super+H)"),
+    "sight": ("Sight — Diamond looks at the screen in D.Ai Explain (Super+Shift+E)", "ראייה — Diamond מסתכל על המסך ב־D.Ai מסביר (Super+Shift+E)"),
     "size": ("{size} download · needs {ram} RAM", "הורדה של {size} · דורש {ram} RAM"),
     "included": ("included in the assistant on this computer", "כלול בעוזר במחשב הזה"),
     "installed": ("already installed", "כבר מותקן"),

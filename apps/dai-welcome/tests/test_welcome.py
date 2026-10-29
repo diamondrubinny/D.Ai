@@ -100,10 +100,11 @@ class ModelTests(WelcomeTestCase):
         mid = {o.key: o for o in core.ai_options(6000)}
         self.assertEqual((mid["assistant"].model_id, mid["assistant"].checked), (core.ASSISTANT_SMALL, True))
         self.assertFalse(mid["code"].checked)
+        self.assertEqual((low["sight"].model_id, low["sight"].checked, low["sight"].note), (core.SIGHT_SMALL, False, "low_ram"))
         big = core.ai_options(16000)
-        self.assertEqual(core.chosen_models(big), [core.CODER, core.VOICE])
+        self.assertEqual(core.chosen_models(big), [core.CODER, core.VOICE, core.SIGHT])
         self.assertEqual({o.key: o.note for o in big}["code"], "included")
-        installed = core.ai_options(16000, {core.VOICE})
+        installed = core.ai_options(16000, {core.VOICE, core.SIGHT})
         self.assertEqual(core.chosen_models(installed), [core.CODER])
         for option in core.ai_options(16000):
             self.assertIn(option.model_id, CATALOG)
@@ -212,7 +213,7 @@ class WindowTests(WelcomeTestCase):
         while win.step != "done" and time.monotonic() < deadline:
             QTest.qWait(20)
         self.assertEqual(win.step, "done")
-        self.assertEqual(calls[0].models, [core.CODER, core.VOICE])
+        self.assertEqual(calls[0].models, [core.CODER, core.VOICE, core.SIGHT])
         self.assertEqual(sum(1 for s in calls[0].plan.steps if s.action == "device.block"), 2)
         self.assertIn("Super+Space", self.texts(win))
         state = json.loads(core.state_path(self.home).read_text())

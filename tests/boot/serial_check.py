@@ -851,7 +851,7 @@ def main() -> int:
          "dai-settings list --json | python3 -c 'import json, sys; v = json.load(sys.stdin); "
          "print(\"KEYS\", len(v), \"HOST\", v[\"hostname\"], \"THEME\", v[\"theme\"], \"LOCK\", v[\"lock\"])'; "
          "test -f /usr/share/applications/dai-settings.desktop && echo DESKTOP_ENTRY", True,
-         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 18" in o and "HOST dai-os" in o and "THEME night" in o
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 19" in o and "HOST dai-os" in o and "THEME night" in o
          and re.search(r"LOCK (?:0|1|5|10|30|custom)", o) is not None and "DESKTOP_ENTRY" in o
          and "Computer name: dai-os" in o, 60),
         # D.Ai Focus (docs/BEYOND.md §5): a session hides pop-ups, arms a user timer and warms the light; stopping it

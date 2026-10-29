@@ -88,6 +88,9 @@ class ModelTests(SettingsTestCase):
         self.assertTrue(values["usb"])
         self.assertFalse(values["updates"])
         self.assertEqual(values["antivirus"], "weekly")
+        self.assertEqual(values["reading"], "normal")
+        (self.home / ".config/dai/speak.json").write_text('{"rate": 230}')
+        self.assertEqual(model.snapshot(self.ctx)["reading"], "fast")
         self.assertTrue(values["snapshots"])
         self.assertEqual(values["language"], "he")
         self.assertFalse(values["ssh"])
@@ -106,7 +109,7 @@ class ModelTests(SettingsTestCase):
         samples = {"lock": "10", "updates": False, "usb": True, "camera": False, "ssh": True, "antivirus": "daily",
                    "snapshots": True, "theme": "contrast", "touch": "on", "sounds": "quiet", "language": "ar",
                    "layouts": "us, il", "timezone": "Europe/Berlin", "hostname": "office-pc", "power": "performance",
-                   "clean": True, "saver": True, "ai": "local"}
+                   "clean": True, "saver": True, "ai": "local", "reading": "fast"}
         for setting in model.SETTINGS:
             with self.subTest(setting.key):
                 plan = build_plan(setting.request(samples[setting.key]), self.ctx)
@@ -117,6 +120,7 @@ class ModelTests(SettingsTestCase):
         self.assertEqual(model.by_key("layouts").request("us, il")[0].params, {"layouts": ["us", "il"]})
         self.assertEqual(model.by_key("usb").request(False)[0].action, "device.allow")
         self.assertEqual(model.by_key("snapshots").request(False), [])  # only "on" exists
+        self.assertEqual(model.by_key("reading").request("slow")[0].params, {"change": "rate", "rate": 120})
 
     def test_weakening_changes_say_so(self):
         plan = build_plan(model.by_key("updates").request(False), self.ctx)

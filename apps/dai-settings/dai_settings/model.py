@@ -199,6 +199,7 @@ TITLES = {
     "hostname": ("Computer name", "שם המחשב"),
     "power": ("Power", "צריכת חשמל"),
     "ai": ("Who answers Diamond's questions", "מי עונה לשאלות של Diamond"),
+    "reading": ("Reading aloud speed", "מהירות ההקראה"),
     "clean": ("Free disk space", "פינוי מקום בדיסק"),
 }
 HINTS = {
@@ -208,6 +209,7 @@ HINTS = {
     "snapshots": ("Needs a Btrfs system disk; the way back is D.Ai Rescue.", "דורש דיסק Btrfs; הדרך חזרה היא D.Ai Rescue."),
     "saver": ("Compressed swap first, Diamond on its smallest model, MOM says what is heavy.", "החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד."),
     "ai": ("A provider appears here after dai-models provider use NAME (your key, your consent).", "ספק מופיע כאן אחרי dai-models provider use NAME (המפתח שלך, ההסכמה שלך)."),
+    "reading": ("Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak).", "Super+Shift+S מקריא את הטקסט המסומן במחשב הזה (D.Ai Speak)."),
     "language": ("From the next login.", "מהכניסה הבאה."),
     "layouts": ("Up to four, separated by commas: us,il,ru. Alt+Shift switches.",
                 "עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף."),
@@ -221,7 +223,9 @@ CHOICES = {
     "antivirus": {"daily": ("every day", "כל יום"), "weekly": ("every week", "כל שבוע"), "off": ("off", "כבוי")},
     "power": {"power-saver": ("battery saver", "חיסכון בסוללה"), "balanced": ("balanced", "מאוזן"),
               "performance": ("performance", "ביצועים")},
+    "reading": {"slow": ("slow", "איטית"), "normal": ("normal", "רגילה"), "fast": ("fast", "מהירה")},
 }
+READING_RATES = {"slow": 120, "normal": catalog.SPEAK_DEFAULT_RATE, "fast": 220}   # words per minute (docs/SPEAK.md)
 NO_HINT = ("", "")
 
 
@@ -237,6 +241,16 @@ def read_ai(ctx: Context) -> str:
         return providers.load(ctx.user_path(catalog.PROVIDERS_FILE)).active or "local"
     except Exception:  # noqa: BLE001 - no dai_ai: local
         return "local"
+
+
+def read_reading(ctx: Context) -> str:
+    """slow / normal / fast: the nearest of the three to the rate in the person's file."""
+    rate = catalog.speak_current_rate(ctx)
+    return min(READING_RATES, key=lambda name: abs(READING_RATES[name] - rate))
+
+
+def _reading(value: Value) -> list[Request]:
+    return _one("speak.rate", change="rate", rate=READING_RATES[str(value)])
 
 
 def _ai_choices() -> tuple[tuple[str, tuple[str, str]], ...]:
@@ -289,6 +303,7 @@ SETTINGS: tuple[Setting, ...] = (
     Setting("power", "system", "choice", TITLES["power"], read_power, _choice("power.profile", "profile"), _choices("power")),
     Setting("saver", "system", "toggle", TITLES["saver"], catalog.saver_on, _saver, hint=HINTS["saver"]),
     Setting("ai", "system", "choice", TITLES["ai"], read_ai, _choice("diamond.provider", "name"), _ai_choices(), hint=HINTS["ai"]),
+    Setting("reading", "system", "choice", TITLES["reading"], read_reading, _reading, _choices("reading"), hint=HINTS["reading"]),
     Setting("clean", "system", "button", TITLES["clean"], lambda c: "", lambda value: _one("system.clean"), hint=HINTS["clean"]),
 )
 

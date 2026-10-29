@@ -7108,3 +7108,27 @@ msgstr "A resposta do Diamond quando há uma, senão o texto selecionado · nest
 #: apps/dai-explain/dai_explain/engine.py
 msgid "On this computer: Diamond looked at the picture; nothing is saved."
 msgstr "Neste computador: o Diamond olhou para a imagem; nada é guardado."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Reading aloud speed"
+msgstr "Velocidade da leitura em voz alta"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Sight — Diamond looks at the screen in D.Ai Explain (Super+Shift+E)"
+msgstr "Visão — o Diamond olha para o ecrã no D.Ai Explain (Super+Shift+E)"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak)."
+msgstr "Super+Shift+S lê em voz alta o texto selecionado neste computador (D.Ai Speak)."
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "fast"
+msgstr "rápida"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "normal"
+msgstr "normal"
+
+#: apps/dai-settings/dai_settings/model.py
+msgid "slow"
+msgstr "lenta"
