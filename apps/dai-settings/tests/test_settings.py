@@ -91,6 +91,11 @@ class ModelTests(SettingsTestCase):
         self.assertEqual(values["reading"], "normal")
         (self.home / ".config/dai/speak.json").write_text('{"rate": 230}')
         self.assertEqual(model.snapshot(self.ctx)["reading"], "fast")
+        self.assertEqual((values["sight"], values["explain_voice"]), (True, False))
+        (self.home / ".config/dai/explain.json").write_text('{"sight": false, "voice": true}')
+        snap = model.snapshot(self.ctx)
+        self.assertEqual((snap["sight"], snap["explain_voice"]), (False, True))
+        self.assertEqual(model.by_key("sight").request(False)[0].params, {"option": "sight", "enabled": False})
         self.assertTrue(values["snapshots"])
         self.assertEqual(values["language"], "he")
         self.assertFalse(values["ssh"])
@@ -109,7 +114,7 @@ class ModelTests(SettingsTestCase):
         samples = {"lock": "10", "updates": False, "usb": True, "camera": False, "ssh": True, "antivirus": "daily",
                    "snapshots": True, "theme": "contrast", "touch": "on", "sounds": "quiet", "language": "ar",
                    "layouts": "us, il", "timezone": "Europe/Berlin", "hostname": "office-pc", "power": "performance",
-                   "clean": True, "saver": True, "ai": "local", "reading": "fast"}
+                   "clean": True, "saver": True, "ai": "local", "reading": "fast", "sight": False, "explain_voice": True}
         for setting in model.SETTINGS:
             with self.subTest(setting.key):
                 plan = build_plan(setting.request(samples[setting.key]), self.ctx)

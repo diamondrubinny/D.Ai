@@ -323,7 +323,7 @@ msgid "A picture to stamp (your signature, a logo)"
 msgstr ""
 
 #. he: ספק מופיע כאן אחרי dai-models provider use NAME (המפתח שלך, ההסכמה שלך).
-#: apps/dai-settings/dai_settings/model.py:211
+#: apps/dai-settings/dai_settings/model.py:213
 msgid "A provider appears here after dai-models provider use NAME (your key, your consent)."
 msgstr ""
 
@@ -532,7 +532,7 @@ msgid "Allow {kind}"
 msgstr ""
 
 #. he: מדיניות ארגונית יכולה להגביל את זה.
-#: apps/dai-settings/dai_settings/model.py:206
+#: apps/dai-settings/dai_settings/model.py:208
 msgid "An organization policy may cap this."
 msgstr ""
 
@@ -979,7 +979,7 @@ msgid "Cannot reach the mail server. Check the Internet connection and the serve
 msgstr ""
 
 #. he: אי אפשר לקרוא את {path}: {error}
-#: apps/dai-explain/dai_explain/cli.py:50
+#: apps/dai-explain/dai_explain/cli.py:52
 #, python-brace-format
 msgid "Cannot read {path}: {error}"
 msgstr ""
@@ -1234,7 +1234,7 @@ msgid "Compare with {name}"
 msgstr ""
 
 #. he: החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד.
-#: apps/dai-settings/dai_settings/model.py:210
+#: apps/dai-settings/dai_settings/model.py:212
 msgid "Compressed swap first, Diamond on its smallest model, MOM says what is heavy."
 msgstr ""
 
@@ -1413,6 +1413,32 @@ msgstr ""
 #. he: D.Ai מסביר
 #: apps/dai-explain/dai_explain/gui.py:44
 msgid "D.Ai Explain"
+msgstr ""
+
+#. he: D.Ai מסביר לא מקריא הסברים
+#: apps/dai-tune/dai_tune/catalog.py:2159
+msgid "D.Ai Explain does not read explanations aloud"
+msgstr ""
+
+#. he: D.Ai מסביר מסתכל על תמונת המסך
+#: apps/dai-settings/dai_settings/model.py:203
+msgid "D.Ai Explain looks at the picture of the screen"
+msgstr ""
+
+#. he: D.Ai מסביר מקריא כל הסבר
+#: apps/dai-settings/dai_settings/model.py:204
+#: apps/dai-tune/dai_tune/catalog.py:2158
+msgid "D.Ai Explain reads every explanation aloud"
+msgstr ""
+
+#. he: D.Ai מסביר: Diamond מסתכל על תמונת המסך
+#: apps/dai-tune/dai_tune/catalog.py:2156
+msgid "D.Ai Explain: Diamond looks at the picture of the screen"
+msgstr ""
+
+#. he: D.Ai מסביר: רק הטקסט מהמסך, בלי תמונה
+#: apps/dai-tune/dai_tune/catalog.py:2157
+msgid "D.Ai Explain: only the text from the screen, no picture"
 msgstr ""
 
 #. he: D.Ai מסביר: מה שעל המסך
@@ -1736,7 +1762,7 @@ msgid "Diamond is not available. Install a model: D.Ai Command, ? and the questi
 msgstr ""
 
 #. he: Diamond לא זמין: {error}
-#: apps/dai-explain/dai_explain/engine.py:178
+#: apps/dai-explain/dai_explain/engine.py:195
 #, python-brace-format
 msgid "Diamond is not available: {error}"
 msgstr ""
@@ -1788,23 +1814,23 @@ msgid "Diamond proposed no change."
 msgstr ""
 
 #. he: Diamond מקריא במהירות הרגילה
-#: apps/dai-tune/dai_tune/catalog.py:2176
+#: apps/dai-tune/dai_tune/catalog.py:2233
 msgid "Diamond reads aloud at the normal speed"
 msgstr ""
 
 #. he: Diamond מקריא ב־{rate} מילים לדקה
-#: apps/dai-tune/dai_tune/catalog.py:2177
+#: apps/dai-tune/dai_tune/catalog.py:2234
 #, python-brace-format
 msgid "Diamond reads aloud at {rate} words per minute"
 msgstr ""
 
 #. he: Diamond מקריא מהר יותר
-#: apps/dai-tune/dai_tune/catalog.py:2172
+#: apps/dai-tune/dai_tune/catalog.py:2229
 msgid "Diamond reads aloud faster"
 msgstr ""
 
 #. he: Diamond מקריא לאט יותר
-#: apps/dai-tune/dai_tune/catalog.py:2174
+#: apps/dai-tune/dai_tune/catalog.py:2231
 msgid "Diamond reads aloud slower"
 msgstr ""
 
@@ -2005,7 +2031,7 @@ msgid "Downloaded and verified: {path}"
 msgstr ""
 
 #. he: קבצי התקנה שהורדו ויומנים ישנים. אי אפשר לבטל; שום דבר שבשימוש לא נמחק.
-#: apps/dai-settings/dai_settings/model.py:216
+#: apps/dai-settings/dai_settings/model.py:220
 msgid "Downloaded package files and old logs. Cannot be undone; nothing you use is lost."
 msgstr ""
 
@@ -2253,6 +2279,11 @@ msgstr ""
 msgid "Everything on this page can also be asked later: type a question in the command bar, such as 'how do I lock the screen', and the answer appears at once."
 msgstr ""
 
+#. he: בכל מקרה הכול נשאר במחשב הזה; התמונה דורשת מודל ראייה מותקן.
+#: apps/dai-tune/dai_tune/catalog.py:2171
+msgid "Everything stays on this computer either way; the picture needs an installed vision model."
+msgstr ""
+
 #. he: הכל עובד
 #: apps/dai-quick/dai_quick/gui.py:40
 msgid "Everything works"
@@ -2290,7 +2321,7 @@ msgid "File"
 msgstr ""
 
 #. he: קובץ {path} בבית שלך ({size} תווים)
-#: apps/dai-tune/dai_tune/catalog.py:2414
+#: apps/dai-tune/dai_tune/catalog.py:2471
 #, python-brace-format
 msgid "File {path} in your home ({size} characters)"
 msgstr ""
@@ -2450,7 +2481,7 @@ msgid "Focus: {n} minutes"
 msgstr ""
 
 #. he: תיקייה {path} בבית שלך
-#: apps/dai-tune/dai_tune/catalog.py:2413
+#: apps/dai-tune/dai_tune/catalog.py:2470
 #, python-brace-format
 msgid "Folder {path} in your home"
 msgstr ""
@@ -2510,7 +2541,7 @@ msgid "Found: {host} (secure connection)"
 msgstr ""
 
 #. he: פינוי מקום בדיסק
-#: apps/dai-settings/dai_settings/model.py:203
+#: apps/dai-settings/dai_settings/model.py:205
 msgid "Free disk space"
 msgstr ""
 
@@ -2562,7 +2593,7 @@ msgid "From history"
 msgstr ""
 
 #. he: מהכניסה הבאה.
-#: apps/dai-settings/dai_settings/model.py:213
+#: apps/dai-settings/dai_settings/model.py:217
 msgid "From the next login."
 msgstr ""
 
@@ -3358,7 +3389,7 @@ msgid "Needs a Btrfs system disk. Your personal files (/home) are not part of it
 msgstr ""
 
 #. he: דורש דיסק Btrfs; הדרך חזרה היא D.Ai Rescue.
-#: apps/dai-settings/dai_settings/model.py:209
+#: apps/dai-settings/dai_settings/model.py:211
 msgid "Needs a Btrfs system disk; the way back is D.Ai Rescue."
 msgstr ""
 
@@ -3453,7 +3484,7 @@ msgid "No apps yet. Try: dai-forge \"build an app for a shopping list\""
 msgstr ""
 
 #. he: לא נבחר אזור.
-#: apps/dai-explain/dai_explain/cli.py:54
+#: apps/dai-explain/dai_explain/cli.py:56
 msgid "No area was chosen."
 msgstr ""
 
@@ -3695,7 +3726,7 @@ msgid "No text found"
 msgstr ""
 
 #. he: לא נמצא טקסט על המסך.
-#: apps/dai-explain/dai_explain/engine.py:166
+#: apps/dai-explain/dai_explain/engine.py:183
 #: apps/dai-explain/dai_explain/gui.py:55
 msgid "No text was found on the screen."
 msgstr ""
@@ -4031,18 +4062,23 @@ msgstr ""
 msgid "On this computer"
 msgstr ""
 
+#. he: במחשב הזה בלבד, עם מודל ראייה (dai-models install smolvlm-500m).
+#: apps/dai-settings/dai_settings/model.py:215
+msgid "On this computer only, with a vision model (dai-models install smolvlm-500m)."
+msgstr ""
+
 #. he: על המחשב הזה בלבד: בלי רשת, בלי שמירה.
 #: apps/dai-captions/dai_captions/gui.py:48
 msgid "On this computer only: no network, nothing saved."
 msgstr ""
 
 #. he: על המחשב הזה: Diamond הסתכל על התמונה; שום דבר לא נשמר.
-#: apps/dai-explain/dai_explain/engine.py:192
+#: apps/dai-explain/dai_explain/engine.py:209
 msgid "On this computer: Diamond looked at the picture; nothing is saved."
 msgstr ""
 
 #. he: על המחשב הזה: התמונה והטקסט לא נשמרים.
-#: apps/dai-explain/dai_explain/engine.py:200
+#: apps/dai-explain/dai_explain/engine.py:217
 msgid "On this computer: the picture and the text are not saved."
 msgstr ""
 
@@ -4194,7 +4230,7 @@ msgid "Opened in a sandbox"
 msgstr ""
 
 #. he: פותח את פורט 22 לרשת המקומית.
-#: apps/dai-settings/dai_settings/model.py:208
+#: apps/dai-settings/dai_settings/model.py:210
 msgid "Opens port 22 to the local network."
 msgstr ""
 
@@ -4650,7 +4686,7 @@ msgid "Remove the metadata (author, program, dates) before sharing"
 msgstr ""
 
 #. he: הסרת הטיימר {name} (דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2476
+#: apps/dai-tune/dai_tune/catalog.py:2533
 #, python-brace-format
 msgid "Remove the timer {name} (Diamond's Way)"
 msgstr ""
@@ -4798,7 +4834,7 @@ msgid "Run ▶"
 msgstr ""
 
 #. he: רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo
-#: apps/dai-tune/dai_tune/catalog.py:2465
+#: apps/dai-tune/dai_tune/catalog.py:2522
 msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
 msgstr ""
 
@@ -5516,7 +5552,7 @@ msgid "Subtitles for whatever the computer plays · on this computer only · Ent
 msgstr ""
 
 #. he: הצעה: dai-tune "{sentence}"
-#: apps/dai-explain/dai_explain/cli.py:85
+#: apps/dai-explain/dai_explain/cli.py:87
 #, python-brace-format
 msgid "Suggested: dai-tune \"{sentence}\""
 msgstr ""
@@ -5556,13 +5592,18 @@ msgstr ""
 msgid "Super+F1 opens help"
 msgstr ""
 
+#. he: Super+Shift+E: רואים ושומעים.
+#: apps/dai-settings/dai_settings/model.py:216
+msgid "Super+Shift+E: seen and heard."
+msgstr ""
+
 #. he: Super+Shift+S מקריא את הטקסט המסומן במחשב הזה (D.Ai Speak).
-#: apps/dai-settings/dai_settings/model.py:212
+#: apps/dai-settings/dai_settings/model.py:214
 msgid "Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak)."
 msgstr ""
 
 #. he: Super+Shift+S מקריא את הטקסט המסומן; ההקראה הבאה במהירות החדשה.
-#: apps/dai-tune/dai_tune/catalog.py:2189
+#: apps/dai-tune/dai_tune/catalog.py:2246
 msgid "Super+Shift+S reads the selected text; the next reading uses the new speed."
 msgstr ""
 
@@ -6013,7 +6054,7 @@ msgid "The screen of {name} opens in its own window."
 msgstr ""
 
 #. he: טקסט המסך נשלח ל־{provider} (במפתח שלך).
-#: apps/dai-explain/dai_explain/engine.py:201
+#: apps/dai-explain/dai_explain/engine.py:218
 #, python-brace-format
 msgid "The screen text is sent to {provider} (your own key)."
 msgstr ""
@@ -6457,7 +6498,7 @@ msgid "Turn this page"
 msgstr ""
 
 #. he: כיבוי דורש אישור מוקלד.
-#: apps/dai-settings/dai_settings/model.py:207
+#: apps/dai-settings/dai_settings/model.py:209
 msgid "Turning them off needs a typed confirmation."
 msgstr ""
 
@@ -6582,7 +6623,7 @@ msgid "Up to date"
 msgstr ""
 
 #. he: עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף.
-#: apps/dai-settings/dai_settings/model.py:214
+#: apps/dai-settings/dai_settings/model.py:218
 msgid "Up to four, separated by commas: us,il,ru. Alt+Shift switches."
 msgstr ""
 
@@ -7118,22 +7159,22 @@ msgid "administrator"
 msgstr ""
 
 #. he: אחרי דקה
-#: apps/dai-settings/dai_settings/model.py:220
+#: apps/dai-settings/dai_settings/model.py:224
 msgid "after 1 minute"
 msgstr ""
 
 #. he: אחרי 10 דקות
-#: apps/dai-settings/dai_settings/model.py:221
+#: apps/dai-settings/dai_settings/model.py:225
 msgid "after 10 minutes"
 msgstr ""
 
 #. he: אחרי 30 דקות
-#: apps/dai-settings/dai_settings/model.py:221
+#: apps/dai-settings/dai_settings/model.py:225
 msgid "after 30 minutes"
 msgstr ""
 
 #. he: אחרי 5 דקות
-#: apps/dai-settings/dai_settings/model.py:220
+#: apps/dai-settings/dai_settings/model.py:224
 msgid "after 5 minutes"
 msgstr ""
 
@@ -7189,12 +7230,12 @@ msgid "automatic: on when a touch screen is attached"
 msgstr ""
 
 #. he: מאוזן
-#: apps/dai-settings/dai_settings/model.py:224
+#: apps/dai-settings/dai_settings/model.py:228
 msgid "balanced"
 msgstr ""
 
 #. he: חיסכון בסוללה
-#: apps/dai-settings/dai_settings/model.py:224
+#: apps/dai-settings/dai_settings/model.py:228
 msgid "battery saver"
 msgstr ""
 
@@ -7287,7 +7328,7 @@ msgid "evaluates text as code"
 msgstr ""
 
 #. he: כל יום
-#: apps/dai-settings/dai_settings/model.py:223
+#: apps/dai-settings/dai_settings/model.py:227
 msgid "every day"
 msgstr ""
 
@@ -7308,7 +7349,7 @@ msgid "every time you log in"
 msgstr ""
 
 #. he: כל שבוע
-#: apps/dai-settings/dai_settings/model.py:223
+#: apps/dai-settings/dai_settings/model.py:227
 msgid "every week"
 msgstr ""
 
@@ -7341,7 +7382,7 @@ msgid "failed"
 msgstr ""
 
 #. he: מהירה
-#: apps/dai-settings/dai_settings/model.py:226
+#: apps/dai-settings/dai_settings/model.py:230
 msgid "fast"
 msgstr ""
 
@@ -7517,7 +7558,7 @@ msgstr ""
 
 #. he: אף פעם
 #: apps/dai-backup/dai_backup/cli.py:55
-#: apps/dai-settings/dai_settings/model.py:222
+#: apps/dai-settings/dai_settings/model.py:226
 msgid "never"
 msgstr ""
 
@@ -7574,7 +7615,7 @@ msgid "none"
 msgstr ""
 
 #. he: רגילה
-#: apps/dai-settings/dai_settings/model.py:226
+#: apps/dai-settings/dai_settings/model.py:230
 msgid "normal"
 msgstr ""
 
@@ -7614,7 +7655,7 @@ msgstr ""
 #: apps/dai-quick/dai_quick/gui.py:35
 #: apps/dai-settings/dai_settings/cli.py:49
 #: apps/dai-settings/dai_settings/gui.py:88
-#: apps/dai-settings/dai_settings/model.py:223
+#: apps/dai-settings/dai_settings/model.py:227
 #: apps/dai-tune/dai_tune/catalog.py:847
 msgid "off"
 msgstr ""
@@ -7661,7 +7702,7 @@ msgid "paused"
 msgstr ""
 
 #. he: ביצועים
-#: apps/dai-settings/dai_settings/model.py:225
+#: apps/dai-settings/dai_settings/model.py:229
 msgid "performance"
 msgstr ""
 
@@ -7743,7 +7784,7 @@ msgid "signs in only through the provider's page (not supported yet)"
 msgstr ""
 
 #. he: איטית
-#: apps/dai-settings/dai_settings/model.py:226
+#: apps/dai-settings/dai_settings/model.py:230
 msgid "slow"
 msgstr ""
 
@@ -8607,7 +8648,7 @@ msgid "{value}% CPU"
 msgstr ""
 
 #. he: {when}: {sentence} (טיימר, דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2451
+#: apps/dai-tune/dai_tune/catalog.py:2508
 #, python-brace-format
 msgid "{when}: {sentence} (a timer, Diamond's Way)"
 msgstr ""

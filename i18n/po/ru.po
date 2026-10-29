@@ -7132,3 +7132,35 @@ msgstr "обычно"
 #: apps/dai-settings/dai_settings/model.py
 msgid "slow"
 msgstr "медленно"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain does not read explanations aloud"
+msgstr "D.Ai Explain не читает объяснения вслух"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain looks at the picture of the screen"
+msgstr "D.Ai Explain смотрит на картинку экрана"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain reads every explanation aloud"
+msgstr "D.Ai Explain читает каждое объяснение вслух"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain: Diamond looks at the picture of the screen"
+msgstr "D.Ai Explain: Diamond смотрит на картинку экрана"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain: only the text from the screen, no picture"
+msgstr "D.Ai Explain: только текст с экрана, без картинки"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Everything stays on this computer either way; the picture needs an installed vision model."
+msgstr "В любом случае всё остаётся на этом компьютере; для картинки нужна установленная модель зрения."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "On this computer only, with a vision model (dai-models install smolvlm-500m)."
+msgstr "Только на этом компьютере, с моделью зрения (dai-models install smolvlm-500m)."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Super+Shift+E: seen and heard."
+msgstr "Super+Shift+E: видно и слышно."

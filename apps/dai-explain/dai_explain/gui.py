@@ -81,9 +81,10 @@ class Worker(QObject):
 
 class ExplainWindow(QWidget):
     def __init__(self, lang: str, gather: Callable[[], str | tuple[str, bytes | None]], chat: Callable | None = None,
-                 spawn: Callable[..., None] | None = None) -> None:
+                 spawn: Callable[..., None] | None = None, read_aloud: bool = False) -> None:
         super().__init__(objectName="Explain")
         self.lang, self.gather, self.chat = lang, gather, chat
+        self.read_aloud = read_aloud
         self.spawn = spawn or _spawn
         self.thread: QThread | None = None
         self.worker: Worker | None = None
@@ -204,6 +205,8 @@ class ExplainWindow(QWidget):
         self.status.setText(self.t("done"))
         self.read.setEnabled(bool(result.text.strip()) and shutil.which("dai-speak") is not None)
         self._finish()
+        if self.read_aloud and self.read.isEnabled():     # docs/EXPLAIN.md §9: seen and heard
+            self.toggle_reading()
 
     @pyqtSlot(str)
     def show_error(self, message: str) -> None:
@@ -270,6 +273,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"dai-explain {__version__} — {__author__}")
         return 0
     from .cli import gather
+    from .engine import options
     app = QApplication.instance() or QApplication(argv)
     app.setApplicationName(APP_ID)
     app.setDesktopFileName(APP_ID)
@@ -278,7 +282,7 @@ def main(argv: list[str] | None = None) -> int:
     app.setStyleSheet(with_touch(STYLE))
     lang = argv[argv.index("--lang") + 1] if "--lang" in argv and argv.index("--lang") + 1 < len(argv) else ui_lang()
     args = argv[1:]
-    window = ExplainWindow(lang, lambda: gather(args, lang))
+    window = ExplainWindow(lang, lambda: gather(args, lang), read_aloud="--read" in args or options()["voice"])
     window.show()
     window.start()
     return app.exec()

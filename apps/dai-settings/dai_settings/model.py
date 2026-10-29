@@ -200,6 +200,8 @@ TITLES = {
     "power": ("Power", "צריכת חשמל"),
     "ai": ("Who answers Diamond's questions", "מי עונה לשאלות של Diamond"),
     "reading": ("Reading aloud speed", "מהירות ההקראה"),
+    "sight": ("D.Ai Explain looks at the picture of the screen", "D.Ai מסביר מסתכל על תמונת המסך"),
+    "explain_voice": ("D.Ai Explain reads every explanation aloud", "D.Ai מסביר מקריא כל הסבר"),
     "clean": ("Free disk space", "פינוי מקום בדיסק"),
 }
 HINTS = {
@@ -210,6 +212,8 @@ HINTS = {
     "saver": ("Compressed swap first, Diamond on its smallest model, MOM says what is heavy.", "החלפה דחוסה קודם, Diamond על המודל הקטן ביותר, MOM אומר מה כבד."),
     "ai": ("A provider appears here after dai-models provider use NAME (your key, your consent).", "ספק מופיע כאן אחרי dai-models provider use NAME (המפתח שלך, ההסכמה שלך)."),
     "reading": ("Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak).", "Super+Shift+S מקריא את הטקסט המסומן במחשב הזה (D.Ai Speak)."),
+    "sight": ("On this computer only, with a vision model (dai-models install smolvlm-500m).", "במחשב הזה בלבד, עם מודל ראייה (dai-models install smolvlm-500m)."),
+    "explain_voice": ("Super+Shift+E: seen and heard.", "Super+Shift+E: רואים ושומעים."),
     "language": ("From the next login.", "מהכניסה הבאה."),
     "layouts": ("Up to four, separated by commas: us,il,ru. Alt+Shift switches.",
                 "עד ארבע, מופרדות בפסיקים: us,il,ru. ‏Alt+Shift מחליף."),
@@ -304,6 +308,10 @@ SETTINGS: tuple[Setting, ...] = (
     Setting("saver", "system", "toggle", TITLES["saver"], catalog.saver_on, _saver, hint=HINTS["saver"]),
     Setting("ai", "system", "choice", TITLES["ai"], read_ai, _choice("diamond.provider", "name"), _ai_choices(), hint=HINTS["ai"]),
     Setting("reading", "system", "choice", TITLES["reading"], read_reading, _reading, _choices("reading"), hint=HINTS["reading"]),
+    Setting("sight", "system", "toggle", TITLES["sight"], lambda c: catalog.explain_options(c)["sight"],
+            _enabled("explain.options", option="sight"), hint=HINTS["sight"]),
+    Setting("explain_voice", "system", "toggle", TITLES["explain_voice"], lambda c: catalog.explain_options(c)["voice"],
+            _enabled("explain.options", option="voice"), hint=HINTS["explain_voice"]),
     Setting("clean", "system", "button", TITLES["clean"], lambda c: "", lambda value: _one("system.clean"), hint=HINTS["clean"]),
 )
 

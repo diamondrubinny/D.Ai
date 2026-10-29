@@ -231,6 +231,14 @@ PROVIDER = r"(?:\b(?:answer|answers|ask|asking|think)\s+(?:with|through|via|usin
 PROVIDERS_FORBID = r"(?:\b(?:no|forbid|block|disable|without)\s+external\s+ai(?:\s+providers?)?\b|\bexternal\s+ai\s+providers?\s+(?:off|forbidden)\b|(?:בלי|אסור|לאסור|חסום|חסימת)\s+ספקי\s+(?:ai|בינה(?:\s+מלאכותית)?)\s+חיצוניים)"
 PROVIDERS_ALLOW = r"(?:\b(?:allow|permit)\s+external\s+ai(?:\s+providers?)?\b|(?:לאפשר|אפשר|תאפשר|התר|להתיר)\s+ספקי\s+(?:ai|בינה(?:\s+מלאכותית)?)\s+חיצוניים)"
 PROVIDER_LOCAL = r"(?:\b(?:answer|answers|think)\s+(?:locally|on\s+this\s+computer|here\s+only|on\s+the\s+computer)\b|(?:ענה|תענה|חשוב|תחשוב)\s+(?:מקומית|במחשב\s+הזה|רק\s+כאן|במחשב\s+בלבד))"
+# D.Ai Explain's choices (docs/EXPLAIN.md §9). SAVER_OFF words in the clause turn the option off.
+EXPLAIN_OPTIONS = [
+    ("sight", r"(?:\bexplain(?:ing|s)?\s+(?:with|using|from)\s+(?:the\s+)?(?:pictures?|images?|screenshots?)\b|\bexplain\s+pictures?\b|"
+              r"\bdiamond\s+(?:looks?|looking)\s+at\s+(?:the\s+)?(?:screen|pictures?)\b|הסבר(?:ים)?\s+עם\s+תמונ(?:ה|ות)|"
+              r"(?:ש)?diamond\s+(?:יסתכל|מסתכל)\s+על\s+(?:ה)?(?:תמונה|מסך))"),
+    ("voice", r"(?:\bread(?:ing|s)?\s+(?:the\s+)?explanations?\s+(?:aloud|out\s+loud|to\s+me)\b|\bspeak\s+(?:the\s+)?explanations?\b|"
+              r"\bexplanations?\s+(?:read\s+)?aloud\b|(?:להקריא|תקריא|הקרא|הקראת)\s+(?:את\s+)?(?:ה)?הסבר(?:ים)?|הסבר(?:ים)?\s+בקול)"),
+]
 # D.Ai Speak (docs/SPEAK.md): reading speed. "read" alone is not enough: "read faster" / "reading speed".
 READ = r"(?:read(?:ing|s)?(?:\s+(?:aloud|out\s+loud|to\s+me))?|speak(?:ing)?|voice|narrat(?:e|ion)|הקראה|תקריא|להקריא|מקריא|הקרא)"
 SPEAK_FASTER = rf"(?:\b{READ}\s+(?:a\s+(?:bit|little)\s+)?(?:faster|quicker|more\s+quickly)\b|\b(?:faster|quicker)\s+{READ}|(?:{READ})\s+(?:יותר\s+מהר|מהר\s+יותר)|מהירות\s+(?:ה)?הקראה\s+(?:גבוהה|מהירה)\s+יותר)"
@@ -298,6 +306,11 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("ai.providers_policy", {"allowed": True}, clause)]
     if _has(PROVIDER_LOCAL, c):
         return [Request("diamond.provider", {"name": "local"}, clause)]
+
+    # D.Ai Explain's choices (docs/EXPLAIN.md §9): "explain with pictures off", "read explanations aloud".
+    for option, pattern in EXPLAIN_OPTIONS:
+        if (m := re.search(pattern, c, re.IGNORECASE)) is not None:
+            return [Request("explain.options", {"option": option, "enabled": not _has(SAVER_OFF, c)}, clause)]
 
     # D.Ai Speak (docs/SPEAK.md §2): "read faster", "read slower", "normal reading speed", "read at 200 words per minute".
     if (m := re.search(SPEAK_RATE, c, re.IGNORECASE)) is not None:

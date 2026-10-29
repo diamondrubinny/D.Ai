@@ -11,6 +11,7 @@ from __future__ import annotations
 import base64
 import re
 import subprocess
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Callable, Iterator
 
@@ -53,6 +54,22 @@ def read_text(image: bytes, lang: str, run: Run = subprocess.run) -> str:
     """The text in the picture, on this computer, through D.Ai OCR's reader (the interface language and English)."""
     from dai_ocr.cli import installed_languages, languages, read
     return read(image, languages([lang, "en"], installed_languages(run)), run)
+
+
+OPTIONS_FILE = ".config/dai/explain.json"   # the person's two choices (docs/EXPLAIN.md §9); D.Ai Tune writes it
+OPTION_DEFAULTS = {"sight": True, "voice": False}
+
+
+def options(home: Path | None = None) -> dict[str, bool]:
+    """sight: Diamond may look at the picture; voice: every explanation is read aloud. Missing or odd: the defaults."""
+    import json
+    try:
+        data = json.loads(((home or Path.home()) / OPTIONS_FILE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    return {key: (data[key] if isinstance(data.get(key), bool) else default) for key, default in OPTION_DEFAULTS.items()}
 
 
 def vision_model() -> str | None:

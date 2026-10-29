@@ -609,6 +609,13 @@ def main() -> int:
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
          and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+        # docs/EXPLAIN.md §9: with "explain with pictures off" the installed vision model is left out; undo brings it back.
+        ("explain: the person's two choices", "dai-tune --yes 'explain with pictures off' </dev/null >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/explain.json; "
+         "dai-explain --print --file /tmp/explain.png --lang en >/dev/null 2>/tmp/choice.err; echo RC=$?; cat /tmp/choice.err; "
+         "dai-tune --yes 'read explanations aloud' </dev/null >/dev/null; cat ~/.config/dai/explain.json; "
+         "dai-tune undo >/dev/null 2>&1; dai-tune undo >/dev/null 2>&1; test -e ~/.config/dai/explain.json && cat ~/.config/dai/explain.json || echo FILE_GONE", True,
+         lambda o: "TUNE_RC=0" in o and '"sight": false' in o and "RC=0" in o and "the picture and the text are not saved" in o
+         and '"voice": true' in o and "FILE_GONE" in o, 600),
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "
          "ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; "
@@ -851,7 +858,7 @@ def main() -> int:
          "dai-settings list --json | python3 -c 'import json, sys; v = json.load(sys.stdin); "
          "print(\"KEYS\", len(v), \"HOST\", v[\"hostname\"], \"THEME\", v[\"theme\"], \"LOCK\", v[\"lock\"])'; "
          "test -f /usr/share/applications/dai-settings.desktop && echo DESKTOP_ENTRY", True,
-         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 19" in o and "HOST dai-os" in o and "THEME night" in o
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "KEYS 21" in o and "HOST dai-os" in o and "THEME night" in o
          and re.search(r"LOCK (?:0|1|5|10|30|custom)", o) is not None and "DESKTOP_ENTRY" in o
          and "Computer name: dai-os" in o, 60),
         # D.Ai Focus (docs/BEYOND.md §5): a session hides pop-ups, arms a user timer and warms the light; stopping it

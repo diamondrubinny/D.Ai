@@ -7132,3 +7132,35 @@ msgstr "normal"
 #: apps/dai-settings/dai_settings/model.py
 msgid "slow"
 msgstr "lenta"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain does not read explanations aloud"
+msgstr "O D.Ai Explain não lê as explicações em voz alta"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain looks at the picture of the screen"
+msgstr "O D.Ai Explain olha para a imagem do ecrã"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain reads every explanation aloud"
+msgstr "O D.Ai Explain lê cada explicação em voz alta"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain: Diamond looks at the picture of the screen"
+msgstr "D.Ai Explain: o Diamond olha para a imagem do ecrã"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "D.Ai Explain: only the text from the screen, no picture"
+msgstr "D.Ai Explain: só o texto do ecrã, sem imagem"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Everything stays on this computer either way; the picture needs an installed vision model."
+msgstr "De qualquer forma tudo fica neste computador; a imagem precisa de um modelo de visão instalado."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "On this computer only, with a vision model (dai-models install smolvlm-500m)."
+msgstr "Só neste computador, com um modelo de visão (dai-models install smolvlm-500m)."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Super+Shift+E: seen and heard."
+msgstr "Super+Shift+E: visto e ouvido."

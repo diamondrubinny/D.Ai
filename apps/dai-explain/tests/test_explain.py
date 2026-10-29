@@ -131,6 +131,31 @@ class PictureTests(unittest.TestCase):
         self.assertFalse(result.looked)
 
 
+class OptionsTests(unittest.TestCase):
+    """docs/EXPLAIN.md §9: the person's two choices in ~/.config/dai/explain.json."""
+
+    def test_the_file_is_read_with_defaults_and_sight_off_keeps_the_picture_out(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            self.assertEqual(engine.options(home), {"sight": True, "voice": False})
+            (home / ".config/dai").mkdir(parents=True)
+            (home / ".config/dai/explain.json").write_text('{"sight": false, "voice": true}')
+            self.assertEqual(engine.options(home), {"sight": False, "voice": True})
+            (home / ".config/dai/explain.json").write_text('[]')
+            self.assertEqual(engine.options(home), {"sight": True, "voice": False})
+            picture = home / "shot.png"
+            picture.write_bytes(b"\x89PNG fake")
+
+            def run(argv, **kwargs):
+                if argv[1] == "--list-langs":
+                    return subprocess.CompletedProcess(argv, 0, "List of available languages (1):\neng\n", "")
+                return subprocess.CompletedProcess(argv, 0, b"words", b"")
+            with mock.patch.object(cli, "options", lambda: {"sight": False, "voice": False}):
+                self.assertIsNone(cli.gather(["--file", str(picture)], "en", run)[1])
+            with mock.patch.object(cli, "options", lambda: {"sight": True, "voice": False}):
+                self.assertEqual(cli.gather(["--file", str(picture)], "en", run)[1], b"\x89PNG fake")
+
+
 class CliTests(unittest.TestCase):
     def test_print_with_text_file_and_errors(self):
         out, err = io.StringIO(), io.StringIO()
@@ -213,6 +238,13 @@ class WindowTests(unittest.TestCase):
         window.read.click()
         window.close()
         self.assertEqual(spawned[-1], (["dai-speak", "--stop"], None))
+        # With "read explanations aloud" on, the answer is read as soon as it arrives.
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            auto = self.gui.ExplainWindow("en", lambda: SCREEN, chat=fake_chat, spawn=lambda argv, text=None: spawned.append((argv, text)), read_aloud=True)
+            self.addCleanup(auto.deleteLater)
+            auto.show_result(engine.Explanation(text="Read me.", suggestion=""))
+        self.assertEqual(spawned[-1], (["dai-speak", "--stdin", "--lang", "en"], "Read me."))
+        self.assertEqual(auto.read.text(), "Stop reading")
 
     def test_the_answer_arrives_the_button_opens_command_and_hebrew_is_rtl(self):
         from PyQt6.QtCore import Qt

@@ -422,6 +422,35 @@ class ExecutorTests(TuneTestCase):
         for text in ("read this book", "faster boot", "speak"):
             self.assertFalse([r for r in parser.parse(text).requests if r.action == "speak.rate"], text)
 
+    def test_explain_options_are_two_flags_in_one_file(self):
+        """docs/EXPLAIN.md §9: sight (default on) and voice (default off); undo restores the file."""
+        spec = catalog.CATALOG["explain.options"]
+        self.assertEqual(catalog.explain_options(self.ctx), {"sight": True, "voice": False})
+        for bad in ({"option": "smell", "enabled": True}, {"option": "sight", "enabled": "yes"}, {"option": "sight"}):
+            with self.assertRaises(ValidationError):
+                spec.validate(bad, self.ctx)
+        spec.apply({"option": "sight", "enabled": False}, self.ctx)
+        path = self.home / ".config/dai/explain.json"
+        self.assertEqual(json.loads(path.read_text()), {"sight": False, "voice": False})
+        self.assertEqual(oct(path.stat().st_mode & 0o777), "0o600")
+        spec.apply({"option": "voice", "enabled": True}, self.ctx)
+        self.assertEqual(catalog.explain_options(self.ctx), {"sight": False, "voice": True})
+        path.write_text('{"sight": "maybe", "voice": 1}')
+        self.assertEqual(catalog.explain_options(self.ctx), {"sight": True, "voice": False})
+        self.assertIn("בלי תמונה", spec.summary({"option": "sight", "enabled": False}, "he"))
+        self.assertIn("aloud", spec.summary({"option": "voice", "enabled": True}, "en"))
+        for text, params in (("explain with pictures off", {"option": "sight", "enabled": False}),
+                             ("explain with pictures", {"option": "sight", "enabled": True}),
+                             ("read explanations aloud", {"option": "voice", "enabled": True}),
+                             ("stop reading explanations aloud", {"option": "voice", "enabled": False}),
+                             ("הסבר עם תמונה כבוי", {"option": "sight", "enabled": False}),
+                             ("להקריא הסברים", {"option": "voice", "enabled": True}),
+                             ("בלי להקריא הסברים", {"option": "voice", "enabled": False})):
+            result = parser.parse(text)
+            self.assertEqual([(r.action, r.params) for r in result.requests], [("explain.options", params)], text)
+        for text in ("read this aloud", "explain this screen"):
+            self.assertFalse([r for r in parser.parse(text).requests if r.action == "explain.options"], text)
+
     def test_diamond_provider_choice_needs_a_consented_provider(self):
         """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""
         import sys

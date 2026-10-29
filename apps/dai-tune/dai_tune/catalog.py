@@ -2116,6 +2116,63 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# D.Ai Explain (docs/EXPLAIN.md §9): the person's two choices. One small user file; a snapshot makes undo exact.
+# --------------------------------------------------------------------------
+
+EXPLAIN_FILE = ".config/dai/explain.json"
+EXPLAIN_KEYS = ("sight", "voice")
+EXPLAIN_DEFAULTS = {"sight": True, "voice": False}
+
+
+def explain_options(ctx: Context) -> dict[str, bool]:
+    data: Any = {}
+    try:
+        data = json.loads(read_text(ctx.user_path(EXPLAIN_FILE), "{}"))
+    except ValueError:
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    return {key: (data[key] if isinstance(data.get(key), bool) else EXPLAIN_DEFAULTS[key]) for key in EXPLAIN_KEYS}
+
+
+def _explain_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"option", "enabled"})
+    option = _choice(params.get("option"), EXPLAIN_KEYS, "option")
+    enabled = params.get("enabled")
+    if not isinstance(enabled, bool):
+        raise ValidationError("enabled: true or false")
+    return {"option": option, "enabled": enabled}
+
+
+def _explain_apply(params: Params, ctx: Context) -> None:
+    data = explain_options(ctx)
+    data[params["option"]] = params["enabled"]
+    write_file(ctx.user_path(EXPLAIN_FILE), json.dumps(data, indent=2) + "\n", 0o600)
+
+
+def _explain_summary(params: Params, lang: str) -> str:
+    on = params["enabled"]
+    if params["option"] == "sight":
+        return (_t(lang, "D.Ai Explain: Diamond looks at the picture of the screen", "D.Ai מסביר: Diamond מסתכל על תמונת המסך") if on
+                else _t(lang, "D.Ai Explain: only the text from the screen, no picture", "D.Ai מסביר: רק הטקסט מהמסך, בלי תמונה"))
+    return (_t(lang, "D.Ai Explain reads every explanation aloud", "D.Ai מסביר מקריא כל הסבר") if on
+            else _t(lang, "D.Ai Explain does not read explanations aloud", "D.Ai מסביר לא מקריא הסברים"))
+
+
+register(ActionSpec(
+    id="explain.options",
+    scope="user",
+    validate=_explain_validate,
+    apply=_explain_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=_explain_summary,
+    files=lambda p, c: [c.user_path(EXPLAIN_FILE)],
+    note=lambda p, lang: _t(lang, "Everything stays on this computer either way; the picture needs an installed vision model.",
+                            "בכל מקרה הכול נשאר במחשב הזה; התמונה דורשת מודל ראייה מותקן."),
+))
+
+# --------------------------------------------------------------------------
 # D.Ai Speak (docs/SPEAK.md §2): how fast Diamond reads aloud. One small user file; "faster" and "slower" step
 # from the current value, "normal" is the default. The file snapshot makes undo exact.
 # --------------------------------------------------------------------------
