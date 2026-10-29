@@ -324,6 +324,10 @@
           [
             "Subtítulos en vivo y ahorro de memoria",
             "subtítulos para lo que reproduce el equipo, leídos por whisper.cpp en este equipo; y un ahorro de memoria para equipos antiguos: primero el swap comprimido, Diamond con su modelo más pequeño, MOM dice qué pesa."
+          ],
+          [
+            "Ve la pantalla y lee en voz alta",
+            "Super+Mayús+E: la pantalla se lee en el equipo y, con un modelo de visión local, Diamond mira la imagen misma y la explica en tu idioma con un paso siguiente seguro. Super+Mayús+S: el texto seleccionado, una página PDF, un correo o la respuesta de Diamond se leen en voz alta en ocho idiomas, todo en este equipo."
           ]
         ]
       }

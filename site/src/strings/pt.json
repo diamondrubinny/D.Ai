@@ -324,6 +324,10 @@
           [
             "Legendas ao vivo e poupança de memória",
             "legendas para tudo o que o computador reproduz, lidas pelo whisper.cpp neste computador; e uma poupança de memória para computadores antigos: swap comprimido primeiro, Diamond no modelo mais pequeno, MOM diz o que pesa."
+          ],
+          [
+            "Vê o ecrã e lê em voz alta",
+            "Super+Shift+E: o ecrã é lido no computador e, com um modelo de visão local, o Diamond olha para a própria imagem e explica-a na sua língua, com um próximo passo seguro. Super+Shift+S: o texto selecionado, uma página PDF, um e-mail ou a resposta do Diamond são lidos em voz alta em oito línguas, tudo neste computador."
           ]
         ]
       }

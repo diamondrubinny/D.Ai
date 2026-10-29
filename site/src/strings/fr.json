@@ -324,6 +324,10 @@
           [
             "Sous-titres en direct et économie de mémoire",
             "des sous-titres pour tout ce que l'ordinateur joue, lus par whisper.cpp sur cet ordinateur ; et une économie de mémoire pour les vieux ordinateurs : swap compressé d'abord, Diamond sur son plus petit modèle, MOM dit ce qui pèse."
+          ],
+          [
+            "Il voit l'écran et lit à voix haute",
+            "Super+Maj+E : l'écran est lu sur l'ordinateur et, avec un modèle de vision local, Diamond regarde l'image elle-même et l'explique dans votre langue, avec une étape suivante sûre. Super+Maj+S : le texte sélectionné, une page PDF, un courriel ou la réponse de Diamond sont lus à voix haute en huit langues, tout sur cet ordinateur."
           ]
         ]
       }

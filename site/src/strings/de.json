@@ -324,6 +324,10 @@
           [
             "Live-Untertitel und Speichersparmodus",
             "Untertitel für alles, was der Computer abspielt, gelesen von whisper.cpp auf diesem Computer; und ein Speichersparmodus für alte Computer: komprimierter Swap zuerst, Diamond auf dem kleinsten Modell, MOM sagt, was schwer ist."
+          ],
+          [
+            "Es sieht den Bildschirm und liest vor",
+            "Super+Umschalt+E: der Bildschirm wird auf dem Computer gelesen, und mit einem lokalen Sehmodell sieht sich Diamond das Bild selbst an und erklärt es in Ihrer Sprache, mit einem sicheren nächsten Schritt. Super+Umschalt+S: markierter Text, eine PDF-Seite, eine Mail oder Diamonds Antwort wird in acht Sprachen vorgelesen, alles auf diesem Computer."
           ]
         ]
       }

@@ -324,6 +324,10 @@
           [
             "Live captions and a memory saver",
             "subtitles for whatever the computer plays, read by whisper.cpp on this computer; and a memory saver for old computers: compressed swap first, Diamond on its smallest model, MOM says what is heavy."
+          ],
+          [
+            "It sees the screen and reads aloud",
+            "Super+Shift+E: the screen is read on the computer and, with a local vision model, Diamond looks at the picture itself and explains it in your language, with one safe next step. Super+Shift+S: the selected text, a PDF page, a mail or Diamond's answer is read aloud in eight languages, all on this computer."
           ]
         ]
       }
