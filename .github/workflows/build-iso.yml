@@ -37,7 +37,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Qt for the window tests (every window passes Raz's accessibility audit)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq python3-pyqt6 >/dev/null
       - name: ShellCheck
@@ -314,10 +314,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Cache llama.cpp build
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: llama-dist
           key: llama-${{ hashFiles('build/scripts/build-llama.sh') }}
@@ -329,7 +329,7 @@ jobs:
           sudo chown -R "$(id -u):$(id -g)" llama-dist
       - name: Pack (keeps symlinks and permissions)
         run: tar -czf llama-dist.tar.gz -C llama-dist .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: llama-dist
           path: llama-dist.tar.gz
@@ -340,10 +340,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Cache whisper.cpp build
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: whisper-dist
           key: whisper-${{ hashFiles('build/scripts/build-whisper.sh') }}
@@ -355,7 +355,7 @@ jobs:
           sudo chown -R "$(id -u):$(id -g)" whisper-dist
       - name: Pack (keeps symlinks and permissions)
         run: tar -czf whisper-dist.tar.gz -C whisper-dist .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: whisper-dist
           path: whisper-dist.tar.gz
@@ -366,13 +366,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build lxqt-panel plugin (Debian trixie container)
         run: |
           docker run --rm -v "$PWD:/src" -w /src debian:trixie \
             bash build/scripts/build-panel-plugin.sh /src/panel-plugin
           sudo chown -R "$(id -u):$(id -g)" panel-plugin
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: panel-plugin
           path: panel-plugin/
@@ -389,7 +389,7 @@ jobs:
       AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
       AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Lint and build the extension
         run: |
           npx --yes web-ext@8.3.0 lint --source-dir apps/dai-ruby/extension --self-hosted
@@ -400,7 +400,7 @@ jobs:
           npx --yes web-ext@8.3.0 sign --source-dir apps/dai-ruby/extension --channel unlisted \
             --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET" --artifacts-dir ruby-signed
           mkdir -p ruby-extension && cp ruby-signed/*.xpi ruby-extension/ruby.xpi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: env.AMO_JWT_ISSUER != ''
         with:
           name: ruby-extension
@@ -415,7 +415,7 @@ jobs:
     timeout-minutes: 240
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free runner disk space
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
@@ -440,7 +440,7 @@ jobs:
             bash build/scripts/build-iso.sh phone /src/out
       - name: Upload build log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-log-phone
           path: .work/phone/build.log
@@ -456,7 +456,7 @@ jobs:
         run: bash tests/boot/boot-test.sh out/dai-os-phone-*.iso boot-artifacts
       - name: Upload boot artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: boot-phone
           path: boot-artifacts/
@@ -469,7 +469,7 @@ jobs:
     timeout-minutes: 240
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Free runner disk space
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
@@ -495,7 +495,7 @@ jobs:
             bash build/scripts/build-iso.sh tv /src/out
       - name: Upload build log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-log-tv-arm64
           path: .work/tv/build.log
@@ -511,7 +511,7 @@ jobs:
         run: bash tests/boot/boot-test.sh out/dai-os-tv-*-arm64.iso boot-artifacts
       - name: Upload boot artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: boot-tv-arm64
           path: boot-artifacts/
@@ -525,27 +525,27 @@ jobs:
       matrix:
         edition: [user, dev, edu, tv]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Free runner disk space
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
           df -h /
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: llama-dist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: whisper-dist
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: panel-plugin
           path: panel-plugin
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         continue-on-error: true   # only there when the extension was signed
         with:
           name: ruby-extension
@@ -571,7 +571,7 @@ jobs:
 
       - name: Upload build log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-log-${{ matrix.edition }}
           path: .work/${{ matrix.edition }}/build.log
@@ -592,14 +592,14 @@ jobs:
 
       - name: Upload boot artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: boot-${{ matrix.edition }}
           path: boot-artifacts/
           if-no-files-found: ignore
 
       - name: Upload ISO
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dai-os-${{ matrix.edition }}-iso
           path: |
@@ -611,7 +611,7 @@ jobs:
 
       - name: Upload D.Ai packages
         if: matrix.edition == 'user'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dai-debs
           path: out/debs/*.deb
@@ -628,15 +628,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: dai-os-*-iso
           path: dist
           merge-multiple: true
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dai-debs
           path: debs
@@ -714,7 +714,7 @@ jobs:
           - { name: weak, memory: 2048, cpus: 1 }
           - { name: standard, memory: 4096, cpus: 2 }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install QEMU
         run: |
@@ -722,7 +722,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends qemu-system-x86 xorriso
 
       - name: Download the user edition ISO
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dai-os-user-iso
           path: iso
@@ -740,7 +740,7 @@ jobs:
 
       - name: Upload measurements
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: measure-${{ matrix.profile.name }}
           path: |
@@ -758,7 +758,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: boot-*
           path: shots
