@@ -417,8 +417,8 @@ sleep 60
 monitor "screendump $ARTIFACT_DIR/captions.png -f png" || log "warning: screenshot failed"
 type_keys alt-f4
 sleep 2
-log "interactive: D.Ai Explain (the picture the serial check drew, explained by the local Diamond)"
-command_bar shift-4 spc d a i minus e x p l a i n spc minus minus f i l e spc slash t m p slash e x p l a i n dot p n g ret
+log "interactive: D.Ai Explain (the picture the serial check drew, explained by the local Diamond; text only, so the window is ready in time)"
+command_bar shift-4 spc d a i minus e x p l a i n spc minus minus f i l e spc slash t m p slash e x p l a i n dot p n g spc minus minus n o minus p i c t u r e ret
 sleep 90
 monitor "screendump $ARTIFACT_DIR/explain.png -f png" || log "warning: screenshot failed"
 type_keys alt-f4
