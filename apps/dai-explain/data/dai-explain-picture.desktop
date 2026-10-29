@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=Explain with Diamond
+Name[he]=הסבר עם Diamond
+Comment=What is in this picture, explained on this computer (D.Ai Explain)
+Comment[he]=מה יש בתמונה הזאת, מוסבר במחשב הזה (D.Ai מסביר)
+Exec=dai-explain --file %f
+TryExec=dai-explain
+Icon=help-about
+NoDisplay=true
+MimeType=image/png;image/jpeg;image/webp;image/bmp;image/gif;
+Categories=Utility;

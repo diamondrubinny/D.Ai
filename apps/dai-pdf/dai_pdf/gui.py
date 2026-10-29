@@ -136,6 +136,15 @@ SIGNATURE_NOTE = ("Who the signer really is was not checked against any list of 
                   "זהות החותם לא נבדקה מול רשימת רשויות מהימנות; D.Ai אומר את השם שבחתימה והאם הקובץ השתנה, ותו לא.")
 
 
+def _speak():
+    """dai_speak's client when D.Ai Speak is installed next to us, else None (the button is disabled)."""
+    try:
+        from dai_speak import client
+    except ImportError:
+        return None
+    return client if client.available() else None
+
+
 def _diamond(question: str) -> str:
     """Diamond's answer (the local AI); raises when it is not installed or not running."""
     from dai_ai import client
@@ -622,6 +631,8 @@ class PdfWindow(QWidget):
                                         self.toggle_side, top)
         self.info_button = self._button("ⓘ", say(self.lang, "About this PDF", "על קובץ ה-PDF הזה"), self.show_info, top)
         self.print_button = self._button("🖨", say(self.lang, "Print", "הדפסה"), self.print_, top)
+        self.read_button = self._button("🔊", say(self.lang, "Read this page aloud", "הקראת העמוד הזה"), self.read_page, top)
+        self.reading = False
         top.addSpacing(12)
         self.undo_button = self._button("↶", say(self.lang, "Undo", "ביטול"), self.undo, top)
         self.redo_button = self._button("↷", say(self.lang, "Redo", "ביצוע מחדש"), self.redo, top)
@@ -1320,6 +1331,37 @@ class PdfWindow(QWidget):
         dialog = LinkDialog(self, self.lang, url, allowed)
         if dialog.exec() == QDialog.DialogCode.Accepted and allowed:
             self.open_url(url)
+
+    def read_page(self) -> None:
+        """D.Ai Speak (docs/SPEAK.md §8): the text of this page, on this computer; the same button stops."""
+        speak = _speak()
+        if speak is None:
+            self.status.setText(say(self.lang, "D.Ai Speak is not installed on this computer.", "D.Ai Speak לא מותקן במחשב הזה."))
+            return
+        if self.reading:
+            speak.stop()
+            self._set_reading(False)
+            return
+        if not self.reader or not self.doc:
+            return
+        reader, src = self._src(self.current_page)
+        try:
+            text = reader.text(src, as_extracted=False)
+        except PdfError:
+            return
+        if not text.strip():
+            self.status.setText(say(self.lang, "There is no text on page {n} to read.", "אין טקסט להקראה בעמוד {n}.", n=self.current_page + 1))
+            return
+        if speak.read(text, self.lang):
+            self._set_reading(True)
+            self.status.setText(say(self.lang, "Reading page {n} aloud.", "מקריא את עמוד {n}.", n=self.current_page + 1))
+
+    def _set_reading(self, on: bool) -> None:
+        self.reading = on
+        self.read_button.setText("⏹" if on else "🔊")
+        name = say(self.lang, "Stop reading", "עצירת ההקראה") if on else say(self.lang, "Read this page aloud", "הקראת העמוד הזה")
+        self.read_button.setAccessibleName(name)
+        self.read_button.setToolTip(name)
 
     def copy_page(self, as_extracted: bool) -> None:
         if not self.reader or not self.doc:

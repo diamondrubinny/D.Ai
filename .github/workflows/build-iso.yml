@@ -138,7 +138,7 @@ jobs:
 
       - name: Unit tests (dai-j, the mail client, against a local IMAP server, with the windows)
         env:
-          PYTHONPATH: apps/dai-j:apps/dai-i18n:apps/dai-raz
+          PYTHONPATH: apps/dai-j:apps/dai-i18n:apps/dai-raz:apps/dai-speak
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-j/tests -t apps/dai-j -v
 
@@ -234,7 +234,7 @@ jobs:
 
       - name: Unit tests (dai-pdf, the sandboxed PDF reader)
         env:
-          PYTHONPATH: apps/dai-pdf:apps/dai-i18n:apps/dai-raz
+          PYTHONPATH: apps/dai-pdf:apps/dai-i18n:apps/dai-raz:apps/dai-speak
           QT_QPA_PLATFORM: offscreen
         run: |
           sudo apt-get install -y -qq --no-install-recommends python3-pyqt6.qtpdf python3-pikepdf bubblewrap tesseract-ocr tesseract-ocr-eng >/dev/null

@@ -158,6 +158,25 @@ class WindowTests(unittest.TestCase):
         self.assertIn("A plain file", texts)
         self.assertIn("Dana", texts)
 
+    def test_read_this_page_aloud_goes_through_dai_speak(self):
+        from unittest import mock
+        gui = sys.modules["dai_pdf.gui"]
+        spoken = []
+        fake = mock.Mock(read=lambda text, lang: spoken.append((text, lang)) or True, stop=lambda: spoken.append("stop"))
+        win = self.window(fixtures.plain(self.dir / "p.pdf", pages=2), lang="he")
+        gui = sys.modules["dai_pdf.gui"]
+        with mock.patch.object(gui, "_speak", return_value=fake):
+            win.read_page()
+            self.assertTrue(spoken[-1][0].startswith("Hello D.Ai page") and spoken[-1][1] == "he", spoken)
+            self.assertEqual(win.read_button.text(), "⏹")
+            self.assertIn("עמוד", win.status.text())
+            win.read_page()
+            self.assertEqual(spoken[-1], "stop")
+            self.assertEqual(win.read_button.text(), "🔊")
+        with mock.patch.object(gui, "_speak", return_value=None):
+            win.read_page()
+            self.assertIn("לא מותקן", win.status.text())
+
     def test_print_to_a_pdf_file(self):
         try:
             from PyQt6.QtPrintSupport import QPrinter

@@ -136,6 +136,8 @@ STRINGS = {
     "encrypted": ("🔒 This message is encrypted. Only you can read it, with your key.",
                   "🔒 ההודעה מוצפנת. רק אתם יכולים לקרוא אותה, עם המפתח שלכם."),
     "decrypt": ("Decrypt and show", "פענוח והצגה"),
+    "read_aloud": ("Read aloud", "הקראה"),
+    "stop_reading": ("Stop reading", "עצירת ההקראה"),
     "decrypting": ("Decrypting… (your key's password may be asked in its own window)",
                    "מפענחים… (ייתכן שהסיסמה של המפתח תתבקש בחלון נפרד)"),
     "decrypted": ("🔓 Decrypted to read now. It is not saved decrypted.",

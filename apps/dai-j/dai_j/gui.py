@@ -30,6 +30,15 @@ from dai_style.panes import Panes, touch_scrolling
 from . import __author__, __version__, accounts as acc, compose, discover, engine, localmail, mail, sanitize
 from .text import error, t
 
+
+def _speak():
+    """dai_speak's client when D.Ai Speak is installed next to us, else None (no button)."""
+    try:
+        from dai_speak import client
+    except ImportError:
+        return None
+    return client if client.available() else None
+
 ROLE = Qt.ItemDataRole.UserRole
 LRI, PDI = "\u2066", "\u2069"   # isolates: addresses keep their order inside Hebrew text
 SYNC_EVERY = 3 * 60 * 1000
@@ -742,6 +751,11 @@ class MainWindow(QMainWindow):
         self.decrypt_button = QPushButton(embed("🔒 " + t("decrypt", self.lang), self.lang))
         self.decrypt_button.clicked.connect(self.decrypt_current)
         self.decrypt_button.hide()
+        self.read_button = QPushButton(embed("🔊 " + t("read_aloud", self.lang), self.lang))
+        self.read_button.setAccessibleName(t("read_aloud", self.lang))
+        self.read_button.clicked.connect(self.read_current)
+        self.read_button.hide()
+        self.reading = False
         self.reader = Reader()
         self.reader.setOpenLinks(False)
         self.reader.anchorClicked.connect(self._open_link)
@@ -750,6 +764,7 @@ class MainWindow(QMainWindow):
         column.addWidget(self.notice)
         column.addWidget(self.security)
         column.addWidget(self.decrypt_button, 0, Qt.AlignmentFlag.AlignLeading)
+        column.addWidget(self.read_button, 0, Qt.AlignmentFlag.AlignLeading)
         column.addWidget(self.summary)
         column.addWidget(self.reader, 1)
         middle = QWidget(objectName="Page")
@@ -917,6 +932,23 @@ class MainWindow(QMainWindow):
         self.runner.start(lambda: engine.open_message(account, password, self.db, row["folder"], row["uid"]), done,
                           lambda e: self.reader.setPlainText(error(e, self.lang)))
 
+    def read_current(self) -> None:
+        """D.Ai Speak (docs/SPEAK.md §8): the message's text, on this computer; the same button stops."""
+        speak = _speak()
+        if speak is None:
+            return
+        if self.reading:
+            speak.stop()
+            self._set_reading(False)
+        elif speak.read(self.current_text, self.lang):
+            self._set_reading(True)
+
+    def _set_reading(self, on: bool) -> None:
+        self.reading = on
+        key = "stop_reading" if on else "read_aloud"
+        self.read_button.setText(embed(("⏹ " if on else "🔊 ") + t(key, self.lang), self.lang))
+        self.read_button.setAccessibleName(t(key, self.lang))
+
     def show_body(self, body: mail.Body) -> None:
         blocked = 0
         if body.html:
@@ -926,6 +958,9 @@ class MainWindow(QMainWindow):
             safe = sanitize.text_to_html(body.text)
             self.current_text = body.text
         self.reader.setHtml(safe)
+        if self.reading:
+            self._set_reading(False)
+        self.read_button.setVisible(bool(self.current_text.strip()) and _speak() is not None)
         notes = []
         if blocked:
             notes.append(t("images_blocked", self.lang, count=blocked))

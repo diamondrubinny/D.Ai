@@ -7164,3 +7164,21 @@ msgstr "Nur auf diesem Computer, mit einem Sehmodell (dai-models install smolvlm
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Super+Shift+E: seen and heard."
 msgstr "Super+Shift+E: gesehen und gehört."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Read this page aloud"
+msgstr "Diese Seite vorlesen"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Reading page {n} aloud."
+msgstr "Seite {n} wird vorgelesen."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no text on page {n} to read."
+msgstr "Auf Seite {n} gibt es keinen Text zum Vorlesen."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "D.Ai Speak is not installed on this computer."
+msgstr "D.Ai Speak ist auf diesem Computer nicht installiert."

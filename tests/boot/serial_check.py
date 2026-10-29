@@ -609,6 +609,12 @@ def main() -> int:
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
          and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+        # D.Ai Speak §8: the client other windows use is installed next to them; "Explain with Diamond" is offered for pictures.
+        ("speak: everywhere", "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); from dai_speak import client; print(\"CLIENT\", client.available())'; "
+         "test -f /usr/share/applications/dai-explain-picture.desktop && echo PICTURE_ENTRY; "
+         "grep -c 'MimeType=image/png' /usr/share/applications/dai-explain-picture.desktop | sed 's/^/MIME=/'; "
+         "grep -c 'Exec=dai-explain --file %f' /usr/share/applications/dai-explain-picture.desktop | sed 's/^/EXEC=/'", True,
+         lambda o: "CLIENT True" in o and "PICTURE_ENTRY" in o and "MIME=1" in o and "EXEC=1" in o),
         # docs/EXPLAIN.md §9: with "explain with pictures off" the installed vision model is left out; undo brings it back.
         ("explain: the person's two choices", "dai-tune --yes 'explain with pictures off' </dev/null >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/explain.json; "
          "dai-explain --print --file /tmp/explain.png --lang en >/dev/null 2>/tmp/choice.err; echo RC=$?; cat /tmp/choice.err; "

@@ -7164,3 +7164,21 @@ msgstr "على هذا الحاسوب فقط، مع نموذج رؤية (dai-mode
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Super+Shift+E: seen and heard."
 msgstr "Super+Shift+E: تُرى وتُسمع."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Read this page aloud"
+msgstr "قراءة هذه الصفحة بصوت عالٍ"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Reading page {n} aloud."
+msgstr "تجري قراءة الصفحة {n} بصوت عالٍ."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no text on page {n} to read."
+msgstr "لا يوجد نص في الصفحة {n} لقراءته."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "D.Ai Speak is not installed on this computer."
+msgstr "D.Ai Speak غير مثبّت على هذا الحاسوب."

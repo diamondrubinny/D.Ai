@@ -7164,3 +7164,21 @@ msgstr "Только на этом компьютере, с моделью зр�
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Super+Shift+E: seen and heard."
 msgstr "Super+Shift+E: видно и слышно."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "Read this page aloud"
+msgstr "Прочитать эту страницу вслух"
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "Reading page {n} aloud."
+msgstr "Читаю страницу {n} вслух."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+#, python-brace-format
+msgid "There is no text on page {n} to read."
+msgstr "На странице {n} нет текста для чтения."
+
+#: apps/dai-pdf/dai_pdf/gui.py
+msgid "D.Ai Speak is not installed on this computer."
+msgstr "D.Ai Speak не установлен на этом компьютере."

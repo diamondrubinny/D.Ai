@@ -446,6 +446,23 @@ class WindowTests(unittest.TestCase):
         self.assertIn("unread", item.data(0, Qt.ItemDataRole.AccessibleTextRole))
         window.show_body(mail.Body(text="", html="<p>hi <img src=http://t/p></p>"))
         self.assertIn("1 image(s) blocked", window.notice.text())
+        # D.Ai Speak (docs/SPEAK.md §8): the message is read aloud through dai_speak, the same button stops.
+        from unittest import mock
+        from dai_j import gui
+        spoken = []
+        fake = mock.Mock(read=lambda text, lang: spoken.append((text, lang)) or True, stop=lambda: spoken.append("stop"))
+        with mock.patch.object(gui, "_speak", return_value=fake):
+            window.show_body(mail.Body(text="Shalom from Avi", html=""))
+            self.assertFalse(window.read_button.isHidden())
+            window.read_current()
+            self.assertEqual(spoken[-1], ("Shalom from Avi", "en"))
+            self.assertIn("Stop reading", window.read_button.text())
+            window.read_current()
+            self.assertEqual(spoken[-1], "stop")
+            self.assertIn("Read aloud", window.read_button.text())
+        with mock.patch.object(gui, "_speak", return_value=None):
+            window.show_body(mail.Body(text="Again", html=""))
+            self.assertTrue(window.read_button.isHidden())
 
     def test_toolbar_new_message_and_import(self):
         from dai_j import gui, importers

@@ -233,6 +233,7 @@ build_apps() {
   copy_package "$explain/dai_explain" "$root"
   install -m 0755 "$explain/data/dai-explain" "$root/usr/bin/dai-explain"
   install -m 0644 "$explain/data/dai-explain.desktop" "$root/usr/share/applications/"
+  install -m 0644 "$explain/data/dai-explain-picture.desktop" "$root/usr/share/applications/"
 
   local speak="$REPO_ROOT/apps/dai-speak"
   copy_package "$speak/dai_speak" "$root"

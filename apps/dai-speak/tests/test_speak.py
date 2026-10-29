@@ -178,5 +178,28 @@ class CliTests(unittest.TestCase):
             self.assertEqual(children[-1].argv[4], "130")
 
 
+class ClientTests(unittest.TestCase):
+    def test_other_windows_read_through_stdin_and_stop(self):
+        from dai_speak import client
+        children = []
+
+        def popen(argv, **kwargs):
+            child = FakeChild(argv)
+            children.append(child)
+            return child
+        self.assertTrue(client.read("  Page one.  ", "he", popen))
+        self.assertEqual(children[-1].argv, ["dai-speak", "--stdin", "--lang", "he"])
+        self.assertEqual(children[-1].written, b"Page one.")
+        self.assertFalse(client.read("   ", "en", popen))
+        client.stop(popen)
+        self.assertEqual(children[-1].argv, ["dai-speak", "--stop"])
+
+        def missing(argv, **kwargs):
+            raise FileNotFoundError(2, "no", "dai-speak")
+        with redirect_stderr(io.StringIO()):
+            self.assertFalse(client.read("x", "en", missing))
+        client.stop(missing)
+
+
 if __name__ == "__main__":
     unittest.main()
