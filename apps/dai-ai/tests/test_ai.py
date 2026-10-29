@@ -480,6 +480,16 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(k.relevant("block usb storage", "en")[0][:4], "Sett")   # "block" is not "lock"
         self.assertLessEqual(len(k.relevant("lock screen files mail chat help backup updates", "en")), 5)
         self.assertTrue(all(fact.he and fact.en for fact in k.FACTS))
+        # people coming from Windows ask in Windows words (docs/FROM-WINDOWS.md)
+        self.assertIn("MOM", k.relevant("how do I open the task manager", "en")[0])
+        self.assertIn("MOM", k.relevant("ctrl+alt+del", "en")[0])
+        self.assertIn("Bottles", k.relevant("can I run exe files here", "en")[0])
+        self.assertIn("Settings", k.relevant("where is the control panel", "en")[0])
+        self.assertIn("LibreOffice", k.relevant("is there word and excel", "en")[0])
+        self.assertIn("Alt+Tab", k.relevant("how do I switch between windows", "en")[0])
+        self.assertIn("ClamAV", k.relevant("איפה הדיפנדר, יש אנטי-וירוס?", "he")[0])
+        self.assertIn("GIMP", k.relevant("יש פוטושופ?", "he")[0])
+        self.assertIn("Steam", k.relevant("do games work", "en")[0])
 
     def test_the_briefing_goes_into_the_system_prompt_only_for_system_questions(self):
         from dai_ai import client, knowledge as k
