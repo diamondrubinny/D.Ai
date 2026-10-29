@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 from dataclasses import dataclass
@@ -75,11 +76,38 @@ def voice_for(lang: str) -> str:
     return VOICES.get(lang, VOICES["en"])
 
 
-def reader_argv(lang: str, rate: int, wav: Path | None = None) -> list[str]:
-    argv = [READER, "-v", voice_for(lang), "-s", str(clamp_rate(rate)), "--stdin"]
-    if wav is not None:
-        argv += ["-w", str(wav)]
-    return argv
+PLAYER = "pw-play"
+
+
+def reader_argv(lang: str, rate: int, sandbox: bool | None = None) -> list[str]:
+    """espeak-ng, text in on stdin and WAV out on stdout; inside bubblewrap when it is there (docs/SPEAK.md §9).
+
+    The reader parses untrusted text (a mail, a PDF page). In the sandbox it has no network, no home, no
+    devices and nothing writable; the sound leaves it only as bytes on standard output.
+    """
+    inner = [READER, "-v", voice_for(lang), "-s", str(clamp_rate(rate)), "--stdin", "--stdout"]
+    if sandbox is None:
+        sandbox = shutil.which("bwrap") is not None
+    if not sandbox:
+        return inner
+    return [
+        "bwrap",
+        "--ro-bind", "/usr", "/usr",
+        "--symlink", "usr/bin", "/bin",
+        "--symlink", "usr/lib", "/lib",
+        "--symlink", "usr/lib64", "/lib64",
+        "--ro-bind-try", "/etc/ld.so.cache", "/etc/ld.so.cache",
+        "--dev", "/dev",
+        "--tmpfs", "/tmp",
+        "--unshare-all",
+        "--die-with-parent",
+        "--new-session",
+        "--cap-drop", "ALL",
+        "--clearenv",
+        "--setenv", "PATH", "/usr/bin",
+        "--",
+        *inner,
+    ]
 
 
 def runtime_dir(environ: dict[str, str] | None = None) -> Path:
@@ -105,13 +133,13 @@ def running_reader(path: Path, proc: Path = Path("/proc")) -> int | None:
         pid = int(path.read_text(encoding="utf-8").strip())
     except (OSError, ValueError):
         return None
-    if pid <= 1 or _comm(pid, proc) != READER:
+    if pid <= 1 or _comm(pid, proc) not in (READER, "bwrap"):
         return None
     return pid
 
 
-def stop(path: Path | None = None, proc: Path = Path("/proc"), kill: Callable[[int, int], None] = os.kill) -> bool:
-    """Stop the running reader. True when there was one."""
+def stop(path: Path | None = None, proc: Path = Path("/proc"), kill: Callable[[int, int], None] = os.killpg) -> bool:
+    """Stop the running reader and its player (one process group). True when there was one."""
     path = pid_file() if path is None else path
     pid = running_reader(path, proc)
     try:
@@ -140,13 +168,33 @@ def start(text: str, lang: str, rate: int, wav: Path | None = None, path: Path |
         raise SpeakError(pick(lang, "There is nothing to read.", "אין מה להקריא."))
     path = pid_file() if path is None else path
     stop(path, proc)
-    argv = reader_argv(language_of(text, lang), rate, wav)
+    argv = reader_argv(language_of(text, lang), rate)
+    out = None
+    if wav is not None:
+        try:
+            out = wav.open("wb")
+        except OSError as exc:
+            raise SpeakError(pick(lang, "The reader could not write {path}.", "הקורא לא הצליח לכתוב את {path}.").format(path=wav)) from exc
     try:
-        child = popen(argv, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                      start_new_session=True)
+        child = popen(argv, stdin=subprocess.PIPE, stdout=out if out is not None else subprocess.PIPE,
+                      stderr=subprocess.DEVNULL, start_new_session=True)
     except OSError as exc:
         raise SpeakError(pick(lang, "The reader (espeak-ng) is not installed: {error}",
                               "הקורא (espeak-ng) לא מותקן: {error}").format(error=exc.strerror or exc)) from exc
+    finally:
+        if out is not None:
+            out.close()
+    if wav is None:
+        # The sound goes from the reader's stdout to the player, in the reader's process group, so one stop ends both.
+        try:
+            popen([PLAYER, "-"], stdin=child.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                  process_group=child.pid)
+        except OSError as exc:
+            child.kill()
+            raise SpeakError(pick(lang, "The player ({player}) is not installed: {error}",
+                                  "הנגן ({player}) לא מותקן: {error}").format(player=PLAYER, error=exc.strerror or exc)) from exc
+        if child.stdout is not None:
+            child.stdout.close()      # only the player keeps the pipe
     assert child.stdin is not None
     try:
         child.stdin.write(text.encode("utf-8"))

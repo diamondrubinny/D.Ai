@@ -9,9 +9,11 @@
   dai-speak --lang he            the voice's language (otherwise: the text's letters, then your language)
   dai-speak --rate 200           words per minute (80-400; the setting comes from "read faster" in D.Ai Tune)
   dai-speak --wav FILE           write a sound file instead of playing
+  dai-speak --show               print the reader's command line (is it inside the sandbox?) and exit
   dai-speak --version
 
-Nothing leaves the computer and nothing is saved. The voice is espeak-ng, the same one Orca uses.
+Nothing leaves the computer and nothing is saved. The voice is espeak-ng, the same one Orca uses, run inside
+bubblewrap (no network, no home) with the sound piped to pw-play.
 """
 from __future__ import annotations
 
@@ -22,9 +24,9 @@ from pathlib import Path
 from dai_i18n import ui_lang
 
 from . import __author__, __version__
-from .engine import SpeakError, clamp_rate, load_settings, notify, pid_file, running_reader, selection, start, stop
+from .engine import SpeakError, clamp_rate, load_settings, notify, pid_file, reader_argv, running_reader, selection, start, stop
 
-FLAGS = ("--text", "--stdin", "--stop", "--lang", "--rate", "--wav", "--quiet")
+FLAGS = ("--text", "--stdin", "--stop", "--lang", "--rate", "--wav", "--quiet", "--show")
 
 
 def _option(args: list[str], name: str) -> str | None:
@@ -52,6 +54,9 @@ def main(argv: list[str] | None = None, run=subprocess.run, popen=subprocess.Pop
         stop(path)
         return 0
     rate = clamp_rate(_option(args, "--rate") or load_settings(home).rate)
+    if "--show" in args:
+        print(" ".join(reader_argv(lang, rate)))
+        return 0
     wav = Path(given) if (given := _option(args, "--wav")) else None
     from_shortcut = False
     if (text := _option(args, "--text")) is not None:

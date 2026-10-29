@@ -1789,7 +1789,7 @@ msgid "Diamond is not ready. Install a model: dai-models install qwen2.5-0.5b"
 msgstr ""
 
 #. he: Diamond מקריא
-#: apps/dai-speak/dai_speak/engine.py:185
+#: apps/dai-speak/dai_speak/engine.py:233
 msgid "Diamond is reading"
 msgstr ""
 
@@ -5628,7 +5628,7 @@ msgid "Super+Shift+S reads the selected text; the next reading uses the new spee
 msgstr ""
 
 #. he: Super+Shift+S עוצר
-#: apps/dai-speak/dai_speak/engine.py:186
+#: apps/dai-speak/dai_speak/engine.py:234
 msgid "Super+Shift+S stops it"
 msgstr ""
 
@@ -6018,6 +6018,12 @@ msgstr ""
 msgid "The note's text:"
 msgstr ""
 
+#. he: הנגן ({player}) לא מותקן: {error}
+#: apps/dai-speak/dai_speak/engine.py:194
+#, python-brace-format
+msgid "The player ({player}) is not installed: {error}"
+msgstr ""
+
 #. he: המעבד עמוס
 #: apps/dai-doctor/dai_doctor/diagnose.py:92
 msgid "The processor is busy"
@@ -6029,13 +6035,14 @@ msgid "The processor is not overloaded"
 msgstr ""
 
 #. he: הקורא (espeak-ng) לא מותקן: {error}
-#: apps/dai-speak/dai_speak/engine.py:148
+#: apps/dai-speak/dai_speak/engine.py:182
 #, python-brace-format
 msgid "The reader (espeak-ng) is not installed: {error}"
 msgstr ""
 
 #. he: הקורא לא הצליח לכתוב את {path}.
-#: apps/dai-speak/dai_speak/engine.py:166
+#: apps/dai-speak/dai_speak/engine.py:214
+#: apps/dai-speak/dai_speak/engine.py:177
 #, python-brace-format
 msgid "The reader could not write {path}."
 msgstr ""
@@ -6194,7 +6201,7 @@ msgid "There is no text on page {n} to read."
 msgstr ""
 
 #. he: אין מה להקריא.
-#: apps/dai-speak/dai_speak/engine.py:140
+#: apps/dai-speak/dai_speak/engine.py:168
 msgid "There is nothing to read."
 msgstr ""
 

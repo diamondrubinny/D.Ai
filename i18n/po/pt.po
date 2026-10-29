@@ -7182,3 +7182,8 @@ msgstr "Não há texto para ler na página {n}."
 #: apps/dai-pdf/dai_pdf/gui.py
 msgid "D.Ai Speak is not installed on this computer."
 msgstr "O D.Ai Speak não está instalado neste computador."
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "The player ({player}) is not installed: {error}"
+msgstr "O reprodutor ({player}) não está instalado: {error}"
