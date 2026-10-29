@@ -275,7 +275,7 @@ jobs:
 
       - name: Unit tests (dai-speak, Diamond reads aloud)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-raz:apps/dai-speak
+          PYTHONPATH: apps/dai-i18n:apps/dai-raz
         run: python3 -m unittest discover -s apps/dai-speak/tests -t apps/dai-speak -v
       - name: Unit tests (dai-store, find and set up software, with the window)
         env:

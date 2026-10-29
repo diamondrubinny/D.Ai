@@ -7104,3 +7104,7 @@ msgstr "Es gibt nichts vorzulesen."
 #: apps/dai-command/dai_command/core.py
 msgid "Diamond's answer when one is shown, else the selected text · on this computer · Super+Shift+S stops · Enter"
 msgstr "Diamonds Antwort, wenn eine angezeigt wird, sonst der markierte Text · auf diesem Computer · Super+Shift+S stoppt · Enter"
+
+#: apps/dai-explain/dai_explain/engine.py
+msgid "On this computer: Diamond looked at the picture; nothing is saved."
+msgstr "Auf diesem Computer: Diamond hat sich das Bild angesehen; nichts wird gespeichert."

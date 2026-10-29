@@ -6,6 +6,7 @@
   dai-explain --area              choose an area with the mouse first
   dai-explain --file IMAGE        a picture from a file
   dai-explain --text "..."        this text, no picture
+  dai-explain --no-picture        only the text read from the picture, even when a vision model is installed
   dai-explain --print             the explanation to standard output instead of a window
   dai-explain --version
 
@@ -23,7 +24,7 @@ from dai_i18n import pick, ui_lang
 from . import __author__, __version__
 from .engine import ExplainError, capture_screen, choose_area, explain, read_text, where_label
 
-FLAGS = ("--area", "--file", "--text", "--print", "--lang")
+FLAGS = ("--area", "--file", "--text", "--print", "--lang", "--no-picture")
 
 
 def _option(args: list[str], name: str) -> str | None:
@@ -35,8 +36,13 @@ def _option(args: list[str], name: str) -> str | None:
 
 def gather_text(args: list[str], lang: str, run=subprocess.run) -> str:
     """The text to explain, from --text, --file, --area or the whole screen."""
+    return gather(args, lang, run)[0]
+
+
+def gather(args: list[str], lang: str, run=subprocess.run) -> tuple[str, bytes | None]:
+    """(the text read from the screen, the picture itself or None) from --text, --file, --area or the whole screen."""
     if (given := _option(args, "--text")) is not None:
-        return given
+        return given, None
     if (path := _option(args, "--file")) is not None:
         try:
             image = Path(path).read_bytes()
@@ -49,10 +55,10 @@ def gather_text(args: list[str], lang: str, run=subprocess.run) -> str:
         image = capture_screen(run, area)
     else:
         image = capture_screen(run)
-    return read_text(image, lang, run)
+    return read_text(image, lang, run), (None if "--no-picture" in args else image)
 
 
-def main(argv: list[str] | None = None, run=subprocess.run, chat=None) -> int:
+def main(argv: list[str] | None = None, run=subprocess.run, chat=None, sees=None) -> int:
     args = list(sys.argv if argv is None else argv)[1:]
     lang = _option(args, "--lang") or ui_lang()
     if args and args[0] in ("-h", "--help"):
@@ -68,13 +74,14 @@ def main(argv: list[str] | None = None, run=subprocess.run, chat=None) -> int:
         from .gui import main as window
         return window(["dai-explain", *args])
     try:
-        text = gather_text(args, lang, run)
-        result = explain(text, lang, chat=chat, on_piece=lambda piece: (sys.stdout.write(piece), sys.stdout.flush()))
+        text, image = gather(args, lang, run)
+        result = explain(text, lang, chat=chat, on_piece=lambda piece: (sys.stdout.write(piece), sys.stdout.flush()),
+                         image=image, **({"sees": sees} if sees is not None else {}))
     except (ExplainError, OSError) as exc:
         print(f"✗ {exc}", file=sys.stderr)
         return 1
     print()
     if result.suggestion:
         print(pick(lang, "Suggested: dai-tune \"{sentence}\"", "הצעה: dai-tune \"{sentence}\"").format(sentence=result.suggestion))
-    print(where_label(lang), file=sys.stderr)
+    print(where_label(lang, result.looked), file=sys.stderr)
     return 0

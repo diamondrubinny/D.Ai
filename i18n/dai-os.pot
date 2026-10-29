@@ -979,7 +979,7 @@ msgid "Cannot reach the mail server. Check the Internet connection and the serve
 msgstr ""
 
 #. he: אי אפשר לקרוא את {path}: {error}
-#: apps/dai-explain/dai_explain/cli.py:44
+#: apps/dai-explain/dai_explain/cli.py:50
 #, python-brace-format
 msgid "Cannot read {path}: {error}"
 msgstr ""
@@ -1736,7 +1736,7 @@ msgid "Diamond is not available. Install a model: D.Ai Command, ? and the questi
 msgstr ""
 
 #. he: Diamond לא זמין: {error}
-#: apps/dai-explain/dai_explain/engine.py:118
+#: apps/dai-explain/dai_explain/engine.py:178
 #, python-brace-format
 msgid "Diamond is not available: {error}"
 msgstr ""
@@ -3453,7 +3453,7 @@ msgid "No apps yet. Try: dai-forge \"build an app for a shopping list\""
 msgstr ""
 
 #. he: לא נבחר אזור.
-#: apps/dai-explain/dai_explain/cli.py:48
+#: apps/dai-explain/dai_explain/cli.py:54
 msgid "No area was chosen."
 msgstr ""
 
@@ -3695,7 +3695,7 @@ msgid "No text found"
 msgstr ""
 
 #. he: לא נמצא טקסט על המסך.
-#: apps/dai-explain/dai_explain/engine.py:106
+#: apps/dai-explain/dai_explain/engine.py:166
 #: apps/dai-explain/dai_explain/gui.py:55
 msgid "No text was found on the screen."
 msgstr ""
@@ -4036,8 +4036,13 @@ msgstr ""
 msgid "On this computer only: no network, nothing saved."
 msgstr ""
 
+#. he: על המחשב הזה: Diamond הסתכל על התמונה; שום דבר לא נשמר.
+#: apps/dai-explain/dai_explain/engine.py:192
+msgid "On this computer: Diamond looked at the picture; nothing is saved."
+msgstr ""
+
 #. he: על המחשב הזה: התמונה והטקסט לא נשמרים.
-#: apps/dai-explain/dai_explain/engine.py:137
+#: apps/dai-explain/dai_explain/engine.py:200
 msgid "On this computer: the picture and the text are not saved."
 msgstr ""
 
@@ -5501,7 +5506,7 @@ msgid "Subtitles for whatever the computer plays · on this computer only · Ent
 msgstr ""
 
 #. he: הצעה: dai-tune "{sentence}"
-#: apps/dai-explain/dai_explain/cli.py:78
+#: apps/dai-explain/dai_explain/cli.py:85
 #, python-brace-format
 msgid "Suggested: dai-tune \"{sentence}\""
 msgstr ""
@@ -5993,7 +5998,7 @@ msgid "The screen of {name} opens in its own window."
 msgstr ""
 
 #. he: טקסט המסך נשלח ל־{provider} (במפתח שלך).
-#: apps/dai-explain/dai_explain/engine.py:138
+#: apps/dai-explain/dai_explain/engine.py:201
 #, python-brace-format
 msgid "The screen text is sent to {provider} (your own key)."
 msgstr ""

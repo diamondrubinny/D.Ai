@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 import socketserver
 import sys
@@ -26,7 +27,11 @@ from .llama import LlamaError, LlamaServer
 from .models import TASKS, ModelError, default_model_id, load_catalog
 from .paths import daid_socket
 
-MAX_REQUEST = 256 * 1024
+MAX_REQUEST = 6 * 1024 * 1024        # a request with one picture of the screen (docs/EXPLAIN.md §8)
+MAX_TEXT_REQUEST = 256 * 1024
+MAX_IMAGE_B64 = 4 * 1024 * 1024      # base64 characters per picture
+MAX_IMAGES = 2
+IMAGE_DATA_URI = re.compile(r"^data:image/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$")
 MAX_MESSAGES = 32
 MAX_TOKENS = 4096  # D.Ai Forge writes whole (small) programs
 
@@ -42,12 +47,14 @@ class Backend:
         models = load_catalog()
         model_id = default_model_id(models, task)
         if model_id is None:
+            if task == "vision":
+                raise ModelError("no vision model installed (run: dai-models install smolvlm-500m)")
             raise ModelError("no model installed (run: dai-models install qwen2.5-0.5b)")
         model = models[model_id]
-        if self.server is None or self.server.model != model.path:
+        if self.server is None or self.server.model != model.path or self.server.mmproj != model.mmproj_path:
             if self.server:
                 self.server.stop()
-            self.server = LlamaServer(model.path)
+            self.server = LlamaServer(model.path, mmproj=model.mmproj_path)
         return self.server
 
     def status(self) -> dict[str, Any]:
@@ -59,7 +66,7 @@ class Backend:
         running = bool(self.server and self.server.process and self.server.process.poll() is None)
         return {"ok": True, "model": model_id, "running": running}
 
-    def chat(self, messages: list[dict[str, str]], schema: dict | None, max_tokens: int, task: str = "general"):
+    def chat(self, messages: list[dict[str, Any]], schema: dict | None, max_tokens: int, task: str = "general"):
         with self.lock:
             yield from self._server(task).chat(messages, schema=schema, max_tokens=max_tokens,
                                            temperature=0.0 if schema else 0.3)
@@ -72,29 +79,57 @@ class Backend:
                 self.lock.release()
 
 
+def _valid_content(content: Any, task: str) -> bool:
+    """Text, or (for the vision task only) OpenAI-style parts: text and inline pictures as data: URIs.
+
+    A picture never arrives as a file path or a URL: llama-server would read the file or fetch the address.
+    """
+    if isinstance(content, str):
+        return True
+    if task != "vision" or not isinstance(content, list) or not 1 <= len(content) <= 8:
+        return False
+    pictures = 0
+    for part in content:
+        if not isinstance(part, dict):
+            return False
+        if part.get("type") == "text" and isinstance(part.get("text"), str) and len(part) == 2:
+            continue
+        if part.get("type") == "image_url" and len(part) == 2 and isinstance(part.get("image_url"), dict):
+            url = part["image_url"].get("url")
+            if (list(part["image_url"]) != ["url"] or not isinstance(url, str) or len(url) > MAX_IMAGE_B64 + 32
+                    or not IMAGE_DATA_URI.match(url)):
+                return False
+            pictures += 1
+            continue
+        return False
+    return pictures <= MAX_IMAGES
+
+
 def validate_request(request: Any) -> dict[str, Any]:
     if not isinstance(request, dict) or request.get("op") not in ("status", "chat"):
         raise ValueError("unknown request")
     if request["op"] == "chat":
+        task = request.get("task", "general")
+        if task not in TASKS:
+            raise ValueError("invalid task")
         messages = request.get("messages")
         if (
             not isinstance(messages, list)
             or not 1 <= len(messages) <= MAX_MESSAGES
             or not all(
-                isinstance(m, dict) and m.get("role") in ("system", "user", "assistant") and isinstance(m.get("content"), str)
+                isinstance(m, dict) and m.get("role") in ("system", "user", "assistant") and _valid_content(m.get("content"), task)
                 for m in messages
             )
         ):
             raise ValueError("invalid messages")
+        if task != "vision" and len(json.dumps(messages)) > MAX_TEXT_REQUEST:
+            raise ValueError("request too large")
         schema = request.get("schema")
         if schema is not None and not isinstance(schema, dict):
             raise ValueError("invalid schema")
         max_tokens = request.get("max_tokens", 512)
         if not isinstance(max_tokens, int) or not 1 <= max_tokens <= MAX_TOKENS:
             raise ValueError("invalid max_tokens")
-        task = request.get("task", "general")
-        if task not in TASKS:
-            raise ValueError("invalid task")
         return {"op": "chat", "messages": messages, "schema": schema, "max_tokens": max_tokens, "task": task}
     return {"op": "status"}
 

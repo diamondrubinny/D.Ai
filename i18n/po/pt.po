@@ -7104,3 +7104,7 @@ msgstr "Não há nada para ler."
 #: apps/dai-command/dai_command/core.py
 msgid "Diamond's answer when one is shown, else the selected text · on this computer · Super+Shift+S stops · Enter"
 msgstr "A resposta do Diamond quando há uma, senão o texto selecionado · neste computador · Super+Shift+S para · Enter"
+
+#: apps/dai-explain/dai_explain/engine.py
+msgid "On this computer: Diamond looked at the picture; nothing is saved."
+msgstr "Neste computador: o Diamond olhou para a imagem; nada é guardado."

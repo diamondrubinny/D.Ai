@@ -35,8 +35,9 @@ class UnixHTTPConnection(http.client.HTTPConnection):
 class LlamaServer:
     """Starts llama-server lazily for a model and stops it when idle."""
 
-    def __init__(self, model: Path, idle_seconds: int = 600, threads: int | None = None) -> None:
+    def __init__(self, model: Path, idle_seconds: int = 600, threads: int | None = None, mmproj: Path | None = None) -> None:
         self.model = model
+        self.mmproj = mmproj                # a vision model's projector: llama-server --mmproj (docs/EXPLAIN.md §8)
         self.idle_seconds = idle_seconds
         self.threads = threads or max(1, (os.cpu_count() or 2) // 2)
         self.socket_path = runtime_dir() / "llama.sock"
@@ -58,15 +59,7 @@ class LlamaServer:
             self.socket_path.unlink()
         env = {"PATH": "/usr/bin:/bin", "LD_LIBRARY_PATH": str(LLAMA_DIR), "HOME": str(Path.home())}
         self.process = subprocess.Popen(
-            [
-                str(binary),
-                "-m", str(self.model),
-                "--host", str(self.socket_path),
-                "--no-webui",
-                "-c", "8192",
-                "-t", str(self.threads),
-                "--parallel", "1",
-            ],
+            self.argv(binary),
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -82,6 +75,16 @@ class LlamaServer:
             time.sleep(0.5)
         self.stop()
         raise LlamaError("llama-server did not become ready in time")
+
+    def argv(self, binary: Path) -> list[str]:
+        """llama-server's command line. No --media-path: a picture only ever arrives inline (a data: URI)."""
+        argv = [str(binary), "-m", str(self.model), "--host", str(self.socket_path), "--no-webui",
+                "-c", "8192", "-t", str(self.threads), "--parallel", "1"]
+        if self.mmproj is not None:
+            if not self.mmproj.is_file():
+                raise LlamaError(f"projector not installed: {self.mmproj.name} (run: dai-models install)")
+            argv += ["--mmproj", str(self.mmproj), "--no-mmproj-offload"]
+        return argv
 
     def stop(self) -> None:
         if self.process and self.process.poll() is None:
@@ -108,7 +111,7 @@ class LlamaServer:
         except OSError:
             return False
 
-    def chat(self, messages: list[dict[str, str]], schema: dict | None = None, max_tokens: int = 512,
+    def chat(self, messages: list[dict[str, Any]], schema: dict | None = None, max_tokens: int = 512,
              temperature: float = 0.2) -> Iterator[str]:
         """Stream the assistant's reply as text deltas."""
         self.ensure_running()

@@ -24,7 +24,7 @@ ALLOWED_DOMAINS = ("huggingface.co", "hf.co")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9.-]{1,48}$")
 CHUNK = 1024 * 1024
-TASKS = ("general", "code", "speech")  # speech: whisper.cpp models for D.Ai Voice
+TASKS = ("general", "code", "speech", "vision")  # speech: whisper.cpp models for D.Ai Voice; vision: a picture + text (Explain)
 
 
 class ModelError(RuntimeError):
@@ -49,18 +49,28 @@ class Model:
     ram_mb: int
     purpose: str
     tasks: tuple[str, ...] = ("general",)
+    # A vision model's companion projector (llama-server --mmproj); empty for every other model.
+    mmproj_url: str = ""
+    mmproj_file: str = ""
+    mmproj_sha256: str = ""
+    mmproj_size: int = 0
 
     @property
     def path(self) -> Path:
         return models_dir() / self.file
 
     @property
+    def mmproj_path(self) -> Path | None:
+        return models_dir() / self.mmproj_file if self.mmproj_file else None
+
+    @property
     def pinned(self) -> bool:
-        return bool(SHA256_RE.match(self.sha256))
+        return bool(SHA256_RE.match(self.sha256)) and (not self.mmproj_file or bool(SHA256_RE.match(self.mmproj_sha256)))
 
     @property
     def installed(self) -> bool:
-        return self.path.is_file()
+        companion = self.mmproj_path
+        return self.path.is_file() and (companion is None or companion.is_file())
 
 
 def load_catalog(path: Path = CATALOG) -> dict[str, Model]:
@@ -75,6 +85,13 @@ def load_catalog(path: Path = CATALOG) -> dict[str, Model]:
             raise ModelError(f"invalid catalog entry: {model.id}")
         if urllib.parse.urlparse(model.url).scheme != "https":
             raise ModelError(f"catalog URL must be https: {model.id}")
+        if model.mmproj_file or model.mmproj_url:
+            if ("vision" not in model.tasks or "/" in model.mmproj_file or not model.mmproj_file.endswith(".gguf")
+                    or model.mmproj_file == model.file or urllib.parse.urlparse(model.mmproj_url).scheme != "https"
+                    or not isinstance(model.mmproj_size, int) or model.mmproj_size <= 0):
+                raise ModelError(f"invalid projector entry: {model.id}")
+        elif "vision" in model.tasks:
+            raise ModelError(f"a vision model needs a projector (mmproj): {model.id}")
         models[model.id] = model
     return models
 
@@ -105,35 +122,58 @@ def _open(url: str):
     return opener.open(request, timeout=60)
 
 
-def install(model: Model, progress: Callable[[int, int], None] | None = None, opener=_open) -> Path:
-    """Download, verify the pinned SHA-256, then move into place atomically."""
-    if not model.pinned:
-        raise ModelError(f"{model.id} has no pinned SHA-256; refusing to install")
-    target = model.path
+def _download(model_id: str, url: str, target: Path, sha256: str, size: int,
+              progress: Callable[[int, int], None] | None, opener) -> Path:
+    """One file: download, verify the pinned SHA-256, then move into place atomically."""
     target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if target.is_file() and sha256_file(target) == model.sha256:
+    if target.is_file() and sha256_file(target) == sha256:
         return target
     free = shutil.disk_usage(target.parent).free
-    if free < model.size * 1.1:
-        raise ModelError(f"not enough disk space: need {model.size // 2**20} MB, have {free // 2**20} MB")
+    if free < size * 1.1:
+        raise ModelError(f"not enough disk space: need {size // 2**20} MB, have {free // 2**20} MB")
     partial = target.with_suffix(".part")
     digest = hashlib.sha256()
     done = 0
-    with opener(model.url) as response, partial.open("wb") as out:
+    with opener(url) as response, partial.open("wb") as out:
         for block in iter(lambda: response.read(CHUNK), b""):
             out.write(block)
             digest.update(block)
             done += len(block)
-            if done > model.size * 1.05:
+            if done > size * 1.05:
                 raise ModelError("download is larger than expected; aborting")
             if progress:
-                progress(done, model.size)
-    if digest.hexdigest() != model.sha256:
+                progress(done, size)
+    if digest.hexdigest() != sha256:
         partial.unlink(missing_ok=True)
-        raise ModelError(f"SHA-256 mismatch for {model.id}; the download was discarded")
+        raise ModelError(f"SHA-256 mismatch for {model_id}; the download was discarded")
     os.chmod(partial, 0o600)
     os.replace(partial, target)
     return target
+
+
+def install(model: Model, progress: Callable[[int, int], None] | None = None, opener=_open) -> Path:
+    """Download the model (and a vision model's projector), each verified against its pinned SHA-256."""
+    if not model.pinned:
+        raise ModelError(f"{model.id} has no pinned SHA-256; refusing to install")
+    target = _download(model.id, model.url, model.path, model.sha256, model.size, progress, opener)
+    companion = model.mmproj_path
+    if companion is not None:
+        _download(model.id, model.mmproj_url, companion, model.mmproj_sha256, model.mmproj_size, progress, opener)
+    return target
+
+
+def verified(model: Model) -> bool:
+    """Every file of the model is present and matches its pinned SHA-256."""
+    if not model.installed or sha256_file(model.path) != model.sha256:
+        return False
+    companion = model.mmproj_path
+    return companion is None or sha256_file(companion) == model.mmproj_sha256
+
+
+def remove(model: Model) -> None:
+    model.path.unlink(missing_ok=True)
+    if (companion := model.mmproj_path) is not None:
+        companion.unlink(missing_ok=True)
 
 
 def default_model_id(models: dict[str, Model], task: str = "general") -> str | None:
@@ -144,6 +184,8 @@ def default_model_id(models: dict[str, Model], task: str = "general") -> str | N
     """
     if task != "general":
         suited = [m for m in models.values() if m.installed and task in m.tasks]
+        if task == "vision":           # a picture needs a model that sees; a text model is never a substitute
+            return min(suited, key=lambda m: m.ram_mb).id if suited else None
         if task == "speech":
             chosen = _configured("speech_model")
             if chosen in models and models[chosen].installed and "speech" in models[chosen].tasks:
@@ -222,18 +264,20 @@ def main(argv: list[str]) -> int:
                 print(f"\n✓ {model.id} installed and verified (SHA-256)")
                 key = "speech_model" if "speech" in model.tasks else "model"
                 same_kind = [m for m in models.values() if m.installed and ("speech" in m.tasks) == ("speech" in model.tasks)]
-                if len(same_kind) == 1:
+                if len(same_kind) == 1 and "vision" not in model.tasks:   # vision models are chosen by task, never as the chat default
                     set_default(model.id, key)
             elif command == "verify":
-                ok = model.installed and sha256_file(model.path) == model.sha256
+                ok = verified(model)
                 print(("✓ verified: " if ok else "✗ missing or modified: ") + model.id)
                 return 0 if ok else 1
             elif command == "remove":
-                model.path.unlink(missing_ok=True)
+                remove(model)
                 print(f"✓ removed {model.id}")
             else:
                 if not model.installed:
                     raise ModelError(f"{model.id} is not installed")
+                if "vision" in model.tasks:
+                    raise ModelError(f"{model.id} sees pictures for D.Ai Explain; it is not a chat model")
                 set_default(model.id, "speech_model" if "speech" in model.tasks else "model")
                 print(f"✓ default model: {model.id}")
         except (ModelError, OSError) as exc:

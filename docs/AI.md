@@ -32,10 +32,13 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 |------|------|--------|-----|-------|
 | `qwen2.5-0.5b` | Qwen2.5-0.5B-Instruct Q4_K_M (~0.4GB) | Apache-2.0 | ~1GB | כללי, מהיר, ברירת מחדל |
 | `qwen2.5-coder-1.5b` | Qwen2.5-Coder-1.5B-Instruct Q4_K_M (~1.1GB) | Apache-2.0 | ~2GB | קוד (מהדורת מפתחים) |
+| `smolvlm-256m` | SmolVLM-256M-Instruct Q8_0 + projector (~0.3GB, שני קבצים) | Apache-2.0 | ~0.9GB | ראייה: D.Ai Explain מסתכל על המסך (מהיר) |
+| `smolvlm-500m` | SmolVLM-500M-Instruct Q8_0 + projector (~0.55GB, שני קבצים) | Apache-2.0 | ~1.5GB | ראייה: D.Ai Explain מסתכל על המסך (מומלץ) |
 
 - הורדה ב־HTTPS בלבד, מ־`huggingface.co` ומתת־הדומיינים של רשת ה־CDN שלו (`*.hf.co`). שמות שרתי ה־CDN משתנים, ולכן ההתאמה היא לפי דומיין שלם (`evilhf.co` נדחה). כל קובץ חייב **SHA-256 מוצמד** בקטלוג, ומודל בלי hash מוצמד לא יותקן.
 - ה־hash נלקח פעם אחת ב־CI מהמאגר הרשמי, ומשם הוא קבוע בקוד.
 - המודלים לא כלולים ב־ISO: גודל, רישוי, ובחירה של המשתמש.
+- מודל ראייה הוא שני קבצים (המשקולות ו־`mmproj`, המקרן), שניהם מוצמדים ומאומתים; ‏`llama-server` עולה עם `--mmproj`. משימת `vision` נענית רק במחשב (אף פעם לא אצל ספק חיצוני), תמונה מגיעה רק כ־data URI בתוך הבקשה (לא נתיב ולא כתובת), עד 4MB, ורק במשימה הזו (docs/EXPLAIN.md §8).
 
 ## 3. אבטחה ופרטיות
 

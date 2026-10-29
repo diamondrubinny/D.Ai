@@ -70,6 +70,42 @@
       "tasks": [
         "speech"
       ]
+    },
+    {
+      "id": "smolvlm-256m",
+      "name": "SmolVLM 256M Instruct (Q8_0) + projector",
+      "url": "https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF/resolve/main/SmolVLM-256M-Instruct-Q8_0.gguf",
+      "file": "SmolVLM-256M-Instruct-Q8_0.gguf",
+      "sha256": "2a31195d3769c0b0fd0a4906201666108834848db768af11de1d2cef7cd35e65",
+      "size": 175054528,
+      "license": "Apache-2.0",
+      "ram_mb": 900,
+      "purpose": "sees the screen for D.Ai Explain (fast, small)",
+      "tasks": [
+        "vision"
+      ],
+      "mmproj_url": "https://huggingface.co/ggml-org/SmolVLM-256M-Instruct-GGUF/resolve/main/mmproj-SmolVLM-256M-Instruct-Q8_0.gguf",
+      "mmproj_file": "mmproj-SmolVLM-256M-Instruct-Q8_0.gguf",
+      "mmproj_sha256": "7e943f7c53f0382a6fc41b6ee0c2def63ba4fded9ab8ed039cc9e2ab905e0edd",
+      "mmproj_size": 103769856
+    },
+    {
+      "id": "smolvlm-500m",
+      "name": "SmolVLM 500M Instruct (Q8_0) + projector",
+      "url": "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/resolve/main/SmolVLM-500M-Instruct-Q8_0.gguf",
+      "file": "SmolVLM-500M-Instruct-Q8_0.gguf",
+      "sha256": "9d4612de6a42214499e301494a3ecc2be0abdd9de44e663bda63f1152fad1bf4",
+      "size": 436806912,
+      "license": "Apache-2.0",
+      "ram_mb": 1500,
+      "purpose": "sees the screen for D.Ai Explain (recommended)",
+      "tasks": [
+        "vision"
+      ],
+      "mmproj_url": "https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/resolve/main/mmproj-SmolVLM-500M-Instruct-Q8_0.gguf",
+      "mmproj_file": "mmproj-SmolVLM-500M-Instruct-Q8_0.gguf",
+      "mmproj_sha256": "d1eb8b6b23979205fdf63703ed10f788131a3f812c7b1f72e0119d5d81295150",
+      "mmproj_size": 108783360
     }
   ]
 }

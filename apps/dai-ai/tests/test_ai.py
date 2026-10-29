@@ -119,6 +119,38 @@ class DaidTests(EnvTestCase):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 daid.validate_request(bad)
 
+    def test_pictures_only_inline_and_only_for_the_vision_task(self):
+        """docs/EXPLAIN.md §8: a picture is a data: URI in a content part; a path or an address is refused."""
+        import base64
+        picture = {"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(b"\x89PNG").decode()}}
+        parts = [picture, {"type": "text", "text": "what is this?"}]
+        request = {"op": "chat", "messages": [{"role": "user", "content": parts}], "task": "vision"}
+        self.assertEqual(daid.validate_request(request)["task"], "vision")
+        for bad in [
+            {**request, "task": "general"},
+            {**request, "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "file:///etc/passwd"}}]}]},
+            {**request, "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "https://x/y.png"}}]}]},
+            {**request, "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "data:text/html;base64,PGI+"}}]}]},
+            {**request, "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": picture["image_url"]["url"], "detail": "high"}}]}]},
+            {**request, "messages": [{"role": "user", "content": [picture, picture, picture]}]},
+            {**request, "messages": [{"role": "user", "content": [{"type": "input_audio", "data": "x"}]}]},
+            {**request, "messages": [{"role": "user", "content": []}]},
+            {**request, "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "data:image/png;base64," + "A" * (daid.MAX_IMAGE_B64 + 64)}}]}]},
+        ]:
+            with self.subTest(bad=str(bad)[:80]), self.assertRaises(ValueError):
+                daid.validate_request(bad)
+        with self.assertRaises(ValueError):   # a text task keeps its small limit
+            daid.validate_request({"op": "chat", "messages": [{"role": "user", "content": "x" * (daid.MAX_TEXT_REQUEST + 1)}]})
+        # The client never routes the vision task to a provider, whatever is configured.
+        from dai_ai import providers
+        with mock.patch.object(providers, "load") as load:
+            load.return_value.for_task.return_value = object()
+            with mock.patch.object(client, "_request", return_value=iter([{"delta": "seen"}, {"done": True}])) as request:
+                self.assertEqual("".join(client.chat(request["messages"] if False else [{"role": "user", "content": parts}], task="vision")), "seen")
+                self.assertEqual(request.call_args[0][0]["task"], "vision")
+        self.assertEqual(client.where("vision"), "local")
+        self.assertIsNone(client.vision_model())
+
     def test_client_server_roundtrip(self):
         class FakeBackend:
             def status(self):
@@ -196,6 +228,69 @@ class TaskTests(EnvTestCase):
         self.assertEqual(models.default_model_id(catalog, "speech"), "whisper-small")
         models.set_default("qwen2.5-0.5b")  # chat choice kept separately
         self.assertEqual(models.default_model_id(catalog, "speech"), "whisper-small")
+
+    def test_vision_models_carry_a_projector_and_never_answer_chat(self):
+        """docs/EXPLAIN.md §8: a vision model is two files, both pinned; it is chosen by task only."""
+        shipped = Path(__file__).resolve().parents[1] / "data" / "models.json"
+        catalog = models.load_catalog(shipped)
+        small = catalog["smolvlm-256m"]
+        self.assertEqual(small.tasks, ("vision",))
+        self.assertTrue(small.pinned and small.mmproj_path is not None and small.mmproj_path.name.startswith("mmproj-"))
+        self.assertIsNone(models.default_model_id(catalog, "vision"))
+        small.path.parent.mkdir(parents=True, exist_ok=True)
+        small.path.write_bytes(b"x")
+        self.assertFalse(small.installed)                       # the projector is part of the model
+        small.mmproj_path.write_bytes(b"y")
+        self.assertTrue(small.installed)
+        self.assertEqual(models.default_model_id(catalog, "vision"), "smolvlm-256m")
+        self.assertIsNone(models.default_model_id(catalog))     # never the chat model
+        self.assertIsNone(models.default_model_id(catalog, "code"))
+        catalog["qwen2.5-0.5b"].path.write_bytes(b"x")
+        self.assertEqual(models.default_model_id(catalog), "qwen2.5-0.5b")
+        self.assertEqual(models.default_model_id(catalog, "vision"), "smolvlm-256m")
+        models.remove(small)
+        self.assertFalse(small.path.exists() or small.mmproj_path.exists())
+        # Both files are downloaded and verified; a wrong projector hash discards the download.
+        model_bytes, proj_bytes = b"model" * 100, b"proj" * 100
+        spec = {**{k: getattr(small, k) for k in ("id", "name", "url", "file", "license", "ram_mb", "purpose", "tasks",
+                                                   "mmproj_url", "mmproj_file")},
+                "sha256": hashlib.sha256(model_bytes).hexdigest(), "size": len(model_bytes),
+                "mmproj_sha256": hashlib.sha256(proj_bytes).hexdigest(), "mmproj_size": len(proj_bytes)}
+        entry = models.Model(**spec)
+        opener = lambda url: io.BytesIO(proj_bytes if "mmproj" in url else model_bytes)  # noqa: E731
+        models.install(entry, opener=opener)
+        self.assertTrue(entry.installed and models.verified(entry))
+        entry.mmproj_path.write_bytes(b"tampered")
+        self.assertFalse(models.verified(entry))
+        models.remove(entry)
+        bad = models.Model(**{**spec, "mmproj_sha256": "0" * 64})
+        with self.assertRaises(models.ModelError):
+            models.install(bad, opener=opener)
+        self.assertTrue(bad.path.exists() and not bad.mmproj_path.exists())   # the weights stayed, the bad projector did not
+        # The catalog refuses a vision model without a projector, and a projector on a text model.
+        path = Path(self.tmp.name) / "catalog.json"
+        base = {"id": "see", "name": "x", "url": "https://huggingface.co/a.gguf", "file": "a.gguf", "sha256": "",
+                "size": 1, "license": "MIT", "ram_mb": 1, "purpose": "x", "tasks": ["vision"]}
+        for broken in (base, {**base, "tasks": ["general"], "mmproj_url": "https://huggingface.co/m.gguf", "mmproj_file": "m.gguf", "mmproj_size": 1},
+                       {**base, "mmproj_url": "http://huggingface.co/m.gguf", "mmproj_file": "m.gguf", "mmproj_size": 1},
+                       {**base, "mmproj_url": "https://huggingface.co/m.gguf", "mmproj_file": "../m.gguf", "mmproj_size": 1}):
+            path.write_text(json.dumps({"models": [broken]}))
+            with self.subTest(broken=broken), self.assertRaises(models.ModelError):
+                models.load_catalog(path)
+
+    def test_llama_server_gets_the_projector_on_its_command_line(self):
+        from dai_ai import llama
+        with tempfile.TemporaryDirectory() as tmp:
+            weights, projector = Path(tmp) / "m.gguf", Path(tmp) / "mmproj.gguf"
+            weights.write_bytes(b"x")
+            server = llama.LlamaServer(weights, mmproj=projector)
+            with self.assertRaises(llama.LlamaError):
+                server.argv(Path("/opt/dai/llama/llama-server"))
+            projector.write_bytes(b"y")
+            argv = server.argv(Path("/opt/dai/llama/llama-server"))
+            self.assertEqual(argv[argv.index("--mmproj") + 1], str(projector))
+            self.assertNotIn("--media-path", argv)
+            self.assertNotIn("--mmproj", llama.LlamaServer(weights).argv(Path("/x")))
 
     def test_speech_file_suffix(self):
         path = Path(self.tmp.name) / "catalog.json"

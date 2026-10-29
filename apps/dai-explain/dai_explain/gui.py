@@ -63,15 +63,16 @@ class Worker(QObject):
     done = pyqtSignal(object)
     failed = pyqtSignal(str)
 
-    def __init__(self, gather: Callable[[], str], lang: str, chat: Callable | None = None) -> None:
+    def __init__(self, gather: Callable[[], str | tuple[str, bytes | None]], lang: str, chat: Callable | None = None) -> None:
         super().__init__()
         self.gather, self.lang, self.chat = gather, lang, chat
 
     @pyqtSlot()
     def run(self) -> None:
         try:
-            text = self.gather()
-            result = explain(text, self.lang, chat=self.chat, on_piece=self.piece.emit)
+            gathered = self.gather()
+            text, image = gathered if isinstance(gathered, tuple) else (gathered, None)
+            result = explain(text, self.lang, chat=self.chat, on_piece=self.piece.emit, image=image)
         except (ExplainError, OSError) as exc:
             self.failed.emit(str(exc))
             return
@@ -79,7 +80,7 @@ class Worker(QObject):
 
 
 class ExplainWindow(QWidget):
-    def __init__(self, lang: str, gather: Callable[[], str], chat: Callable | None = None,
+    def __init__(self, lang: str, gather: Callable[[], str | tuple[str, bytes | None]], chat: Callable | None = None,
                  spawn: Callable[..., None] | None = None) -> None:
         super().__init__(objectName="Explain")
         self.lang, self.gather, self.chat = lang, gather, chat
@@ -194,6 +195,7 @@ class ExplainWindow(QWidget):
     @pyqtSlot(object)
     def show_result(self, result: Explanation) -> None:
         self.result = result
+        self.privacy.setText(where_label(self.lang, result.looked))
         self.answer.setPlainText(result.text)
         if result.suggestion:
             self.do_it.setText(self.t("do_it", sentence=result.suggestion))
@@ -267,7 +269,7 @@ def main(argv: list[str] | None = None) -> int:
     if "--version" in argv:
         print(f"dai-explain {__version__} — {__author__}")
         return 0
-    from .cli import gather_text
+    from .cli import gather
     app = QApplication.instance() or QApplication(argv)
     app.setApplicationName(APP_ID)
     app.setDesktopFileName(APP_ID)
@@ -276,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
     app.setStyleSheet(with_touch(STYLE))
     lang = argv[argv.index("--lang") + 1] if "--lang" in argv and argv.index("--lang") + 1 < len(argv) else ui_lang()
     args = argv[1:]
-    window = ExplainWindow(lang, lambda: gather_text(args, lang))
+    window = ExplainWindow(lang, lambda: gather(args, lang))
     window.show()
     window.start()
     return app.exec()

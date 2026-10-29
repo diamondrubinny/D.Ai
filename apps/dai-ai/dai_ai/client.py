@@ -49,17 +49,32 @@ def where(task: str = "general") -> str:
     """"local", or the provider's name, for this task; what a window shows next to an answer."""
     from . import providers
 
+    if task == "vision":
+        return "local"
     return providers.where().get(task, "local")
 
 
+def vision_model() -> str | None:
+    """The installed model that sees pictures (for D.Ai Explain), or None."""
+    from .models import ModelError, default_model_id, load_catalog
+
+    try:
+        return default_model_id(load_catalog(), "vision")
+    except (OSError, ModelError, ValueError, KeyError):
+        return None
+
+
 def chat(
-    messages: list[dict[str, str]], schema: dict | None = None, max_tokens: int = 512, task: str = "general"
+    messages: list[dict[str, Any]], schema: dict | None = None, max_tokens: int = 512, task: str = "general"
 ) -> Iterator[str]:
-    """An answer, as pieces of text: from the provider chosen for this task, else from the local Diamond."""
+    """An answer, as pieces of text: from the provider chosen for this task, else from the local Diamond.
+
+    The vision task (a picture of the screen, docs/EXPLAIN.md §8) is answered on this computer only.
+    """
     from . import providers
 
     config = providers.load()
-    provider = config.for_task(task)
+    provider = None if task == "vision" else config.for_task(task)
     if provider is not None:
         started = False
         try:

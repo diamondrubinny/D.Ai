@@ -78,6 +78,59 @@ class EngineTests(unittest.TestCase):
             engine.capture_screen(lambda argv, **k: subprocess.CompletedProcess(argv, 1, b"", b""))
 
 
+class PictureTests(unittest.TestCase):
+    """docs/EXPLAIN.md §8: with a vision model, Diamond looks at the (shrunk, inline) picture on this computer."""
+
+    @staticmethod
+    def png(width: int = 2000, height: int = 600) -> bytes:
+        try:
+            from PyQt6.QtCore import QBuffer, QIODevice
+            from PyQt6.QtGui import QColor, QImage
+        except ImportError:
+            raise unittest.SkipTest("PyQt6 is missing")
+        image = QImage(width, height, QImage.Format.Format_RGB32)
+        image.fill(QColor("white"))
+        buffer = QBuffer()
+        buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+        image.save(buffer, "PNG")
+        return bytes(buffer.data())
+
+    def test_the_picture_is_shrunk_and_goes_inline_with_the_text(self):
+        from PyQt6.QtGui import QImage
+        small = engine.shrink(self.png())
+        shrunk = QImage()
+        self.assertTrue(shrunk.loadFromData(small))
+        self.assertEqual((shrunk.width(), shrunk.height()), (engine.PICTURE_WIDTH, 307))
+        self.assertEqual(engine.shrink(b"not a picture"), b"not a picture")
+        messages = engine.messages_for("Hello", "he", b"\x89PNG")
+        self.assertIn("picture of their screen", messages[0]["content"])
+        self.assertEqual(messages[1]["content"][0]["image_url"]["url"], "data:image/png;base64,iVBORw==")
+        self.assertIn("<<< screen text >>>\nHello", messages[1]["content"][1]["text"])
+        self.assertEqual(engine.messages_for("Hello", "en", None)[1]["content"], engine.user_prompt("Hello", "en"))
+
+    def test_explain_looks_only_with_a_vision_model_and_never_sends_the_picture_elsewhere(self):
+        seen = []
+
+        def chat(messages, max_tokens=320, task="general"):
+            seen.append((task, messages[1]["content"]))
+            yield "A white window with nothing in it."
+        picture = self.png(300, 100)
+        result = engine.explain("", "en", chat=chat, image=picture, sees=lambda: "smolvlm-256m")
+        self.assertTrue(result.looked)
+        self.assertEqual(seen[-1][0], "vision")
+        self.assertEqual(seen[-1][1][0]["type"], "image_url")
+        self.assertIn("looked at the picture", engine.where_label("en", True))
+        result = engine.explain("Some text", "en", chat=chat, image=picture, sees=lambda: None)
+        self.assertFalse(result.looked)
+        self.assertEqual(seen[-1][0], "general")
+        self.assertIsInstance(seen[-1][1], str)
+        with self.assertRaises(engine.ExplainError):      # no text and no model that sees: nothing to explain
+            engine.explain("", "en", chat=chat, image=picture, sees=lambda: None)
+        with mock.patch.object(engine, "MAX_PICTURE", 10):   # too big even after shrinking: the text alone
+            result = engine.explain("Some text", "en", chat=chat, image=picture, sees=lambda: "smolvlm-256m")
+        self.assertFalse(result.looked)
+
+
 class CliTests(unittest.TestCase):
     def test_print_with_text_file_and_errors(self):
         out, err = io.StringIO(), io.StringIO()
@@ -101,6 +154,18 @@ class CliTests(unittest.TestCase):
                 raise AssertionError(argv)
             with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                 self.assertEqual(cli.main(["dai-explain", "--print", "--file", str(picture), "--lang", "he"], run=run, chat=fake_chat), 0)
+            # With a vision model the picture itself goes along (shrink leaves a fake PNG as it is), and --no-picture keeps it out.
+            looked = []
+
+            def seeing_chat(messages, max_tokens=320, task="general"):
+                looked.append((task, isinstance(messages[1]["content"], list)))
+                yield "A picture."
+            err = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(err):
+                self.assertEqual(cli.main(["dai-explain", "--print", "--file", str(picture), "--lang", "he"], run=run, chat=seeing_chat, sees=lambda: "smolvlm-256m"), 0)
+                self.assertEqual(cli.main(["dai-explain", "--print", "--file", str(picture), "--lang", "he", "--no-picture"], run=run, chat=seeing_chat, sees=lambda: "smolvlm-256m"), 0)
+            self.assertEqual(looked, [("vision", True), ("general", False)])
+            self.assertIn("הסתכל על התמונה", err.getvalue())
         with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
             self.assertEqual(cli.main(["dai-explain", "--version"]), 0)
             self.assertEqual(cli.main(["dai-explain", "--dance"]), 2)

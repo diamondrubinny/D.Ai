@@ -174,6 +174,23 @@ OCR_PICTURE = (
 )
 OCR_PICTURE_B64 = base64.b64encode(OCR_PICTURE.encode()).decode()
 
+# D.Ai Explain stage 2 (docs/EXPLAIN.md §8): shapes and no text at all; only a model that sees can describe it.
+SHAPES_PICTURE = (
+    "import sys\n"
+    "from PyQt6.QtGui import QColor, QGuiApplication, QImage, QPainter\n"
+    "app = QGuiApplication(sys.argv)\n"
+    "image = QImage(640, 400, QImage.Format.Format_RGB32)\n"
+    "image.fill(QColor('#1b2a4a'))\n"
+    "painter = QPainter(image)\n"
+    "painter.setBrush(QColor('#e8c547'))\n"
+    "painter.drawEllipse(80, 80, 200, 200)\n"
+    "painter.setBrush(QColor('#d94f4f'))\n"
+    "painter.drawRect(360, 90, 200, 200)\n"
+    "painter.end()\n"
+    "image.save(sys.argv[1])\n"
+)
+SHAPES_PICTURE_B64 = base64.b64encode(SHAPES_PICTURE.encode()).decode()
+
 # A small PNG re-drawn as a JPEG, then that JPEG with a made-up location in its EXIF re-drawn again (docs/SEND.md).
 CHAT_PICTURE = r"""
 import struct, sys, zlib
@@ -582,6 +599,16 @@ def main() -> int:
          and "HE_RC=0" in o and "EN_RC=0" in o and re.search(r"HE_BYTES=(\d{5,})", o) is not None and re.search(r"EN_BYTES=(\d{5,})", o) is not None
          and "STOP_RC=0" in o and "STALE_RC=0" in o and "SHELL_ALIVE" in o and "TUNE_RC=0" in o and '"rate": 190' in o
          and "MODE=600" in o and "UNDO_RC=0" in o and "FILE_GONE" in o, 120),
+        # D.Ai Explain stage 2 (docs/EXPLAIN.md §8): a vision model (two pinned files) is installed, a picture with
+        # shapes and no text is explained by looking at it, on this computer; --no-picture is refused without text.
+        ("explain: Diamond sees the picture", "dai-models install smolvlm-256m 2>&1 | tail -n 1; dai-models verify smolvlm-256m; "
+         "dai-models list | grep -c 'smolvlm.*installed' | sed 's/^/LISTED=/'; "
+         f"echo {SHAPES_PICTURE_B64} | base64 -d > /tmp/shapes-picture.py && QT_QPA_PLATFORM=offscreen python3 /tmp/shapes-picture.py /tmp/shapes.png; "
+         "dai-explain --print --file /tmp/shapes.png --lang en > /tmp/shapes.txt 2>/tmp/shapes.err; echo SEE_RC=$?; "
+         "wc -w < /tmp/shapes.txt | sed 's/^/SEE_WORDS=/'; head -c 300 /tmp/shapes.txt; echo; cat /tmp/shapes.err; "
+         "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
+         lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
+         and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "
          "ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; "

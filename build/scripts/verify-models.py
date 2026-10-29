@@ -34,20 +34,24 @@ def main() -> int:
     catalog = json.load(open(sys.argv[1], encoding="utf-8"))
     ok = True
     for model in catalog["models"]:
-        digest, size = hashlib.sha256(), 0
-        with urllib.request.urlopen(model["url"], timeout=120) as response:
-            for block in iter(lambda: response.read(1 << 20), b""):
-                digest.update(block)
-                size += len(block)
-        computed = digest.hexdigest()
-        published = hf_published_sha256(model["url"])
-        print(f"{model['id']}: size={size} computed={computed} published={published} pinned={model['sha256'] or '-'}")
-        if computed != published:
-            print(f"  ✗ downloaded bytes do not match the published hash")
-            ok = False
-        if model["sha256"] != computed or model["size"] != size:
-            print(f'  ✗ pin with: "sha256": "{computed}", "size": {size}')
-            ok = False
+        files = [("", model["url"], model["sha256"], model["size"])]
+        if model.get("mmproj_url"):   # a vision model's projector (docs/EXPLAIN.md §8)
+            files.append(("mmproj_", model["mmproj_url"], model.get("mmproj_sha256", ""), model.get("mmproj_size", 0)))
+        for prefix, url, pinned, pinned_size in files:
+            digest, size = hashlib.sha256(), 0
+            with urllib.request.urlopen(url, timeout=120) as response:
+                for block in iter(lambda: response.read(1 << 20), b""):
+                    digest.update(block)
+                    size += len(block)
+            computed = digest.hexdigest()
+            published = hf_published_sha256(url)
+            print(f"{model['id']} {prefix or 'model'}: size={size} computed={computed} published={published} pinned={pinned or '-'}")
+            if computed != published:
+                print("  ✗ downloaded bytes do not match the published hash")
+                ok = False
+            if pinned != computed or pinned_size != size:
+                print(f'  ✗ pin with: "{prefix}sha256": "{computed}", "{prefix}size": {size}')
+                ok = False
     return 0 if ok else 1
 
 
