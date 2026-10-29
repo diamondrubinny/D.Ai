@@ -307,6 +307,26 @@ class HealLanguageTests(unittest.TestCase):
         self.assertNotIn("fact", [r.kind for r in core.build_actions("lock screen", [])])   # not a question: the usual rows
         self.assertEqual(core.build_actions("2+2", [])[0].kind, "calc")
 
+    def test_undo_shows_the_last_change_from_tunes_journal(self):
+        import json
+        import tempfile
+        with tempfile.TemporaryDirectory() as home, mock.patch.dict(os.environ, {"HOME": home}):
+            rows = core.build_actions("undo", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("tune", "history"))
+            self.assertIn("Nothing to undo", rows[0].title)
+            journal = Path(home) / ".local/state/dai/tune/journal.json"
+            journal.parent.mkdir(parents=True)
+            journal.write_text(json.dumps([{"id": "x1", "time": "2026-10-29T10:00:00+0200", "status": "applied",
+                                            "summary": ["Block USB storage devices"], "steps": []}]))
+            rows = core.build_actions("בטל את השינוי האחרון", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("tune", "undo"))
+            self.assertIn("Block USB storage devices", rows[0].title)
+            self.assertIn("2026-10-29 10:00", rows[0].subtitle)
+            self.assertEqual(rows[1].payload, "history")
+        for text in ("undo", "undo the last change", "revert", "בטל", "לבטל", "תבטל"):
+            self.assertTrue(core.UNDO_WORDS.search(text), text)
+        self.assertFalse(core.UNDO_WORDS.search("undo button in word"))
+
     def test_explain_words(self):
         for text in ("explain this screen", "explain", "what is this error", "what is this?", "what am I looking at",
                      "מה זה", "מה זה?", "הסבר לי את המסך", "תסביר", "מה השגיאה הזאת", "מה כתוב על המסך"):

@@ -7025,3 +7025,21 @@ msgstr "Sechzig Sekunden, die Stunden sparen"
 #: apps/dai-welcome/dai_welcome/gui.py
 msgid "Everything on this page can also be asked later: type a question in the command bar, such as 'how do I lock the screen', and the answer appears at once."
 msgstr "Alles auf dieser Seite lässt sich auch später fragen: tippe eine Frage in die Befehlsleiste, etwa „wie sperre ich den Bildschirm“, und die Antwort erscheint sofort."
+
+#: apps/dai-command/dai_command/core.py
+#, python-brace-format
+msgid "Undo: {summary}"
+msgstr "Rückgängig: {summary}"
+
+#: apps/dai-command/dai_command/core.py
+#, python-brace-format
+msgid "The last change, {time} · Enter undoes it in D.Ai Tune"
+msgstr "Die letzte Änderung, {time} · Enter macht sie in D.Ai Tune rückgängig"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Nothing to undo"
+msgstr "Nichts rückgängig zu machen"
+
+#: apps/dai-command/dai_command/core.py
+msgid "See what was changed · Enter"
+msgstr "Sehen, was geändert wurde · Enter"

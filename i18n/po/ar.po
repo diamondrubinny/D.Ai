@@ -7025,3 +7025,21 @@ msgstr "ستون ثانية توفّر ساعات"
 #: apps/dai-welcome/dai_welcome/gui.py
 msgid "Everything on this page can also be asked later: type a question in the command bar, such as 'how do I lock the screen', and the answer appears at once."
 msgstr "كل ما في هذه الصفحة يمكن سؤاله لاحقًا: اكتب سؤالًا في شريط الأوامر، مثل 'كيف أقفل الشاشة'، فيظهر الجواب فورًا."
+
+#: apps/dai-command/dai_command/core.py
+#, python-brace-format
+msgid "Undo: {summary}"
+msgstr "تراجع: {summary}"
+
+#: apps/dai-command/dai_command/core.py
+#, python-brace-format
+msgid "The last change, {time} · Enter undoes it in D.Ai Tune"
+msgstr "آخر تغيير، {time} · Enter يتراجع عنه في D.Ai Tune"
+
+#: apps/dai-command/dai_command/core.py
+msgid "Nothing to undo"
+msgstr "لا شيء للتراجع عنه"
+
+#: apps/dai-command/dai_command/core.py
+msgid "See what was changed · Enter"
+msgstr "اعرض ما تغيّر · Enter"

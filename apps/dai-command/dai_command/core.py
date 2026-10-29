@@ -460,6 +460,10 @@ _STRINGS = {
     "way_hint": ("Diamond's Way: a whole computer in one file (check, plan, apply, export) · Enter",
                  "דרך היהלום: מחשב שלם בקובץ אחד (check, plan, apply, export) · Enter"),
     "fact_hint": ("From D.Ai's own guide · Enter copies it", "מהמדריך של D.Ai · Enter מעתיק"),
+    "undo_title": ("Undo: {summary}", "ביטול: {summary}"),
+    "undo_hint": ("The last change, {time} · Enter undoes it in D.Ai Tune", "השינוי האחרון, {time} · Enter מבטל ב־D.Ai Tune"),
+    "nothing_to_undo": ("Nothing to undo", "אין מה לבטל"),
+    "history_hint": ("See what was changed · Enter", "מה שונה · Enter"),
     "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
     "explain_title": ("D.Ai Explain: what is on the screen", "D.Ai מסביר: מה שעל המסך"),
     "explain_hint": ("Diamond reads the screen and explains it in your language · Enter", "Diamond קורא את המסך ומסביר בשפה שלך · Enter"),
@@ -588,6 +592,8 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("captions", tr("captions_title"), tr("captions_hint"), "accessories-text-editor", "")]
     if EXPLAIN_WORDS.search(text.strip()) and shutil.which("dai-explain"):
         return [Action("explain", tr("explain_title"), tr("explain_hint"), "help-about", "")]
+    if UNDO_WORDS.search(text.strip()):
+        return undo_actions()
 
     actions: list[Action] = fact_actions(text)
     if (value := calculate(text)) is not None:
@@ -820,6 +826,25 @@ def backup_actions(text: str) -> list[Action] | None:
     return [Action("backup", tr("backup_now"), state, "document-save", "now"),
             Action("backup", f"{tr('backup_last')} {when}", f"{settings.repo} · {tr('backup_details')}",
                    "document-open-recent", "status")]
+
+
+# "undo" / "בטל": the last change in D.Ai Tune's journal, as one row (docs/TUNE.md); dai-tune does the undoing.
+UNDO_WORDS = re.compile(r"^(?:undo(?: (?:the )?last(?: change)?| that| it)?|revert|take (?:it|that) back|בטל(?: את)?(?: השינוי)?(?: האחרון)?|תבטל|לבטל|החזר(?: אחורה)?)$", re.IGNORECASE)
+
+
+def undo_actions() -> list[Action]:
+    try:
+        from dai_tune.context import Context
+        from dai_tune.executor import Journal
+        entry = Journal.for_user(Context()).find("last")
+    except Exception:  # noqa: BLE001 - no dai_tune on the path, or an unreadable journal: the plain row
+        entry = None
+    if entry is None:
+        return [Action("tune", tr("nothing_to_undo"), tr("history_hint"), "edit-undo", "history")]
+    summary = "; ".join(entry.get("summary", [])) or entry.get("id", "")
+    when = str(entry.get("time", ""))[:16].replace("T", " ")
+    return [Action("tune", tr("undo_title").format(summary=summary), tr("undo_hint").format(time=when), "edit-undo", "undo"),
+            Action("tune", tr("history_hint"), "dai-tune history", "document-open-recent", "history")]
 
 
 # A question about the system (docs/AI.md §6): the answer from D.Ai's own guide appears at once, no model needed.
