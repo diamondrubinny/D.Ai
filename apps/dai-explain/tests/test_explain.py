@@ -131,10 +131,28 @@ class WindowTests(unittest.TestCase):
         window.show_error("Diamond is not available")
         assert_accessible(self, window, touch=True)
 
+    def test_read_aloud_goes_through_dai_speak_and_the_same_button_stops(self):
+        spawned = []
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            window = self.gui.ExplainWindow("he", lambda: SCREEN, chat=fake_chat, spawn=lambda argv, text=None: spawned.append((argv, text)))
+            self.addCleanup(window.deleteLater)
+            self.assertFalse(window.read.isEnabled())
+            window.show_result(engine.Explanation(text="הסבר קצר.", suggestion=""))
+        self.assertTrue(window.read.isEnabled())
+        window.read.click()
+        self.assertEqual(spawned[-1], (["dai-speak", "--stdin", "--lang", "he"], "הסבר קצר."))
+        self.assertEqual(window.read.text(), "עצירת ההקראה")
+        window.read.click()
+        self.assertEqual(spawned[-1], (["dai-speak", "--stop"], None))
+        self.assertEqual(window.read.text(), "הקראה")
+        window.read.click()
+        window.close()
+        self.assertEqual(spawned[-1], (["dai-speak", "--stop"], None))
+
     def test_the_answer_arrives_the_button_opens_command_and_hebrew_is_rtl(self):
         from PyQt6.QtCore import Qt
         spawned = []
-        window = self.gui.ExplainWindow("he", lambda: SCREEN, chat=fake_chat, spawn=spawned.append)
+        window = self.gui.ExplainWindow("he", lambda: SCREEN, chat=fake_chat, spawn=lambda argv, text=None: spawned.append(argv))
         self.addCleanup(window.deleteLater)
         self.assertEqual(window.layoutDirection(), Qt.LayoutDirection.RightToLeft)
         self.assertEqual(window.windowTitle(), "D.Ai מסביר")

@@ -336,6 +336,21 @@ class HealLanguageTests(unittest.TestCase):
         for text in ("explain quantum physics", "what is linux", "מה זה לינוקס"):
             self.assertFalse(core.EXPLAIN_WORDS.search(text), text)
 
+    def test_speak_words(self):
+        for text in ("read this aloud", "read aloud", "read it to me", "read the selection", "Read this out loud!", "text to speech",
+                     "תקריא את זה", "תקריא לי", "הקראה", "להקריא"):
+            self.assertTrue(core.SPEAK_WORDS.search(text), text)
+        for text in ("read a book", "read faster", "reading list", "תקריא מהר יותר"):
+            self.assertFalse(core.SPEAK_WORDS.search(text), text)
+        for text in ("stop reading", "quiet", "be quiet", "די להקריא", "תפסיק לדבר", "שקט"):
+            self.assertTrue(core.SPEAK_STOP_WORDS.search(text), text)
+        self.assertFalse(core.SPEAK_STOP_WORDS.search("quiet hours"))
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            rows = core.build_actions("read this aloud", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("speak", ""))
+            rows = core.build_actions("stop reading", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("speak", "stop"))
+
     def test_captions_words(self):
         for text in ("captions", "live captions", "subtitles", "כתוביות", "כתוביות חיות", "תמלול חי"):
             with self.subTest(text):

@@ -7043,3 +7043,66 @@ msgstr "Rien à annuler"
 #: apps/dai-command/dai_command/core.py
 msgid "See what was changed · Enter"
 msgstr "Voir ce qui a été modifié · Entrée"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond goes quiet · Enter"
+msgstr "Diamond se tait · Enter"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond is reading"
+msgstr "Diamond lit"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads aloud at the normal speed"
+msgstr "Diamond lit à voix haute à la vitesse normale"
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "Diamond reads aloud at {rate} words per minute"
+msgstr "Diamond lit à voix haute à {rate} mots par minute"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads aloud faster"
+msgstr "Diamond lit à voix haute plus vite"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads aloud slower"
+msgstr "Diamond lit à voix haute plus lentement"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads it on this computer · Super+Shift+S again stops · Enter"
+msgstr "Diamond le lit sur cet ordinateur · Super+Shift+S à nouveau arrête · Enter"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Read aloud"
+msgstr "Lire à voix haute"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Read the selected text aloud"
+msgstr "Lire à voix haute le texte sélectionné"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Stop reading"
+msgstr "Arrêter la lecture"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Super+Shift+S reads the selected text; the next reading uses the new speed."
+msgstr "Super+Shift+S lit le texte sélectionné ; la prochaine lecture utilise la nouvelle vitesse."
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Super+Shift+S stops it"
+msgstr "Super+Shift+S l'arrête"
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "The reader (espeak-ng) is not installed: {error}"
+msgstr "Le lecteur (espeak-ng) n'est pas installé : {error}"
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "The reader could not write {path}."
+msgstr "Le lecteur n'a pas pu écrire {path}."
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "There is nothing to read."
+msgstr "Il n'y a rien à lire."

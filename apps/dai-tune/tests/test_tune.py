@@ -387,6 +387,41 @@ class ExecutorTests(TuneTestCase):
         self.assertFalse(catalog.policy_forbids_providers(self.ctx))
         self.assertIn("ספקי AI", spec.summary({"allowed": False}, "he"))
 
+    def test_speak_rate_steps_from_the_file_and_undo_restores_it(self):
+        """docs/SPEAK.md §2: faster/slower step from the current value, normal is the default, a number is checked."""
+        spec = catalog.CATALOG["speak.rate"]
+        self.assertEqual(spec.scope, "user")
+        self.assertEqual(spec.validate({"change": "faster"}, self.ctx), {"change": "faster"})
+        self.assertEqual(spec.validate({"change": "rate", "rate": 200}, self.ctx), {"change": "rate", "rate": 200})
+        for bad in ({"change": "warp"}, {"change": "rate", "rate": 10}, {"change": "rate", "rate": "200"}, {"change": "rate", "rate": True}):
+            with self.assertRaises(ValidationError):
+                spec.validate(bad, self.ctx)
+        path = self.home / ".config/dai/speak.json"
+        spec.apply({"change": "faster"}, self.ctx)
+        self.assertEqual(json.loads(path.read_text())["rate"], catalog.SPEAK_DEFAULT_RATE + catalog.SPEAK_STEP)
+        self.assertEqual(oct(path.stat().st_mode & 0o777), "0o600")
+        spec.apply({"change": "faster"}, self.ctx)
+        self.assertEqual(catalog.speak_current_rate(self.ctx), catalog.SPEAK_DEFAULT_RATE + 2 * catalog.SPEAK_STEP)
+        spec.apply({"change": "normal"}, self.ctx)
+        self.assertEqual(catalog.speak_current_rate(self.ctx), catalog.SPEAK_DEFAULT_RATE)
+        for _ in range(20):
+            spec.apply({"change": "slower"}, self.ctx)
+        self.assertEqual(catalog.speak_current_rate(self.ctx), catalog.SPEAK_MIN)
+        path.write_text("not json")
+        spec.apply({"change": "rate", "rate": 250}, self.ctx)
+        self.assertEqual(json.loads(path.read_text()), {"rate": 250})
+        self.assertIn("250", spec.summary({"change": "rate", "rate": 250}, "en"))
+        self.assertIn("מהר", spec.summary({"change": "faster"}, "he"))
+        self.assertEqual(spec.files({"change": "faster"}, self.ctx), [path])
+        for text, params in (("read faster", {"change": "faster"}), ("read aloud slower", {"change": "slower"}),
+                             ("normal reading speed", {"change": "normal"}), ("read at 200 words per minute", {"change": "rate", "rate": 200}),
+                             ("תקריא מהר יותר", {"change": "faster"}), ("תקריא לאט יותר", {"change": "slower"}),
+                             ("מהירות הקראה רגילה", {"change": "normal"}), ("תקריא ב-120 מילים לדקה", {"change": "rate", "rate": 120})):
+            result = parser.parse(text)
+            self.assertEqual([(r.action, r.params) for r in result.requests], [("speak.rate", params)], text)
+        for text in ("read this book", "faster boot", "speak"):
+            self.assertFalse([r for r in parser.parse(text).requests if r.action == "speak.rate"], text)
+
     def test_diamond_provider_choice_needs_a_consented_provider(self):
         """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""
         import sys

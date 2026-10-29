@@ -82,6 +82,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `way.file` | רק מקובץ `.dway` (שורת `files:`; docs/WAY.md §2: תיקייה או קובץ טקסט קטן בבית, לא מוסתר, לא הרצה, לא מחליף תוכן קיים) | משתמש | ניטרלי |
 | `way.when` / `way.when_off` | לוח זמנים לפני משפט: "every day at 20:00 dark theme", "כל בוקר ב־7 ערכת נושא בהירה", "at login: firefox does not go online" (גם מ־`!` בשורת הפקודה); או שורת `when:` ב־`.dway`; הסרה: `dai-way when remove` (docs/WAY.md §2: טיימר משתמש שמריץ משפט אחד, רק פעולות בהיקף משתמש) | משתמש | לפי המשפט |
 | `ai.providers_policy` | "no external AI providers", "בלי ספקי AI חיצוניים", "allow external AI providers" (docs/PROVIDERS.md §4c: בדרך כלל ממדיניות ארגונית) | מערכת | מחזק |
+| `speak.rate` | "read faster", "read slower", "normal reading speed", "read at 200 words per minute" / "תקריא מהר יותר", "תקריא לאט יותר", "מהירות הקראה רגילה" (docs/SPEAK.md: `~/.config/dai/speak.json`) | משתמש | ניטרלי |
 | `diamond.provider` | "answer with anthropic", "תענה במחשב הזה" (docs/PROVIDERS.md: מקומי, או ספק שכבר הוסכם ב־`dai-models provider use`; גם בחירה ב־Settings) | משתמש | מחליש (ספק) / מחזק (מקומי) |
 | `memory.saver` + `diamond.small_model` | "מצב חיסכון בזיכרון", "memory saver off" (docs/BEYOND.md §14: sysctl ל־zram עכשיו, zram גדול מהאתחול הבא, Diamond על המודל הקטן; גם מתג ב־Settings) | מערכת + משתמש | ניטרלי |
 | `app.offline` / `app.online` | "פיירפוקס לא יוצא לאינטרנט", "אפשר אינטרנט לפיירפוקס" (docs/BEYOND.md §12: קובץ ‎.desktop חופף שמריץ את האפליקציה ב־bubblewrap בלי רשת; Flatpak: override) | משתמש | מחזק / מחליש |

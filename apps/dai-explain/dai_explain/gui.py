@@ -5,6 +5,7 @@ button when a D.Ai Tune sentence would help (it opens D.Ai Command; nothing is a
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 from typing import Callable
@@ -52,6 +53,8 @@ STRINGS = {
                 "Diamond מציע צעד של D.Ai Tune. הוא נפתח ב־D.Ai Command, שם רואים את התוכנית ומאשרים."),
     "answer": ("Diamond's explanation", "ההסבר של Diamond"),
     "empty": ("No text was found on the screen.", "לא נמצא טקסט על המסך."),
+    "read": ("Read aloud", "הקראה"),
+    "read_stop": ("Stop reading", "עצירת ההקראה"),
 }
 
 
@@ -77,7 +80,7 @@ class Worker(QObject):
 
 class ExplainWindow(QWidget):
     def __init__(self, lang: str, gather: Callable[[], str], chat: Callable | None = None,
-                 spawn: Callable[[list[str]], None] | None = None) -> None:
+                 spawn: Callable[..., None] | None = None) -> None:
         super().__init__(objectName="Explain")
         self.lang, self.gather, self.chat = lang, gather, chat
         self.spawn = spawn or _spawn
@@ -132,6 +135,12 @@ class ExplainWindow(QWidget):
         self.again.setAccessibleName(self.t("again"))
         self.again.clicked.connect(self.start)
         row.addWidget(self.again)
+        self.read = QPushButton(self.t("read"))
+        self.read.setAccessibleName(self.t("read"))
+        self.read.setEnabled(False)
+        self.read.clicked.connect(self.toggle_reading)
+        row.addWidget(self.read)
+        self.reading = False
         copy = QPushButton(self.t("copy"))
         copy.setAccessibleName(self.t("copy"))
         copy.clicked.connect(self.copy_answer)
@@ -157,6 +166,9 @@ class ExplainWindow(QWidget):
     def start(self) -> None:
         if self.thread is not None:
             return
+        if self.reading:
+            self.toggle_reading()
+        self.read.setEnabled(False)
         self.result = None
         self.answer.clear()
         self.error_box.hide()
@@ -188,6 +200,7 @@ class ExplainWindow(QWidget):
             self.do_it.setAccessibleName(self.do_it.text())
             self.suggest_box.show()
         self.status.setText(self.t("done"))
+        self.read.setEnabled(bool(result.text.strip()) and shutil.which("dai-speak") is not None)
         self._finish()
 
     @pyqtSlot(str)
@@ -208,19 +221,43 @@ class ExplainWindow(QWidget):
         if self.result and self.result.suggestion:
             self.spawn(["dai-command", "--query", self.result.suggestion])
 
+    def toggle_reading(self) -> None:
+        """D.Ai Speak (docs/SPEAK.md): the explanation through dai-speak's standard input; the same button stops."""
+        if self.reading:
+            self.spawn(["dai-speak", "--stop"])
+            self.reading = False
+        else:
+            words = self.answer.toPlainText().strip()
+            if not words:
+                return
+            self.spawn(["dai-speak", "--stdin", "--lang", self.lang], words)
+            self.reading = True
+        self.read.setText(self.t("read_stop") if self.reading else self.t("read"))
+        self.read.setAccessibleName(self.read.text())
+
     def copy_answer(self) -> None:
         QApplication.clipboard().setText(self.answer.toPlainText())
 
     def closeEvent(self, event) -> None:  # noqa: N802 - Qt
+        if self.reading:
+            self.toggle_reading()
         if self.thread is not None:
             self.thread.quit()
             self.thread.wait(8000)
         event.accept()
 
 
-def _spawn(argv: list[str]) -> None:
+def _spawn(argv: list[str], stdin_text: str | None = None) -> None:
+    """Start a program detached; `stdin_text`, when given, goes through its standard input (never on a command line)."""
     try:
-        subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        child = subprocess.Popen(argv, stdin=subprocess.PIPE if stdin_text is not None else subprocess.DEVNULL,
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        if stdin_text is not None and child.stdin is not None:
+            try:
+                child.stdin.write(stdin_text.encode("utf-8"))
+                child.stdin.close()
+            except OSError:
+                pass
     except OSError as exc:
         print(f"dai-explain: cannot start {argv[0]}: {exc}", file=sys.stderr)
 

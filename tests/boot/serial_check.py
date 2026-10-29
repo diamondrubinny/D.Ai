@@ -568,6 +568,20 @@ def main() -> int:
          lambda o: "Diamond Rubinny (d.Ai)" in o and "DESKTOP_ENTRY" in o and "KEY=1" in o and "EXPLAIN_RC=0" in o
          and re.search(r"WORDS=([1-9]\d|\d{3,})", o) is not None and "On this computer" in o
          and ("SUGGESTION_OK" in o or "NO_SUGGESTION" in o), 600),
+        # D.Ai Speak (docs/SPEAK.md): the local voice writes a sound file in Hebrew and in English, a stop with no
+        # reader is quiet, a stale pid file naming another process is never acted on, and Tune sets the speed.
+        ("speak: Diamond reads aloud", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-speak --version; which espeak-ng | sed 's/^/READER=/'; "
+         "test -f /usr/share/applications/dai-speak.desktop && echo DESKTOP_ENTRY; grep -c 'W-S-s' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; "
+         "dai-speak --text 'שלום, אני דיימונד. המחשב הזה מקריא בעברית.' --lang he --wav /tmp/speak-he.wav; echo HE_RC=$?; "
+         "stat -c 'HE_BYTES=%s' /tmp/speak-he.wav; dai-speak --text 'Hello, I am Diamond. This computer reads aloud.' --lang en --wav /tmp/speak-en.wav; echo EN_RC=$?; "
+         "stat -c 'EN_BYTES=%s' /tmp/speak-en.wav; dai-speak --stop; echo STOP_RC=$?; "
+         "mkdir -p $XDG_RUNTIME_DIR/dai; echo $$ > $XDG_RUNTIME_DIR/dai/speak.pid; dai-speak --stop; echo STALE_RC=$?; echo SHELL_ALIVE; "
+         "dai-tune --yes 'read faster' </dev/null >/dev/null; echo TUNE_RC=$?; cat ~/.config/dai/speak.json; stat -c 'MODE=%a' ~/.config/dai/speak.json; "
+         "dai-tune undo >/dev/null 2>&1; echo UNDO_RC=$?; test -e ~/.config/dai/speak.json && cat ~/.config/dai/speak.json || echo FILE_GONE", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "READER=/usr/bin/espeak-ng" in o and "DESKTOP_ENTRY" in o and "KEY=1" in o
+         and "HE_RC=0" in o and "EN_RC=0" in o and re.search(r"HE_BYTES=(\d{5,})", o) is not None and re.search(r"EN_BYTES=(\d{5,})", o) is not None
+         and "STOP_RC=0" in o and "STALE_RC=0" in o and "SHELL_ALIVE" in o and "TUNE_RC=0" in o and '"rate": 190' in o
+         and "MODE=600" in o and "UNDO_RC=0" in o and "FILE_GONE" in o, 120),
         ("captions: a file through the pipeline", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-captions --version; "
          "dai-captions --print --from-file /opt/dai/whisper/test-jfk.wav --lang en; echo RC=$?; "
          "ls $XDG_RUNTIME_DIR/dai/captions-*.wav 2>/dev/null | wc -l; test -f /usr/share/applications/dai-captions.desktop && echo DESKTOP_ENTRY; "

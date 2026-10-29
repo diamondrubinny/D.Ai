@@ -465,6 +465,10 @@ _STRINGS = {
     "nothing_to_undo": ("Nothing to undo", "אין מה לבטל"),
     "history_hint": ("See what was changed · Enter", "מה שונה · Enter"),
     "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
+    "speak_title": ("Read the selected text aloud", "הקראה של הטקסט המסומן"),
+    "speak_hint": ("Diamond reads it on this computer · Super+Shift+S again stops · Enter", "Diamond מקריא במחשב הזה · Super+Shift+S שוב עוצר · Enter"),
+    "speak_stop_title": ("Stop reading", "להפסיק להקריא"),
+    "speak_stop_hint": ("Diamond goes quiet · Enter", "Diamond משתתק · Enter"),
     "explain_title": ("D.Ai Explain: what is on the screen", "D.Ai מסביר: מה שעל המסך"),
     "explain_hint": ("Diamond reads the screen and explains it in your language · Enter", "Diamond קורא את המסך ומסביר בשפה שלך · Enter"),
     "captions_title": ("D.Ai Live Captions", "כתוביות חיות D.Ai"),
@@ -592,6 +596,10 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("captions", tr("captions_title"), tr("captions_hint"), "accessories-text-editor", "")]
     if EXPLAIN_WORDS.search(text.strip()) and shutil.which("dai-explain"):
         return [Action("explain", tr("explain_title"), tr("explain_hint"), "help-about", "")]
+    if SPEAK_STOP_WORDS.search(text.strip()) and shutil.which("dai-speak"):
+        return [Action("speak", tr("speak_stop_title"), tr("speak_stop_hint"), "media-playback-stop", "stop")]
+    if SPEAK_WORDS.search(text.strip()) and shutil.which("dai-speak"):
+        return [Action("speak", tr("speak_title"), tr("speak_hint"), "audio-speakers", "")]
     if UNDO_WORDS.search(text.strip()):
         return undo_actions()
 
@@ -784,6 +792,11 @@ GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IG
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 # D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
 WAY_WORDS = re.compile(r"^(?:(?:diamond'?s )?way|dai-way|דרך היהלום|דרך)$", re.IGNORECASE)
+# D.Ai Speak (docs/SPEAK.md): "read this aloud", "read it to me", "read the selection", "תקריא את זה", "הקראה".
+SPEAK_WORDS = re.compile(r"^(?:(?:please )?read (?:(?:this|that|it|the (?:selection|selected text|text)) )?(?:aloud|out loud|to me)|read (?:this|that|it|the selection|the selected text)|"
+                         r"(?:text to speech|tts|speak (?:this|that|it|the selection))|(?:תקריא|הקרא|להקריא|תקריאי)(?: לי)?(?: את (?:זה|הטקסט|הבחירה|המסומן))?|הקראה(?: של הטקסט)?)\s*[.!]?$", re.IGNORECASE)
+SPEAK_STOP_WORDS = re.compile(r"^(?:stop (?:reading|speaking|talking|the reading|the voice)|(?:be )?quiet|shut up|hush|"
+                              r"(?:די|תפסיק|הפסק|הפסיקי) (?:להקריא|לדבר|לקרוא|עם ההקראה)|שקט|תשתוק|תשתקי)\s*[.!]?$", re.IGNORECASE)
 # D.Ai Explain (docs/EXPLAIN.md): "explain this screen", "what is this error", "מה זה", "מה כתוב על המסך".
 EXPLAIN_WORDS = re.compile(r"^(?:explain(?: (?:this|the|my))?(?: screen| error| window| message)?|what (?:is|does) (?:this|that)(?: (?:screen|error|message|window|mean))?\??|"
                            r"what am i (?:looking at|seeing)\??|(?:תסביר|הסבר)(?: לי)?(?: את)?(?: (?:ה)?(?:מסך|שגיאה|חלון|הודעה))?|מה זה\??|מה (?:ה)?(?:שגיאה|הודעה)(?: הזאת| הזו)?\??|מה כתוב (?:על |ב)?(?:ה)?מסך\??)$", re.IGNORECASE)

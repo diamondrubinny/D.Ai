@@ -234,6 +234,11 @@ build_apps() {
   install -m 0755 "$explain/data/dai-explain" "$root/usr/bin/dai-explain"
   install -m 0644 "$explain/data/dai-explain.desktop" "$root/usr/share/applications/"
 
+  local speak="$REPO_ROOT/apps/dai-speak"
+  copy_package "$speak/dai_speak" "$root"
+  install -m 0755 "$speak/data/dai-speak" "$root/usr/bin/dai-speak"
+  install -m 0644 "$speak/data/dai-speak.desktop" "$root/usr/share/applications/"
+
   local way="$REPO_ROOT/apps/dai-way"
   copy_package "$way/dai_way" "$root"
   install -m 0755 "$way/data/dai-way" "$root/usr/bin/dai-way"
@@ -393,7 +398,7 @@ EOF
   finish "$root" dai-apps all \
     "python3 (>= 3.11), python3-pyqt6, bubblewrap, pkexec, polkitd, wl-clipboard, wtype, libnotify-bin, pipewire-bin, gnupg, gpgsm" \
     "D.Ai OS apps: Command, Tune, Find, Doctor, Privacy, Backup, Move, Diamond (local AI), Forge, Code, Voice, Welcome, MOM and J" \
-    "dai-llama-runtime, dai-whisper-runtime, git, power-profiles-daemon, restic, libsecret-tools, python3-dnspython, python3-nacl, python3-zeroconf, tor"
+    "dai-llama-runtime, dai-whisper-runtime, espeak-ng, git, power-profiles-daemon, restic, libsecret-tools, python3-dnspython, python3-nacl, python3-zeroconf, tor"
 }
 
 build_ruby() { # Ruby (docs/BROWSER.md): D.Ai's browsing experience on Debian's Firefox ESR, unmodified.

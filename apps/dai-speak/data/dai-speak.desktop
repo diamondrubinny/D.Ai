@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Speak
+Name[he]=D.Ai מקריא
+GenericName=Read aloud
+GenericName[he]=הקראה
+Comment=Diamond reads the selected text aloud, on this computer (Super+Shift+S)
+Comment[he]=Diamond מקריא את הטקסט המסומן, במחשב הזה (Super+Shift+S)
+Exec=dai-speak
+TryExec=dai-speak
+Icon=audio-speakers
+NoDisplay=false
+Categories=Utility;Accessibility;Audio;
+Keywords=read aloud;speak;voice;text to speech;tts;הקראה;תקריא;קול;דיבור;

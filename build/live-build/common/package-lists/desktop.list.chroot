@@ -137,6 +137,8 @@ fonts-dejavu-core
 
 # Accessibility
 orca
+# D.Ai Speak (docs/SPEAK.md): Diamond reads aloud with the same local voice Orca uses.
+espeak-ng
 at-spi2-core
 
 # Installer (live session): Calamares with Debian's tested settings, incl. LUKS encryption

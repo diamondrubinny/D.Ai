@@ -378,6 +378,11 @@ class CommandWindow(QWidget):
             # A moment for this window to close, so the screen Diamond reads is the person's, not ours.
             self._spawn(["sh", "-c", "sleep 0.4; exec dai-explain"])
             remembered = self.query.text().strip()
+        elif action.kind == "speak":
+            # A moment for this window to close, so the selection Diamond reads is the person's, not ours.
+            self._spawn(["sh", "-c", "sleep 0.3; exec dai-speak --stop"] if action.payload == "stop"
+                        else ["sh", "-c", "sleep 0.3; exec dai-speak"])
+            remembered = self.query.text().strip()
         elif action.kind == "focus":
             argv = {"stop": ["dai-focus", "stop"], "game": ["dai-focus", "game"], "game-stop": ["dai-focus", "game", "stop"]}
             self._spawn(argv.get(str(action.payload), ["dai-focus", "start", str(action.payload)]))

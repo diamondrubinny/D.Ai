@@ -7043,3 +7043,66 @@ msgstr "لا شيء للتراجع عنه"
 #: apps/dai-command/dai_command/core.py
 msgid "See what was changed · Enter"
 msgstr "اعرض ما تغيّر · Enter"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond goes quiet · Enter"
+msgstr "يصمت Diamond · Enter"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond is reading"
+msgstr "Diamond يقرأ"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads aloud at the normal speed"
+msgstr "يقرأ Diamond بالسرعة العادية"
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "Diamond reads aloud at {rate} words per minute"
+msgstr "يقرأ Diamond بسرعة {rate} كلمة في الدقيقة"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads aloud faster"
+msgstr "يقرأ Diamond بسرعة أكبر"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads aloud slower"
+msgstr "يقرأ Diamond بسرعة أقل"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Diamond reads it on this computer · Super+Shift+S again stops · Enter"
+msgstr "يقرأه Diamond على هذا الحاسوب · Super+Shift+S مرة أخرى يوقف · Enter"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Read aloud"
+msgstr "قراءة بصوت عالٍ"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Read the selected text aloud"
+msgstr "قراءة النص المحدد بصوت عالٍ"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Stop reading"
+msgstr "إيقاف القراءة"
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Super+Shift+S reads the selected text; the next reading uses the new speed."
+msgstr "Super+Shift+S يقرأ النص المحدد؛ القراءة التالية تستخدم السرعة الجديدة."
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "Super+Shift+S stops it"
+msgstr "Super+Shift+S يوقفه"
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "The reader (espeak-ng) is not installed: {error}"
+msgstr "القارئ (espeak-ng) غير مثبّت: {error}"
+
+#: apps/dai-speak/dai_speak/engine.py
+#, python-brace-format
+msgid "The reader could not write {path}."
+msgstr "تعذّر على القارئ كتابة {path}."
+
+#: apps/dai-speak/dai_speak/engine.py
+msgid "There is nothing to read."
+msgstr "لا يوجد ما يُقرأ."

@@ -2116,6 +2116,81 @@ register(ActionSpec(
 
 
 # --------------------------------------------------------------------------
+# D.Ai Speak (docs/SPEAK.md §2): how fast Diamond reads aloud. One small user file; "faster" and "slower" step
+# from the current value, "normal" is the default. The file snapshot makes undo exact.
+# --------------------------------------------------------------------------
+
+SPEAK_FILE = ".config/dai/speak.json"
+SPEAK_DEFAULT_RATE, SPEAK_MIN, SPEAK_MAX, SPEAK_STEP = 160, 80, 400, 30
+
+
+def speak_current_rate(ctx: Context) -> int:
+    try:
+        data = json.loads(read_text(ctx.user_path(SPEAK_FILE), "{}"))
+        return max(SPEAK_MIN, min(SPEAK_MAX, int(data.get("rate", SPEAK_DEFAULT_RATE))))
+    except (ValueError, TypeError, AttributeError):
+        return SPEAK_DEFAULT_RATE
+
+
+def speak_target_rate(params: Params, ctx: Context) -> int:
+    change = params["change"]
+    if change == "faster":
+        return min(SPEAK_MAX, speak_current_rate(ctx) + SPEAK_STEP)
+    if change == "slower":
+        return max(SPEAK_MIN, speak_current_rate(ctx) - SPEAK_STEP)
+    if change == "normal":
+        return SPEAK_DEFAULT_RATE
+    return int(params["rate"])
+
+
+def _speak_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"change", "rate"})
+    change = _choice(params.get("change"), ("faster", "slower", "normal", "rate"), "change")
+    if change != "rate":
+        return {"change": change}
+    rate = params.get("rate")
+    if not isinstance(rate, int) or isinstance(rate, bool) or not SPEAK_MIN <= rate <= SPEAK_MAX:
+        raise ValidationError(f"rate: a whole number of words per minute between {SPEAK_MIN} and {SPEAK_MAX}")
+    return {"change": "rate", "rate": rate}
+
+
+def _speak_apply(params: Params, ctx: Context) -> None:
+    path = ctx.user_path(SPEAK_FILE)
+    try:
+        data = json.loads(read_text(path, "{}"))
+    except ValueError:
+        data = {}
+    if not isinstance(data, dict):
+        data = {}
+    data["rate"] = speak_target_rate(params, ctx)
+    write_file(path, json.dumps(data, ensure_ascii=False, indent=2) + "\n", 0o600)
+
+
+def _speak_summary(params: Params, lang: str) -> str:
+    change = params["change"]
+    if change == "faster":
+        return _t(lang, "Diamond reads aloud faster", "Diamond מקריא מהר יותר")
+    if change == "slower":
+        return _t(lang, "Diamond reads aloud slower", "Diamond מקריא לאט יותר")
+    if change == "normal":
+        return _t(lang, "Diamond reads aloud at the normal speed", "Diamond מקריא במהירות הרגילה")
+    return _t(lang, "Diamond reads aloud at {rate} words per minute", "Diamond מקריא ב־{rate} מילים לדקה", rate=params["rate"])
+
+
+register(ActionSpec(
+    id="speak.rate",
+    scope="user",
+    validate=_speak_validate,
+    apply=_speak_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=_speak_summary,
+    files=lambda p, c: [c.user_path(SPEAK_FILE)],
+    note=lambda p, lang: _t(lang, "Super+Shift+S reads the selected text; the next reading uses the new speed.",
+                            "Super+Shift+S מקריא את הטקסט המסומן; ההקראה הבאה במהירות החדשה."),
+))
+
+# --------------------------------------------------------------------------
 # Diamond's Way, when: (docs/WAY.md §2): a user timer that runs one D.Ai Tune sentence at a time. The sentence
 # is kept as text and parsed again at every run; only user-scope actions, because a timer cannot ask for an
 # administrator. dai-way run-when NAME is what the timer starts.

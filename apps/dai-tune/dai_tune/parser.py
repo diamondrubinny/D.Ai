@@ -231,6 +231,12 @@ PROVIDER = r"(?:\b(?:answer|answers|ask|asking|think)\s+(?:with|through|via|usin
 PROVIDERS_FORBID = r"(?:\b(?:no|forbid|block|disable|without)\s+external\s+ai(?:\s+providers?)?\b|\bexternal\s+ai\s+providers?\s+(?:off|forbidden)\b|(?:בלי|אסור|לאסור|חסום|חסימת)\s+ספקי\s+(?:ai|בינה(?:\s+מלאכותית)?)\s+חיצוניים)"
 PROVIDERS_ALLOW = r"(?:\b(?:allow|permit)\s+external\s+ai(?:\s+providers?)?\b|(?:לאפשר|אפשר|תאפשר|התר|להתיר)\s+ספקי\s+(?:ai|בינה(?:\s+מלאכותית)?)\s+חיצוניים)"
 PROVIDER_LOCAL = r"(?:\b(?:answer|answers|think)\s+(?:locally|on\s+this\s+computer|here\s+only|on\s+the\s+computer)\b|(?:ענה|תענה|חשוב|תחשוב)\s+(?:מקומית|במחשב\s+הזה|רק\s+כאן|במחשב\s+בלבד))"
+# D.Ai Speak (docs/SPEAK.md): reading speed. "read" alone is not enough: "read faster" / "reading speed".
+READ = r"(?:read(?:ing|s)?(?:\s+(?:aloud|out\s+loud|to\s+me))?|speak(?:ing)?|voice|narrat(?:e|ion)|הקראה|תקריא|להקריא|מקריא|הקרא)"
+SPEAK_FASTER = rf"(?:\b{READ}\s+(?:a\s+(?:bit|little)\s+)?(?:faster|quicker|more\s+quickly)\b|\b(?:faster|quicker)\s+{READ}|(?:{READ})\s+(?:יותר\s+מהר|מהר\s+יותר)|מהירות\s+(?:ה)?הקראה\s+(?:גבוהה|מהירה)\s+יותר)"
+SPEAK_SLOWER = rf"(?:\b{READ}\s+(?:a\s+(?:bit|little)\s+)?(?:slower|more\s+slowly)\b|\bslower\s+{READ}|(?:{READ})\s+(?:יותר\s+לאט|לאט\s+יותר)|מהירות\s+(?:ה)?הקראה\s+(?:נמוכה|איטית)\s+יותר)"
+SPEAK_NORMAL = rf"(?:\b(?:normal|default|usual)\s+(?:{READ}\s+)?(?:speed|pace)\b|\b{READ}\s+(?:at\s+)?(?:the\s+)?(?:normal|default|usual)\s+(?:speed|pace)\b|\b{READ}\s+(?:speed|pace)\s+(?:normal|default|usual)\b|מהירות\s+(?:ה)?הקראה\s+(?:רגילה|ברירת\s+מחדל)|(?:{READ})\s+(?:במהירות\s+)?(?:רגיל(?:ה)?|כרגיל))"
+SPEAK_RATE = rf"(?:\b{READ}\s+(?:at\s+)?(?P<wpm>\d{{2,3}})\s+(?:words?\s+(?:per|a)\s+minute|wpm)\b|(?:{READ})\s+(?:ב-?)?(?P<wpm_he>\d{{2,3}})\s+מילים\s+(?:לדקה|בדקה))"
 SAVER_OFF = r"(?:\boff\b|\bstop\b|\bdisable\b|\bno\s+more\b|כבוי|כבה|בטל|תבטל|לבטל|הפסק|תפסיק|בלי)"
 NET = r"(?:the\s+)?(?:internet|network|online|web)"
 APP = r"([\w.+'-]+(?:\s+[\w.+'-]+)?)"   # one or two words: "firefox", "google chrome", "org.telegram.desktop"
@@ -292,6 +298,16 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("ai.providers_policy", {"allowed": True}, clause)]
     if _has(PROVIDER_LOCAL, c):
         return [Request("diamond.provider", {"name": "local"}, clause)]
+
+    # D.Ai Speak (docs/SPEAK.md §2): "read faster", "read slower", "normal reading speed", "read at 200 words per minute".
+    if (m := re.search(SPEAK_RATE, c, re.IGNORECASE)) is not None:
+        return [Request("speak.rate", {"change": "rate", "rate": int(m.group("wpm") or m.group("wpm_he"))}, clause)]
+    if _has(SPEAK_FASTER, c):
+        return [Request("speak.rate", {"change": "faster"}, clause)]
+    if _has(SPEAK_SLOWER, c):
+        return [Request("speak.rate", {"change": "slower"}, clause)]
+    if _has(SPEAK_NORMAL, c):
+        return [Request("speak.rate", {"change": "normal"}, clause)]
     if (m := re.search(PROVIDER, c, re.IGNORECASE)) is not None:
         return [Request("diamond.provider", {"name": m.group("provider") or m.group("provider_he")}, clause)]
 
