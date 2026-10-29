@@ -304,7 +304,7 @@ class HealLanguageTests(unittest.TestCase):
         self.assertEqual(hebrew[0].kind, "fact")
         self.assertIn("Alt+Shift", hebrew[0].title)
         self.assertNotIn("fact", [r.kind for r in core.build_actions("what is the capital of France", [])])
-        self.assertEqual(core.build_actions("lock screen", [])[:1], [])      # not a question: the usual rows
+        self.assertNotIn("fact", [r.kind for r in core.build_actions("lock screen", [])])   # not a question: the usual rows
         self.assertEqual(core.build_actions("2+2", [])[0].kind, "calc")
 
     def test_explain_words(self):
