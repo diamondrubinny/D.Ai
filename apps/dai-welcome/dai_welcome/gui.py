@@ -34,7 +34,7 @@ from dai_style import app_font, color, with_touch
 from . import __author__, __version__, core
 
 APP_ID = "dai-welcome"
-STEPS = ("welcome", "security", "ai", "privacy", "summary")
+STEPS = ("welcome", "security", "ai", "privacy", "tour", "summary")
 
 STYLE = FORGE_STYLE.replace("QWidget#Forge", "QWidget#Welcome") + f"""
 QLabel#Dot {{ color: {color('dot')}; font-size: 12pt; }}  /* a step still to come: 3.8:1 (WCAG 1.4.11) */
@@ -91,6 +91,9 @@ STRINGS = {
     "low_ram": ("this computer has little memory; it may be slow", "למחשב הזה מעט זיכרון; זה עלול להיות איטי"),
     "ram_now": ("This computer: {ram} RAM", "המחשב הזה: {ram} RAM"),
     "privacy_title": ("Your privacy", "הפרטיות שלכם"),
+    "tour_title": ("Sixty seconds that save hours", "שישים שניות שחוסכות שעות"),
+    "tour_intro": ("Everything on this page can also be asked later: type a question in the command bar, such as 'how do I lock the screen', and the answer appears at once.",
+                   "כל מה שבעמוד הזה אפשר גם לשאול אחר כך: כותבים שאלה בשורת הפקודה, למשל 'איך נועלים את המסך', והתשובה מופיעה מיד."),
     "privacy": [
         ("No telemetry, no ads, no account. D.Ai OS does not report anything about you.",
          "אין טלמטריה, אין פרסומות ואין חשבון. D.Ai OS לא מדווח עליכם כלום."),
@@ -159,6 +162,21 @@ def _catalog() -> dict[str, Any]:
         return models.load_catalog()
     except Exception:
         return {}
+
+
+def tour_facts(lang: str) -> list[str]:
+    """The facts of the tour, in order, from Diamond's knowledge of the system; [] without dai_ai."""
+    try:
+        from dai_ai.knowledge import FACTS
+    except ImportError:
+        return []
+    chosen = []
+    for key in WelcomeWindow.TOUR_KEYS:
+        for fact in FACTS:
+            if fact.keys[0] == key and fact not in chosen:
+                chosen.append(fact)
+                break
+    return [fact.text(lang) for fact in chosen]
 
 
 class WelcomeWindow(QWidget):
@@ -409,6 +427,19 @@ class WelcomeWindow(QWidget):
         card = self._card(layout)
         for pair in STRINGS["privacy"]:
             card.addWidget(self._wrap(f"<span style='color:{OK_GREEN}'>✓</span> {self.pick(pair)}"))
+        layout.addStretch(1)
+        self._nav(self._button("back", lambda: self.go(-1)), self._button("next", lambda: self.go(1), primary=True))
+
+    # The tour draws on the same facts Diamond uses (dai_ai.knowledge): one source, never two versions.
+    TOUR_KEYS = ("command", "settings", "install", "lock", "language", "clipboard", "quick", "crash", "slow", "explain", "undo")
+
+    def page_tour(self) -> None:
+        layout = self._page()
+        self._title(layout, "tour_title")
+        layout.addWidget(self._wrap(self.t("tour_intro"), "Muted"))
+        card = self._card(layout)
+        for fact in tour_facts(self.lang):
+            card.addWidget(self._wrap(f"<span style='color:{OK_GREEN}'>◆</span> {fact}"))
         layout.addStretch(1)
         self._nav(self._button("back", lambda: self.go(-1)), self._button("next", lambda: self.go(1), primary=True))
 

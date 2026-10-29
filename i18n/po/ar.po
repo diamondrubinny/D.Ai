@@ -7017,3 +7017,11 @@ msgstr "اسأل Diamond عن ذلك"
 #: apps/dai-command/dai_command/core.py
 msgid "From D.Ai's own guide · Enter copies it"
 msgstr "من دليل D.Ai نفسه · Enter ينسخ"
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Sixty seconds that save hours"
+msgstr "ستون ثانية توفّر ساعات"
+
+#: apps/dai-welcome/dai_welcome/gui.py
+msgid "Everything on this page can also be asked later: type a question in the command bar, such as 'how do I lock the screen', and the answer appears at once."
+msgstr "كل ما في هذه الصفحة يمكن سؤاله لاحقًا: اكتب سؤالًا في شريط الأوامر، مثل 'كيف أقفل الشاشة'، فيظهر الجواب فورًا."
