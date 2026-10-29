@@ -7261,7 +7261,7 @@ msgid "friday|fri\\b"
 msgstr ""
 
 #. he: מחזק אבטחה
-#: apps/dai-command/dai_command/core.py:897
+#: apps/dai-command/dai_command/core.py:901
 #: apps/dai-forge/dai_forge/gui.py:181
 #: apps/dai-settings/dai_settings/gui.py:112
 #: apps/dai-store/dai_store/gui.py:107
@@ -7407,7 +7407,7 @@ msgid "monitor-sensor is installed"
 msgstr ""
 
 #. he: ניטרלי
-#: apps/dai-command/dai_command/core.py:899
+#: apps/dai-command/dai_command/core.py:903
 #: apps/dai-forge/dai_forge/gui.py:182
 #: apps/dai-settings/dai_settings/gui.py:114
 #: apps/dai-store/dai_store/gui.py:109
@@ -7813,7 +7813,7 @@ msgid "verified"
 msgstr ""
 
 #. he: מחליש אבטחה
-#: apps/dai-command/dai_command/core.py:898
+#: apps/dai-command/dai_command/core.py:902
 #: apps/dai-forge/dai_forge/gui.py:181
 #: apps/dai-settings/dai_settings/gui.py:113
 #: apps/dai-store/dai_store/gui.py:108
