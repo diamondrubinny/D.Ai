@@ -588,7 +588,7 @@ def main() -> int:
         # D.Ai Speak (docs/SPEAK.md): the local voice writes a sound file in Hebrew and in English, a stop with no
         # reader is quiet, a stale pid file naming another process is never acted on, and Tune sets the speed.
         ("speak: Diamond reads aloud", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-speak --version; which espeak-ng | sed 's/^/READER=/'; "
-         "test -f /usr/share/applications/dai-speak.desktop && echo DESKTOP_ENTRY; grep -c 'W-S-s' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; "
+         "test -f /usr/share/applications/dai-speak.desktop && echo DESKTOP_ENTRY; grep -c 'key=\"W-S-s\"' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; "
          "dai-speak --text 'שלום, אני דיימונד. המחשב הזה מקריא בעברית.' --lang he --wav /tmp/speak-he.wav; echo HE_RC=$?; "
          "stat -c 'HE_BYTES=%s' /tmp/speak-he.wav; dai-speak --text 'Hello, I am Diamond. This computer reads aloud.' --lang en --wav /tmp/speak-en.wav; echo EN_RC=$?; "
          "stat -c 'EN_BYTES=%s' /tmp/speak-en.wav; dai-speak --stop; echo STOP_RC=$?; "
