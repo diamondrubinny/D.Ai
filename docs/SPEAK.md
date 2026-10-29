@@ -6,8 +6,8 @@
 ## 1. הרעיון
 
 מסמנים טקסט בכל חלון ולוחצים **Super+Shift+S**: Diamond מקריא אותו. לוחצים שוב: שקט. ב־D.Ai Explain יש כפתור
-"הקראה" להסבר שהתקבל; ב־D.Ai Command כותבים "תקריא את זה" / "read this aloud" ("די להקריא" / "stop reading"
-עוצר). הקול הוא ‏espeak-ng המקומי, זה שכבר נמצא במערכת בשביל קורא המסך Orca, בשמונה השפות של D.Ai.
+"הקראה" להסבר שהתקבל; ב־D.Ai Command כותבים "תקריא את זה" / "read this aloud": כשיש תשובה של Diamond על
+המסך היא מוקראת, אחרת הטקסט המסומן ("די להקריא" / "stop reading" עוצר). ב־Welcome, הסיור מזכיר את זה. הקול הוא ‏espeak-ng המקומי, זה שכבר נמצא במערכת בשביל קורא המסך Orca, בשמונה השפות של D.Ai.
 
 זה לא תחליף ל־Orca (קורא מסך מלא, ‏Super+Alt+S): זו הקראה של **מה שבוחרים**, בשביל מי שקורא לאט, מי שעייף,
 מי שרוצה לשמוע מאמר תוך כדי משהו אחר, או ילד שעדיין לומד לקרוא.
@@ -55,7 +55,8 @@
 | `apps/dai-speak/dai_speak/cli.py` | `dai-speak` |
 | `apps/dai-speak/data/dai-speak`, `dai-speak.desktop` | המפעיל והרשומה |
 | `apps/dai-explain/dai_explain/gui.py` | כפתור "הקראה" / "עצור" |
-| `apps/dai-command/dai_command/core.py`, `ui.py` | "תקריא את זה", "stop reading" |
+| `apps/dai-command/dai_command/core.py`, `ui.py` | "תקריא את זה" (התשובה של Diamond כשיש, אחרת הבחירה), "stop reading" |
+| `apps/dai-welcome/dai_welcome/gui.py` | העובדה על ההקראה בסיור |
 | `apps/dai-tune/dai_tune/catalog.py`, `parser.py` | `speak.rate` |
 | `apps/dai-ai/dai_ai/knowledge.py` | עובדה: "המחשב יכול להקריא לי?" |
 | `build/live-build/common/package-lists/desktop.list.chroot` | `espeak-ng` במפורש |

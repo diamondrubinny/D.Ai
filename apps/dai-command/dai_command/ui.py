@@ -379,9 +379,15 @@ class CommandWindow(QWidget):
             self._spawn(["sh", "-c", "sleep 0.4; exec dai-explain"])
             remembered = self.query.text().strip()
         elif action.kind == "speak":
-            # A moment for this window to close, so the selection Diamond reads is the person's, not ours.
-            self._spawn(["sh", "-c", "sleep 0.3; exec dai-speak --stop"] if action.payload == "stop"
-                        else ["sh", "-c", "sleep 0.3; exec dai-speak"])
+            answer = "" if self.answer.isHidden() else self.answer.toPlainText().strip()
+            if action.payload == "stop":
+                self._spawn(["dai-speak", "--stop"])
+            elif answer:
+                # Diamond's answer, through dai-speak's standard input (never on a command line).
+                self._spawn_with_input(["dai-speak", "--stdin"], answer)
+            else:
+                # A moment for this window to close, so the selection Diamond reads is the person's, not ours.
+                self._spawn(["sh", "-c", "sleep 0.3; exec dai-speak"])
             remembered = self.query.text().strip()
         elif action.kind == "focus":
             argv = {"stop": ["dai-focus", "stop"], "game": ["dai-focus", "game"], "game-stop": ["dai-focus", "game", "stop"]}
@@ -506,6 +512,21 @@ class CommandWindow(QWidget):
             )
         except OSError as exc:
             print(f"dai-command: cannot start {argv[0]}: {exc}", file=sys.stderr)
+
+    @staticmethod
+    def _spawn_with_input(argv: list[str], text: str) -> None:
+        try:
+            child = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                     start_new_session=True, cwd=str(Path.home()))
+        except OSError as exc:
+            print(f"dai-command: cannot start {argv[0]}: {exc}", file=sys.stderr)
+            return
+        try:
+            assert child.stdin is not None
+            child.stdin.write(text.encode("utf-8"))
+            child.stdin.close()
+        except OSError:
+            pass
 
     # -- window behaviour --------------------------------------------------
 

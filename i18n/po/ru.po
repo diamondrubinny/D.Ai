@@ -7106,3 +7106,7 @@ msgstr "Чтец не смог записать {path}."
 #: apps/dai-speak/dai_speak/engine.py
 msgid "There is nothing to read."
 msgstr "Нечего читать."
+
+#: apps/dai-command/dai_command/core.py
+msgid "Diamond's answer when one is shown, else the selected text · on this computer · Super+Shift+S stops · Enter"
+msgstr "Ответ Diamond, когда он показан, иначе выделенный текст · на этом компьютере · Super+Shift+S останавливает · Enter"

@@ -431,7 +431,7 @@ class WelcomeWindow(QWidget):
         self._nav(self._button("back", lambda: self.go(-1)), self._button("next", lambda: self.go(1), primary=True))
 
     # The tour draws on the same facts Diamond uses (dai_ai.knowledge): one source, never two versions.
-    TOUR_KEYS = ("command", "settings", "install", "lock", "language", "clipboard", "quick", "crash", "slow", "explain", "undo")
+    TOUR_KEYS = ("command", "settings", "install", "lock", "language", "clipboard", "quick", "crash", "slow", "explain", "read aloud", "undo")
 
     def page_tour(self) -> None:
         layout = self._page()

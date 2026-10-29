@@ -7106,3 +7106,7 @@ msgstr "Le lecteur n'a pas pu écrire {path}."
 #: apps/dai-speak/dai_speak/engine.py
 msgid "There is nothing to read."
 msgstr "Il n'y a rien à lire."
+
+#: apps/dai-command/dai_command/core.py
+msgid "Diamond's answer when one is shown, else the selected text · on this computer · Super+Shift+S stops · Enter"
+msgstr "La réponse de Diamond quand il y en a une, sinon le texte sélectionné · sur cet ordinateur · Super+Shift+S arrête · Enter"
