@@ -204,7 +204,7 @@ class PlannerTests(TuneTestCase):
             "extra key": {"version": 1, "hash": "x", "steps": [{"action": "device.block", "params": {"kind": "camera"}, "run": "id"}]},
             "bad params": {"version": 1, "hash": "x", "steps": [{"action": "device.block", "params": {"kind": "../../x"}}]},
             "not a plan": ["device.block"],
-            "too many": {"version": 1, "hash": "x", "steps": [{"action": "device.block", "params": {"kind": "camera"}}] * 21},
+            "too many": {"version": 1, "hash": "x", "steps": [{"action": "device.block", "params": {"kind": "camera"}}] * 33},
         }
         for name, data in bad_payloads.items():
             with self.subTest(name), self.assertRaises(ValidationError):

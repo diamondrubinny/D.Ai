@@ -13,7 +13,7 @@ from .catalog import CATALOG, ValidationError, load_firewall_rules
 from .context import Context
 from .parser import Request, parse
 
-MAX_STEPS = 20
+MAX_STEPS = 32   # a whole computer in one .dway (dai-way export) grows with the catalog; still one screen of plan
 RISK_ORDER = {"low": 0, "medium": 1, "high": 2}
 
 
