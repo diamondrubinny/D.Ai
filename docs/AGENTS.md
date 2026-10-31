@@ -67,4 +67,6 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 
 ## 7. מצב
 
-🔨 שלב 1 נבנה; ממתין ל־CI.
+🔨 שלב 1 נבנה. בריצה 41242134572 המנגנון עבד (כלים, תפקידים, `--script` יצר פתק ותזכורת, ‏`shell` נדחה, היומן נכתב), אבל
+הריצה עם המודל נעצרה אחרי 8 צעדים של `"tool": ""`: הסכמה הקשיחה מעולם לא הגיעה ל־llama-server (docs/AI.md §5, מבנה
+`response_format` שגוי מאז היום הראשון של Diamond). תוקן ב־`dai_ai/llama.py`; ממתין לריצה הבאה.

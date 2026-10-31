@@ -16,6 +16,25 @@ from typing import Any, Iterator
 from .paths import LLAMA_DIR, runtime_dir
 
 
+def request_body(messages: list[dict[str, Any]], schema: dict | None, max_tokens: int, temperature: float) -> dict[str, Any]:
+    """The /v1/chat/completions request.
+
+    A schema goes in the OpenAI layout, response_format.json_schema.schema: llama-server (tools/server/
+    server-common.cpp of the pinned tag) reads only that key for type "json_schema" and otherwise applies an
+    empty schema, i.e. "any JSON". The old shape {"type": "json_schema", "schema": ...} looked right and
+    silently constrained nothing: the first agent run in the VM got {"tool": ""} eight times.
+    """
+    body: dict[str, Any] = {
+        "messages": messages,
+        "stream": True,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if schema is not None:
+        body["response_format"] = {"type": "json_schema", "json_schema": {"name": "reply", "schema": schema}}
+    return body
+
+
 class LlamaError(RuntimeError):
     pass
 
@@ -115,14 +134,7 @@ class LlamaServer:
              temperature: float = 0.2) -> Iterator[str]:
         """Stream the assistant's reply as text deltas."""
         self.ensure_running()
-        body: dict[str, Any] = {
-            "messages": messages,
-            "stream": True,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-        }
-        if schema is not None:
-            body["response_format"] = {"type": "json_schema", "schema": schema}
+        body = request_body(messages, schema, max_tokens, temperature)
         conn = UnixHTTPConnection(str(self.socket_path))
         conn.request("POST", "/v1/chat/completions", body=json.dumps(body), headers={"Content-Type": "application/json"})
         response = conn.getresponse()

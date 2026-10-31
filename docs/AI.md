@@ -78,6 +78,11 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 - מודל 0.5B מהיר אבל מוגבל, בעיקר בעברית. אפשר לבחור מודל גדול יותר מהקטלוג.
 - האצת GPU (Vulkan/CUDA) עוד לא נבנתה. כרגע CPU בלבד.
 - הכתבה קולית (Whisper): ראו [VOICE.md](VOICE.md).
+- **סכמת JSON נאכפת רק מ־2026-10-31.** עד אז `llama.py` שלח `response_format: {"type": "json_schema", "schema": …}`,
+  ו־llama-server (‏`tools/server/server-common.cpp` בתג המקובע b11400, אומת מול המקור) קורא ל־`type: json_schema` רק את
+  `response_format.json_schema.schema`; בלי המפתח הזה הסכמה ריקה, כלומר "כל JSON". ‏Tune, ‏Forge, ‏Code ו־Agents קיבלו JSON
+  תקין אבל לא מוגבל (הסוכן קיבל `"tool": ""` שמונה פעמים ב־VM). עכשיו הפריסה היא של OpenAI (`json_schema.schema`), ובדיקת
+  יחידה מקבעת אותה. הממיר המקובע תומך ב־`enum`, ‏`pattern`, ‏`minLength/maxLength`, ‏`items`, ‏`additionalProperties`.
 
 ---
 

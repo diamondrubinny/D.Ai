@@ -292,6 +292,17 @@ class TaskTests(EnvTestCase):
             self.assertNotIn("--media-path", argv)
             self.assertNotIn("--mmproj", llama.LlamaServer(weights).argv(Path("/x")))
 
+    def test_llama_server_gets_the_schema_where_it_reads_it(self):
+        from dai_ai import llama
+        body = llama.request_body([{"role": "user", "content": "hi"}], {"type": "object", "properties": {"tool": {"enum": ["a"]}}}, 40, 0.0)
+        # llama-server reads response_format.json_schema.schema for type "json_schema"; a "schema" key beside
+        # "type" is ignored and the reply is then any JSON at all (the VM showed {"tool": ""}).
+        self.assertEqual(body["response_format"]["type"], "json_schema")
+        self.assertEqual(body["response_format"]["json_schema"]["schema"]["properties"]["tool"]["enum"], ["a"])
+        self.assertNotIn("schema", body["response_format"])
+        self.assertTrue(body["stream"])
+        self.assertNotIn("response_format", llama.request_body([], None, 40, 0.3))
+
     def test_speech_file_suffix(self):
         path = Path(self.tmp.name) / "catalog.json"
         entry = {"id": "voice", "name": "x", "url": "https://huggingface.co/a.gguf", "file": "a.gguf", "sha256": "",
