@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import re
+import secrets
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -2170,6 +2171,144 @@ register(ActionSpec(
     files=lambda p, c: [c.user_path(EXPLAIN_FILE)],
     note=lambda p, lang: _t(lang, "Everything stays on this computer either way; the picture needs an installed vision model.",
                             "בכל מקרה הכול נשאר במחשב הזה; התמונה דורשת מודל ראייה מותקן."),
+))
+
+# --------------------------------------------------------------------------
+# D.Ai Remind (docs/REMIND.md): one reminder = one small file and one user timer that runs dai-remind fire.
+# --------------------------------------------------------------------------
+
+REMIND_DIR = ".local/share/dai/reminders"
+REMIND_ID_RE = re.compile(r"^[0-9a-f]{8}$")
+REMIND_TEXT_MAX = 200
+REMIND_DAYS_MAX = 365
+
+
+def remind_unit(reminder_id: str, suffix: str) -> str:
+    return f"dai-remind-{reminder_id}.{suffix}"
+
+
+def remind_files(reminder_id: str, ctx: Context) -> list[Path]:
+    return [ctx.user_path(f"{REMIND_DIR}/{reminder_id}.json"),
+            ctx.user_path(f"{WAY_UNIT_DIR}/{remind_unit(reminder_id, 'service')}"),
+            ctx.user_path(f"{WAY_UNIT_DIR}/{remind_unit(reminder_id, 'timer')}")]
+
+
+def remind_unit_texts(reminder_id: str, at: str) -> dict[str, str]:
+    """at: "YYYY-MM-DDTHH:MM" (local time). The timer fires once; dai-remind fire removes both units."""
+    when = at.replace("T", " ") + ":00"
+    return {
+        remind_unit(reminder_id, "service"): "\n".join([
+            f"# Written by D.Ai Remind (docs/REMIND.md). dai-remind cancel {reminder_id}",
+            "[Unit]",
+            f"Description=D.Ai reminder {reminder_id}",
+            "",
+            "[Service]",
+            "Type=oneshot",
+            f"ExecStart=/usr/bin/dai-remind fire {reminder_id}",
+            "NoNewPrivileges=yes",
+        ]) + "\n",
+        remind_unit(reminder_id, "timer"): "\n".join([
+            f"# Written by D.Ai Remind (docs/REMIND.md). dai-remind cancel {reminder_id}",
+            "[Unit]",
+            f"Description=D.Ai reminder timer {reminder_id}",
+            "",
+            "[Timer]",
+            f"OnCalendar={when}",
+            "AccuracySec=1s",
+            "",
+            "[Install]",
+            "WantedBy=timers.target",
+        ]) + "\n",
+    }
+
+
+def remind_disable(reminder_id: str, ctx: Context) -> None:
+    for suffix in ("timer", "service"):
+        ctx.run(["systemctl", "--user", "disable", "--now", remind_unit(reminder_id, suffix)], check=False)
+    ctx.run(["systemctl", "--user", "daemon-reload"], check=False)
+    for suffix in ("timer", "service"):
+        ctx.run(["systemctl", "--user", "reset-failed", remind_unit(reminder_id, suffix)], check=False)
+
+
+def remind_when(params: Params, now: "datetime | None" = None) -> "datetime":
+    """The moment, whole minutes, from "in N minutes" or "HH:MM [tomorrow]" (a time already past today = tomorrow)."""
+    from datetime import datetime, timedelta
+    now = (now or datetime.now()).replace(second=0, microsecond=0)
+    if "in_minutes" in params:
+        return now + timedelta(minutes=int(params["in_minutes"]))
+    hour, minute = (int(x) for x in str(params["time"]).split(":"))
+    when = now.replace(hour=hour, minute=minute)
+    if params.get("tomorrow") or when <= now:
+        when += timedelta(days=1)
+    return when
+
+
+def _remind_validate(params: Params, ctx: Context) -> Params:
+    from datetime import datetime, timedelta
+    _only_keys(params, {"id", "text", "at", "in_minutes", "time", "tomorrow"})
+    text = params.get("text")
+    if not isinstance(text, str) or not text.strip() or len(text.strip()) > REMIND_TEXT_MAX or "\n" in text:
+        raise ValidationError(f"text: 1 to {REMIND_TEXT_MAX} characters on one line")
+    reminder_id = params.get("id") or secrets.token_hex(4)
+    if not isinstance(reminder_id, str) or not REMIND_ID_RE.match(reminder_id):
+        raise ValidationError("id: 8 hexadecimal characters")
+    if "at" in params:
+        try:
+            when = datetime.strptime(str(params["at"]), "%Y-%m-%dT%H:%M")
+        except ValueError as exc:
+            raise ValidationError("at: YYYY-MM-DDTHH:MM") from exc
+    else:
+        if "in_minutes" in params:
+            minutes = params["in_minutes"]
+            if not isinstance(minutes, int) or isinstance(minutes, bool) or not 1 <= minutes <= REMIND_DAYS_MAX * 24 * 60:
+                raise ValidationError("in_minutes: 1 to a year")
+        elif "time" in params:
+            if not re.fullmatch(r"(?:[01]?\d|2[0-3]):[0-5]\d", str(params["time"])):
+                raise ValidationError("time: HH:MM")
+        else:
+            raise ValidationError("when: in_minutes, time or at")
+        when = remind_when(params)
+    now = datetime.now().replace(second=0, microsecond=0)
+    if when < now or when > now + timedelta(days=REMIND_DAYS_MAX):
+        raise ValidationError("at: between now and a year from now")
+    return {"id": reminder_id, "text": text.strip(), "at": when.strftime("%Y-%m-%dT%H:%M")}
+
+
+def _remind_apply(params: Params, ctx: Context) -> None:
+    from datetime import datetime
+    reminder_id, at = params["id"], params["at"]
+    for filename, content in remind_unit_texts(reminder_id, at).items():
+        write_file(ctx.user_path(f"{WAY_UNIT_DIR}/{filename}"), content)
+    write_file(ctx.user_path(f"{REMIND_DIR}/{reminder_id}.json"),
+               json.dumps({"text": params["text"], "at": at, "created": datetime.now().strftime("%Y-%m-%dT%H:%M")},
+                          ensure_ascii=False, indent=1) + "\n", mode=0o600)
+    ctx.run(["systemctl", "--user", "daemon-reload"], check=False)
+    ctx.run(["systemctl", "--user", "enable", "--now", remind_unit(reminder_id, "timer")])
+
+
+def _remind_restore(params: Params, ctx: Context, extra: dict) -> None:
+    remind_disable(params["id"], ctx)
+    if ctx.user_path(f"{REMIND_DIR}/{params['id']}.json").exists():   # the undo of a cancel: the timer comes back
+        ctx.run(["systemctl", "--user", "enable", "--now", remind_unit(params["id"], "timer")], check=False)
+
+
+def _remind_summary(params: Params, lang: str) -> str:
+    at = str(params["at"]).replace("T", " ")
+    return _t(lang, "Reminder at {at}: {text}", "תזכורת ב־{at}: {text}", at=at, text=params["text"])
+
+
+register(ActionSpec(
+    id="reminder.add",
+    scope="user",
+    validate=_remind_validate,
+    apply=_remind_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=_remind_summary,
+    files=lambda p, c: remind_files(p["id"], c),
+    restore=_remind_restore,
+    note=lambda p, lang: _t(lang, "A notification and a sound, on this computer. The list: dai-remind list",
+                            "הודעה וצליל, במחשב הזה. הרשימה: dai-remind list"),
 ))
 
 # --------------------------------------------------------------------------

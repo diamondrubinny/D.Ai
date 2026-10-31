@@ -336,6 +336,19 @@ class HealLanguageTests(unittest.TestCase):
         for text in ("explain quantum physics", "what is linux", "מה זה לינוקס"):
             self.assertFalse(core.EXPLAIN_WORDS.search(text), text)
 
+    def test_remind_words(self):
+        for text in ("remind me in 20 minutes to call Dana", "Remind me at 18:30 to rest", "תזכיר לי בעוד שעה לצאת", "להזכיר לי מחר ב-8 לשלם"):
+            self.assertTrue(core.REMIND_WORDS.search(text), text)
+        self.assertFalse(core.REMIND_WORDS.search("reminders are nice"))
+        for text in ("reminders", "my reminders", "show my reminders", "תזכורות", "התזכורות שלי"):
+            self.assertTrue(core.REMIND_LIST_WORDS.search(text), text)
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            rows = core.build_actions("my reminders", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("terminal", "dai-remind list"))
+            rows = core.build_actions("remind me in 20 minutes to call Dana", [])
+            self.assertEqual(rows[0].kind, "tune")
+            self.assertIn("call Dana", rows[0].title)
+
     def test_speak_words(self):
         for text in ("read this aloud", "read aloud", "read it to me", "read the selection", "Read this out loud!", "text to speech",
                      "תקריא את זה", "תקריא לי", "הקראה", "להקריא"):

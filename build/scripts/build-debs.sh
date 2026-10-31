@@ -240,6 +240,10 @@ build_apps() {
   install -m 0755 "$speak/data/dai-speak" "$root/usr/bin/dai-speak"
   install -m 0644 "$speak/data/dai-speak.desktop" "$root/usr/share/applications/"
 
+  local remind="$REPO_ROOT/apps/dai-remind"
+  copy_package "$remind/dai_remind" "$root"
+  install -m 0755 "$remind/data/dai-remind" "$root/usr/bin/dai-remind"
+
   local way="$REPO_ROOT/apps/dai-way"
   copy_package "$way/dai_way" "$root"
   install -m 0755 "$way/data/dai-way" "$root/usr/bin/dai-way"

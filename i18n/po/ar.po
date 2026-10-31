@@ -7187,3 +7187,62 @@ msgstr "D.Ai Speak غير مثبّت على هذا الحاسوب."
 #, python-brace-format
 msgid "The player ({player}) is not installed: {error}"
 msgstr "المشغّل ({player}) غير مثبّت: {error}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "A notification and a sound, on this computer. The list: dai-remind list"
+msgstr "إشعار وصوت، على هذا الحاسوب. القائمة: dai-remind list"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "No reminder {id}."
+msgstr "لا يوجد تذكير {id}."
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "No reminder {id}; nothing to remove."
+msgstr "لا يوجد تذكير {id}؛ لا شيء لإزالته."
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "No reminders. Say one: dai-tune \"remind me in 20 minutes to call Dana\""
+msgstr "لا توجد تذكيرات. قل واحدًا: dai-tune \"remind me in 20 minutes to call Dana\""
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "Reminder at {at}: {text}"
+msgstr "تذكير في {at}: {text}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "The reminders still to come (dai-remind list) · Enter"
+msgstr "التذكيرات القادمة (dai-remind list) · Enter"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {d} days"
+msgstr "بعد {d} أيام"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {h} h {m} min"
+msgstr "بعد {h} س {m} د"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {n} min"
+msgstr "بعد {n} د"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "overdue"
+msgstr "فات موعده"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "⏰ Reminder"
+msgstr "⏰ تذكير"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "✓ removed {id}"
+msgstr "✓ أُزيل {id}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "✗ a reminder id is 8 hexadecimal characters"
+msgstr "✗ معرّف التذكير هو 8 أحرف ست عشرية"

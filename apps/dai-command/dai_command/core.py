@@ -465,6 +465,7 @@ _STRINGS = {
     "nothing_to_undo": ("Nothing to undo", "אין מה לבטל"),
     "history_hint": ("See what was changed · Enter", "מה שונה · Enter"),
     "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
+    "remind_list_hint": ("The reminders still to come (dai-remind list) · Enter", "התזכורות שעוד יבואו (dai-remind list) · Enter"),
     "speak_title": ("Read aloud", "הקראה"),
     "speak_hint": ("Diamond's answer when one is shown, else the selected text · on this computer · Super+Shift+S stops · Enter",
                    "התשובה של Diamond כשיש אחת, אחרת הטקסט המסומן · במחשב הזה · Super+Shift+S עוצר · Enter"),
@@ -603,6 +604,10 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("speak", tr("speak_title"), tr("speak_hint"), "audio-speakers", "")]
     if UNDO_WORDS.search(text.strip()):
         return undo_actions()
+    if REMIND_LIST_WORDS.search(text.strip()) and shutil.which("dai-remind"):
+        return [Action("terminal", "dai-remind list", tr("remind_list_hint"), "alarm-clock", "dai-remind list")]
+    if REMIND_WORDS.search(text.strip()) and shutil.which("dai-remind"):    # a reminder is a D.Ai Tune plan, no "!" needed
+        return tune_actions(text.strip())
 
     actions: list[Action] = fact_actions(text)
     if (value := calculate(text)) is not None:
@@ -793,6 +798,9 @@ GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IG
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 # D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
 WAY_WORDS = re.compile(r"^(?:(?:diamond'?s )?way|dai-way|דרך היהלום|דרך)$", re.IGNORECASE)
+# D.Ai Remind (docs/REMIND.md): "remind me in 20 minutes to …", "תזכיר לי …"; "my reminders" lists them.
+REMIND_WORDS = re.compile(r"^(?:remind me\b|(?:תזכיר|תזכירי|להזכיר) לי\b)", re.IGNORECASE)
+REMIND_LIST_WORDS = re.compile(r"^(?:(?:my |the |show (?:my |the )?|list (?:my |the )?)?reminders|(?:הצג |הראה )?(?:את )?(?:ה)?תזכורות(?: שלי)?)\s*[.!?]?$", re.IGNORECASE)
 # D.Ai Speak (docs/SPEAK.md): "read this aloud", "read it to me", "read the selection", "תקריא את זה", "הקראה".
 SPEAK_WORDS = re.compile(r"^(?:(?:please )?read (?:(?:this|that|it|the (?:selection|selected text|text)) )?(?:aloud|out loud|to me)|read (?:this|that|it|the selection|the selected text)|"
                          r"(?:text to speech|tts|speak (?:this|that|it|the selection))|(?:תקריא|הקרא|להקריא|תקריאי)(?: לי)?(?: את (?:זה|הטקסט|הבחירה|המסומן))?|הקראה(?: של הטקסט)?)\s*[.!]?$", re.IGNORECASE)

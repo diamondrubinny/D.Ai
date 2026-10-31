@@ -7187,3 +7187,62 @@ msgstr "D.Ai Speak ist auf diesem Computer nicht installiert."
 #, python-brace-format
 msgid "The player ({player}) is not installed: {error}"
 msgstr "Der Abspieler ({player}) ist nicht installiert: {error}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "A notification and a sound, on this computer. The list: dai-remind list"
+msgstr "Eine Benachrichtigung und ein Ton, auf diesem Computer. Die Liste: dai-remind list"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "No reminder {id}."
+msgstr "Keine Erinnerung {id}."
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "No reminder {id}; nothing to remove."
+msgstr "Keine Erinnerung {id}; nichts zu entfernen."
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "No reminders. Say one: dai-tune \"remind me in 20 minutes to call Dana\""
+msgstr "Keine Erinnerungen. Sag eine: dai-tune \"remind me in 20 minutes to call Dana\""
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "Reminder at {at}: {text}"
+msgstr "Erinnerung um {at}: {text}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "The reminders still to come (dai-remind list) · Enter"
+msgstr "Die kommenden Erinnerungen (dai-remind list) · Enter"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {d} days"
+msgstr "in {d} Tagen"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {h} h {m} min"
+msgstr "in {h} Std {m} Min"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {n} min"
+msgstr "in {n} Min"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "overdue"
+msgstr "überfällig"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "⏰ Reminder"
+msgstr "⏰ Erinnerung"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "✓ removed {id}"
+msgstr "✓ entfernt {id}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "✗ a reminder id is 8 hexadecimal characters"
+msgstr "✗ eine Erinnerungs-ID hat 8 Hexadezimalzeichen"

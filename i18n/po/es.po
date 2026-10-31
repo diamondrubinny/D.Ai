@@ -7187,3 +7187,62 @@ msgstr "D.Ai Speak no está instalado en este equipo."
 #, python-brace-format
 msgid "The player ({player}) is not installed: {error}"
 msgstr "El reproductor ({player}) no está instalado: {error}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "A notification and a sound, on this computer. The list: dai-remind list"
+msgstr "Una notificación y un sonido, en este equipo. La lista: dai-remind list"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "No reminder {id}."
+msgstr "No hay ningún recordatorio {id}."
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "No reminder {id}; nothing to remove."
+msgstr "No hay ningún recordatorio {id}; nada que quitar."
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "No reminders. Say one: dai-tune \"remind me in 20 minutes to call Dana\""
+msgstr "No hay recordatorios. Di uno: dai-tune \"remind me in 20 minutes to call Dana\""
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "Reminder at {at}: {text}"
+msgstr "Recordatorio a las {at}: {text}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "The reminders still to come (dai-remind list) · Enter"
+msgstr "Los recordatorios pendientes (dai-remind list) · Enter"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {d} days"
+msgstr "en {d} días"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {h} h {m} min"
+msgstr "en {h} h {m} min"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "in {n} min"
+msgstr "en {n} min"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "overdue"
+msgstr "vencido"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "⏰ Reminder"
+msgstr "⏰ Recordatorio"
+
+#: apps/dai-remind/dai_remind/engine.py
+#, python-brace-format
+msgid "✓ removed {id}"
+msgstr "✓ eliminado {id}"
+
+#: apps/dai-remind/dai_remind/engine.py
+msgid "✗ a reminder id is 8 hexadecimal characters"
+msgstr "✗ el id de un recordatorio tiene 8 caracteres hexadecimales"

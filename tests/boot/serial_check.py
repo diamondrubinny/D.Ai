@@ -611,6 +611,19 @@ def main() -> int:
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
          and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+        # D.Ai Remind (docs/REMIND.md): a sentence makes a user timer; it fires within ~75 s and cleans up; undo removes one.
+        ("remind: in a minute", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-remind --version; dai-remind list; "
+         "dai-tune --yes 'remind me in 1 minute to drink water' </dev/null >/dev/null; echo TUNE_RC=$?; "
+         "ID=$(ls ~/.local/share/dai/reminders/*.json | head -n1 | xargs -n1 basename | sed 's/.json//'); echo ID_LEN=${#ID}; "
+         "systemctl --user list-timers --all | grep -c dai-remind | sed 's/^/TIMERS=/'; dai-remind list | grep -c 'drink water' | sed 's/^/LISTED=/'; "
+         "dai-tune --yes 'תזכיר לי בעוד 3 שעות לצלצל לדנה' </dev/null >/dev/null; echo TUNE2_RC=$?; dai-remind list | grep -c 'לצלצל לדנה' | sed 's/^/LISTED2=/'; "
+         "dai-tune undo >/dev/null 2>&1; echo UNDO_RC=$?; dai-remind list | grep -c 'לצלצל לדנה' | sed 's/^/AFTER_UNDO=/'; "
+         "for i in $(seq 100); do test -f ~/.local/share/dai/reminders/$ID.fired && break; sleep 1; done; "
+         "test -f ~/.local/share/dai/reminders/$ID.fired && echo FIRED; test -e ~/.local/share/dai/reminders/$ID.json || echo GONE; "
+         "test -e ~/.config/systemd/user/dai-remind-$ID.timer || echo UNIT_GONE", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "TUNE_RC=0" in o and "ID_LEN=8" in o and "TIMERS=1" in o and "LISTED=1" in o
+         and "TUNE2_RC=0" in o and "LISTED2=1" in o and "UNDO_RC=0" in o and "AFTER_UNDO=0" in o and "FIRED" in o
+         and "GONE" in o and "UNIT_GONE" in o, 240),
         # D.Ai Speak §8: the client other windows use is installed next to them; "Explain with Diamond" is offered for pictures.
         ("speak: everywhere", "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); from dai_speak import client; print(\"CLIENT\", client.available())'; "
          "test -f /usr/share/applications/dai-explain-picture.desktop && echo PICTURE_ENTRY; "

@@ -451,6 +451,54 @@ class ExecutorTests(TuneTestCase):
         for text in ("read this aloud", "explain this screen"):
             self.assertFalse([r for r in parser.parse(text).requests if r.action == "explain.options"], text)
 
+    def test_reminders_by_sentence_become_a_timer_and_undo_removes_it(self):
+        """docs/REMIND.md: the clock is applied at validation; the files and the timer; a past time means tomorrow."""
+        from datetime import datetime, timedelta
+        spec = catalog.CATALOG["reminder.add"]
+        for text, expect in (("remind me in 20 minutes to call Dana", {"in_minutes": 20, "text": "call Dana"}),
+                             ("remind me in an hour to stretch", {"in_minutes": 60, "text": "stretch"}),
+                             ("remind me at 18:30 to take the pills", {"time": "18:30", "tomorrow": False, "text": "take the pills"}),
+                             ("remind me tomorrow at 8 to pay the bill", {"time": "08:00", "tomorrow": True, "text": "pay the bill"}),
+                             ("remind me at 7 pm that the game starts", {"time": "19:00", "tomorrow": False, "text": "the game starts"}),
+                             ("תזכיר לי בעוד 20 דקות לצלצל לדנה", {"in_minutes": 20, "text": "לצלצל לדנה"}),
+                             ("תזכיר לי ב־18:30 לקחת את הכדורים", {"time": "18:30", "tomorrow": False, "text": "לקחת את הכדורים"}),
+                             ("תזכיר לי מחר ב-8 לשלם את החשבון", {"time": "08:00", "tomorrow": True, "text": "לשלם את החשבון"}),
+                             ("תזכיר לי בעוד חצי שעה שהכביסה מוכנה", {"in_minutes": 30, "text": "הכביסה מוכנה"})):
+            result = parser.parse(text)
+            self.assertEqual([(r.action, r.params) for r in result.requests], [("reminder.add", expect)], text)
+        for text in ("remind me", "remind me to call", "block usb storage"):
+            self.assertFalse([r for r in parser.parse(text).requests if r.action == "reminder.add"], text)
+        now = datetime(2026, 10, 31, 10, 0)
+        self.assertEqual(catalog.remind_when({"in_minutes": 20}, now), datetime(2026, 10, 31, 10, 20))
+        self.assertEqual(catalog.remind_when({"time": "18:30"}, now), datetime(2026, 10, 31, 18, 30))
+        self.assertEqual(catalog.remind_when({"time": "08:00"}, now), datetime(2026, 11, 1, 8, 0))      # already past today
+        self.assertEqual(catalog.remind_when({"time": "11:00", "tomorrow": True}, now), datetime(2026, 11, 1, 11, 0))
+        checked = spec.validate({"in_minutes": 20, "text": "  call Dana "}, self.ctx)
+        self.assertEqual(checked["text"], "call Dana")
+        self.assertTrue(catalog.REMIND_ID_RE.match(checked["id"]))
+        self.assertEqual(datetime.strptime(checked["at"], "%Y-%m-%dT%H:%M") - datetime.now().replace(second=0, microsecond=0), timedelta(minutes=20))
+        for bad in ({"text": "x"}, {"in_minutes": 0, "text": "x"}, {"in_minutes": 10 ** 7, "text": "x"}, {"time": "25:00", "text": "x"},
+                    {"in_minutes": 5, "text": "x" * 201}, {"in_minutes": 5, "text": "a\nb"}, {"at": "yesterday", "text": "x"},
+                    {"at": "2020-01-01T10:00", "text": "x"}, {"in_minutes": 5, "text": "x", "id": "../.."}):
+            with self.subTest(bad=bad), self.assertRaises(ValidationError):
+                spec.validate(bad, self.ctx)
+        params = {"id": "0a1b2c3d", "text": "call Dana", "at": "2026-12-31T18:30"}
+        spec.apply(params, self.ctx)
+        stored = json.loads((self.home / ".local/share/dai/reminders/0a1b2c3d.json").read_text())
+        self.assertEqual((stored["text"], stored["at"]), ("call Dana", "2026-12-31T18:30"))
+        self.assertEqual(oct((self.home / ".local/share/dai/reminders/0a1b2c3d.json").stat().st_mode & 0o777), "0o600")
+        timer = (self.home / ".config/systemd/user/dai-remind-0a1b2c3d.timer").read_text()
+        self.assertIn("OnCalendar=2026-12-31 18:30:00", timer)
+        service = (self.home / ".config/systemd/user/dai-remind-0a1b2c3d.service").read_text()
+        self.assertIn("ExecStart=/usr/bin/dai-remind fire 0a1b2c3d", service)
+        self.assertNotIn("call Dana", service + timer)                          # the text never names a unit
+        self.assertIn(["systemctl", "--user", "enable", "--now", "dai-remind-0a1b2c3d.timer"], self.runner.calls)
+        self.assertEqual(len(spec.files(params, self.ctx)), 3)
+        self.assertIn("call Dana", spec.summary(params, "en"))
+        self.assertIn("תזכורת ב־2026-12-31 18:30", spec.summary(params, "he"))
+        spec.restore(params, self.ctx, {})
+        self.assertIn(["systemctl", "--user", "disable", "--now", "dai-remind-0a1b2c3d.timer"], self.runner.calls)
+
     def test_diamond_provider_choice_needs_a_consented_provider(self):
         """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""
         import sys

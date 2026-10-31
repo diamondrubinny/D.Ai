@@ -529,6 +529,58 @@ def _only_device(clause: str) -> str | None:
 SCHEDULE_START = re.compile(r"^(?:every|each|at (?:log ?in|login|startup|start ?up|boot)|hourly|daily|weekly|כל|בכל|ב ?כניסה)\b", re.IGNORECASE)
 
 
+# D.Ai Remind (docs/REMIND.md): "remind me in 20 minutes to call Dana", "remind me tomorrow at 8 to pay the bill",
+# "תזכיר לי בעוד 20 דקות לצלצל לדנה", "תזכיר לי ב־18:30 לקחת את הכדורים". The text after "to"/"ל" is kept whole.
+REMIND_START = re.compile(r"^\s*(?:remind\s+me|(?:תזכיר|תזכירי|להזכיר)\s+לי)\s+", re.IGNORECASE)
+REMIND_IN = re.compile(r"^(?:in|בעוד)\s+(?:(\d{1,3})\s*(minutes?|mins?|hours?|hrs?|דקות|דקה|שעות|שעה)|(?:an?\s+)?(hour|minute|שעה|דקה|חצי\s+שעה|רבע\s+שעה|half\s+an\s+hour|a\s+quarter\s+of\s+an\s+hour))\s+", re.IGNORECASE)
+REMIND_AT = re.compile(r"^(?:(tomorrow|מחר)\s+)?(?:at|ב|בשעה|ב־|ב-)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm|בבוקר|בצהריים|בערב|בלילה|אחה\"צ)?\s+(?:(tomorrow|מחר)\s+)?", re.IGNORECASE)
+REMIND_TO = re.compile(r"^(?:to\s+|that\s+|ש(?=[\u05d0-\u05ea]))", re.IGNORECASE)   # Hebrew keeps its infinitive ("לצלצל")
+REMIND_WORDS = {"minute": 1, "minutes": 1, "min": 1, "mins": 1, "דקה": 1, "דקות": 1,
+                "hour": 60, "hours": 60, "hr": 60, "hrs": 60, "שעה": 60, "שעות": 60}
+
+
+def _remind_time(hour: int, minute: int, suffix: str) -> tuple[int, int]:
+    suffix = (suffix or "").casefold()
+    if suffix in ("pm", "בערב", "אחה\"צ", "בצהריים") and hour < 12:
+        hour += 12
+    if suffix == "בלילה" and 5 <= hour < 12:
+        hour += 12
+    if suffix in ("am", "בבוקר") and hour == 12:
+        hour = 0
+    return hour, minute
+
+
+def reminder_request(text: str) -> Request | None:
+    """One reminder.add request, or None. The clock is applied at validation (docs/REMIND.md §2)."""
+    rest = text.strip()
+    m = REMIND_START.match(rest)
+    if not m:
+        return None
+    rest = rest[m.end():]
+    params: dict[str, Any]
+    if (m := REMIND_IN.match(rest)) is not None:
+        if m.group(1):
+            unit = m.group(2).casefold()
+            minutes = int(m.group(1)) * REMIND_WORDS.get(unit, REMIND_WORDS.get(unit.rstrip("s"), 1))
+        else:
+            word = re.sub(r"\s+", " ", m.group(3).casefold())
+            minutes = {"hour": 60, "שעה": 60, "minute": 1, "דקה": 1, "חצי שעה": 30, "half an hour": 30,
+                       "רבע שעה": 15, "a quarter of an hour": 15}[word]
+        params = {"in_minutes": minutes}
+        rest = rest[m.end():]
+    elif (m := REMIND_AT.match(rest)) is not None:
+        hour, minute = _remind_time(int(m.group(2)), int(m.group(3) or 0), m.group(4) or "")
+        params = {"time": f"{hour:02d}:{minute:02d}", "tomorrow": bool(m.group(1) or m.group(5))}
+        rest = rest[m.end():]
+    else:
+        return None
+    rest = REMIND_TO.sub("", rest, count=1).strip(" .!")
+    if not rest:
+        return None
+    params["text"] = rest
+    return Request("reminder.add", params, text.strip())
+
+
 def timed_request(text: str) -> Request | None:
     """One way.when request when the text is SCHEDULE + SENTENCE and the sentence is fully understood."""
     text = text.strip()
@@ -572,6 +624,9 @@ def timer_name(schedule_text: str, sentence: str) -> str:
 
 def parse(text: str) -> ParseResult:
     result = ParseResult()
+    if (reminder := reminder_request(text)) is not None:
+        result.requests.append(reminder)
+        return result
     if (timed := timed_request(text)) is not None:
         result.requests.append(timed)
         return result
