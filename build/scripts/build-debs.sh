@@ -240,6 +240,10 @@ build_apps() {
   install -m 0755 "$speak/data/dai-speak" "$root/usr/bin/dai-speak"
   install -m 0644 "$speak/data/dai-speak.desktop" "$root/usr/share/applications/"
 
+  local agent="$REPO_ROOT/apps/dai-agent"
+  copy_package "$agent/dai_agent" "$root"
+  install -m 0755 "$agent/data/dai-agent" "$root/usr/bin/dai-agent"
+
   local record="$REPO_ROOT/apps/dai-record"
   copy_package "$record/dai_record" "$root"
   install -m 0755 "$record/data/dai-record" "$root/usr/bin/dai-record"

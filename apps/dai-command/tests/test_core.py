@@ -336,6 +336,16 @@ class HealLanguageTests(unittest.TestCase):
         for text in ("explain quantum physics", "what is linux", "מה זה לינוקס"):
             self.assertFalse(core.EXPLAIN_WORDS.search(text), text)
 
+    def test_agent_words(self):
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            rows = core.build_actions("agent: find the lease and read it to me", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("terminal", "dai-agent run 'find the lease and read it to me'"))
+            rows = core.build_actions("סוכן: תרשום ש'הכול' בסדר", [])
+            self.assertEqual(rows[0].payload, "dai-agent run 'תרשום ש'\\''הכול'\\'' בסדר'")
+            rows = core.build_actions("agent:", [])
+            self.assertEqual(rows[0].payload, "dai-agent roles")
+        self.assertIsNone(core.AGENT_WORDS.search("agents of shield"))
+
     def test_note_words(self):
         for text in ("note: buy milk", "Note buy bread", "write down that the plumber comes", "רשום: לקנות חלב", "תרשום שהשרברב מגיע", "הערה: חשוב"):
             self.assertTrue(core.NOTE_WORDS.search(text), text)

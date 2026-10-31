@@ -7341,3 +7341,138 @@ msgstr "ملاحظة: {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "~/Documents/Notes/notes.md · Enter opens it"
 msgstr "‎~/Documents/Notes/notes.md · Enter يفتحه"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "  Allow {tool} {args}? [y/N] "
+msgstr "  السماح بـ {tool} {args}؟ [y/N] "
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "  skipped (not approved)"
+msgstr "  تم التخطي (غير موافق عليه)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "(run {id}: dai-agent history)"
+msgstr "(التشغيل {id}: dai-agent history)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Applied: {sentence}"
+msgstr "طُبّق: {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Agent: Diamond plans with a closed toolbox; every change asks you first · Enter"
+msgstr "وكيل D.Ai: يخطط Diamond بصندوق أدوات مغلق؛ كل تغيير يسألك أولًا · Enter"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Speak is not available."
+msgstr "D.Ai Speak غير متاح."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Diamond could not plan this step: {error}"
+msgstr "تعذّر على Diamond تخطيط هذه الخطوة: {error}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Done."
+msgstr "تم."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Dry run: {sentence}"
+msgstr "تشغيل تجريبي: {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Goal: {goal}  [{role}]"
+msgstr "الهدف: {goal}  [{role}]"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No files match."
+msgstr "لا توجد ملفات مطابقة."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No notification service."
+msgstr "لا توجد خدمة إشعارات."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No reminders."
+msgstr "لا توجد تذكيرات."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No runs yet."
+msgstr "لا توجد عمليات تشغيل بعد."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Not applied (dai-tune said no, or you cancelled)."
+msgstr "لم يُطبَّق (رفض dai-tune، أو ألغيت)."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Not understood: {parts}"
+msgstr "غير مفهوم: {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Note: the goal and the tools' results go to {p} (your own key)."
+msgstr "ملاحظة: يُرسَل الهدف ونتائج الأدوات إلى {p} (بمفتاحك)."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing in D.Ai's own facts about that."
+msgstr "لا شيء في حقائق D.Ai عن ذلك."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing to report."
+msgstr "لا شيء للإبلاغ عنه."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Said aloud."
+msgstr "قيل بصوت عالٍ."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Say what the agent should do."
+msgstr "قل ما يجب أن يفعله الوكيل."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Script finished."
+msgstr "انتهى التسلسل."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Shown."
+msgstr "عُرض."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Stopped after {n} steps."
+msgstr "توقف بعد {n} خطوات."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Stopped: the same step was repeated."
+msgstr "توقف: تكررت الخطوة نفسها."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Tune did not understand: {parts}"
+msgstr "لم يفهم Tune: {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "agent: …  what should the agent do?"
+msgstr "agent: …  ماذا يجب أن يفعل الوكيل؟"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "not a tool of this role: {name}"
+msgstr "ليست أداة لهذا الدور: {name}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "not approved"
+msgstr "غير موافق عليه"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ --script: a JSON list of steps"
+msgstr "✗ --script: قائمة JSON من الخطوات"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ unknown role; see: dai-agent roles"
+msgstr "✗ دور غير معروف؛ انظر: dai-agent roles"

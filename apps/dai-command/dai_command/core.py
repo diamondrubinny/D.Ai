@@ -465,6 +465,8 @@ _STRINGS = {
     "nothing_to_undo": ("Nothing to undo", "אין מה לבטל"),
     "history_hint": ("See what was changed · Enter", "מה שונה · Enter"),
     "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
+    "agent_hint": ("D.Ai Agent: Diamond plans with a closed toolbox; every change asks you first · Enter", "סוכן D.Ai: Diamond מתכנן עם ארגז כלים סגור; כל שינוי שואל קודם · Enter"),
+    "agent_empty": ("agent: …  what should the agent do?", "סוכן: …  מה הסוכן צריך לעשות?"),
     "notes_title": ("My notes", "הפתקים שלי"),
     "notes_hint": ("~/Documents/Notes/notes.md · Enter opens it", "~/Documents/Notes/notes.md · Enter פותח"),
     "notes_none": ("No notes yet. Type: note: buy milk", "אין פתקים עדיין. כתבו: רשום: לקנות חלב"),
@@ -612,6 +614,12 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("speak", tr("speak_title"), tr("speak_hint"), "audio-speakers", "")]
     if UNDO_WORDS.search(text.strip()):
         return undo_actions()
+    if (m := AGENT_WORDS.search(text.strip())) is not None and shutil.which("dai-agent"):
+        goal = m.group("goal").strip()
+        if not goal:
+            return [Action("terminal", tr("agent_empty"), tr("agent_hint"), "system-run", "dai-agent roles")]
+        safe = goal.replace("'", "'\\''")
+        return [Action("terminal", f"dai-agent: {goal}", tr("agent_hint"), "system-run", f"dai-agent run '{safe}'")]
     if NOTES_LIST_WORDS.search(text.strip()):
         notes = Path.home() / "Documents/Notes/notes.md"
         if notes.is_file():
@@ -819,6 +827,9 @@ GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IG
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 # D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
 WAY_WORDS = re.compile(r"^(?:(?:diamond'?s )?way|dai-way|דרך היהלום|דרך)$", re.IGNORECASE)
+# D.Ai Agents (docs/AGENTS.md): "agent: find the lease and read it to me", "סוכן: תזכיר לי מחר ב־8 לשלם ותרשום ש…".
+AGENT_WORDS = re.compile(r"^(?:agent|dai-agent|סוכן|הסוכן)(?:\s*[:,]|\s+|$)\s*(?P<goal>.*)$", re.IGNORECASE)
+
 # D.Ai Notes (docs/NOTES.md): "note: buy milk", "רשום: לקנות חלב"; "my notes" opens the file.
 NOTE_WORDS = re.compile(r"^(?:note(?:s)?\s*[:-]|note (?:that )?\S|write (?:this )?down\b|jot down\b|take a note\b|(?:הערה|פתק)\s*:|(?:רשום|תרשום|לרשום|רשמי|תרשמי|כתוב לי|תכתוב לי)\b)", re.IGNORECASE)
 NOTES_LIST_WORDS = re.compile(r"^(?:(?:my |the |show (?:my |the )?|open (?:my |the )?)?notes|(?:הצג |פתח )?(?:את )?(?:ה)?פתקים(?: שלי)?|(?:ה)?הערות שלי)\s*[.!?]?$", re.IGNORECASE)

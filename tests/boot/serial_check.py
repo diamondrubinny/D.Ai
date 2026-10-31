@@ -611,6 +611,20 @@ def main() -> int:
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
          and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+        # D.Ai Agents (docs/AGENTS.md): the toolbox and the roles print; a scripted run (no model) writes a note and a
+        # reminder through Tune with --yes; an unknown tool is refused; the journal is there; a run with the local
+        # Diamond ends with 0 (done) or 3 (could not plan): the mechanism is what is checked, not the small model's wit.
+        ("agent: tools, a script and the model", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-agent --version; dai-agent tools | grep -c ' act ' | sed 's/^/ACT_TOOLS=/'; "
+         "dai-agent roles | grep -c '^' | sed 's/^/ROLES=/'; "
+         "printf '[{\"tool\":\"note\",\"args\":{\"text\":\"agent wrote this\"}},{\"tool\":\"shell\",\"args\":{\"cmd\":\"id\"}},"
+         "{\"tool\":\"remind\",\"args\":{\"text\":\"agent reminder\",\"in_minutes\":90}},{\"tool\":\"done\",\"args\":{},\"final\":\"scripted ok\"}]' > /tmp/agent.json; "
+         "dai-agent run 'scripted' --script /tmp/agent.json --yes </dev/null; echo SCRIPT_RC=$?; "
+         "grep -c 'agent wrote this' ~/Documents/Notes/notes.md | sed 's/^/NOTED=/'; dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED=/'; "
+         "dai-tune undo >/dev/null 2>&1; dai-tune undo >/dev/null 2>&1; ls ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/RUNS=/'; "
+         "dai-agent history | head -n 2; timeout 600 dai-agent run 'what is the security score of this computer?' --role guard --dry-run --yes </dev/null; echo MODEL_RC=$?", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "ACT_TOOLS=3" in o and "ROLES=5" in o and "SCRIPT_RC=0" in o and "not a tool" in o
+         and "NOTED=1" in o and "REMINDED=1" in o and re.search(r"RUNS=[1-9]", o) is not None and "scripted ok" in o
+         and re.search(r"MODEL_RC=[03]$", o, re.M) is not None, 900),
         # D.Ai Notes (docs/NOTES.md): one sentence, one dated line; undo puts the file back.
         ("notes: a sentence becomes a line", "dai-tune --yes 'note: buy milk and eggs' </dev/null >/dev/null; echo NOTE_RC=$?; "
          "cat ~/Documents/Notes/notes.md; stat -c 'MODE=%a' ~/Documents/Notes/notes.md; "

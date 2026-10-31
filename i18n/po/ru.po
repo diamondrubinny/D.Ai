@@ -7341,3 +7341,138 @@ msgstr "Заметка: {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "~/Documents/Notes/notes.md · Enter opens it"
 msgstr "~/Documents/Notes/notes.md · Enter открывает"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "  Allow {tool} {args}? [y/N] "
+msgstr "  Разрешить {tool} {args}? [y/N] "
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "  skipped (not approved)"
+msgstr "  пропущено (не одобрено)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "(run {id}: dai-agent history)"
+msgstr "(запуск {id}: dai-agent history)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Applied: {sentence}"
+msgstr "Применено: {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Agent: Diamond plans with a closed toolbox; every change asks you first · Enter"
+msgstr "Агент D.Ai: Diamond планирует с закрытым набором инструментов; каждое изменение сначала спрашивает вас · Enter"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Speak is not available."
+msgstr "D.Ai Speak недоступен."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Diamond could not plan this step: {error}"
+msgstr "Diamond не смог спланировать этот шаг: {error}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Done."
+msgstr "Готово."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Dry run: {sentence}"
+msgstr "Пробный запуск: {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Goal: {goal}  [{role}]"
+msgstr "Цель: {goal}  [{role}]"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No files match."
+msgstr "Нет подходящих файлов."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No notification service."
+msgstr "Нет службы уведомлений."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No reminders."
+msgstr "Напоминаний нет."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No runs yet."
+msgstr "Запусков пока нет."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Not applied (dai-tune said no, or you cancelled)."
+msgstr "Не применено (dai-tune отказал, или вы отменили)."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Not understood: {parts}"
+msgstr "Не понято: {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Note: the goal and the tools' results go to {p} (your own key)."
+msgstr "Примечание: цель и результаты инструментов отправляются в {p} (ваш ключ)."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing in D.Ai's own facts about that."
+msgstr "В собственных фактах D.Ai об этом ничего нет."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing to report."
+msgstr "Нечего сообщить."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Said aloud."
+msgstr "Произнесено вслух."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Say what the agent should do."
+msgstr "Скажите, что должен сделать агент."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Script finished."
+msgstr "Сценарий завершён."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Shown."
+msgstr "Показано."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Stopped after {n} steps."
+msgstr "Остановлено после {n} шагов."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Stopped: the same step was repeated."
+msgstr "Остановлено: тот же шаг повторился."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Tune did not understand: {parts}"
+msgstr "Tune не понял: {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "agent: …  what should the agent do?"
+msgstr "agent: …  что должен сделать агент?"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "not a tool of this role: {name}"
+msgstr "не инструмент этой роли: {name}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "not approved"
+msgstr "не одобрено"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ --script: a JSON list of steps"
+msgstr "✗ --script: JSON-список шагов"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ unknown role; see: dai-agent roles"
+msgstr "✗ неизвестная роль; см.: dai-agent roles"

@@ -7341,3 +7341,138 @@ msgstr "Nota: {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "~/Documents/Notes/notes.md · Enter opens it"
 msgstr "~/Documents/Notes/notes.md · Enter abre"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "  Allow {tool} {args}? [y/N] "
+msgstr "  Permitir {tool} {args}? [y/N] "
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "  skipped (not approved)"
+msgstr "  ignorado (não aprovado)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "(run {id}: dai-agent history)"
+msgstr "(execução {id}: dai-agent history)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Applied: {sentence}"
+msgstr "Aplicado: {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Agent: Diamond plans with a closed toolbox; every change asks you first · Enter"
+msgstr "Agente D.Ai: o Diamond planeia com uma caixa de ferramentas fechada; cada alteração pergunta primeiro · Enter"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Speak is not available."
+msgstr "O D.Ai Speak não está disponível."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Diamond could not plan this step: {error}"
+msgstr "O Diamond não conseguiu planear este passo: {error}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Done."
+msgstr "Feito."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Dry run: {sentence}"
+msgstr "Simulação: {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Goal: {goal}  [{role}]"
+msgstr "Objetivo: {goal}  [{role}]"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No files match."
+msgstr "Nenhum ficheiro corresponde."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No notification service."
+msgstr "Sem serviço de notificações."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No reminders."
+msgstr "Sem lembretes."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No runs yet."
+msgstr "Ainda sem execuções."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Not applied (dai-tune said no, or you cancelled)."
+msgstr "Não aplicado (o dai-tune recusou, ou cancelou)."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Not understood: {parts}"
+msgstr "Não entendido: {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Note: the goal and the tools' results go to {p} (your own key)."
+msgstr "Nota: o objetivo e os resultados das ferramentas vão para {p} (a sua própria chave)."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing in D.Ai's own facts about that."
+msgstr "Nada nos factos do próprio D.Ai sobre isso."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing to report."
+msgstr "Nada a reportar."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Said aloud."
+msgstr "Dito em voz alta."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Say what the agent should do."
+msgstr "Diga o que o agente deve fazer."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Script finished."
+msgstr "Guião terminado."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Shown."
+msgstr "Mostrado."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Stopped after {n} steps."
+msgstr "Parado após {n} passos."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Stopped: the same step was repeated."
+msgstr "Parado: o mesmo passo repetiu-se."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Tune did not understand: {parts}"
+msgstr "O Tune não entendeu: {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "agent: …  what should the agent do?"
+msgstr "agent: …  o que deve o agente fazer?"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "not a tool of this role: {name}"
+msgstr "não é uma ferramenta deste papel: {name}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "not approved"
+msgstr "não aprovado"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ --script: a JSON list of steps"
+msgstr "✗ --script: uma lista JSON de passos"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ unknown role; see: dai-agent roles"
+msgstr "✗ papel desconhecido; veja: dai-agent roles"

@@ -7341,3 +7341,138 @@ msgstr "Note : {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "~/Documents/Notes/notes.md · Enter opens it"
 msgstr "~/Documents/Notes/notes.md · Enter l'ouvre"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "  Allow {tool} {args}? [y/N] "
+msgstr "  Autoriser {tool} {args} ? [y/N] "
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "  skipped (not approved)"
+msgstr "  ignoré (non approuvé)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "(run {id}: dai-agent history)"
+msgstr "(exécution {id} : dai-agent history)"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Applied: {sentence}"
+msgstr "Appliqué : {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Agent: Diamond plans with a closed toolbox; every change asks you first · Enter"
+msgstr "Agent D.Ai : Diamond planifie avec une boîte à outils fermée ; chaque changement vous demande d'abord · Enter"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "D.Ai Speak is not available."
+msgstr "D.Ai Speak n'est pas disponible."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Diamond could not plan this step: {error}"
+msgstr "Diamond n'a pas pu planifier cette étape : {error}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Done."
+msgstr "Terminé."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Dry run: {sentence}"
+msgstr "Essai à blanc : {sentence}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Goal: {goal}  [{role}]"
+msgstr "Objectif : {goal}  [{role}]"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No files match."
+msgstr "Aucun fichier ne correspond."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No notification service."
+msgstr "Pas de service de notifications."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No reminders."
+msgstr "Aucun rappel."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "No runs yet."
+msgstr "Pas encore d'exécutions."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Not applied (dai-tune said no, or you cancelled)."
+msgstr "Non appliqué (dai-tune a refusé, ou vous avez annulé)."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Not understood: {parts}"
+msgstr "Non compris : {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Note: the goal and the tools' results go to {p} (your own key)."
+msgstr "Note : l'objectif et les résultats des outils vont à {p} (votre propre clé)."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing in D.Ai's own facts about that."
+msgstr "Rien dans les faits propres de D.Ai à ce sujet."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Nothing to report."
+msgstr "Rien à signaler."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Said aloud."
+msgstr "Dit à voix haute."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Say what the agent should do."
+msgstr "Dites ce que l'agent doit faire."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Script finished."
+msgstr "Script terminé."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Shown."
+msgstr "Affiché."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Stopped after {n} steps."
+msgstr "Arrêté après {n} étapes."
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "Stopped: the same step was repeated."
+msgstr "Arrêté : la même étape s'est répétée."
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "Tune did not understand: {parts}"
+msgstr "Tune n'a pas compris : {parts}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "agent: …  what should the agent do?"
+msgstr "agent: …  que doit faire l'agent ?"
+
+#: apps/dai-agent/dai_agent/agent.py
+#, python-brace-format
+msgid "not a tool of this role: {name}"
+msgstr "pas un outil de ce rôle : {name}"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "not approved"
+msgstr "non approuvé"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ --script: a JSON list of steps"
+msgstr "✗ --script : une liste JSON d'étapes"
+
+#: apps/dai-agent/dai_agent/agent.py
+msgid "✗ unknown role; see: dai-agent roles"
+msgstr "✗ rôle inconnu ; voir : dai-agent roles"
