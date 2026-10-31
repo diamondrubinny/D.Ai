@@ -204,6 +204,8 @@ class WindowTests(WelcomeTestCase):
         self.assertIn("Alt+Shift", tour)
         self.assertIn("dai-tune undo", tour)
         self.assertIn("Super+Shift+S", tour)
+        self.assertIn("Remind me in 20 minutes", tour)
+        self.assertIn("Note: buy milk", tour)
         self.click(win, "Next")
         summary = self.texts(win)
         self.assertIn("System changes", summary)
