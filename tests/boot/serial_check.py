@@ -611,6 +611,16 @@ def main() -> int:
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
          and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+        # D.Ai Record (docs/RECORD.md): three seconds of the screen under Wayland, stopped by the guard; the file is not empty.
+        ("record: three seconds of the screen", WAYLAND_ENV + "dai-record --version; which wf-recorder | sed 's/^/RECORDER=/'; "
+         "grep -c 'key=\"W-S-r\"' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; dai-record status; "
+         "dai-record start 3 --file /tmp/rec.mp4; echo START_RC=$?; sleep 1; dai-record status; "
+         "for i in $(seq 30); do test -e $XDG_RUNTIME_DIR/dai/record.pid || break; sleep 1; done; sleep 2; "
+         "test -e $XDG_RUNTIME_DIR/dai/record.pid && echo PID_STAYED || echo PID_GONE; stat -c 'BYTES=%s' /tmp/rec.mp4; "
+         "dai-record stop; dai-record status", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "RECORDER=/usr/bin/wf-recorder" in o and "KEY=1" in o and "START_RC=0" in o
+         and "Recording to /tmp/rec.mp4" in o and "PID_GONE" in o and re.search(r"BYTES=([1-9]\d{2,})", o) is not None
+         and o.rstrip().endswith("Not recording."), 120),
         # D.Ai Remind (docs/REMIND.md): a sentence makes a user timer; it fires within ~75 s and cleans up; undo removes one.
         ("remind: in a minute", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-remind --version; dai-remind list; "
          "dai-tune --yes 'remind me in 1 minute to drink water' </dev/null >/dev/null; echo TUNE_RC=$?; "

@@ -27,6 +27,7 @@
 | 18 | ‏**D.Ai Explain ("מה אני רואה?"):** ‏Super+Shift+E, "מה זה" ב־Command: צילום → OCR מקומי → Diamond מסביר בשפה של האדם ומציע משפט Tune אחד, שנפתח ב־Command לאישור | ‏EXPLAIN | ✅ שלב 1, ירוק ב־CI (71b19cd); ✅ שלב 2 (מודל ראייה מקומי SmolVLM, §8) ירוק ב־CI (40931385578) |
 | 19 | ‏**D.Ai Speak (Diamond מקריא):** ‏Super+Shift+S מקריא את הטקסט המסומן בקול המקומי (espeak-ng, זה של Orca) בשפה של האותיות; כפתור "הקראה" ב־Explain, "תקריא את זה" ב־Command, "תקריא מהר יותר" ב־Tune | ‏SPEAK | ✅ שלב 1, ירוק ב־CI (40949747805); ✅ שלבים 2–3 (הקראה ב־PDF וב־J, "הסבר עם Diamond" לתמונות, הקורא בארגז חול) עברו ב־VM (40966097575) |
 | 20 | ‏**D.Ai Remind ("תזכיר לי"):** "remind me in 20 minutes to call Dana" / "תזכיר לי מחר ב־8 לשלם את החשבון" → תוכנית Tune, טיימר משתמש, הודעה וצליל במחשב; `dai-remind list`, ביטול במילה | ‏REMIND | 🔨 שלב 1 נבנה, ממתין ל־CI |
+| 21 | ‏**D.Ai Record ("הקלט את המסך"):** "record my screen for 30 seconds" / Super+Shift+R → סרטון ב־`~/Videos/Recordings` (wf-recorder, בלי קול), הודעה בהתחלה ובסוף, אותו מקש עוצר | ‏RECORD | 🔨 שלב 1 נבנה, ממתין ל־CI |
 | 17 | ‏**ספקי AI חיצוניים (BYO key):** Anthropic, OpenAI, Google, Mistral, Groq, DeepSeek, xAI, OpenRouter, שרת תואם OpenAI; הסכמה מוקלדת, מפתח ב־0600, לפי משימה, נפילה חזרה למקומי, "נשלח ל־…" ב־Command וב־Forge | ‏PROVIDERS | ✅ שלב 1 + בחירה ב־Settings ובמשפט + זרימה + מדיניות ארגונית שאוסרת |
 
 ## ⏳ תלוי בך (אי אפשר מכאן)

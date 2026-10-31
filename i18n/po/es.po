@@ -7255,3 +7255,64 @@ msgstr "Recordatorio ahora: {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
 msgstr "Dentro de \"every day at 9 …\" se convierte en un recordatorio periódico (el Camino del Diamante, dai-way when)."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "A video to ~/Videos/Recordings, no sound · Super+Shift+R stops · Enter"
+msgstr "Un vídeo en ~/Videos/Recordings, sin sonido · Super+Shift+R lo detiene · Enter"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Already recording; stop it first (Super+Shift+R)."
+msgstr "Ya se está grabando; detenlo primero (Super+Shift+R)."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Not recording."
+msgstr "No se está grabando."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Record the screen"
+msgstr "Grabar la pantalla"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Record the screen for {n} seconds"
+msgstr "Grabar la pantalla durante {n} segundos"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Recording saved"
+msgstr "Grabación guardada"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Recording to {file}"
+msgstr "Grabando en {file}"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Seconds: 1 to {max}."
+msgstr "Segundos: de 1 a {max}."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Stop recording"
+msgstr "Detener la grabación"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Super+Shift+R stops"
+msgstr "Super+Shift+R lo detiene"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "The file is kept and shown · Enter"
+msgstr "El archivo se conserva y se muestra · Enter"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "The recorder (wf-recorder) is not installed: {error}"
+msgstr "El grabador (wf-recorder) no está instalado: {error}"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "{n} seconds · Super+Shift+R stops earlier"
+msgstr "{n} segundos · Super+Shift+R lo detiene antes"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "⏺ Recording the screen"
+msgstr "⏺ Grabando la pantalla"

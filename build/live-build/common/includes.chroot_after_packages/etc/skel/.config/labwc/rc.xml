@@ -66,6 +66,8 @@
     <keybind key="W-S-e"><action name="Execute" command="dai-explain" /></keybind>
     <!-- D.Ai Speak (docs/SPEAK.md): read the selected text aloud; again stops -->
     <keybind key="W-S-s"><action name="Execute" command="dai-speak" /></keybind>
+    <!-- D.Ai Record (docs/RECORD.md): a video of the screen; again stops -->
+    <keybind key="W-S-r"><action name="Execute" command="dai-record toggle" /></keybind>
     <!-- Window layouts (docs/BEYOND.md §7): Super+arrows are labwc's halves; thirds and quarters below.
          Holding Super while dragging a window also drops it into one of these regions. -->
     <keybind key="W-S-Left"><action name="ToggleSnapToRegion" region="third-left" /></keybind>

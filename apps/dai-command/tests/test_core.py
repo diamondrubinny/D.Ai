@@ -336,6 +336,22 @@ class HealLanguageTests(unittest.TestCase):
         for text in ("explain quantum physics", "what is linux", "מה זה לינוקס"):
             self.assertFalse(core.EXPLAIN_WORDS.search(text), text)
 
+    def test_record_words(self):
+        for text, seconds in (("record my screen for 30 seconds", 30), ("record the screen", 0), ("record screen for 2 minutes", 120),
+                              ("screen recording", 0), ("הקלט את המסך 30 שניות", 30), ("הקלטת מסך", 0), ("תקליט את המסך למשך 2 דקות", 120)):
+            m = core.RECORD_WORDS.search(text)
+            self.assertIsNotNone(m, text)
+            self.assertEqual(core.record_seconds(m), seconds, text)
+        self.assertIsNone(core.RECORD_WORDS.search("record player"))
+        for text in ("stop recording", "stop the recording", "עצור הקלטה", "תפסיק את ההקלטה"):
+            self.assertTrue(core.RECORD_STOP_WORDS.search(text), text)
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            rows = core.build_actions("record my screen for 30 seconds", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("record", "30"))
+            self.assertIn("30", rows[0].title)
+            rows = core.build_actions("stop recording", [])
+            self.assertEqual((rows[0].kind, rows[0].payload), ("record", "stop"))
+
     def test_remind_words(self):
         for text in ("remind me in 20 minutes to call Dana", "Remind me at 18:30 to rest", "תזכיר לי בעוד שעה לצאת", "להזכיר לי מחר ב-8 לשלם"):
             self.assertTrue(core.REMIND_WORDS.search(text), text)

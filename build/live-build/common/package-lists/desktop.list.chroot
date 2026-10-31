@@ -46,6 +46,8 @@ udisks2
 gvfs
 gvfs-backends
 grim
+# D.Ai Record (docs/RECORD.md): a video of the screen, the same screencopy protocol as grim.
+wf-recorder
 slurp
 # D.Ai Find reads PDFs into its content index with pdftotext (docs/BEYOND.md §11).
 poppler-utils

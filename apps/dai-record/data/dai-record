@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+# D.Ai Record: a video of the screen (docs/RECORD.md). Installed as /usr/bin/dai-record.
+# -I: ignore PYTHONPATH and user site-packages.
+exec python3 -I -c 'import sys; sys.path.insert(0, "/usr/lib/dai"); from dai_record.cli import main; sys.exit(main(["dai-record", *sys.argv[1:]]))' "$@"

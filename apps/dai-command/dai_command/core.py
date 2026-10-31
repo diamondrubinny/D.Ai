@@ -465,6 +465,11 @@ _STRINGS = {
     "nothing_to_undo": ("Nothing to undo", "אין מה לבטל"),
     "history_hint": ("See what was changed · Enter", "מה שונה · Enter"),
     "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
+    "record_title": ("Record the screen", "הקלטת המסך"),
+    "record_for_title": ("Record the screen for {n} seconds", "הקלטת המסך למשך {n} שניות"),
+    "record_hint": ("A video to ~/Videos/Recordings, no sound · Super+Shift+R stops · Enter", "סרטון אל ~/Videos/Recordings, בלי קול · Super+Shift+R עוצר · Enter"),
+    "record_stop_title": ("Stop recording", "עצירת ההקלטה"),
+    "record_stop_hint": ("The file is kept and shown · Enter", "הקובץ נשמר ומוצג · Enter"),
     "remind_list_hint": ("The reminders still to come (dai-remind list) · Enter", "התזכורות שעוד יבואו (dai-remind list) · Enter"),
     "speak_title": ("Read aloud", "הקראה"),
     "speak_hint": ("Diamond's answer when one is shown, else the selected text · on this computer · Super+Shift+S stops · Enter",
@@ -604,6 +609,12 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("speak", tr("speak_title"), tr("speak_hint"), "audio-speakers", "")]
     if UNDO_WORDS.search(text.strip()):
         return undo_actions()
+    if RECORD_STOP_WORDS.search(text.strip()) and shutil.which("dai-record"):
+        return [Action("record", tr("record_stop_title"), tr("record_stop_hint"), "media-playback-stop", "stop")]
+    if (m := RECORD_WORDS.search(text.strip())) is not None and shutil.which("dai-record"):
+        seconds = record_seconds(m)
+        title = tr("record_for_title").format(n=seconds) if seconds else tr("record_title")
+        return [Action("record", title, tr("record_hint"), "camera-video", str(seconds))]
     if REMIND_LIST_WORDS.search(text.strip()) and shutil.which("dai-remind"):
         return [Action("terminal", "dai-remind list", tr("remind_list_hint"), "alarm-clock", "dai-remind list")]
     if REMIND_WORDS.search(text.strip()) and shutil.which("dai-remind"):    # a reminder is a D.Ai Tune plan, no "!" needed
@@ -798,6 +809,21 @@ GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IG
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 # D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
 WAY_WORDS = re.compile(r"^(?:(?:diamond'?s )?way|dai-way|דרך היהלום|דרך)$", re.IGNORECASE)
+# D.Ai Record (docs/RECORD.md): "record my screen for 30 seconds", "record the screen", "הקלט את המסך 30 שניות".
+RECORD_WORDS = re.compile(r"^(?:(?:start )?record(?:ing)? (?:my |the )?screen(?: for (?P<n>\d{1,4}) ?(?P<unit>seconds?|secs?|minutes?|mins?))?|screen recording|"
+                          r"(?:הקלט|תקליט|להקליט|הקלטת|הקלטה של) (?:את )?(?:ה)?מסך(?: (?:למשך |ל-?)?(?P<nh>\d{1,4}) ?(?P<unith>שניות|שנייה|דקות|דקה))?|הקלטת מסך)\s*[.!]?$", re.IGNORECASE)
+RECORD_STOP_WORDS = re.compile(r"^(?:stop (?:the )?record(?:ing)?|(?:עצור|תעצור|הפסק|תפסיק) (?:את )?(?:ה)?הקלטה)\s*[.!]?$", re.IGNORECASE)
+
+
+def record_seconds(match: re.Match) -> int:
+    number = match.group("n") or match.group("nh")
+    unit = (match.group("unit") or match.group("unith") or "").casefold()
+    if not number:
+        return 0
+    seconds = int(number) * (60 if unit.startswith(("min", "דק")) else 1)
+    return max(1, min(3600, seconds))
+
+
 # D.Ai Remind (docs/REMIND.md): "remind me in 20 minutes to …", "תזכיר לי …"; "my reminders" lists them.
 REMIND_WORDS = re.compile(r"^(?:remind me\b|(?:תזכיר|תזכירי|להזכיר) לי\b)", re.IGNORECASE)
 REMIND_LIST_WORDS = re.compile(r"^(?:(?:my |the |show (?:my |the )?|list (?:my |the )?)?reminders|(?:הצג |הראה )?(?:את )?(?:ה)?תזכורות(?: שלי)?)\s*[.!?]?$", re.IGNORECASE)

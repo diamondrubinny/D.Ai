@@ -7255,3 +7255,64 @@ msgstr "تذكير الآن: {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
 msgstr "داخل \"every day at 9 …\" يصبح هذا تذكيرًا متكررًا (طريق الماسة، dai-way when)."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "A video to ~/Videos/Recordings, no sound · Super+Shift+R stops · Enter"
+msgstr "فيديو إلى ‎~/Videos/Recordings، بلا صوت · Super+Shift+R يوقف · Enter"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Already recording; stop it first (Super+Shift+R)."
+msgstr "يجري التسجيل بالفعل؛ أوقفه أولًا (Super+Shift+R)."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Not recording."
+msgstr "لا يوجد تسجيل."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Record the screen"
+msgstr "تسجيل الشاشة"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Record the screen for {n} seconds"
+msgstr "تسجيل الشاشة لمدة {n} ثانية"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Recording saved"
+msgstr "حُفظ التسجيل"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Recording to {file}"
+msgstr "يجري التسجيل إلى {file}"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Seconds: 1 to {max}."
+msgstr "الثواني: من 1 إلى {max}."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Stop recording"
+msgstr "إيقاف التسجيل"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Super+Shift+R stops"
+msgstr "Super+Shift+R يوقف"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "The file is kept and shown · Enter"
+msgstr "يُحفظ الملف ويُعرض · Enter"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "The recorder (wf-recorder) is not installed: {error}"
+msgstr "المسجّل (wf-recorder) غير مثبّت: {error}"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "{n} seconds · Super+Shift+R stops earlier"
+msgstr "{n} ثانية · Super+Shift+R يوقف قبل ذلك"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "⏺ Recording the screen"
+msgstr "⏺ يجري تسجيل الشاشة"

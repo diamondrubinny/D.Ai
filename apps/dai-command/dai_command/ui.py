@@ -378,6 +378,13 @@ class CommandWindow(QWidget):
             # A moment for this window to close, so the screen Diamond reads is the person's, not ours.
             self._spawn(["sh", "-c", "sleep 0.4; exec dai-explain"])
             remembered = self.query.text().strip()
+        elif action.kind == "record":
+            # A moment for this window to close, so the recording (or the area chooser) does not show us.
+            if action.payload == "stop":
+                self._spawn(["dai-record", "stop"])
+            else:
+                self._spawn(["sh", "-c", "sleep 0.4; exec dai-record start " + str(int(action.payload or 0) or "")])
+            remembered = self.query.text().strip()
         elif action.kind == "speak":
             answer = "" if self.answer.isHidden() else self.answer.toPlainText().strip()
             if action.payload == "stop":

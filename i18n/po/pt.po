@@ -7255,3 +7255,64 @@ msgstr "Lembrete agora: {text}"
 #: apps/dai-tune/dai_tune/catalog.py
 msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
 msgstr "Dentro de \"every day at 9 …\" isto torna-se um lembrete recorrente (o Caminho do Diamante, dai-way when)."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "A video to ~/Videos/Recordings, no sound · Super+Shift+R stops · Enter"
+msgstr "Um vídeo em ~/Videos/Recordings, sem som · Super+Shift+R para · Enter"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Already recording; stop it first (Super+Shift+R)."
+msgstr "Já está a gravar; pare primeiro (Super+Shift+R)."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Not recording."
+msgstr "Não está a gravar."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Record the screen"
+msgstr "Gravar o ecrã"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Record the screen for {n} seconds"
+msgstr "Gravar o ecrã durante {n} segundos"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Recording saved"
+msgstr "Gravação guardada"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Recording to {file}"
+msgstr "A gravar para {file}"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "Seconds: 1 to {max}."
+msgstr "Segundos: 1 a {max}."
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Stop recording"
+msgstr "Parar a gravação"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "Super+Shift+R stops"
+msgstr "Super+Shift+R para"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "The file is kept and shown · Enter"
+msgstr "O ficheiro é guardado e mostrado · Enter"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "The recorder (wf-recorder) is not installed: {error}"
+msgstr "O gravador (wf-recorder) não está instalado: {error}"
+
+#: apps/dai-record/dai_record/engine.py
+#, python-brace-format
+msgid "{n} seconds · Super+Shift+R stops earlier"
+msgstr "{n} segundos · Super+Shift+R para mais cedo"
+
+#: apps/dai-record/dai_record/engine.py
+msgid "⏺ Recording the screen"
+msgstr "⏺ A gravar o ecrã"
