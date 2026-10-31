@@ -77,9 +77,14 @@ def upcoming(home: Path | None = None) -> list[Reminder]:
 
 
 def remove(reminder_id: str, home: Path | None = None, run: Run = subprocess.run) -> None:
-    """Stop the timer and delete the units and the file; quiet when they are already gone."""
-    for suffix in ("timer", "service"):
-        _quiet(run, ["systemctl", "--user", "disable", "--now", f"dai-remind-{reminder_id}.{suffix}"])
+    """Stop the timer and delete the units and the file; quiet when they are already gone.
+
+    The timer is stopped (--now); the service is only disabled, never stopped: fire() runs *inside* it,
+    and "systemctl stop" on itself would kill the process mid-way (the first VM run showed exactly that:
+    "Stopped dai-remind-<id>.service", no .fired file). A oneshot service simply ends when fire() returns.
+    """
+    _quiet(run, ["systemctl", "--user", "disable", "--now", f"dai-remind-{reminder_id}.timer"])
+    _quiet(run, ["systemctl", "--user", "disable", f"dai-remind-{reminder_id}.service"])
     for path in unit_files(reminder_id, home) + [folder(home) / f"{reminder_id}.json"]:
         try:
             path.unlink()
@@ -127,12 +132,12 @@ def fire(reminder_id: str, lang: str, home: Path | None = None, run: Run = subpr
                 child.stdin.close()
         except OSError:
             pass
-    remove(reminder_id, home, run)
-    try:
+    try:  # the trace first: whatever the cleanup does, the moment is on disk
         folder(home).mkdir(parents=True, exist_ok=True)
         (folder(home) / f"{reminder_id}.fired").write_text(datetime.now().strftime("%Y-%m-%dT%H:%M") + "\n", encoding="utf-8")
     except OSError:
         pass
+    remove(reminder_id, home, run)
     return reminder
 
 

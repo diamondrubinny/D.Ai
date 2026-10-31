@@ -3796,7 +3796,7 @@ msgid "No recipe yet · Diamond will write one for review · Enter"
 msgstr ""
 
 #. he: אין תזכורת {id}.
-#: apps/dai-remind/dai_remind/engine.py:115
+#: apps/dai-remind/dai_remind/engine.py:120
 #, python-brace-format
 msgid "No reminder {id}."
 msgstr ""
@@ -7749,19 +7749,19 @@ msgid "imports code dynamically"
 msgstr ""
 
 #. he: בעוד {d} ימים
-#: apps/dai-remind/dai_remind/engine.py:149
+#: apps/dai-remind/dai_remind/engine.py:154
 #, python-brace-format
 msgid "in {d} days"
 msgstr ""
 
 #. he: בעוד {h} שע׳ {m} דק׳
-#: apps/dai-remind/dai_remind/engine.py:147
+#: apps/dai-remind/dai_remind/engine.py:152
 #, python-brace-format
 msgid "in {h} h {m} min"
 msgstr ""
 
 #. he: בעוד {n} דק׳
-#: apps/dai-remind/dai_remind/engine.py:145
+#: apps/dai-remind/dai_remind/engine.py:150
 #, python-brace-format
 msgid "in {n} min"
 msgstr ""
@@ -8019,7 +8019,7 @@ msgid "opens terminals"
 msgstr ""
 
 #. he: עבר הזמן
-#: apps/dai-remind/dai_remind/engine.py:143
+#: apps/dai-remind/dai_remind/engine.py:148
 msgid "overdue"
 msgstr ""
 
@@ -9026,7 +9026,7 @@ msgid "⌛  {name} (waiting for them)"
 msgstr ""
 
 #. he: ⏰ תזכורת
-#: apps/dai-remind/dai_remind/engine.py:116
+#: apps/dai-remind/dai_remind/engine.py:121
 #: apps/dai-tune/dai_tune/catalog.py:2352
 msgid "⏰ Reminder"
 msgstr ""

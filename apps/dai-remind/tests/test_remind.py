@@ -46,6 +46,9 @@ class EngineTests(unittest.TestCase):
             self.assertIn("-u", notify)
             self.assertIn(["dai-sound", "bell"], calls)
             self.assertIn(["systemctl", "--user", "disable", "--now", "dai-remind-0a1b2c3d.timer"], calls)
+            self.assertIn(["systemctl", "--user", "disable", "dai-remind-0a1b2c3d.service"], calls)
+            # fire() runs inside that service: it must never stop itself (that killed the first VM run)
+            self.assertFalse(any("--now" in c and c[-1].endswith(".service") for c in calls))
             self.assertEqual(spoken, [])                                      # "read explanations aloud" is off
             self.assertFalse((home / engine.REMIND_DIR / "0a1b2c3d.json").exists())
             self.assertFalse(any(p.exists() for p in engine.unit_files("0a1b2c3d", home)))
