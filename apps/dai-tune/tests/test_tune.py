@@ -451,6 +451,28 @@ class ExecutorTests(TuneTestCase):
         for text in ("read this aloud", "explain this screen"):
             self.assertFalse([r for r in parser.parse(text).requests if r.action == "explain.options"], text)
 
+    def test_notes_by_sentence_append_one_dated_line(self):
+        """docs/NOTES.md: the text after "note:" is one line in ~/Documents/Notes/notes.md; "and" stays inside it."""
+        spec = catalog.CATALOG["note.add"]
+        for text, body in (("note: buy milk and eggs", "buy milk and eggs"), ("write down that the plumber comes on Tuesday", "the plumber comes on Tuesday"),
+                           ("Note buy bread", "buy bread"), ("רשום: לקנות חלב וביצים", "לקנות חלב וביצים"), ("תרשום שהשרברב מגיע ביום שלישי", "השרברב מגיע ביום שלישי"),
+                           ("הערה: הסיסמה של הראוטר על המדבקה", "הסיסמה של הראוטר על המדבקה")):
+            result = parser.parse(text)
+            self.assertEqual([(r.action, r.params) for r in result.requests], [("note.add", {"text": body})], text)
+        for text in ("note:", "notes", "block usb storage", "remind me in 5 minutes to note"):
+            self.assertFalse([r for r in parser.parse(text).requests if r.action == "note.add"], text)
+        with self.assertRaises(ValidationError):
+            spec.validate({"text": "x" * 501}, self.ctx)
+        spec.apply({"text": "buy milk"}, self.ctx)
+        path = self.home / "Documents/Notes/notes.md"
+        self.assertTrue(path.read_text().startswith("# Notes"))
+        self.assertRegex(path.read_text(), r"- \d{4}-\d{2}-\d{2} \d{2}:\d{2}  buy milk\n$")
+        self.assertEqual(oct(path.stat().st_mode & 0o777), "0o600")
+        spec.apply({"text": "call the bank"}, self.ctx)
+        self.assertEqual(path.read_text().count("\n- "), 2)
+        self.assertEqual(spec.files({"text": "x"}, self.ctx), [path])
+        self.assertIn("פתק: buy milk", spec.summary({"text": "buy milk"}, "he"))
+
     def test_reminders_by_sentence_become_a_timer_and_undo_removes_it(self):
         """docs/REMIND.md: the clock is applied at validation; the files and the timer; a past time means tomorrow."""
         from datetime import datetime, timedelta

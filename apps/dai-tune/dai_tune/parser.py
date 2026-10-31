@@ -587,6 +587,23 @@ def reminder_request(text: str) -> Request | None:
     return Request("reminder.add", params, text.strip())
 
 
+# D.Ai Notes (docs/NOTES.md): "note: buy milk", "write down that …", "רשום: לקנות חלב", "תרשום ש…". Checked before any
+# clause splitting, so "and" inside the note stays inside it.
+NOTE_START = re.compile(r"^\s*(?:note|notes|jot down|write down|write this down|take a note|הערה|פתק|רשום|תרשום|לרשום|רשמי|תרשמי|כתוב לי|תכתוב לי)\b"
+                        r"(?:\s*[:\-]|\s+that\b|\s+ש(?=[\u05d0-\u05ea]))?\s*", re.IGNORECASE)
+NOTE_MAX = 500
+
+
+def note_request(text: str) -> Request | None:
+    m = NOTE_START.match(text.strip())
+    if not m:
+        return None
+    body = text.strip()[m.end():].strip(" .!")
+    if not body or len(body) > NOTE_MAX or "\n" in body:
+        return None
+    return Request("note.add", {"text": body}, text.strip())
+
+
 def timed_request(text: str) -> Request | None:
     """One way.when request when the text is SCHEDULE + SENTENCE and the sentence is fully understood."""
     text = text.strip()
@@ -635,6 +652,9 @@ def parse(text: str) -> ParseResult:
     result = ParseResult()
     if (reminder := reminder_request(text)) is not None:
         result.requests.append(reminder)
+        return result
+    if (note := note_request(text)) is not None:
+        result.requests.append(note)
         return result
     if (timed := timed_request(text)) is not None:
         result.requests.append(timed)

@@ -465,6 +465,9 @@ _STRINGS = {
     "nothing_to_undo": ("Nothing to undo", "אין מה לבטל"),
     "history_hint": ("See what was changed · Enter", "מה שונה · Enter"),
     "ask_more": ("Ask Diamond about it", "לשאול את Diamond על זה"),
+    "notes_title": ("My notes", "הפתקים שלי"),
+    "notes_hint": ("~/Documents/Notes/notes.md · Enter opens it", "~/Documents/Notes/notes.md · Enter פותח"),
+    "notes_none": ("No notes yet. Type: note: buy milk", "אין פתקים עדיין. כתבו: רשום: לקנות חלב"),
     "record_title": ("Record the screen", "הקלטת המסך"),
     "record_for_title": ("Record the screen for {n} seconds", "הקלטת המסך למשך {n} שניות"),
     "record_hint": ("A video to ~/Videos/Recordings, no sound · Super+Shift+R stops · Enter", "סרטון אל ~/Videos/Recordings, בלי קול · Super+Shift+R עוצר · Enter"),
@@ -609,6 +612,13 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return [Action("speak", tr("speak_title"), tr("speak_hint"), "audio-speakers", "")]
     if UNDO_WORDS.search(text.strip()):
         return undo_actions()
+    if NOTES_LIST_WORDS.search(text.strip()):
+        notes = Path.home() / "Documents/Notes/notes.md"
+        if notes.is_file():
+            return [Action("file", tr("notes_title"), tr("notes_hint"), "accessories-text-editor", notes)]
+        return [Action("file", tr("notes_title"), tr("notes_none"), "accessories-text-editor", "")]
+    if NOTE_WORDS.search(text.strip()):                                      # a note is a D.Ai Tune plan, no "!" needed
+        return tune_actions(text.strip())
     if RECORD_STOP_WORDS.search(text.strip()) and shutil.which("dai-record"):
         return [Action("record", tr("record_stop_title"), tr("record_stop_hint"), "media-playback-stop", "stop")]
     if (m := RECORD_WORDS.search(text.strip())) is not None and shutil.which("dai-record"):
@@ -809,6 +819,10 @@ GAME_WORDS = re.compile(r"\bgam(?:e|ing) mode\b|מצב משחק(?:ים)?", re.IG
 SETTINGS_WORDS = re.compile(r"^(?:(?:open |show |system |security |d\.?ai )?settings|preferences|(?:פתח |הצג |הגדרות ה?)?הגדרות(?: מערכת| אבטחה)?)$", re.IGNORECASE)
 # D.Ai Store (docs/BEYOND.md §9): "store", "app store", "חנות", "חנות אפליקציות", "software".
 WAY_WORDS = re.compile(r"^(?:(?:diamond'?s )?way|dai-way|דרך היהלום|דרך)$", re.IGNORECASE)
+# D.Ai Notes (docs/NOTES.md): "note: buy milk", "רשום: לקנות חלב"; "my notes" opens the file.
+NOTE_WORDS = re.compile(r"^(?:note(?:s)?\s*[:-]|note (?:that )?\S|write (?:this )?down\b|jot down\b|take a note\b|(?:הערה|פתק)\s*:|(?:רשום|תרשום|לרשום|רשמי|תרשמי|כתוב לי|תכתוב לי)\b)", re.IGNORECASE)
+NOTES_LIST_WORDS = re.compile(r"^(?:(?:my |the |show (?:my |the )?|open (?:my |the )?)?notes|(?:הצג |פתח )?(?:את )?(?:ה)?פתקים(?: שלי)?|(?:ה)?הערות שלי)\s*[.!?]?$", re.IGNORECASE)
+
 # D.Ai Record (docs/RECORD.md): "record my screen for 30 seconds", "record the screen", "הקלט את המסך 30 שניות".
 RECORD_WORDS = re.compile(r"^(?:(?:start )?record(?:ing)? (?:my |the )?screen(?: for (?P<n>\d{1,4}) ?(?P<unit>seconds?|secs?|minutes?|mins?))?|screen recording|"
                           r"(?:הקלט|תקליט|להקליט|הקלטת|הקלטה של) (?:את )?(?:ה)?מסך(?: (?:למשך |ל-?)?(?P<nh>\d{1,4}) ?(?P<unith>שניות|שנייה|דקות|דקה))?|הקלטת מסך)\s*[.!]?$", re.IGNORECASE)

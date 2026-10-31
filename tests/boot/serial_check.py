@@ -611,6 +611,12 @@ def main() -> int:
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
          and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+        # D.Ai Notes (docs/NOTES.md): one sentence, one dated line; undo puts the file back.
+        ("notes: a sentence becomes a line", "dai-tune --yes 'note: buy milk and eggs' </dev/null >/dev/null; echo NOTE_RC=$?; "
+         "cat ~/Documents/Notes/notes.md; stat -c 'MODE=%a' ~/Documents/Notes/notes.md; "
+         "dai-tune --yes 'רשום: לקנות חלב' </dev/null >/dev/null; grep -c '^- ' ~/Documents/Notes/notes.md | sed 's/^/LINES=/'; "
+         "dai-tune undo >/dev/null 2>&1; grep -c '^- ' ~/Documents/Notes/notes.md | sed 's/^/AFTER_UNDO=/'; dai-tune --dry-run 'my notes' </dev/null >/dev/null 2>&1; echo PLAIN_RC=$?", True,
+         lambda o: "NOTE_RC=0" in o and "# Notes" in o and "buy milk and eggs" in o and "MODE=600" in o and "LINES=2" in o and "AFTER_UNDO=1" in o, 120),
         # D.Ai Record (docs/RECORD.md): three seconds of the screen under Wayland, stopped by the guard; the file is not empty.
         ("record: three seconds of the screen", WAYLAND_ENV + "dai-record --version; which wf-recorder | sed 's/^/RECORDER=/'; "
          "grep -c 'key=\"W-S-r\"' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; dai-record status; "

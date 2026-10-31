@@ -2174,6 +2174,48 @@ register(ActionSpec(
 ))
 
 # --------------------------------------------------------------------------
+# D.Ai Notes (docs/NOTES.md): one line appended to ~/Documents/Notes/notes.md; the file snapshot makes undo exact.
+# --------------------------------------------------------------------------
+
+NOTES_FILE = "Documents/Notes/notes.md"
+NOTE_TEXT_MAX = 500
+
+
+def _note_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"text"})
+    text = params.get("text")
+    if not isinstance(text, str) or not text.strip() or len(text.strip()) > NOTE_TEXT_MAX or "\n" in text:
+        raise ValidationError(f"text: 1 to {NOTE_TEXT_MAX} characters on one line")
+    return {"text": text.strip()}
+
+
+def _note_apply(params: Params, ctx: Context) -> None:
+    from datetime import datetime
+    path = ctx.user_path(NOTES_FILE)
+    current = read_text(path, "")
+    if not current:
+        current = _t(ctx.lang, "# Notes\n\nWritten by D.Ai: \"note: …\" in the command bar. One line each, newest last.\n\n",
+                     "# פתקים\n\nנכתב על ידי D.Ai: \"רשום: …\" בשורת הפקודה. שורה לכל פתק, האחרון בסוף.\n\n")
+    elif not current.endswith("\n"):
+        current += "\n"
+    line = f"- {datetime.now().strftime('%Y-%m-%d %H:%M')}  {params['text']}\n"
+    write_file(path, current + line, 0o600)
+
+
+register(ActionSpec(
+    id="note.add",
+    scope="user",
+    validate=_note_validate,
+    apply=_note_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Note: {text}", "פתק: {text}", text=p["text"]),
+    files=lambda p, c: [c.user_path(NOTES_FILE)],
+    note=lambda p, lang: _t(lang, "Appended to ~/Documents/Notes/notes.md; \"my notes\" opens it, D.Ai Find finds it.",
+                            "מצטרף ל־~/Documents/Notes/notes.md; \"הפתקים שלי\" פותח אותו, D.Ai Find מוצא אותו."),
+))
+
+# --------------------------------------------------------------------------
 # D.Ai Remind (docs/REMIND.md): one reminder = one small file and one user timer that runs dai-remind fire.
 # --------------------------------------------------------------------------
 

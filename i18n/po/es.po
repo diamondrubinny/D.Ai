@@ -7316,3 +7316,28 @@ msgstr "{n} segundos · Super+Shift+R lo detiene antes"
 #: apps/dai-record/dai_record/engine.py
 msgid "⏺ Recording the screen"
 msgstr "⏺ Grabando la pantalla"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "# Notes\n\nWritten by D.Ai: \"note: …\" in the command bar. One line each, newest last.\n\n"
+msgstr "# Notas\n\nEscrito por D.Ai: \"note: …\" en la barra de comandos. Una línea por nota, la más nueva al final.\n\n"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Appended to ~/Documents/Notes/notes.md; \"my notes\" opens it, D.Ai Find finds it."
+msgstr "Añadido a ~/Documents/Notes/notes.md; \"my notes\" lo abre, D.Ai Find lo encuentra."
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "My notes"
+msgstr "Mis notas"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "No notes yet. Type: note: buy milk"
+msgstr "Aún no hay notas. Escribe: note: buy milk"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Note: {text}"
+msgstr "Nota: {text}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "~/Documents/Notes/notes.md · Enter opens it"
+msgstr "~/Documents/Notes/notes.md · Enter lo abre"

@@ -336,6 +336,19 @@ class HealLanguageTests(unittest.TestCase):
         for text in ("explain quantum physics", "what is linux", "מה זה לינוקס"):
             self.assertFalse(core.EXPLAIN_WORDS.search(text), text)
 
+    def test_note_words(self):
+        for text in ("note: buy milk", "Note buy bread", "write down that the plumber comes", "רשום: לקנות חלב", "תרשום שהשרברב מגיע", "הערה: חשוב"):
+            self.assertTrue(core.NOTE_WORDS.search(text), text)
+        self.assertFalse(core.NOTE_WORDS.search("notebook"))
+        for text in ("notes", "my notes", "open my notes", "הפתקים שלי", "פתקים"):
+            self.assertTrue(core.NOTES_LIST_WORDS.search(text), text)
+        rows = core.build_actions("my notes", [])
+        self.assertEqual(rows[0].kind, "file")
+        with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
+            rows = core.build_actions("note: buy milk and eggs", [])
+            self.assertEqual(rows[0].kind, "tune")
+            self.assertIn("buy milk and eggs", rows[0].title)
+
     def test_record_words(self):
         for text, seconds in (("record my screen for 30 seconds", 30), ("record the screen", 0), ("record screen for 2 minutes", 120),
                               ("screen recording", 0), ("הקלט את המסך 30 שניות", 30), ("הקלטת מסך", 0), ("תקליט את המסך למשך 2 דקות", 120)):
