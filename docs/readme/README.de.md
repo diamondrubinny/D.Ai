@@ -44,6 +44,8 @@ D.Ai OS ist ein freies Open-Source-Betriebssystem auf Basis von Debian 13, entwi
 
 ## ⚠️ Status
 
+Jede Änderung baut vier Editionen und startet sie in einer virtuellen Maschine mit 141 Systemprüfungen; die Screenshots stammen aus dem Lauf vom 2026-10-31. Neu im Oktober 2026: D.Ai Explain sieht sich das Bild des Bildschirms mit einem lokalen Sehmodell an und kann jede Erklärung vorlesen; D.Ai Speak liest markierten Text, PDF-Seiten und Mails vor, espeak-ng in einer Sandbox.
+
 Frühe Alpha-Version. Probiere es vor der Installation vom USB-Stick aus. Die Oberfläche, die Sätze, die D.Ai versteht, und die Website gibt es auf Deutsch (und in sieben weiteren Sprachen).
 
 **Lizenz:** Apache-2.0. „D.Ai“, „D.Ai OS“ und das Diamant-Logo sind Marken (`TRADEMARKS.md`).

@@ -10,7 +10,9 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 
 ![The D.Ai OS desktop: a floating taskbar with the diamond button and a command field](docs/screenshots/desktop.png)
 
-> **Status:** early development. The first working version builds and boots in CI; the installer works but a full end-to-end install is not yet automated. Not recommended as your only operating system.
+> **Status:** early development. Every push builds four editions (user, dev, edu, tv) and boots them in a virtual machine, where 141 system checks run against the live ISO; the pictures below come from that run (2026-10-31). The installer works but a full end-to-end install is not yet automated. Not recommended as your only operating system.
+>
+> **Latest (October 2026):** D.Ai Explain now looks at the picture of the screen with a local vision model and can read every explanation aloud; D.Ai Speak reads the selected text, a PDF page, a mail or Diamond's answer in eight languages, with espeak-ng inside a sandbox; Welcome offers the sight model; Settings gained reading speed and the two Explain choices; Diamond's Way, policies and `.dway` files; external AI providers with your own key, off by default; and a one-minute promo video (`docs/promo`).
 
 ---
 
@@ -34,7 +36,7 @@ Based on Debian 13 · LXQt on labwc (Wayland) · Apache-2.0
 
 ## Screenshots
 
-Every picture is taken automatically in CI, from the ISO booted in a virtual machine.
+Every picture is taken automatically in CI, from the ISO booted in a virtual machine (run 40980013539, 2026-10-31).
 
 | | | |
 |---|---|---|
@@ -52,8 +54,8 @@ Every picture is taken automatically in CI, from the ISO booted in a virtual mac
 | **D.Ai PDF**: what the file wants is shown in the bar, never done | **D.Ai VM**: the hardware check, and what Windows can see | |
 | ![D.Ai Settings: the security score, then every setting as a toggle or a choice](docs/screenshots/settings.png) | ![D.Ai Store: the recipes by category, what each one sets up](docs/screenshots/store.png) | ![D.Ai Live Captions: whisper's test file read on the computer](docs/screenshots/captions.png) |
 | **D.Ai Settings**: one window, every change with its plan and undo | **D.Ai Store**: find and set up software, no account | **D.Ai Captions**: subtitles for whatever the computer plays, on the computer |
-| ![D.Ai Explain: the screen read on the computer and explained by Diamond](docs/screenshots/explain.png) | | |
-| **D.Ai Explain**: "what am I looking at?", with one safe next step | | |
+| ![D.Ai Explain: the screen read on the computer and explained by Diamond, with a Read aloud button](docs/screenshots/explain.png) | ![D.Ai Welcome: the first page, eight languages](docs/screenshots/welcome.png) | ![The on-screen keyboard](docs/screenshots/keyboard.png) |
+| **D.Ai Explain**: "what am I looking at?", one safe next step, read aloud with one button | **Welcome**: language first, then security, the models (sight included) and a 60-second tour | **On-screen keyboard** (Super+Alt+K), with the magnifier and Orca next to it |
 
 A one-minute promo (English captions, synthesized music, narration script): `docs/promo/dai-os-promo.mp4`, built by `build/assets/make_promo.py` from the CI screenshots.
 
@@ -229,6 +231,7 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 - **בטלוויזיה, בטלפון ועל ARM:** מהדורת tv עולה ל-Kodi בעברית ונשלטת מהשלט; תמונות arm64 ניסיוניות של הטלפון (Phosh) ושל הטלוויזיה נבנות ועולות ב-QEMU ב-CI.
 - **מפתח AI משלכם, אם רוצים:** Diamond רץ במחשב כברירת מחדל; `dai-models provider add anthropic` (או OpenAI, Google, Mistral, Groq, DeepSeek, xAI, OpenRouter, כל שרת תואם OpenAI) והסכמה מוקלדת שולחים קוד ושאלות לספק לבניית אפליקציות טובה יותר, במפתח שלכם, שנשמר ב־0600 ולא מוצג (`docs/PROVIDERS.md`).
 - **דרך היהלום:** מחשב שלם בקובץ `.dway` אחד, במשפטים שה־D.Ai כבר מבין; `dai-way apply` מחיל עם אותה תוכנית ו־undo, ו־`dai-way export` כותב את המחשב הנוכחי (`docs/WAY.md`).
+- **רואה את המסך ומקריא:** ‏`Super+Shift+E` ‏(D.Ai מסביר): המסך נקרא במחשב, ועם מודל ראייה מקומי (SmolVLM) ‏Diamond מסתכל על התמונה עצמה ומסביר בשפה שלכם, עם צעד הבא בטוח אחד; "הקראה" בכפתור. ‏`Super+Shift+S` ‏(D.Ai Speak): הטקסט המסומן, עמוד PDF, מייל או התשובה של Diamond מוקראים בשמונה שפות, espeak-ng בתוך ארגז חול, הכול במחשב הזה (`docs/EXPLAIN.md`, ‏`docs/SPEAK.md`).
 - **מגיעים מ־Windows:** פוקוס ומצב משחק במשפט, מצב חיסכון בזיכרון למחשבים ישנים, ו"פיירפוקס לא יוצא לאינטרנט" במשפט אחד; הכול ב־`docs/BEYOND.md`.
 - **ועוד:** הדואר J, הדפדפן Ruby, מנהל המשימות MOM, ‏D.Ai Quick, ‏D.Ai Store (חנות בלי חשבון: מה זה מקים מוצג קודם; חיבור לטלפון עם KDE Connect), ‏D.Ai Find שמחפש גם בתוך המסמכים ("מסמך שמדבר על שכירות"), כתוביות חיות למה שהמחשב משמיע (Super+Alt+C), ‏D.Ai Settings (חלון הגדרות אחד, כל שינוי עם תוכנית וביטול), ‏D.Ai Focus ("פוקוס ל־25 דקות"), ‏Raz שבודק כל עדכון, ו־D.Ai Rescue שמחזיר את המערכת מהדיסק און קי.
 
@@ -240,12 +243,14 @@ Created by **Diamond Rubinny (d.Ai)**. Built with [Claude Code](https://claude.c
 | **D.Ai PDF**: מה שהקובץ רוצה מוצג בסרגל, ולא מבוצע | **D.Ai VM**: בדיקת החומרה, ומה Windows רואה | |
 | ![הגדרות D.Ai: ציון האבטחה, ואז כל הגדרה כמתג או בחירה](docs/screenshots/settings.png) | ![חנות D.Ai: המתכונים לפי קטגוריה, מה כל אחד מקים](docs/screenshots/store.png) | ![כתוביות חיות D.Ai: קובץ הבדיקה של whisper נקרא על המחשב](docs/screenshots/captions.png) |
 | **הגדרות D.Ai**: חלון אחד, כל שינוי עם תוכנית וביטול | **חנות D.Ai**: מוצאים ומקימים תוכנות, בלי חשבון | **כתוביות D.Ai**: כתוביות למה שהמחשב משמיע, על המחשב |
+| ![D.Ai מסביר: המסך נקרא במחשב ומוסבר על ידי Diamond, עם כפתור הקראה](docs/screenshots/explain.png) | ![D.Ai Welcome: הדף הראשון, שמונה שפות](docs/screenshots/welcome.png) | ![המקלדת על המסך](docs/screenshots/keyboard.png) |
+| **D.Ai מסביר**: "מה אני רואה?", צעד הבא בטוח אחד, והקראה בכפתור | **Welcome**: שפה קודם, ואז אבטחה, המודלים (כולל ראייה) וסיור של 60 שניות | **מקלדת על המסך** (Super+Alt+K), לצד זכוכית המגדלת ו־Orca |
 
 **אתר:** [rubinny.com](https://rubinny.com) · **הורדה:** [הגרסה האחרונה](https://github.com/diamondrubinny/D.Ai/releases/latest)
 
 **זכויות:** © 2026 Diamond Rubinny (d.Ai). הקוד ברישיון Apache-2.0. השם D.Ai והלוגו הם סימני מסחר: אסור להפיץ גרסה משונה בשמם (`TRADEMARKS.md`).
 
-**סטטוס:** שלב מוקדם. מומלץ לנסות מ-USB (Live) לפני התקנה. מעבר מ-Windows: ראו `docs/FROM-WINDOWS.md`.
+**סטטוס:** שלב מוקדם. כל דחיפה בונה ארבע מהדורות ומעלה אותן במכונה וירטואלית עם 141 בדיקות מערכת; הצילומים כאן מהריצה של 2026-10-31. מומלץ לנסות מ-USB (Live) לפני התקנה. מעבר מ-Windows: ראו `docs/FROM-WINDOWS.md`.
 
 
 ---
