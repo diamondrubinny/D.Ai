@@ -573,7 +573,13 @@ def reminder_request(text: str) -> Request | None:
         params = {"time": f"{hour:02d}:{minute:02d}", "tomorrow": bool(m.group(1) or m.group(5))}
         rest = rest[m.end():]
     else:
-        return None
+        # No time: right now. Typed alone it is odd; inside "every day at 9 remind me to …" (Diamond's Way, docs/WAY.md)
+        # it is exactly what a recurring reminder needs.
+        rest = re.sub(r"^(?:now|עכשיו)\s+", "", rest, flags=re.IGNORECASE)
+        rest = REMIND_TO.sub("", rest, count=1).strip(" .!")
+        if not rest or len(rest) > 200:
+            return None
+        return Request("reminder.now", {"text": rest}, text.strip())
     rest = REMIND_TO.sub("", rest, count=1).strip(" .!")
     if not rest:
         return None
@@ -601,11 +607,14 @@ def timed_request(text: str) -> Request | None:
         if schedule is None or not rest:
             continue
         inner = ParseResult()
-        for clause in split_clauses(rest):
-            requests = parse_clause(clause)
-            if not requests:
-                inner.unknown.append(clause)
-            inner.requests += requests
+        if (reminder := reminder_request(rest)) is not None:     # "every day at 9 remind me to …" (docs/REMIND.md §6)
+            inner.requests.append(reminder)
+        else:
+            for clause in split_clauses(rest):
+                requests = parse_clause(clause)
+                if not requests:
+                    inner.unknown.append(clause)
+                inner.requests += requests
         if inner.requests and not inner.unknown:
             return Request("way.when", {"name": timer_name(head, rest), "schedule": schedule.to_json(), "sentence": rest}, text)
     return None

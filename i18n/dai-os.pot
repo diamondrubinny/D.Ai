@@ -313,7 +313,7 @@ msgid "A new message from {name}"
 msgstr ""
 
 #. he: הודעה וצליל, במחשב הזה. הרשימה: dai-remind list
-#: apps/dai-tune/dai_tune/catalog.py:2310
+#: apps/dai-tune/dai_tune/catalog.py:2338
 msgid "A notification and a sound, on this computer. The list: dai-remind list"
 msgstr ""
 
@@ -1824,23 +1824,23 @@ msgid "Diamond proposed no change."
 msgstr ""
 
 #. he: Diamond מקריא במהירות הרגילה
-#: apps/dai-tune/dai_tune/catalog.py:2372
+#: apps/dai-tune/dai_tune/catalog.py:2400
 msgid "Diamond reads aloud at the normal speed"
 msgstr ""
 
 #. he: Diamond מקריא ב־{rate} מילים לדקה
-#: apps/dai-tune/dai_tune/catalog.py:2373
+#: apps/dai-tune/dai_tune/catalog.py:2401
 #, python-brace-format
 msgid "Diamond reads aloud at {rate} words per minute"
 msgstr ""
 
 #. he: Diamond מקריא מהר יותר
-#: apps/dai-tune/dai_tune/catalog.py:2368
+#: apps/dai-tune/dai_tune/catalog.py:2396
 msgid "Diamond reads aloud faster"
 msgstr ""
 
 #. he: Diamond מקריא לאט יותר
-#: apps/dai-tune/dai_tune/catalog.py:2370
+#: apps/dai-tune/dai_tune/catalog.py:2398
 msgid "Diamond reads aloud slower"
 msgstr ""
 
@@ -2331,7 +2331,7 @@ msgid "File"
 msgstr ""
 
 #. he: קובץ {path} בבית שלך ({size} תווים)
-#: apps/dai-tune/dai_tune/catalog.py:2610
+#: apps/dai-tune/dai_tune/catalog.py:2638
 #, python-brace-format
 msgid "File {path} in your home ({size} characters)"
 msgstr ""
@@ -2491,7 +2491,7 @@ msgid "Focus: {n} minutes"
 msgstr ""
 
 #. he: תיקייה {path} בבית שלך
-#: apps/dai-tune/dai_tune/catalog.py:2609
+#: apps/dai-tune/dai_tune/catalog.py:2637
 #, python-brace-format
 msgid "Folder {path} in your home"
 msgstr ""
@@ -2855,6 +2855,11 @@ msgstr ""
 #. he: הוספת עמודים מקובץ PDF אחר
 #: apps/dai-pdf/dai_pdf/gui.py:687
 msgid "Insert pages from another PDF"
+msgstr ""
+
+#. he: בתוך "כל יום ב־9 …" זה הופך לתזכורת חוזרת (דרך היהלום, dai-way when).
+#: apps/dai-tune/dai_tune/catalog.py:2323
+msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
 msgstr ""
 
 #. he: בתוך Windows התיקייה מופיעה ככונן (דרייברי VirtIO חייבים להיות מותקנים שם). כתיבה היא בחירה שנייה.
@@ -4700,6 +4705,12 @@ msgstr ""
 msgid "Reminder at {at}: {text}"
 msgstr ""
 
+#. he: תזכורת עכשיו: {text}
+#: apps/dai-tune/dai_tune/catalog.py:2322
+#, python-brace-format
+msgid "Reminder now: {text}"
+msgstr ""
+
 #. he: כניסה מרחוק (SSH)
 #: apps/dai-settings/dai_settings/model.py:189
 msgid "Remote login (SSH)"
@@ -4732,7 +4743,7 @@ msgid "Remove the metadata (author, program, dates) before sharing"
 msgstr ""
 
 #. he: הסרת הטיימר {name} (דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2672
+#: apps/dai-tune/dai_tune/catalog.py:2700
 #, python-brace-format
 msgid "Remove the timer {name} (Diamond's Way)"
 msgstr ""
@@ -4880,7 +4891,7 @@ msgid "Run ▶"
 msgstr ""
 
 #. he: רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo
-#: apps/dai-tune/dai_tune/catalog.py:2661
+#: apps/dai-tune/dai_tune/catalog.py:2689
 msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
 msgstr ""
 
@@ -5651,7 +5662,7 @@ msgid "Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak)
 msgstr ""
 
 #. he: Super+Shift+S מקריא את הטקסט המסומן; ההקראה הבאה במהירות החדשה.
-#: apps/dai-tune/dai_tune/catalog.py:2385
+#: apps/dai-tune/dai_tune/catalog.py:2413
 msgid "Super+Shift+S reads the selected text; the next reading uses the new speed."
 msgstr ""
 
@@ -8737,7 +8748,7 @@ msgid "{value}% CPU"
 msgstr ""
 
 #. he: {when}: {sentence} (טיימר, דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2647
+#: apps/dai-tune/dai_tune/catalog.py:2675
 #, python-brace-format
 msgid "{when}: {sentence} (a timer, Diamond's Way)"
 msgstr ""
@@ -8756,6 +8767,7 @@ msgstr ""
 
 #. he: ⏰ תזכורת
 #: apps/dai-remind/dai_remind/engine.py:116
+#: apps/dai-tune/dai_tune/catalog.py:2310
 msgid "⏰ Reminder"
 msgstr ""
 

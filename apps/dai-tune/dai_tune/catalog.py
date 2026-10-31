@@ -2297,6 +2297,34 @@ def _remind_summary(params: Params, lang: str) -> str:
     return _t(lang, "Reminder at {at}: {text}", "תזכורת ב־{at}: {text}", at=at, text=params["text"])
 
 
+def _remind_now_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"text"})
+    text = params.get("text")
+    if not isinstance(text, str) or not text.strip() or len(text.strip()) > REMIND_TEXT_MAX or "\n" in text:
+        raise ValidationError(f"text: 1 to {REMIND_TEXT_MAX} characters on one line")
+    return {"text": text.strip()}
+
+
+def _remind_now_apply(params: Params, ctx: Context) -> None:
+    """A notification and the bell, now: the text is an argument, never a shell. Nothing to undo."""
+    title = _t(ctx.lang, "⏰ Reminder", "⏰ תזכורת")
+    ctx.run(["notify-send", "-a", "D.Ai", "-i", "alarm-clock", "-u", "critical", title, params["text"]], check=False)
+    ctx.run(["dai-sound", "bell"], check=False)
+
+
+register(ActionSpec(
+    id="reminder.now",
+    scope="user",
+    validate=_remind_now_validate,
+    apply=_remind_now_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Reminder now: {text}", "תזכורת עכשיו: {text}", text=p["text"]),
+    note=lambda p, lang: _t(lang, "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when).",
+                            "בתוך \"כל יום ב־9 …\" זה הופך לתזכורת חוזרת (דרך היהלום, dai-way when)."),
+))
+
+
 register(ActionSpec(
     id="reminder.add",
     scope="user",

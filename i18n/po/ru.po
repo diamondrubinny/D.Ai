@@ -7246,3 +7246,12 @@ msgstr "✓ удалено {id}"
 #: apps/dai-remind/dai_remind/engine.py
 msgid "✗ a reminder id is 8 hexadecimal characters"
 msgstr "✗ идентификатор напоминания — 8 шестнадцатеричных символов"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Reminder now: {text}"
+msgstr "Напоминание сейчас: {text}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
+msgstr "Внутри \"every day at 9 …\" это становится повторяющимся напоминанием (Путь Алмаза, dai-way when)."

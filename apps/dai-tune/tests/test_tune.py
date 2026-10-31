@@ -498,6 +498,22 @@ class ExecutorTests(TuneTestCase):
         self.assertIn("תזכורת ב־2026-12-31 18:30", spec.summary(params, "he"))
         spec.restore(params, self.ctx, {})
         self.assertIn(["systemctl", "--user", "disable", "--now", "dai-remind-0a1b2c3d.timer"], self.runner.calls)
+        # docs/REMIND.md §6: no time = now; inside a schedule it is a recurring reminder through Diamond's Way.
+        now_spec = catalog.CATALOG["reminder.now"]
+        self.assertEqual([(r.action, r.params) for r in parser.parse("remind me to call Dana").requests], [("reminder.now", {"text": "call Dana"})])
+        self.assertEqual(parser.parse("תזכיר לי עכשיו לשתות מים").requests[0].params, {"text": "לשתות מים"})
+        for text in ("every day at 9:00 remind me to take the pills", "כל יום ב-9 תזכיר לי לקחת כדורים", "every monday at 8 remind me to put out the bins"):
+            result = parser.parse(text)
+            self.assertEqual(result.requests[0].action, "way.when", text)
+            self.assertFalse(result.unknown)
+            self.assertEqual(parser.parse(result.requests[0].params["sentence"]).requests[0].action, "reminder.now")
+        with self.assertRaises(ValidationError):
+            now_spec.validate({"text": "x" * 201}, self.ctx)
+        now_spec.apply({"text": "drink water"}, self.ctx)
+        notify = next(c for c in self.runner.calls if c[0] == "notify-send")
+        self.assertEqual(notify[-1], "drink water")
+        self.assertIn(["dai-sound", "bell"], self.runner.calls)
+        self.assertEqual(catalog.way_sentence_requests("remind me to take the pills")[0].action, "reminder.now")
 
     def test_diamond_provider_choice_needs_a_consented_provider(self):
         """docs/PROVIDERS.md: Settings may switch between local and a provider the person already agreed to."""

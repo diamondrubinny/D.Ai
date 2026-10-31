@@ -620,8 +620,11 @@ def main() -> int:
          "dai-tune undo >/dev/null 2>&1; echo UNDO_RC=$?; dai-remind list | grep -c 'לצלצל לדנה' | sed 's/^/AFTER_UNDO=/'; "
          "for i in $(seq 100); do test -f ~/.local/share/dai/reminders/$ID.fired && break; sleep 1; done; "
          "test -f ~/.local/share/dai/reminders/$ID.fired && echo FIRED; test -e ~/.local/share/dai/reminders/$ID.json || echo GONE; "
-         "test -e ~/.config/systemd/user/dai-remind-$ID.timer || echo UNIT_GONE", True,
+         "test -e ~/.config/systemd/user/dai-remind-$ID.timer || echo UNIT_GONE; "
+         "dai-tune --dry-run 'every day at 9:00 remind me to take the pills' </dev/null | grep -c 'Way' | sed 's/^/RECURRING=/'; "
+         "dai-tune --dry-run 'תזכיר לי לשתות מים' </dev/null | grep -c 'לשתות מים' | sed 's/^/NOW=/'", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "TUNE_RC=0" in o and "ID_LEN=8" in o and "TIMERS=1" in o and "LISTED=1" in o
+         and re.search(r"RECURRING=[1-9]", o) is not None and re.search(r"NOW=[1-9]", o) is not None
          and "TUNE2_RC=0" in o and "LISTED2=1" in o and "UNDO_RC=0" in o and "AFTER_UNDO=0" in o and "FIRED" in o
          and "GONE" in o and "UNIT_GONE" in o, 240),
         # D.Ai Speak §8: the client other windows use is installed next to them; "Explain with Diamond" is offered for pictures.

@@ -7246,3 +7246,12 @@ msgstr "✓ eliminado {id}"
 #: apps/dai-remind/dai_remind/engine.py
 msgid "✗ a reminder id is 8 hexadecimal characters"
 msgstr "✗ el id de un recordatorio tiene 8 caracteres hexadecimales"
+
+#: apps/dai-tune/dai_tune/catalog.py
+#, python-brace-format
+msgid "Reminder now: {text}"
+msgstr "Recordatorio ahora: {text}"
+
+#: apps/dai-tune/dai_tune/catalog.py
+msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
+msgstr "Dentro de \"every day at 9 …\" se convierte en un recordatorio periódico (el Camino del Diamante, dai-way when)."
