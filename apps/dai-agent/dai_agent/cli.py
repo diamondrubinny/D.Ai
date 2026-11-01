@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """dai-agent: Diamond with a closed toolbox (docs/AGENTS.md).
 
-  dai-agent run "goal" [--role ROLE] [--yes] [--dry-run] [--notify] [--script FILE]
+  dai-agent run "goal" [--role ROLE] [--yes] [--dry-run] [--notify] [--lang LANG] [--script FILE]
   dai-agent "goal"                 the same as run
   dai-agent tools                  the toolbox, with what each tool may do
   dai-agent roles                  secretary, organizer, guard, tutor, all
@@ -122,6 +122,8 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
     if args[0] == "run":
         args = args[1:]
     role_name = _option(args, "--role") or "all"
+    if (chosen := _option(args, "--lang")) and chosen.isalpha():
+        lang = chosen.lower()[:5]                                  # a timer runs without the person's LANG (docs/AGENTS.md §6ב)
     if role_name not in ROLES:
         print(pick(lang, "✗ unknown role; see: dai-agent roles", "✗ תפקיד לא מוכר; ראו: dai-agent roles"), file=sys.stderr)
         return 2
@@ -142,7 +144,7 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
         if skip:
             skip = False
             continue
-        if a in ("--role", "--script"):
+        if a in ("--role", "--script", "--lang"):
             skip = True
             continue
         if a in flags:

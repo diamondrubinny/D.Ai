@@ -106,7 +106,7 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 | רכיב | מה |
 |---|---|
 | Tune parser | `agent[ ROLE]: GOAL` / `סוכן[ ROLE]: GOAL` → `Request("agent.run", {"goal", "role"})`; נבדק לפני פיצול הפסוקיות (המטרה היא טקסט אחד) |
-| `agent.run` (catalog) | היקף משתמש, ניטרלי, בלי קבצים: `apply` מריץ `dai-agent run GOAL --role ROLE --yes --notify` עם stdin סגור ו־timeout של 10 דקות; קוד היציאה של הסוכן לא מפיל את התוכנית (הריצה ביומן הסוכן ובהודעה), רק dai-agent חסר או timeout |
+| `agent.run` (catalog) | היקף משתמש, ניטרלי, בלי קבצים: `apply` מריץ `dai-agent run GOAL --role ROLE --yes --notify --lang LANG` (הסביבה הקבועה של Tune בלי LANG, לכן השפה עוברת כארגומנט) עם stdin סגור ו־timeout של 15 דקות; קוד היציאה של הסוכן לא מפיל את התוכנית (הריצה ביומן הסוכן ובהודעה), רק dai-agent חסר או timeout |
 | `--notify` | בסוף הריצה: הודעה על המסך עם התשובה (או "נעצר"/"לא תכנן") — כך טיימר שאין לו טרמינל מדבר |
 | `--yes` מתוקן | מאשר `do` רק כשתוכנית Tune של המשפט תקינה, לא מחלישה ולא דורשת מנהל (עד עכשיו `--yes` עדיין שאל על כל `do`; `plans.py` מחשב את זה גם לחלון) |
 | טיימר | "every day at 8 agent secretary: summarize my mail" → `way.when` (קיים) → `dai-way run-when` → `apply_plan` → `agent.run`. ‏`dai-way when` מראה אותו; `dai-way when remove` מסיר |

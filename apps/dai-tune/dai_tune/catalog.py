@@ -2241,7 +2241,7 @@ def _agent_validate(params: Params, ctx: Context) -> Params:
 def _agent_apply(params: Params, ctx: Context) -> None:
     """Run the agent; its own journal and notification carry the outcome, so a stopped run is not a failed step.
     Only a missing dai-agent or a run that never ends fails the plan."""
-    argv = ["dai-agent", "run", params["goal"], "--role", params["role"], "--yes", "--notify"]
+    argv = ["dai-agent", "run", params["goal"], "--role", params["role"], "--yes", "--notify", "--lang", ctx.lang or "en"]
     try:
         result = ctx.run(argv, check=False)
     except subprocess.TimeoutExpired as exc:

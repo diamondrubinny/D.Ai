@@ -206,7 +206,7 @@ msgid "(page removed)"
 msgstr ""
 
 #. he: (ריצה {id}: dai-agent history)
-#: apps/dai-agent/dai_agent/cli.py:178
+#: apps/dai-agent/dai_agent/cli.py:180
 #, python-brace-format
 msgid "(run {id}: dai-agent history)"
 msgstr ""
@@ -2859,7 +2859,7 @@ msgid "Go back to {label}?"
 msgstr ""
 
 #. he: מטרה: {goal}  [{role}]
-#: apps/dai-agent/dai_agent/cli.py:167
+#: apps/dai-agent/dai_agent/cli.py:169
 #, python-brace-format
 msgid "Goal: {goal}  [{role}]"
 msgstr ""
@@ -4120,7 +4120,7 @@ msgid "Note"
 msgstr ""
 
 #. he: שימו לב: המטרה ותוצאות הכלים נשלחות ל־{p} (במפתח שלך).
-#: apps/dai-agent/dai_agent/cli.py:164
+#: apps/dai-agent/dai_agent/cli.py:166
 #, python-brace-format
 msgid "Note: the goal and the tools' results go to {p} (your own key)."
 msgstr ""
@@ -9494,7 +9494,7 @@ msgid "✗ '{id}' is a {source} recipe and cannot be replaced."
 msgstr ""
 
 #. he: ✗ --script: רשימת JSON של צעדים
-#: apps/dai-agent/dai_agent/cli.py:136
+#: apps/dai-agent/dai_agent/cli.py:138
 msgid "✗ --script: a JSON list of steps"
 msgstr ""
 
@@ -9557,7 +9557,7 @@ msgid "✗ skipped"
 msgstr ""
 
 #. he: ✗ תפקיד לא מוכר; ראו: dai-agent roles
-#: apps/dai-agent/dai_agent/cli.py:126
+#: apps/dai-agent/dai_agent/cli.py:128
 #: apps/dai-agent/dai_agent/gui.py:476
 msgid "✗ unknown role; see: dai-agent roles"
 msgstr ""

@@ -229,13 +229,13 @@ class CliTests(unittest.TestCase):
                 chat = scripted_chat([{"thought": "", "tool": "do", "args": {"sentence": "lock the screen after 5 minutes"}, "final": ""},
                                       {"thought": "", "tool": "do", "args": {"sentence": "allow usb storage"}, "final": ""},
                                       {"thought": "", "tool": "done", "args": {}, "final": "Locked; USB left as it was."}])
-                code = cli.main(["dai-agent", "run", "harden", "--yes", "--notify"], chat=chat, services=services, home=home,
+                code = cli.main(["dai-agent", "run", "harden", "--yes", "--notify", "--lang", "he"], chat=chat, services=services, home=home,
                                 ask_input=lambda q: (_ for _ in ()).throw(EOFError()))        # no terminal: a question is a no
                 self.assertEqual(code, 0)
             self.assertEqual([e[0] for e in fake.executed], ["lock the screen after 5 minutes"])  # the weakening step never ran
             self.assertEqual(notified[-1][:2], ["notify-send", "-a"])
             self.assertIn("Locked; USB left as it was.", notified[-1][-1])
-            self.assertIn("D.Ai Agent: harden", notified[-1][-2])
+            self.assertIn("סוכן D.Ai: harden", notified[-1][-2])                          # --lang he, whatever LANG says
 
     def test_memory_subcommand(self):
         from dai_agent import memory

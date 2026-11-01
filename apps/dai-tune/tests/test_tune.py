@@ -364,7 +364,8 @@ class ExecutorTests(TuneTestCase):
         from dai_tune.cli import apply_plan
         applied = apply_plan(plan, self.ctx, "test")
         self.assertTrue(applied.ok, applied.error)                                # the executor path a timer uses
-        self.assertEqual(self.runner.calls[-1], ["dai-agent", "run", "what is D.Ai Command?", "--role", "tutor", "--yes", "--notify"])
+        self.assertEqual(self.runner.calls[-1][:7], ["dai-agent", "run", "what is D.Ai Command?", "--role", "tutor", "--yes", "--notify"])
+        self.assertEqual(self.runner.calls[-1][7:9], ["--lang", self.ctx.lang])              # Tune's fixed env has no LANG
         self.runner.responses[("dai-agent", "run")] = (1, "stopped")            # a stopped run is the agent's own story
         spec.apply({"goal": "x", "role": "all"}, self.ctx)
         self.runner.responses[("dai-agent", "run")] = (127, "")
