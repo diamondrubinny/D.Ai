@@ -102,10 +102,10 @@ class ModelTests(WelcomeTestCase):
         self.assertFalse(mid["code"].checked)
         self.assertEqual((low["sight"].model_id, low["sight"].checked, low["sight"].note), (core.SIGHT_SMALL, False, "low_ram"))
         big = core.ai_options(16000)
-        self.assertEqual(core.chosen_models(big), [core.CODER, core.VOICE, core.SIGHT])
-        self.assertEqual({o.key: o.note for o in big}["code"], "included")
+        self.assertEqual(core.chosen_models(big), [core.ASSISTANT_BIG, core.VOICE, core.SIGHT])   # docs/AI.md §2: the 1.5B assistant
+        self.assertEqual(({o.key: o.note for o in big}["code"], {o.key: o.checked for o in big}["code"]), ("", False))
         installed = core.ai_options(16000, {core.VOICE, core.SIGHT})
-        self.assertEqual(core.chosen_models(installed), [core.CODER])
+        self.assertEqual(core.chosen_models(installed), [core.ASSISTANT_BIG])
         for option in core.ai_options(16000):
             self.assertIn(option.model_id, CATALOG)
 
@@ -193,7 +193,8 @@ class WindowTests(WelcomeTestCase):
         self.click(win, "Next")
         self.assertEqual(win.step, "ai")
         boxes = {b.text(): b for b in win.findChildren(QCheckBox)}
-        self.assertFalse(boxes[gui.STRINGS["code"][0]].isEnabled())  # included in the assistant
+        code = boxes[gui.STRINGS["code"][0]]
+        self.assertTrue(code.isEnabled() and not code.isChecked())    # the coder is a choice of its own (docs/AI.md §2)
         self.click(win, "Next")
         self.assertIn("No telemetry", self.texts(win))
         self.click(win, "Next")
@@ -215,7 +216,7 @@ class WindowTests(WelcomeTestCase):
         while win.step != "done" and time.monotonic() < deadline:
             QTest.qWait(20)
         self.assertEqual(win.step, "done")
-        self.assertEqual(calls[0].models, [core.CODER, core.VOICE, core.SIGHT])
+        self.assertEqual(calls[0].models, [core.ASSISTANT_BIG, core.VOICE, core.SIGHT])
         self.assertEqual(sum(1 for s in calls[0].plan.steps if s.action == "device.block"), 2)
         self.assertIn("Super+Space", self.texts(win))
         state = json.loads(core.state_path(self.home).read_text())

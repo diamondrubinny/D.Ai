@@ -100,6 +100,13 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 'agents: secretary only'` → `dai-agent run x --role guard` מסרב (קוד 2), `dai-tune undo` מחזיר; בבדיקת הטלפון
 `AGENT_WINDOW=1`.
 
+## 6ד. שלב 5: Diamond גדול יותר כשיש זיכרון (נבנה 2026-11-01)
+
+> הסוכן טוב כמו המודל שמתכנן. ‏`qwen2.5-1.5b` (Qwen2.5-1.5B-Instruct Q4_K_M, ‏~1.1GB, ‏SHA-256 מוצמד מהמאגר הרשמי
+> ואומת בהורדה) נכנס לקטלוג; ‏Welcome מציע אותו כעוזר במחשבים מ־8GB (המודל לקוד נשאר בחירה נפרדת); ‏`default_model_id`
+> בלי בחירה מפורשת לוקח את המודל הכללי הגדול ביותר שמותקן ושצורך לכל היותר חצי מזיכרון המחשב (`fits`), עוזר רגיל לפני
+> מודל קוד; אחרת הקטן. "memory saver on" עדיין גובר. ב־VM של ה־CI נשאר 0.5B (רק הוא מותקן), ולכן אותה התנהגות.
+
 ## 6ב. שלב 3: כלים נוספים, סוכנים מתוזמנים, זיכרון (נבנה 2026-11-01)
 
 > אותו ארגז כלים סגור, אותם כללים. שלושה דברים: הסוכן מגיע לדואר (J), להסבר (Explain) ולהקלטה (Record); "כל יום
@@ -165,3 +172,5 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 ✅ שלב 3 (כלים נוספים, סוכן מתוזמן, זיכרון) ירוק ב־CI (ריצה 41288787316, ‏145/145 ב־user/dev/edu: ‏`SCRIPT3_RC=0`, ‏`MEMORY=1` ב־0600, ‏`TIMER_PLAN=1`, ‏`TUNE_AGENT_RC=0`): ‏`memory.py`, ‏`plans.py`, חמישה כלים, ‏`agent.run` ב־Tune, ‏`--notify`, ‏`dai-agent memory`; 8 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
 
 ✅ שלב 4 (סוכן שמדבר, טלפון, מדיניות) ירוק ב־CI (ריצה 41296322344: ‏145/145 ב־user/dev/edu עם `POLICY_RC=0`, ‏`GUARD_RC=2`, ‏`NOT_ALLOWED=4`, ‏`POLICY_GONE`; הטלפון 120/120 עם `AGENT_WINDOW=1`): ‏`policy.py`, ‏`agent.policy` ב־Tune, 🎙 ו־`--speak` בחלון, בדיקת הטלפון; 3 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
+
+🔨 שלב 5 (Diamond גדול יותר כשיש זיכרון) נבנה: קטלוג, ‏`fits`/`mem_total_mb`, ‏Welcome; בדיקות dai-ai ו־Welcome עודכנו; ממתין ל־CI.

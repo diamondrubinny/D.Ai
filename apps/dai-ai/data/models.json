@@ -15,6 +15,20 @@
       ]
     },
     {
+      "id": "qwen2.5-1.5b",
+      "name": "Qwen2.5 1.5B Instruct (Q4_K_M)",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "size": 1117320736,
+      "license": "Apache-2.0",
+      "ram_mb": 2048,
+      "purpose": "general assistant (better answers and Hebrew; the default where there is memory)",
+      "tasks": [
+        "general"
+      ]
+    },
+    {
       "id": "qwen2.5-coder-1.5b",
       "name": "Qwen2.5 Coder 1.5B Instruct (Q4_K_M)",
       "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf",

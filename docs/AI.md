@@ -30,7 +30,8 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 
 | מזהה | קובץ | רישיון | RAM | ייעוד |
 |------|------|--------|-----|-------|
-| `qwen2.5-0.5b` | Qwen2.5-0.5B-Instruct Q4_K_M (~0.4GB) | Apache-2.0 | ~1GB | כללי, מהיר, ברירת מחדל |
+| `qwen2.5-0.5b` | Qwen2.5-0.5B-Instruct Q4_K_M (~0.4GB) | Apache-2.0 | ~1GB | כללי, מהיר; ברירת המחדל במחשבים עם פחות מ־4GB |
+| `qwen2.5-1.5b` | Qwen2.5-1.5B-Instruct Q4_K_M (~1.1GB) | Apache-2.0 | ~2GB | כללי, תשובות ועברית טובות יותר; ברירת המחדל כשיש זיכרון (Welcome מציע אותו מ־8GB; daid בוחר את הגדול שמותקן ומשאיר חצי מהזיכרון לשאר) |
 | `qwen2.5-coder-1.5b` | Qwen2.5-Coder-1.5B-Instruct Q4_K_M (~1.1GB) | Apache-2.0 | ~2GB | קוד (מהדורת מפתחים) |
 | `smolvlm-256m` | SmolVLM-256M-Instruct Q8_0 + projector (~0.3GB, שני קבצים) | Apache-2.0 | ~0.9GB | ראייה: D.Ai Explain מסתכל על המסך (מהיר) |
 | `smolvlm-500m` | SmolVLM-500M-Instruct Q8_0 + projector (~0.55GB, שני קבצים) | Apache-2.0 | ~1.5GB | ראייה: D.Ai Explain מסתכל על המסך (מומלץ) |
@@ -75,7 +76,7 @@ dai-tune (fallback)    ─┘     │  socket: $XDG_RUNTIME_DIR/dai/daid.sock (0
 
 ## 5. מגבלות ידועות
 
-- מודל 0.5B מהיר אבל מוגבל, בעיקר בעברית. אפשר לבחור מודל גדול יותר מהקטלוג.
+- מודל 0.5B מהיר אבל מוגבל, בעיקר בעברית. במחשב עם זיכרון, ‏Welcome מציע את 1.5B, ובלי בחירה מפורשת daid משתמש במודל הכללי הגדול ביותר שמותקן ושצורך לכל היותר חצי מהזיכרון (`fits`); "memory saver on" מחזיר לקטן. ‏`dai-models install qwen2.5-1.5b` בכל מחשב.
 - האצת GPU (Vulkan/CUDA) עוד לא נבנתה. כרגע CPU בלבד.
 - הכתבה קולית (Whisper): ראו [VOICE.md](VOICE.md).
 - **סכמת JSON נאכפת רק מ־2026-10-31.** עד אז `llama.py` שלח `response_format: {"type": "json_schema", "schema": …}`,

@@ -194,8 +194,20 @@ class TaskTests(EnvTestCase):
         for model in catalog.values():
             model.path.parent.mkdir(parents=True, exist_ok=True)
             model.path.write_bytes(b"x")
-        self.assertEqual(models.default_model_id(catalog), "qwen2.5-0.5b")  # smallest for general use
+        self.assertEqual(models.default_model_id(catalog, mem_mb=2000), "qwen2.5-0.5b")     # little memory: the smallest
+        self.assertEqual(models.default_model_id(catalog, mem_mb=0), "qwen2.5-0.5b")        # unknown memory: the smallest
+        self.assertEqual(models.default_model_id(catalog, mem_mb=4096), "qwen2.5-1.5b")     # fits: the plain 1.5B before the coder
+        self.assertEqual(models.default_model_id(catalog, mem_mb=16000), "qwen2.5-1.5b")
+        catalog["qwen2.5-1.5b"].path.unlink()
+        self.assertEqual(models.default_model_id(catalog, mem_mb=16000), "qwen2.5-coder-1.5b")   # the coder answers too
+        catalog["qwen2.5-1.5b"].path.write_bytes(b"x")
         self.assertEqual(models.default_model_id(catalog, "code"), "qwen2.5-coder-1.5b")
+        meminfo = Path(self.tmp.name) / "meminfo" if hasattr(self, "tmp") else catalog["qwen2.5-0.5b"].path.parent / "meminfo"
+        meminfo.write_text("MemTotal:       16000000 kB\nMemFree: 1 kB\n")
+        self.assertEqual(models.mem_total_mb(meminfo), 15625)
+        self.assertEqual(models.mem_total_mb(meminfo.parent / "missing"), 0)
+        self.assertTrue(models.fits(catalog["qwen2.5-1.5b"], 4096))
+        self.assertFalse(models.fits(catalog["qwen2.5-1.5b"], 4095))
         # Memory saver (docs/BEYOND.md §14): prefer_small wins over the chosen model, and only while it is set.
         larger = max((m for m in catalog.values() if "general" in m.tasks), key=lambda m: m.ram_mb).id
         models.set_default(larger)
@@ -203,7 +215,7 @@ class TaskTests(EnvTestCase):
         path = models.config_file()
         data = json.loads(path.read_text())
         path.write_text(json.dumps({**data, "prefer_small": True}))
-        self.assertEqual(models.default_model_id(catalog), "qwen2.5-0.5b")
+        self.assertEqual(models.default_model_id(catalog, mem_mb=16000), "qwen2.5-0.5b")
         path.write_text(json.dumps(data))
         self.assertEqual(models.default_model_id(catalog), larger)
 

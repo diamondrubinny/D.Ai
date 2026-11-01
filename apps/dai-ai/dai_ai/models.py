@@ -176,11 +176,32 @@ def remove(model: Model) -> None:
         companion.unlink(missing_ok=True)
 
 
-def default_model_id(models: dict[str, Model], task: str = "general") -> str | None:
+MEMINFO = Path("/proc/meminfo")
+
+
+def mem_total_mb(meminfo: Path = MEMINFO) -> int:
+    """This computer's memory in MB; 0 when unknown."""
+    try:
+        for line in meminfo.read_text(encoding="ascii").splitlines():
+            if line.startswith("MemTotal:"):
+                return int(line.split()[1]) // 1024
+    except (OSError, ValueError, IndexError):
+        pass
+    return 0
+
+
+def fits(model: Model, mem_mb: int) -> bool:
+    """A model may be the default only when it leaves half the memory to everything else (docs/AI.md §2)."""
+    return mem_mb > 0 and model.ram_mb * 2 <= mem_mb
+
+
+def default_model_id(models: dict[str, Model], task: str = "general", mem_mb: int | None = None) -> str | None:
     """The model to use for a task: chat ("general"), code, or speech.
 
     Speech models are never used for chat and vice versa; code falls back to
-    the general model when no coding model is installed.
+    the general model when no coding model is installed. With nothing chosen,
+    chat uses the largest installed general model that fits this computer's
+    memory (a plain assistant before a coding one), else the smallest.
     """
     if task != "general":
         suited = [m for m in models.values() if m.installed and task in m.tasks]
@@ -200,7 +221,13 @@ def default_model_id(models: dict[str, Model], task: str = "general") -> str | N
     chosen = _configured("model")
     if chosen in chat_models and chat_models[chosen].installed:
         return chosen
-    return min(installed, key=lambda m: m.ram_mb).id if installed else None
+    if not installed:
+        return None
+    mem = mem_total_mb() if mem_mb is None else mem_mb
+    fitting = [m for m in installed if fits(m, mem)]
+    if fitting:
+        return max(fitting, key=lambda m: (m.ram_mb, "code" not in m.tasks)).id
+    return min(installed, key=lambda m: m.ram_mb).id
 
 
 def _configured(key: str) -> str | None:

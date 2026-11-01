@@ -29,7 +29,7 @@ LOCK = "lock the screen after 5 minutes"
 UPDATES = "enable automatic updates"
 STRICT_EXTRA = ("block usb storage", "turn off bluetooth")
 
-ASSISTANT_SMALL, CODER, VOICE = "qwen2.5-0.5b", "qwen2.5-coder-1.5b", "whisper-base"
+ASSISTANT_SMALL, ASSISTANT_BIG, CODER, VOICE = "qwen2.5-0.5b", "qwen2.5-1.5b", "qwen2.5-coder-1.5b", "whisper-base"
 SIGHT_SMALL, SIGHT = "smolvlm-256m", "smolvlm-500m"     # D.Ai Explain looks at the screen (docs/EXPLAIN.md §8)
 MIN_AI_RAM_MB, CODER_RAM_MB = 4000, 8000
 
@@ -118,12 +118,11 @@ class Option:
 def ai_options(ram: int, installed: set[str] = frozenset()) -> list[Option]:
     """What to offer, pre-checked according to the memory of this computer."""
     big = ram >= CODER_RAM_MB
-    assistant = Option("assistant", CODER if big else ASSISTANT_SMALL, ram >= MIN_AI_RAM_MB,
+    # With memory, the plain 1.5B assistant (better answers, better Hebrew; docs/AI.md §2); the coding model
+    # stays a choice of its own for people who write code.
+    assistant = Option("assistant", ASSISTANT_BIG if big else ASSISTANT_SMALL, ram >= MIN_AI_RAM_MB,
                        note="" if ram >= MIN_AI_RAM_MB else "low_ram")
-    if big:  # the coding model also answers general questions
-        code = Option("code", CODER, True, enabled=False, note="included")
-    else:
-        code = Option("code", CODER, False, note="" if ram >= MIN_AI_RAM_MB else "low_ram")
+    code = Option("code", CODER, False, note="" if ram >= MIN_AI_RAM_MB else "low_ram")
     voice = Option("voice", VOICE, True)
     sight = Option("sight", SIGHT if ram >= MIN_AI_RAM_MB else SIGHT_SMALL, ram >= MIN_AI_RAM_MB,
                    note="" if ram >= MIN_AI_RAM_MB else "low_ram")
@@ -186,7 +185,7 @@ def run_setup(setup: Setup, ctx: Context, progress: Callable[[str], None],
             results.append(Result(model_id, False, str(exc) or exc.__class__.__name__))
     # Chat uses the fast assistant when there is one; "code" picks the coder by itself.
     installed_ok = {r.label for r in results if r.ok}
-    for chat_model in (ASSISTANT_SMALL, CODER):
+    for chat_model in (ASSISTANT_SMALL, CODER, ASSISTANT_BIG):     # the last one installed wins: the plain assistant
         if chat_model in installed_ok:
             set_default(chat_model)
             break
