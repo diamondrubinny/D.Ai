@@ -173,4 +173,4 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 
 ✅ שלב 4 (סוכן שמדבר, טלפון, מדיניות) ירוק ב־CI (ריצה 41296322344: ‏145/145 ב־user/dev/edu עם `POLICY_RC=0`, ‏`GUARD_RC=2`, ‏`NOT_ALLOWED=4`, ‏`POLICY_GONE`; הטלפון 120/120 עם `AGENT_WINDOW=1`): ‏`policy.py`, ‏`agent.policy` ב־Tune, 🎙 ו־`--speak` בחלון, בדיקת הטלפון; 3 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
 
-🔨 שלב 5 (Diamond גדול יותר כשיש זיכרון) נבנה: קטלוג, ‏`fits`/`mem_total_mb`, ‏Welcome; בדיקות dai-ai ו־Welcome עודכנו; ממתין ל־CI.
+✅ שלב 5 (Diamond גדול יותר כשיש זיכרון) ירוק ב־CI (ריצה 41305736230: ‏145/145 ב־user/dev/edu, ‏135/135 ב־tv; ‏workflow "AI models" אימת את הקטלוג): קטלוג, ‏`fits`/`mem_total_mb`, ‏Welcome; בדיקות dai-ai ו־Welcome עודכנו.
