@@ -14,6 +14,7 @@ from dai_i18n import pick
 
 MAX_TEXT = 500
 MAX_RESULT = 1500
+RECORD_MIN, RECORD_MAX = 5, 600
 
 
 class ToolError(RuntimeError):
@@ -124,7 +125,120 @@ def plan(services: Services, sentence: str) -> str:
     return "\n".join(f"{row['summary']} ({row.get('scope', '')}, {row.get('effect', '')})" for row in describe(made, services.lang))
 
 
+def _j_dir(services: Services) -> Path:
+    """J's data folder: the test's own, or ~/.local/share/dai-j (never created here)."""
+    if services.extra.get("j_dir") is not None:
+        return Path(services.extra["j_dir"])
+    if services.home is not None:
+        return services.home / ".local/share/dai-j"
+    from dai_j.accounts import data_dir
+    return data_dir()
+
+
+def _inbox(services: Services, limit: int) -> list[dict]:
+    from dai_j.accounts import load
+    from dai_j.store import Store
+    folder = _j_dir(services)
+    accounts = [a.id for a in load(folder)] if (folder / "accounts.json").is_file() else []
+    if not accounts or not (folder / "mail.sqlite").is_file():
+        return []
+    store = Store(folder / "mail.sqlite")
+    try:
+        return store.listing(accounts, role="inbox", limit=limit)
+    finally:
+        store.close()
+
+
+def _when(stamp: float) -> str:
+    from datetime import datetime
+    try:
+        return datetime.fromtimestamp(float(stamp)).strftime("%Y-%m-%d %H:%M")
+    except (OverflowError, OSError, ValueError, TypeError):
+        return ""
+
+
+def mail(services: Services, limit: int = 5) -> str:
+    """The newest inbox messages from J's own store: sender, subject, date. No network, no bodies."""
+    rows = _inbox(services, max(1, min(limit, 10)))
+    if not rows:
+        return pick(services.lang, "J has no mail on this computer (no account, or nothing fetched yet).",
+                    "אין דואר של J במחשב הזה (אין חשבון, או שעדיין לא הורד דבר).")
+    lines = []
+    for number, row in enumerate(rows, 1):
+        mark = "" if row.get("seen") else "● "
+        lines.append(f"{number}. {mark}{row.get('sender') or row.get('sender_address') or '?'}: {row.get('subject') or '(no subject)'}  [{_when(row.get('date', 0))}]")
+    return "\n".join(lines)
+
+
+def mail_summary(services: Services, number: int = 1) -> str:
+    """Diamond's summary of the N-th newest inbox message (1 = newest), through J's own summary prompt."""
+    from dai_j import diamond
+    from dai_j.mail import parse_body
+    from dai_j.sanitize import html_to_text
+    from dai_j.store import Store
+    rows = _inbox(services, max(1, min(number, 10)))
+    if len(rows) < max(1, number):
+        return pick(services.lang, "There is no message number {n}.", "אין הודעה מספר {n}.").format(n=number)
+    row = rows[max(1, number) - 1]
+    store = Store(_j_dir(services) / "mail.sqlite")
+    try:
+        raw = store.body(row["account"], row["folder"], int(row["uid"]))
+    finally:
+        store.close()
+    head = f"{row.get('sender') or row.get('sender_address') or '?'}: {row.get('subject') or '(no subject)'}"
+    if not raw:
+        return pick(services.lang, "{head} — J has not downloaded this message yet; open it in J first.",
+                    "{head} — J עדיין לא הוריד את ההודעה הזאת; פתחו אותה ב־J קודם.").format(head=head)
+    body = parse_body(raw)
+    text = body.text or html_to_text(body.html)
+    said = diamond.answer(diamond.summary_messages(row.get("sender") or row.get("sender_address") or "", row.get("subject") or "",
+                                                   text, services.lang), chat=services.extra.get("chat"))
+    return f"{head}\n" + (said or pick(services.lang, "Diamond is not available.", "Diamond לא זמין."))
+
+
+def explain(services: Services, text: str) -> str:
+    """D.Ai Explain on a text (an error, a message): the explanation and, when Tune understands it, a sentence."""
+    from dai_explain.engine import ExplainError
+    from dai_explain.engine import explain as explain_text
+    try:
+        out = explain_text(text, services.lang, chat=services.extra.get("chat"))
+    except ExplainError as exc:
+        raise ToolError(str(exc)) from exc
+    result = out.text
+    if out.suggestion:
+        result += "\n" + pick(services.lang, "Suggested D.Ai Tune sentence: {s}", "משפט D.Ai Tune מוצע: {s}").format(s=out.suggestion)
+    return result
+
+
 # ---------------------------------------------------------------- act tools
+
+def record(services: Services, seconds: int) -> str:
+    """A screen recording that stops by itself (dai-record start N). The person approved the seconds."""
+    if not RECORD_MIN <= seconds <= RECORD_MAX:
+        raise ToolError(f"record: seconds must be {RECORD_MIN} to {RECORD_MAX}")
+    if services.dry_run:
+        return pick(services.lang, "Dry run: would record {n} seconds.", "הרצת ניסיון: היה מקליט {n} שניות.").format(n=seconds)
+    try:
+        done = services.run(["dai-record", "start", str(seconds)], capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ToolError(pick(services.lang, "D.Ai Record did not start: {e}", "D.Ai Record לא התחיל: {e}").format(e=exc)) from exc
+    if done.returncode != 0:
+        raise ToolError(pick(services.lang, "D.Ai Record did not start: {e}", "D.Ai Record לא התחיל: {e}").format(e=(done.stderr or done.stdout or "").strip()[-200:]))
+    return pick(services.lang, "Recording {n} seconds; the file goes to ~/Videos/Recordings.",
+                "מקליט {n} שניות; הקובץ יישמר ב־~/Videos/Recordings.").format(n=seconds)
+
+
+def remember(services: Services, text: str) -> str:
+    """One approved line into the agent's memory (docs/AGENTS.md §6ב)."""
+    from . import memory
+    if services.dry_run:
+        return pick(services.lang, "Dry run: would remember: {t}", "הרצת ניסיון: היה זוכר: {t}").format(t=text)
+    try:
+        rows = memory.add(services.home, text)
+    except ValueError as exc:
+        raise ToolError(str(exc)) from exc
+    return pick(services.lang, "Remembered ({n} lines; dai-agent memory).", "נזכר ({n} שורות; dai-agent memory).").format(n=len(rows))
+
 
 def do(services: Services, sentence: str) -> str:
     """A D.Ai Tune sentence through the same execute_plan as dai-tune: printed plan, confirmation, journal."""
@@ -188,9 +302,14 @@ TOOLS: dict[str, Tool] = {t.name: t for t in (
     Tool("posture", "read", "The security score and which checks fail.", {}, posture),
     Tool("doctor", "read", "D.Ai Doctor findings. args: topic = slow | disk | battery | hardware | update", {"topic": "str"}, doctor),
     Tool("plan", "read", "What a D.Ai Tune sentence would change, without changing it. args: sentence (English, e.g. 'block usb storage')", {"sentence": "str"}, plan, ("sentence",)),
+    Tool("mail", "read", "The newest messages in the person's inbox (J): sender, subject, date; ● = unread. args: limit (1-10)", {"limit": "int"}, mail),
+    Tool("mail_summary", "read", "A short summary of one inbox message by its number in the mail list (1 = newest). args: number", {"number": "int"}, mail_summary, ("number",)),
+    Tool("explain", "read", "Explain a text the person saw (an error, a message, a setting) in plain words, with a D.Ai Tune sentence when one fixes it. args: text", {"text": "str"}, explain, ("text",)),
     Tool("do", "act", "Apply a D.Ai Tune sentence (settings, security, apps, reminders, notes), e.g. 'lock the screen after 5 minutes'. The person approves first. args: sentence", {"sentence": "str"}, do, ("sentence",)),
     Tool("remind", "act", "Set a reminder. args: text, and in_minutes (number) or at ('18:30')", {"text": "str", "in_minutes": "int", "at": "str"}, remind, ("text",)),
     Tool("note", "act", "Write one line into the person's notes. args: text", {"text": "str"}, note, ("text",)),
+    Tool("record", "act", "Record the screen for a number of seconds (no sound); it stops by itself. args: seconds (5-600)", {"seconds": "int"}, record, ("seconds",)),
+    Tool("remember", "act", "Keep one line for later runs (a fact about the person, a preference). The person approves first. args: text", {"text": "str"}, remember, ("text",)),
     Tool("say", "light", "Read a short text aloud. args: text", {"text": "str"}, say, ("text",)),
     Tool("notify", "light", "Show a short notification. args: text", {"text": "str"}, notify, ("text",)),
 )}

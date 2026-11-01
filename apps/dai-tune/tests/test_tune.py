@@ -11,7 +11,7 @@ from unittest import mock
 
 from dai_tune import catalog, executor, parser, planner, posture
 from dai_tune.catalog import ValidationError
-from dai_tune.context import Context
+from dai_tune.context import ActionError, Context
 
 
 class FakeRunner:
@@ -335,6 +335,41 @@ class ExecutorTests(TuneTestCase):
         plan = planner.build_plan(parser.parse("every day at 22:00 memory saver on").requests, self.ctx)
         self.assertFalse(plan.ok)
         self.assertTrue(any("administrator" in e for e in plan.errors), plan.errors)
+
+    def test_an_agent_sentence_is_one_user_action_and_a_timer_may_carry_it(self):
+        """docs/AGENTS.md §6ב: "agent: GOAL" → agent.run, never split into clauses; "every day at 8 agent …" → way.when."""
+        result = parser.parse("agent: find the lease, read it to me and note the date")
+        self.assertEqual([r.action for r in result.requests], ["agent.run"])
+        self.assertEqual(result.requests[0].params, {"goal": "find the lease, read it to me and note the date", "role": "all"})
+        hebrew = parser.parse("סוכן secretary: סכם לי את הדואר")
+        self.assertEqual(hebrew.requests[0].params, {"goal": "סכם לי את הדואר", "role": "secretary"})
+        self.assertEqual(parser.parse("agent:").requests, [])
+        self.assertEqual(parser.parse("agent: " + "x" * 301).requests, [])
+        timed = parser.parse("every day at 8 agent secretary: summarize my mail")
+        self.assertEqual(timed.requests[0].action, "way.when")
+        self.assertEqual(timed.requests[0].params["sentence"], "agent secretary: summarize my mail")
+        self.assertEqual(timed.requests[0].params["schedule"]["hour"], 8)
+        self.assertEqual([r.action for r in catalog.way_sentence_requests("agent: summarize my mail")], ["agent.run"])
+        spec = catalog.CATALOG["agent.run"]
+        self.assertEqual(spec.validate({"goal": "  summarize   my mail ", "role": "secretary"}, self.ctx), {"goal": "summarize my mail", "role": "secretary"})
+        for bad, words in (({"goal": "", "role": "all"}, "goal"), ({"goal": "x", "role": "wizard"}, "role"), ({"goal": "x", "shell": "id"}, "shell")):
+            with self.subTest(words), self.assertRaises(ValidationError) as caught:
+                spec.validate(bad, self.ctx)
+            self.assertIn(words, str(caught.exception))
+        self.assertIn("summarize my mail", spec.summary({"goal": "summarize my mail", "role": "secretary"}, "he"))
+        plan = self.plan("agent tutor: what is D.Ai Command?")
+        self.assertTrue(plan.ok, plan.errors)
+        self.assertEqual([s.scope for s in plan.steps], ["user"])
+        self.assertFalse(plan.weakens)
+        from dai_tune.cli import apply_plan
+        applied = apply_plan(plan, self.ctx, "test")
+        self.assertTrue(applied.ok, applied.error)                                # the executor path a timer uses
+        self.assertEqual(self.runner.calls[-1], ["dai-agent", "run", "what is D.Ai Command?", "--role", "tutor", "--yes", "--notify"])
+        self.runner.responses[("dai-agent", "run")] = (1, "stopped")            # a stopped run is the agent's own story
+        spec.apply({"goal": "x", "role": "all"}, self.ctx)
+        self.runner.responses[("dai-agent", "run")] = (127, "")
+        with self.assertRaises(ActionError):
+            spec.apply({"goal": "x", "role": "all"}, self.ctx)
 
     def test_way_when_timer_user_scope_only(self):
         """docs/WAY.md §2: a when: line is one user timer; a system sentence or a bad schedule is refused."""

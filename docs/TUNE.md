@@ -83,6 +83,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `way.when` / `way.when_off` | לוח זמנים לפני משפט: "every day at 20:00 dark theme", "כל בוקר ב־7 ערכת נושא בהירה", "at login: firefox does not go online" (גם מ־`!` בשורת הפקודה); או שורת `when:` ב־`.dway`; הסרה: `dai-way when remove` (docs/WAY.md §2: טיימר משתמש שמריץ משפט אחד, רק פעולות בהיקף משתמש) | משתמש | לפי המשפט |
 | `ai.providers_policy` | "no external AI providers", "בלי ספקי AI חיצוניים", "allow external AI providers" (docs/PROVIDERS.md §4c: בדרך כלל ממדיניות ארגונית) | מערכת | מחזק |
 | `note.add` | "note: buy milk", "write down that …" / "רשום: לקנות חלב", "תרשום ש…" (docs/NOTES.md: שורה מתוארכת ב־`~/Documents/Notes/notes.md`) | משתמש | ניטרלי |
+| `agent.run` | "agent: summarize my mail", "סוכן secretary: …" (docs/AGENTS.md §6ב: Diamond עם ארגז הכלים הסגור; בתוך "every day at 8 …" → סוכן מתוזמן דרך `way.when`, מאשר לבד רק צעדים ששומרים או מחזקים אבטחה, התשובה כהודעה) | משתמש | ניטרלי |
 | `reminder.now` | "remind me to call Dana" (בלי זמן: הודעה וצליל עכשיו); בתוך "every day at 9 …" / "כל יום ב־9 …" → תזכורת חוזרת דרך `way.when` (docs/REMIND.md §6) | משתמש | ניטרלי |
 | `reminder.add` | "remind me in 20 minutes to call Dana", "remind me tomorrow at 8 to pay the bill" / "תזכיר לי בעוד 20 דקות לצלצל לדנה", "תזכיר לי ב־18:30 לקחת את הכדורים" (docs/REMIND.md: קובץ + טיימר משתמש; `dai-remind list`) | משתמש | ניטרלי |
 | `explain.options` | "explain with pictures off", "read explanations aloud" / "הסבר עם תמונה כבוי", "להקריא הסברים" (docs/EXPLAIN.md §9: `~/.config/dai/explain.json`) | משתמש | ניטרלי |

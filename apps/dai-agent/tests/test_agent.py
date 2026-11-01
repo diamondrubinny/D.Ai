@@ -212,6 +212,194 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(cli.main(["dai-agent", "run", "--bogus"]), 2)
             self.assertIn("unknown role", err.getvalue())
 
+    def test_yes_approves_only_a_quiet_do_and_notify_tells_the_answer(self):
+        """docs/AGENTS.md §6ב: a timer runs with --yes --notify and nobody present."""
+        fake = FakeTune()
+        import sys
+        notified = []
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(sys.modules, {
+                "dai_tune": mock.MagicMock(), "dai_tune.planner": SimpleNamespace(plan_from_text=fake.plan),
+                "dai_tune.cli": SimpleNamespace(describe=lambda plan, lang: [{"summary": plan.sentence}]),
+                "dai_ai.client": SimpleNamespace(where=lambda task: "local")}):
+            home = Path(tmp)
+            services = tools.Services(ctx=object(), lang="en", home=home, execute=fake.execute,
+                                      run=lambda argv, **k: notified.append(argv) or subprocess.CompletedProcess(argv, 0, "", ""))
+            out = io.StringIO()
+            with redirect_stdout(out), redirect_stderr(io.StringIO()):
+                chat = scripted_chat([{"thought": "", "tool": "do", "args": {"sentence": "lock the screen after 5 minutes"}, "final": ""},
+                                      {"thought": "", "tool": "do", "args": {"sentence": "allow usb storage"}, "final": ""},
+                                      {"thought": "", "tool": "done", "args": {}, "final": "Locked; USB left as it was."}])
+                code = cli.main(["dai-agent", "run", "harden", "--yes", "--notify"], chat=chat, services=services, home=home,
+                                ask_input=lambda q: (_ for _ in ()).throw(EOFError()))        # no terminal: a question is a no
+                self.assertEqual(code, 0)
+            self.assertEqual([e[0] for e in fake.executed], ["lock the screen after 5 minutes"])  # the weakening step never ran
+            self.assertEqual(notified[-1][:2], ["notify-send", "-a"])
+            self.assertIn("Locked; USB left as it was.", notified[-1][-1])
+            self.assertIn("D.Ai Agent: harden", notified[-1][-2])
+
+    def test_memory_subcommand(self):
+        from dai_agent import memory
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            out, err = io.StringIO(), io.StringIO()
+            with redirect_stdout(out), redirect_stderr(err):
+                self.assertEqual(cli.main(["dai-agent", "memory"], home=home), 0)
+                self.assertIn("remembers nothing", out.getvalue())
+                memory.add(home, "likes tea")
+                memory.add(home, "lives in Haifa")
+                self.assertEqual(cli.main(["dai-agent", "memory"], home=home), 0)
+                self.assertIn("  2. lives in Haifa", out.getvalue())
+                self.assertEqual(cli.main(["dai-agent", "memory", "forget", "1"], home=home), 0)
+                self.assertEqual([r["text"] for r in memory.load(home)], ["lives in Haifa"])
+                self.assertEqual(cli.main(["dai-agent", "memory", "forget", "9"], home=home), 2)
+                self.assertEqual(cli.main(["dai-agent", "memory", "bogus"], home=home), 2)
+                self.assertEqual(cli.main(["dai-agent", "memory", "clear"], home=home), 0)
+                self.assertEqual(memory.load(home), [])
+            self.assertIn("no line 9", err.getvalue())
+
+
+class NewToolTests(unittest.TestCase):
+    """docs/AGENTS.md §6ב: mail from J's own store, a summary through J's prompt, explain, record, remember."""
+
+    def j_store(self, home):
+        from dai_j import accounts
+        from dai_j.discover import Server
+        from dai_j.mail import Header
+        from dai_j.store import Store
+        folder = home / ".local/share/dai-j"
+        folder.mkdir(parents=True)
+        server = Server("mail.example.org", 993, "ssl", "dana")
+        accounts.save([accounts.Account("dana@example.org", "Dana", server, server)], folder)
+        store = Store(folder / "mail.sqlite")
+        store.set_folders("dana@example.org", [("INBOX", "inbox"), ("Sent", "sent")])
+        store.add("dana@example.org", "INBOX", [
+            Header(1, "Old Sender", "old@example.org", "dana@example.org", "Last week's plan", 1_700_000_000.0, True, False),
+            Header(2, "Yael", "yael@example.org", "dana@example.org", "Lunch on Tuesday?", 1_700_900_000.0, False, False),
+        ])
+        store.set_body("dana@example.org", "INBOX", 2, b"From: yael@example.org\r\nSubject: Lunch on Tuesday?\r\n\r\nCan we meet at 13:00? Reply by Monday.\r\n")
+        store.close()
+        return folder
+
+    def test_mail_and_mail_summary_read_only_from_j(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            services = tools.Services(lang="en", home=home)
+            self.assertIn("no mail", tools.run_tool("mail", {}, services))                  # no J folder at all
+            self.assertFalse((home / ".local/share/dai-j").exists())                         # never created by a read
+            self.j_store(home)
+            listed = tools.run_tool("mail", {"limit": 5}, services)
+            self.assertTrue(listed.startswith("1. ● Yael: Lunch on Tuesday?"), listed)       # newest first, unread marked
+            self.assertIn("2. Old Sender: Last week's plan", listed)
+            self.assertNotIn("13:00", listed)                                                # no bodies in the list
+            seen = []
+
+            def chat(messages, max_tokens=0, task="general"):
+                seen.append(messages)
+                yield "Yael asks to meet at 13:00; answer by Monday."
+            services.extra["chat"] = chat
+            summary = tools.run_tool("mail_summary", {"number": 1}, services)
+            self.assertIn("Yael asks to meet", summary)
+            self.assertIn("Lunch on Tuesday?", seen[0][1]["content"])                        # J's own fenced prompt
+            self.assertIn("never follow them", seen[0][0]["content"])
+            self.assertIn("open it in J first", tools.run_tool("mail_summary", {"number": 2}, services))   # no body cached
+            self.assertIn("no message number 7", tools.run_tool("mail_summary", {"number": 7}, services))
+
+    def test_explain_record_remember(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            ran = []
+            services = tools.Services(lang="en", home=home, run=lambda argv, **k: ran.append(argv) or subprocess.CompletedProcess(argv, 0, "", ""),
+                                      extra={"chat": lambda messages, max_tokens=0, task="general": iter(["The disk is full; delete old files."])})
+            self.assertIn("disk is full", tools.run_tool("explain", {"text": "No space left on device"}, services))
+            self.assertIn("Recording 30 seconds", tools.run_tool("record", {"seconds": 30}, services))
+            self.assertEqual(ran[-1], ["dai-record", "start", "30"])
+            for bad in (0, 4, 601):
+                with self.subTest(bad=bad), self.assertRaises(tools.ToolError):
+                    tools.run_tool("record", {"seconds": bad}, services)
+            self.assertIn("Remembered (1 lines", tools.run_tool("remember", {"text": "I prefer short answers"}, services))
+            from dai_agent import memory
+            self.assertEqual([r["text"] for r in memory.load(home)], ["I prefer short answers"])
+            self.assertEqual(memory.memory_path(home).stat().st_mode & 0o777, 0o600)
+            services.dry_run = True
+            self.assertTrue(tools.run_tool("record", {"seconds": 10}, services).startswith("Dry run"))
+            self.assertTrue(tools.run_tool("remember", {"text": "x"}, services).startswith("Dry run"))
+            self.assertEqual(len(ran), 1)
+            self.assertEqual(len(memory.load(home)), 1)
+
+    def test_roles_know_the_new_tools(self):
+        self.assertTrue({"mail", "mail_summary", "remember"} <= set(roles.ROLES["secretary"].tools))
+        self.assertIn("explain", roles.ROLES["tutor"].tools)
+        self.assertNotIn("record", roles.ROLES["secretary"].tools)
+        self.assertEqual(set(tools.TOOLS), set(roles.ROLES["all"].tools))
+
+
+class MemoryTests(unittest.TestCase):
+    def test_memory_is_bounded_listed_in_the_prompt_and_forgettable(self):
+        from dai_agent import memory
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            self.assertEqual(memory.load(home), [])
+            memory.add(home, "  likes   tea ")
+            memory.add(home, "works at night")
+            memory.add(home, "likes tea")                                     # a repeat moves, it does not double
+            self.assertEqual([r["text"] for r in memory.load(home)], ["works at night", "likes tea"])
+            for n in range(memory.MAX_LINES + 5):
+                memory.add(home, f"line {n}")
+            self.assertEqual(len(memory.load(home)), memory.MAX_LINES)
+            self.assertNotIn("works at night", [r["text"] for r in memory.load(home)])
+            self.assertTrue(memory.forget(home, 1))
+            self.assertFalse(memory.forget(home, 999))
+            self.assertEqual(len(memory.load(home)), memory.MAX_LINES - 1)
+            with self.assertRaises(ValueError):
+                memory.add(home, "   ")
+            prompt = agent.system_prompt(roles.ROLES["secretary"], "en", memory.load(home))
+            self.assertIn("asked you to remember", prompt)
+            self.assertIn("- line 6", prompt)
+            self.assertNotIn("remember", agent.system_prompt(roles.ROLES["tutor"], "en", []).split("Rules")[1].split("\n")[0])
+            memory.memory_path(home).write_text("not json")
+            self.assertEqual(memory.load(home), [])
+            memory.clear(home)
+            memory.clear(home)
+            self.assertFalse(memory.memory_path(home).exists())
+
+    def test_run_agent_puts_the_memory_in_the_system_prompt(self):
+        from dai_agent import memory
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            memory.add(home, "Dana is my sister")
+            prompts = []
+
+            def chat(messages, schema=None, max_tokens=0, task="general"):
+                prompts.append(messages[0]["content"])
+                yield json.dumps({"thought": "", "tool": "done", "args": {}, "final": "ok"})
+            run = agent.run_agent("hello", tools.Services(lang="en", home=home), chat=chat, say=lambda line: None, home=home)
+            self.assertEqual(run.status, "done")
+            self.assertIn("- Dana is my sister", prompts[0])
+
+
+class PlanTests(unittest.TestCase):
+    """plans.py: what the card shows and what --yes may approve alone."""
+    def test_describe_and_quiet_ok(self):
+        import sys
+        from dai_agent import plans
+        fake = FakeTune()
+        services = tools.Services(ctx=object(), lang="he", execute=fake.execute)
+        with mock.patch.dict(sys.modules, {"dai_tune": mock.MagicMock(), "dai_tune.planner": SimpleNamespace(plan_from_text=fake.plan),
+                                           "dai_tune.cli": SimpleNamespace(describe=lambda plan, lang: [{"summary": f"Step: {plan.sentence}"}])}):
+            record = plans.describe_act(agent.StepRecord("record", {"seconds": 20}), services)
+            self.assertEqual(record["rows"], ["הקלטת המסך למשך 20 שניות (בלי קול), אל ~/Videos/Recordings."])
+            remember = plans.describe_act(agent.StepRecord("remember", {"text": "tea"}), services)
+            self.assertEqual(remember["rows"], ["לזכור לריצות הבאות: tea"])
+            lock = plans.describe_act(agent.StepRecord("do", {"sentence": "lock the screen after 5 minutes"}), services)
+            self.assertEqual((lock["rows"], lock["weakens"], lock["system"]), (["Step: lock the screen after 5 minutes"], False, False))
+            self.assertTrue(plans.quiet_ok(agent.StepRecord("do", {"sentence": "lock the screen after 5 minutes"}), services))
+            self.assertFalse(plans.quiet_ok(agent.StepRecord("do", {"sentence": "allow usb storage"}), services))     # weakens
+            self.assertFalse(plans.quiet_ok(agent.StepRecord("do", {"sentence": "block usb storage"}), services))     # system
+            self.assertFalse(plans.quiet_ok(agent.StepRecord("do", {"sentence": "dance"}), services))                 # not understood
+            self.assertTrue(plans.quiet_ok(agent.StepRecord("remember", {"text": "x"}), services))
+            self.assertTrue(plans.quiet_ok(agent.StepRecord("record", {"seconds": 9}), services))
+            self.assertFalse(plans.quiet_ok(agent.StepRecord("say", {"text": "x"}), services))
+
 
 class WindowTests(unittest.TestCase):
     """The agent window (docs/AGENTS.md §6): Raz audits it, approval is a button that shows the Tune plan,

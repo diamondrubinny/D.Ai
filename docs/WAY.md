@@ -51,7 +51,7 @@ use: shared/office.dway                    ← another file, from the same folde
 - **שורת `when:`** (`כאשר:`) היא לוח זמנים של Evolve ("every day at 18:00", "כל בוקר", "every monday at 9",
   "every 30 minutes", "at login"; docs/EVOLVE.md §2), נקודתיים, ומשפט של D.Ai Tune. היא הופכת לפעולה אחת
   `way.when`: טיימר של systemd למשתמש שמריץ `dai-way run-when NAME` בזמן, וזה מחיל את המשפט דרך אותו קטלוג
-  ואותו יומן ("Way when: NAME"; `dai-tune undo` מבטל גם הרצה כזו). **רק משפטים בהיקף משתמש**: טיימר לא יכול
+  ואותו יומן ("Way when: NAME"; `dai-tune undo` מבטל גם הרצה כזו). שורת `when:` יכולה גם להריץ סוכן: "every day at 8: agent secretary: summarize my mail" → הפעולה `agent.run` (היקף משתמש; הסוכן מאשר לבד רק צעדים ששומרים או מחזקים אבטחה ומציג את התשובה כהודעה; docs/AGENTS.md §6ב). **רק משפטים בהיקף משתמש**: טיימר לא יכול
   לבקש סיסמת מנהל, ולכן משפט מערכת ("memory saver on") נדחה כבר ב־`check`, עם מספר השורה. אין כאן סקריפט ואין
   AI: המשפט נשמר כטקסט ומפורש מחדש בכל הרצה דרך הפרסר הדטרמיניסטי.
 - **שורת `files:`** (`קבצים:`) היא תיקייה (`Documents/School/`), קובץ טקסט עם התוכן אחרי נקודתיים, או קובץ שתוכנו

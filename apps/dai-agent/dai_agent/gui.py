@@ -23,8 +23,9 @@ from dai_style import app_font, color, rgba, with_touch
 
 from . import __author__, __version__
 from .agent import AgentError, Run, StepRecord, run_agent
+from .plans import describe_act
 from .roles import ROLES
-from .tools import TOOLS, Services
+from .tools import Services
 
 APP_ID = "dai-agent"
 BG_900, BG_800, BORDER, TEXT, MUTED = color("bg_900"), color("bg_800"), color("border"), color("text"), color("muted")
@@ -90,39 +91,6 @@ STRINGS = {
 def ltr(text: str) -> str:
     """Paths and tool output stay left-to-right inside Hebrew."""
     return "\n".join(f"‪{line}‬" for line in text.splitlines())
-
-
-def describe_act(record: StepRecord, services: Services) -> dict[str, Any]:
-    """What the approval card shows for an act step: the Tune plan rows, whether it weakens security or needs
-    the administrator. Runs in the worker thread (no widgets). A sentence Tune does not understand is said so."""
-    info: dict[str, Any] = {"tool": record.tool, "args": record.args, "rows": [], "weakens": False, "system": False, "error": ""}
-    sentence = ""
-    if record.tool == "do":
-        sentence = str(record.args.get("sentence", ""))
-    elif record.tool == "note":
-        sentence = f"note: {record.args.get('text', '')}"
-    elif record.tool == "remind":
-        text, minutes, at = record.args.get("text", ""), record.args.get("in_minutes", 0), record.args.get("at", "")
-        sentence = f"remind me in {minutes} minutes to {text}" if minutes else (f"remind me at {at} to {text}" if at else f"remind me to {text}")
-    if not sentence:
-        return info
-    try:
-        from dai_tune.cli import describe
-        from dai_tune.planner import plan_from_text
-    except ImportError:
-        return info
-    try:
-        made = plan_from_text(sentence, services.ctx)
-    except Exception as exc:  # noqa: BLE001 - shown on the card, never swallowed
-        info["error"] = str(exc)
-        return info
-    if not made.ok:
-        info["error"] = "; ".join(list(made.unknown) + list(made.errors)) or sentence
-        return info
-    info["rows"] = [str(row.get("summary", "")) for row in describe(made, services.lang)]
-    info["weakens"] = bool(made.weakens)
-    info["system"] = bool(made.scoped("system"))
-    return info
 
 
 def execute_in_window(plan: Any, ctx: Any, dry_run: bool = False, assume_yes: bool = False, label: str = "") -> int:

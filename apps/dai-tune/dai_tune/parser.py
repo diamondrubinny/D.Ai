@@ -604,6 +604,22 @@ def note_request(text: str) -> Request | None:
     return Request("note.add", {"text": body}, text.strip())
 
 
+AGENT_START = re.compile(r"^(?:agent|dai-agent|סוכן|הסוכן)(?:\s+(?P<role>secretary|organizer|guard|tutor|all))?\s*:\s*", re.IGNORECASE)
+AGENT_GOAL_MAX = 300
+
+
+def agent_request(text: str) -> Request | None:
+    """"agent: summarize my mail" / "סוכן secretary: …" → one agent.run (docs/AGENTS.md §6ב). The goal is one
+    text, never split into clauses."""
+    m = AGENT_START.match(text.strip())
+    if not m:
+        return None
+    goal = text.strip()[m.end():].strip()
+    if not goal or len(goal) > AGENT_GOAL_MAX or "\n" in goal:
+        return None
+    return Request("agent.run", {"goal": goal, "role": (m.group("role") or "all").lower()}, text.strip())
+
+
 def timed_request(text: str) -> Request | None:
     """One way.when request when the text is SCHEDULE + SENTENCE and the sentence is fully understood."""
     text = text.strip()
@@ -626,6 +642,8 @@ def timed_request(text: str) -> Request | None:
         inner = ParseResult()
         if (reminder := reminder_request(rest)) is not None:     # "every day at 9 remind me to …" (docs/REMIND.md §6)
             inner.requests.append(reminder)
+        elif (agent := agent_request(rest)) is not None:         # "every day at 8 agent secretary: …" (docs/AGENTS.md §6ב)
+            inner.requests.append(agent)
         else:
             for clause in split_clauses(rest):
                 requests = parse_clause(clause)
@@ -655,6 +673,9 @@ def parse(text: str) -> ParseResult:
         return result
     if (note := note_request(text)) is not None:
         result.requests.append(note)
+        return result
+    if (agent := agent_request(text)) is not None:
+        result.requests.append(agent)
         return result
     if (timed := timed_request(text)) is not None:
         result.requests.append(timed)

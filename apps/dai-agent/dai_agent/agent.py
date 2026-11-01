@@ -97,7 +97,8 @@ def step_schema(tool_names: list[str]) -> dict[str, Any]:
     return {"anyOf": branches}
 
 
-def system_prompt(role: Role, lang: str) -> str:
+def system_prompt(role: Role, lang: str, remembered: list[dict[str, str]] | None = None) -> str:
+    from .memory import prompt_lines
     lines = [
         "You are Diamond, the assistant built into D.Ai OS, working as an agent. You reach the person's goal with the",
         "tools below, one step at a time. Reply with ONE JSON object per step: {\"thought\", \"tool\", \"args\", \"final\"}.",
@@ -113,6 +114,7 @@ def system_prompt(role: Role, lang: str) -> str:
         "what you know; Tune sentences are in English; at most " + str(MAX_STEPS) + " steps.",
         role.guidance,
     ]
+    lines += prompt_lines(remembered or [])
     return "\n".join(lines)
 
 
@@ -166,7 +168,8 @@ def run_agent(goal: str, services: Services, chat: Callable | None = None, role:
     if chat is None and script is None:
         from dai_ai.client import chat as client_chat
         chat = client_chat
-    messages: list[dict[str, Any]] = [{"role": "system", "content": system_prompt(role, lang)},
+    from .memory import load as load_memory
+    messages: list[dict[str, Any]] = [{"role": "system", "content": system_prompt(role, lang, load_memory(home))},
                                       {"role": "user", "content": run.goal}]
     schema = step_schema(list(role.tools))
     seen: set[str] = set()

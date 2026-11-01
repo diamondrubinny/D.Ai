@@ -624,12 +624,22 @@ def main() -> int:
          "dai-agent run 'scripted' --script /tmp/agent.json --yes </dev/null; echo SCRIPT_RC=$?; "
          "grep -c 'agent wrote this' ~/Documents/Notes/notes.md | sed 's/^/NOTED=/'; dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED=/'; "
          "dai-tune undo >/dev/null 2>&1; dai-tune undo >/dev/null 2>&1; ls ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/RUNS=/'; "
-         "dai-agent history | head -n 2; timeout 600 dai-agent run 'what is the security score of this computer?' --role guard --dry-run --yes </dev/null; echo MODEL_RC=$?", True,
-         lambda o: "Diamond Rubinny (d.Ai)" in o and "WINDOW=1" in o and "DESKTOP_ENTRY" in o and "ACT_TOOLS=3" in o and "ROLES=5" in o
+         "dai-agent history | head -n 2; "
+         # Stage 3 (docs/AGENTS.md §6ב): memory through the remember tool, mail from J's store (no account: a clear line), a
+         # scheduled agent is a Way timer carrying agent.run, and "agent tutor: …" through dai-tune runs the agent itself.
+         "printf '[{\"tool\":\"remember\",\"args\":{\"text\":\"likes short answers\"}},{\"tool\":\"mail\",\"args\":{\"limit\":3}},{\"tool\":\"done\",\"args\":{},\"final\":\"stage three ok\"}]' > /tmp/agent3.json; "
+         "dai-agent run 'remember and mail' --script /tmp/agent3.json --yes --role secretary --notify </dev/null; echo SCRIPT3_RC=$?; "
+         "dai-agent memory | grep -c 'likes short answers' | sed 's/^/MEMORY=/'; stat -c 'MEMORY_MODE=%a' ~/.local/share/dai/agents/memory.json; "
+         "dai-tune --dry-run 'every day at 8 agent secretary: summarize my mail' </dev/null | grep -ci 'agent secretary: summarize my mail' | sed 's/^/TIMER_PLAN=/'; "
+         "dai-tune --yes 'agent tutor: what is D.Ai Command?' </dev/null >/tmp/agent-tune.out 2>&1; echo TUNE_AGENT_RC=$?; tail -n 3 /tmp/agent-tune.out; "
+         "timeout 600 dai-agent run 'what is the security score of this computer?' --role guard --dry-run --yes </dev/null; echo MODEL_RC=$?", True,
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "WINDOW=1" in o and "DESKTOP_ENTRY" in o and "ACT_TOOLS=5" in o and "ROLES=5" in o
          and "SCRIPT_RC=0" in o and "not a tool" in o
          and "NOTED=1" in o and "REMINDED=1" in o and re.search(r"RUNS=[1-9]", o) is not None and "scripted ok" in o
+         and "SCRIPT3_RC=0" in o and "no mail" in o and "MEMORY=1" in o and "MEMORY_MODE=600" in o
+         and "TIMER_PLAN=1" in o and "TUNE_AGENT_RC=0" in o
          and re.search(r"MODEL_RC=[013]$", o, re.M) is not None                      # 1 = stopped: a small model may loop; the schema still held:
-         and (re.search(r"^\s*(→|⚠) (posture|plan|do|facts|notify) \{", o, re.M) is not None or "MODEL_RC=3" in o), 900),
+         and (re.search(r"^\s*(→|⚠) (posture|plan|do|facts|notify) \{", o, re.M) is not None or "MODEL_RC=3" in o), 1500),
         # D.Ai Notes (docs/NOTES.md): one sentence, one dated line; undo puts the file back.
         ("notes: a sentence becomes a line", "dai-tune --yes 'note: buy milk and eggs' </dev/null >/dev/null; echo NOTE_RC=$?; "
          "cat ~/Documents/Notes/notes.md; stat -c 'MODE=%a' ~/Documents/Notes/notes.md; "

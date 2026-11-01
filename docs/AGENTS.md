@@ -80,8 +80,57 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 
 ## 6א. שלבים הבאים
 
-כלים נוספים (J: סיכום דואר; Explain; Record); סוכנים מתוזמנים דרך דרך היהלום ("כל יום ב־8 סוכן: …"); זיכרון בין
-ריצות (רק מה שהאדם אישר).
+אחרי שלב 3: סוכן שמדבר (Voice → מטרה, התשובה ב־Speak), סוכן בטלפון (D.Ai Mobile), מדיניות ארגונית לתפקידים
+המותרים (policy.d), מודל גדול יותר כברירת מחדל במחשבים עם זיכרון.
+
+## 6ב. שלב 3: כלים נוספים, סוכנים מתוזמנים, זיכרון (נבנה 2026-11-01)
+
+> אותו ארגז כלים סגור, אותם כללים. שלושה דברים: הסוכן מגיע לדואר (J), להסבר (Explain) ולהקלטה (Record); "כל יום
+> ב־8 סוכן: …" הופך לטיימר של דרך היהלום שמריץ את הסוכן בלי שאלות **רק** בצעדים שלא מחלישים ולא דורשים מנהל;
+> והסוכן זוכר בין ריצות רק מה שהאדם אישר לו לזכור.
+
+### הכלים החדשים (tools.py)
+
+| כלי | סיכון | מה |
+|---|---|---|
+| `mail(limit)` | קריאה | הדואר הנכנס האחרון מה־store המקומי של J (שולח, נושא, תאריך, ● לא נקרא; עד 10). בלי רשת, בלי גוף |
+| `mail_summary(number)` | קריאה | סיכום ההודעה ה־N האחרונה (1 = החדשה) ב־Diamond, דרך אותה `summary_messages` של J (הגוף בגדר נתון, לא הוראה). הגוף נלקח מה־store רק אם J כבר הוריד אותו; אחרת: "פתחו אותה ב־J" |
+| `explain(text)` | קריאה | D.Ai Explain על טקסט (שגיאה, הודעה): ההסבר + משפט Tune מוצע אם Diamond נתן אחד ו־Tune מבין אותו |
+| `record(seconds)` | **פעולה** | D.Ai Record: הקלטת מסך שנעצרת לבד אחרי 5–600 שניות (`dai-record start N`); בלי קול, הקובץ ב־~/Videos/Recordings |
+| `remember(text)` | **פעולה** | שורה לזיכרון הסוכן (`~/.local/share/dai/agents/memory.json`, 0600, עד 50 שורות של 200 תווים). נכנסת להנחיית המערכת של כל ריצה הבאה |
+
+תפקידים: `secretary` מקבל `mail`, `mail_summary`, `remember`; ‏`tutor` מקבל `explain`; ‏`all` את הכול (גם `record`).
+
+### סוכנים מתוזמנים (דרך היהלום)
+
+| רכיב | מה |
+|---|---|
+| Tune parser | `agent[ ROLE]: GOAL` / `סוכן[ ROLE]: GOAL` → `Request("agent.run", {"goal", "role"})`; נבדק לפני פיצול הפסוקיות (המטרה היא טקסט אחד) |
+| `agent.run` (catalog) | היקף משתמש, ניטרלי, בלי קבצים: `apply` מריץ `dai-agent run GOAL --role ROLE --yes --notify` עם stdin סגור ו־timeout של 10 דקות; קוד היציאה של הסוכן לא מפיל את התוכנית (הריצה ביומן הסוכן ובהודעה), רק dai-agent חסר או timeout |
+| `--notify` | בסוף הריצה: הודעה על המסך עם התשובה (או "נעצר"/"לא תכנן") — כך טיימר שאין לו טרמינל מדבר |
+| `--yes` מתוקן | מאשר `do` רק כשתוכנית Tune של המשפט תקינה, לא מחלישה ולא דורשת מנהל (עד עכשיו `--yes` עדיין שאל על כל `do`; `plans.py` מחשב את זה גם לחלון) |
+| טיימר | "every day at 8 agent secretary: summarize my mail" → `way.when` (קיים) → `dai-way run-when` → `apply_plan` → `agent.run`. ‏`dai-way when` מראה אותו; `dai-way when remove` מסיר |
+
+### זיכרון בין ריצות (memory.py)
+
+`load(home)`, `add(home, text)`, `forget(home, number)`, `clear(home)`. הזיכרון מצורף להנחיית המערכת ("What the person asked
+you to remember:"). ‏CLI: `dai-agent memory`, `dai-agent memory forget N`, `dai-agent memory clear`. רק הכלי `remember`
+(אישור!) כותב; המודל לא יכול לכתוב זיכרון בדרך אחרת. בחלון, כרטיס האישור של `remember` ו־`record` מראה במילים מה יקרה.
+
+### פרטיות
+
+`mail`/`mail_summary` מביאים שולחים ונושאים (וגוף אחד) אל Diamond; עם ספק חיצוני ל־general הם יוצאים אליו (השורה
+הקבועה בחלון וב־CLI אומרת זאת). הזיכרון נשאר בקובץ 0600 ונמחק בשורה אחת. סוכן מתוזמן רץ בלי אדם: לכן `do` בו רק
+לצעדים ניטרליים/מחזקים בהיקף משתמש, ולעולם לא החלשה או מערכת.
+
+### בדיקות
+
+יחידה: הכלים (J store זמני עם שתי הודעות; סיכום עם צ'אט מזויף; explain עם צ'אט מזויף; record דרך run מזויף; remember →
+0600 + בהנחיה + forget/clear), ‏`--yes` מאשר `do` ניטרלי ודוחה מחליש, ‏`--notify`, ‏CLI memory, חלון (Raz עם כרטיס
+record/remember). ‏Tune: parser (`agent: …`, `סוכן secretary: …`, לא פסוקיות), `agent.run` validate/summary/apply (ריצה
+מזויפת), `way_sentence_requests("agent: …")` מתקבל, "every day at 8 agent: …" → `way.when`. ‏VM: בבדיקת הסוכן: script עם
+`remember` + `mail` (בלי חשבונות → תשובה ברורה), `dai-agent memory` מראה שורה אחת, `dai-tune --dry-run "every day at 8
+agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "agent tutor: …"` מסתיים ב־0.
 
 ## 7. מצב
 
@@ -95,3 +144,5 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 
 ✅ שלב 2 (החלון) ירוק ב־CI (ריצה 41279781006, ‏145/145 ב־user/dev/edu, ‏`WINDOW=1` ו־`DESKTOP_ENTRY` בבדיקת ה־VM): ‏`gui.py`, ‏`dai-agent window`, ‏`dai-agent.desktop`, ‏Command פותח את החלון; 6 בדיקות יחידה חדשות
 (‏Raz בעברית ובאנגלית עם כרטיס אישור פתוח, אישור → `apply_plan`, דילוג, החלשה במילים, הרצת ניסיון, סגירה בזמן המתנה).
+
+🔨 שלב 3 (כלים נוספים, סוכן מתוזמן, זיכרון) נבנה: ‏`memory.py`, ‏`plans.py`, חמישה כלים, ‏`agent.run` ב־Tune, ‏`--notify`, ‏`dai-agent memory`; 8 בדיקות יחידה חדשות לסוכן ו־2 ל־Tune; ממתין ל־CI.

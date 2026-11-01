@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import secrets
 from dataclasses import dataclass
 from pathlib import Path
@@ -2213,6 +2214,56 @@ register(ActionSpec(
     files=lambda p, c: [c.user_path(NOTES_FILE)],
     note=lambda p, lang: _t(lang, "Appended to ~/Documents/Notes/notes.md; \"my notes\" opens it, D.Ai Find finds it.",
                             "מצטרף ל־~/Documents/Notes/notes.md; \"הפתקים שלי\" פותח אותו, D.Ai Find מוצא אותו."),
+))
+
+# --------------------------------------------------------------------------
+# D.Ai Agents (docs/AGENTS.md §6ב): "agent: GOAL" runs Diamond's agent with the closed toolbox. User scope, so a
+# Diamond's Way timer may carry it ("every day at 8 agent secretary: summarize my mail"); the agent then approves
+# by itself only steps that keep or harden security (--yes), and tells the answer in a notification.
+# --------------------------------------------------------------------------
+
+AGENT_ROLES = ("all", "secretary", "organizer", "guard", "tutor")
+AGENT_GOAL_MAX = 300
+AGENT_TIMEOUT = 600
+
+
+def _agent_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"goal", "role"})
+    goal = params.get("goal")
+    if not isinstance(goal, str) or not goal.strip() or len(goal) > AGENT_GOAL_MAX or "\n" in goal:
+        raise ValidationError(f"goal: one line of 1 to {AGENT_GOAL_MAX} characters")
+    role = params.get("role", "all")
+    if role not in AGENT_ROLES:
+        raise ValidationError("role: one of " + ", ".join(AGENT_ROLES))
+    return {"goal": " ".join(goal.split()), "role": role}
+
+
+def _agent_apply(params: Params, ctx: Context) -> None:
+    """Run the agent; its own journal and notification carry the outcome, so a stopped run is not a failed step.
+    Only a missing dai-agent or a run that never ends fails the plan."""
+    argv = ["dai-agent", "run", params["goal"], "--role", params["role"], "--yes", "--notify"]
+    try:
+        result = ctx.run(argv, check=False)
+    except subprocess.TimeoutExpired as exc:
+        raise ActionError(f"dai-agent: no answer within {AGENT_TIMEOUT} seconds") from exc
+    except OSError as exc:
+        raise ActionError(f"dai-agent: {exc}") from exc
+    if result.returncode == 127 or (result.returncode != 0 and "not found" in (result.stderr or "")):
+        raise ActionError("dai-agent is not installed")
+
+
+register(ActionSpec(
+    id="agent.run",
+    scope="user",
+    validate=_agent_validate,
+    apply=_agent_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: _t(lang, "Agent ({role}): {goal}", "סוכן ({role}): {goal}", role=p.get("role", "all"), goal=p["goal"]),
+    note=lambda p, lang: _t(lang, "Diamond plans with the closed toolbox; without you present it applies only steps that keep "
+                                  "or harden security, and shows the answer as a notification (dai-agent history).",
+                            "Diamond מתכנן עם ארגז הכלים הסגור; בלי נוכחותכם הוא מחיל רק צעדים ששומרים או מחזקים אבטחה, "
+                            "ומציג את התשובה כהודעה (dai-agent history)."),
 ))
 
 # --------------------------------------------------------------------------
