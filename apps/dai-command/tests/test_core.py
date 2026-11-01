@@ -339,11 +339,11 @@ class HealLanguageTests(unittest.TestCase):
     def test_agent_words(self):
         with mock.patch("shutil.which", lambda name: "/usr/bin/" + name):
             rows = core.build_actions("agent: find the lease and read it to me", [])
-            self.assertEqual((rows[0].kind, rows[0].payload), ("terminal", "dai-agent run 'find the lease and read it to me'"))
+            self.assertEqual((rows[0].kind, rows[0].payload), ("agent", "find the lease and read it to me"))
             rows = core.build_actions("סוכן: תרשום ש'הכול' בסדר", [])
-            self.assertEqual(rows[0].payload, "dai-agent run 'תרשום ש'\\''הכול'\\'' בסדר'")
+            self.assertEqual((rows[0].kind, rows[0].payload), ("agent", "תרשום ש'הכול' בסדר"))   # an argument, never a shell
             rows = core.build_actions("agent:", [])
-            self.assertEqual(rows[0].payload, "dai-agent roles")
+            self.assertEqual((rows[0].kind, rows[0].payload), ("agent", ""))
         self.assertIsNone(core.AGENT_WORDS.search("agents of shield"))
 
     def test_note_words(self):

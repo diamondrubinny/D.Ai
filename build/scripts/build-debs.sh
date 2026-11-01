@@ -243,6 +243,7 @@ build_apps() {
   local agent="$REPO_ROOT/apps/dai-agent"
   copy_package "$agent/dai_agent" "$root"
   install -m 0755 "$agent/data/dai-agent" "$root/usr/bin/dai-agent"
+  install -m 0644 "$agent/data/dai-agent.desktop" "$root/usr/share/applications/"
 
   local record="$REPO_ROOT/apps/dai-record"
   copy_package "$record/dai_record" "$root"

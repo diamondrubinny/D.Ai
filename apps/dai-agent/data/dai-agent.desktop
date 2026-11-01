@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Diamond Rubinny (d.Ai)
+[Desktop Entry]
+Type=Application
+Name=D.Ai Agent
+Name[he]=סוכן D.Ai
+GenericName=Diamond does it step by step
+GenericName[he]=Diamond מבצע צעד־צעד
+Comment=Say a goal; Diamond plans with a closed toolbox and asks before every change
+Comment[he]=אומרים מטרה; Diamond מתכנן עם ארגז כלים סגור ושואל לפני כל שינוי
+Exec=dai-agent window
+TryExec=dai-agent
+Icon=system-run
+StartupWMClass=dai-agent
+Categories=Utility;
+Keywords=agent;assistant;automate;diamond;סוכן;עוזר;אוטומציה;

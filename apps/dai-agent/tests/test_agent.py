@@ -213,5 +213,158 @@ class CliTests(unittest.TestCase):
             self.assertIn("unknown role", err.getvalue())
 
 
+class WindowTests(unittest.TestCase):
+    """The agent window (docs/AGENTS.md §6): Raz audits it, approval is a button that shows the Tune plan,
+    a skip applies nothing, a weakening plan is said in words, closing while a card waits frees the thread."""
+
+    @classmethod
+    def setUpClass(cls):
+        import os
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        try:
+            from PyQt6.QtWidgets import QApplication
+        except ImportError:
+            raise unittest.SkipTest("PyQt6 is missing")
+        cls.qt = QApplication.instance() or QApplication([])
+
+    def setUp(self):
+        import sys
+        from dai_agent import gui
+        self.gui = gui
+        self.fake = FakeTune()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.home = Path(self.tmp.name)
+        patch = mock.patch.dict(sys.modules, {"dai_tune": mock.MagicMock(), "dai_tune.planner": SimpleNamespace(plan_from_text=self.fake.plan),
+                                              "dai_tune.cli": SimpleNamespace(describe=lambda plan, lang: [{"summary": f"Step: {plan.sentence}"}])})
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def window(self, steps, lang="en", goal="organise my day", spawn=None):
+        services = tools.Services(ctx=object(), lang=lang, home=self.home, execute=self.fake.execute)
+        window = self.gui.AgentWindow(lang, services, goal=goal, chat=scripted_chat(steps), home=self.home,
+                                      spawn=spawn or (lambda argv, text=None: None))
+        self.addCleanup(window.close)
+        self.addCleanup(window.deleteLater)
+        return window
+
+    def wait(self, window, until, tries=200):
+        from PyQt6.QtTest import QTest
+        for _ in range(tries):
+            QTest.qWait(20)
+            if until():
+                return True
+        return until()
+
+    def card_buttons(self, window):
+        from PyQt6.QtWidgets import QPushButton
+        self.assertIsNotNone(window.pending)
+        allow, skip = window.pending.findChildren(QPushButton)[:2]
+        return allow, skip
+
+    def test_every_control_is_accessible_with_a_card_open_and_an_answer(self):
+        from dai_raz.a11y import assert_accessible
+        self.qt.setStyleSheet(self.gui.STYLE)
+        self.addCleanup(self.qt.setStyleSheet, "")
+        for lang in ("he", "en"):
+            window = self.window([{"tool": "find", "args": {"query": "lease"}, "thought": "look"},
+                                  {"tool": "do", "args": {"sentence": "allow usb storage"}, "thought": "weaken"},
+                                  {"tool": "done", "args": {}, "final": "All set."}], lang=lang)
+            with mock.patch.dict(sys_modules_find()):
+                window.start()
+                self.assertTrue(self.wait(window, lambda: window.pending is not None))
+                assert_accessible(self, window, touch=True)            # a step card and an approval card are open
+                allow, skip = self.card_buttons(window)
+                skip.click()
+                self.assertTrue(self.wait(window, lambda: window.run is not None))
+            assert_accessible(self, window, touch=True)                # the answer is shown
+            self.assertIn("All set.", window.texts())
+
+    def test_allow_runs_the_plan_shown_on_the_card_and_skip_does_not(self):
+        steps = [{"tool": "note", "args": {"text": "call Dana"}, "thought": ""},
+                 {"tool": "remind", "args": {"text": "water", "in_minutes": 5}, "thought": ""},
+                 {"tool": "done", "args": {}, "final": "Noted and set."}]
+        window = self.window(steps)
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        self.assertIn("Step: note: call Dana", window.texts())                   # the Tune plan is on the card
+        allow, skip = self.card_buttons(window)
+        self.assertIs(window.focusWidget(), allow)
+        allow.click()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None and len(window.findChildren(type(window.pending))) >= 2))
+        self.assertIn("Step: remind me in 5 minutes to water", window.texts())
+        _, skip = self.card_buttons(window)
+        skip.click()
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertEqual([e[0] for e in self.fake.executed], ["note: call Dana"])   # allowed once, skipped once
+        self.assertEqual(self.fake.executed[0][2], False)                           # never assume_yes from the window
+        self.assertEqual(window.run.status, "done")
+        self.assertEqual([s.approved for s in window.run.steps], [True, False])
+        self.assertIn("✓ allowed", window.texts())
+        self.assertIn("✗ skipped", window.texts())
+        self.assertTrue((self.home / ".local/share/dai/agents" / f"{window.run.id}.json").exists())
+        self.assertTrue(window.copy.isEnabled())
+
+    def test_a_weakening_plan_is_said_in_words_and_skip_gets_the_focus(self):
+        window = self.window([{"tool": "do", "args": {"sentence": "allow usb storage"}, "thought": ""},
+                              {"tool": "done", "args": {}, "final": "ok"}], lang="he")
+        window.show()
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        self.assertIn("מחליש אבטחה", window.texts())
+        self.assertIn("סיסמת מנהל", window.texts())                                 # a system step says so
+        allow, skip = self.card_buttons(window)
+        self.assertIs(window.focusWidget(), skip)
+        skip.click()
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertEqual(self.fake.executed, [])
+
+    def test_dry_run_applies_nothing_and_a_misunderstood_step_cannot_be_allowed(self):
+        window = self.window([{"tool": "do", "args": {"sentence": "lock the screen after 5 minutes"}, "thought": ""},
+                              {"tool": "do", "args": {"sentence": "make coffee"}, "thought": ""},
+                              {"tool": "done", "args": {}, "final": "ok"}])
+        window.dry_run.setChecked(True)
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        allow, _ = self.card_buttons(window)
+        allow.click()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None and "make coffee" in window.texts() and "did not understand" in window.texts()))
+        allow, skip = self.card_buttons(window)
+        self.assertFalse(allow.isEnabled())
+        skip.click()
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertEqual(self.fake.executed[0][1], True)                            # dry_run reached the executor
+        self.assertEqual(window.run.steps[0].result[:8], "Dry run:")
+
+    def test_closing_while_a_card_waits_frees_the_thread_and_applies_nothing(self):
+        window = self.window([{"tool": "note", "args": {"text": "x"}, "thought": ""}, {"tool": "done", "args": {}, "final": "ok"}])
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        window.close()
+        self.assertIsNone(window.thread)
+        self.assertEqual(self.fake.executed, [])
+
+    def test_read_aloud_goes_through_dai_speak_stdin_and_window_main_parses(self):
+        spawned = []
+        window = self.window([{"tool": "done", "args": {}, "final": "The answer."}], spawn=lambda argv, text=None: spawned.append((argv, text)))
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        window.read.click()
+        self.assertEqual(spawned, [(["dai-speak", "--stdin", "--lang", "en"], "The answer.")])
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            self.assertEqual(cli.main(["dai-agent", "window", "--version"]), 0)
+            self.assertEqual(self.gui.main(["dai-agent", "--role", "nobody"]), 2)
+            self.assertEqual(self.gui.main(["dai-agent", "--dance"]), 2)
+        self.assertIn("dai-agent 0.", out.getvalue())
+        self.assertIn("unknown role", err.getvalue())
+
+
+def sys_modules_find():
+    """A find tool that needs no index: dai_find stand-ins."""
+    return {"dai_find": mock.MagicMock(), "dai_find.query": SimpleNamespace(parse=lambda q, lang="en": q),
+            "dai_find.search": SimpleNamespace(search=lambda q, home=None, limit=10: [SimpleNamespace(path=Path("/home/me/lease.pdf"))])}
+
+
 if __name__ == "__main__":
     unittest.main()

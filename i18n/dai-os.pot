@@ -28,7 +28,7 @@ msgid "\n✓ Copied {copied} files."
 msgstr ""
 
 #. he:   לאשר {tool} {args}? [כ/ל] 
-#: apps/dai-agent/dai_agent/cli.py:38
+#: apps/dai-agent/dai_agent/cli.py:39
 #, python-brace-format
 msgid "  Allow {tool} {args}? [y/N] "
 msgstr ""
@@ -206,7 +206,7 @@ msgid "(page removed)"
 msgstr ""
 
 #. he: (ריצה {id}: dai-agent history)
-#: apps/dai-agent/dai_agent/cli.py:127
+#: apps/dai-agent/dai_agent/cli.py:131
 #, python-brace-format
 msgid "(run {id}: dai-agent history)"
 msgstr ""
@@ -540,6 +540,11 @@ msgstr ""
 #. he: הכל מוכן. מפעילים מחדש…
 #: apps/dai-oem/dai_oem/wizard.py:70
 msgid "All set. Restarting…"
+msgstr ""
+
+#. he: לאשר
+#: apps/dai-agent/dai_agent/gui.py:73
+msgid "Allow"
 msgstr ""
 
 #. he: לאפשר גישה ל־~/Documents
@@ -1184,11 +1189,11 @@ msgid "Clipboard {state} for {name}; takes effect at the next start."
 msgstr ""
 
 #. he: סגירה
+#: apps/dai-agent/dai_agent/gui.py:81
 #: apps/dai-captions/dai_captions/gui.py:46
 #: apps/dai-explain/dai_explain/gui.py:50
 #: apps/dai-mom/dai_mom/text.py:21
 #: apps/dai-pdf/dai_pdf/gui.py:511
-#: apps/dai-pdf/dai_pdf/gui.py:441
 msgid "Close"
 msgstr ""
 
@@ -1349,6 +1354,7 @@ msgid "Copies: "
 msgstr ""
 
 #. he: העתקה
+#: apps/dai-agent/dai_agent/gui.py:79
 #: apps/dai-explain/dai_explain/gui.py:49
 msgid "Copy"
 msgstr ""
@@ -1421,6 +1427,11 @@ msgstr ""
 #. he: נוצר באמצעות
 #: apps/dai-pdf/dai_pdf/gui.py:470
 msgid "Created with"
+msgstr ""
+
+#. he: סוכן D.Ai
+#: apps/dai-agent/dai_agent/gui.py:60
+msgid "D.Ai Agent"
 msgstr ""
 
 #. he: סוכן D.Ai: Diamond מתכנן עם ארגז כלים סגור; כל שינוי שואל קודם · Enter
@@ -1591,6 +1602,12 @@ msgstr ""
 #: apps/dai-command/dai_command/core.py:457
 #: apps/dai-store/dai_store/gui.py:73
 msgid "D.Ai Store"
+msgstr ""
+
+#. he: D.Ai Tune לא הבין את הצעד: {error}
+#: apps/dai-agent/dai_agent/gui.py:72
+#, python-brace-format
+msgid "D.Ai Tune did not understand this step: {error}"
 msgstr ""
 
 #. he: D.Ai Tune · Enter לבדיקה והחלה
@@ -1786,6 +1803,11 @@ msgstr ""
 msgid "Diamond answers with its smallest installed model"
 msgstr ""
 
+#. he: Diamond לא הצליח לתכנן
+#: apps/dai-agent/dai_agent/gui.py:86
+msgid "Diamond could not plan"
+msgstr ""
+
 #. he: Diamond לא הצליח לתכנן את הצעד: {error}
 #: apps/dai-agent/dai_agent/agent.py:184
 #, python-brace-format
@@ -1850,6 +1872,11 @@ msgstr ""
 #. he: Diamond לא מוכן. התקינו מודל: dai-models install qwen2.5-0.5b
 #: apps/dai-command/dai_command/core.py:412
 msgid "Diamond is not ready. Install a model: dai-models install qwen2.5-0.5b"
+msgstr ""
+
+#. he: Diamond מתכנן…
+#: apps/dai-agent/dai_agent/gui.py:66
+msgid "Diamond is planning…"
 msgstr ""
 
 #. he: Diamond מקריא
@@ -1918,6 +1945,12 @@ msgstr ""
 msgid "Diamond uses the chosen model again"
 msgstr ""
 
+#. he: Diamond רוצה: {tool} {args}
+#: apps/dai-agent/dai_agent/gui.py:68
+#, python-brace-format
+msgid "Diamond wants to: {tool} {args}"
+msgstr ""
+
 #. he: Diamond · Enter לשאלה (רץ במחשב הזה)
 #: apps/dai-command/dai_command/core.py:410
 msgid "Diamond · Enter to ask (runs on this computer)"
@@ -1951,6 +1984,7 @@ msgid "Diamond's Way: a whole computer in one file (check, plan, apply, export) 
 msgstr ""
 
 #. he: התשובה של Diamond
+#: apps/dai-agent/dai_agent/gui.py:77
 #: apps/dai-pdf/dai_pdf/gui.py:796
 #: apps/dai-pdf/dai_pdf/gui.py:803
 msgid "Diamond's answer"
@@ -2065,6 +2099,7 @@ msgid "Don't ask about this again"
 msgstr ""
 
 #. he: הסתיים
+#: apps/dai-agent/dai_agent/gui.py:85
 #: apps/dai-explain/dai_explain/gui.py:47
 #: apps/dai-settings/dai_settings/gui.py:100
 #: apps/dai-store/dai_store/gui.py:96
@@ -2298,6 +2333,11 @@ msgstr ""
 msgid "Every PDF opens in a sandbox: no network, no access to your files."
 msgstr ""
 
+#. he: כל שינוי שואל קודם. אפשר לבטל: dai-tune undo
+#: apps/dai-agent/dai_agent/gui.py:67
+msgid "Every change asks you first. You can undo: dai-tune undo"
+msgstr ""
+
 #. he: כל שינוי מראה קודם את התוכנית, עובר דרך D.Ai Tune, ואפשר לבטל אותו.
 #: apps/dai-settings/dai_settings/gui.py:78
 msgid "Every change shows its plan first, goes through D.Ai Tune, and can be undone."
@@ -2388,6 +2428,11 @@ msgstr ""
 #. he: חושף שירות במחשב הזה למחשבים אחרים.
 #: apps/dai-tune/dai_tune/catalog.py:401
 msgid "Exposes a service on this computer to other machines."
+msgstr ""
+
+#. he: נכשל
+#: apps/dai-agent/dai_agent/gui.py:85
+msgid "Failed"
 msgstr ""
 
 #. he: פחות אפליקציות בכניסה…
@@ -2757,7 +2802,7 @@ msgid "Go back to {label}?"
 msgstr ""
 
 #. he: מטרה: {goal}  [{role}]
-#: apps/dai-agent/dai_agent/cli.py:118
+#: apps/dai-agent/dai_agent/cli.py:122
 #, python-brace-format
 msgid "Goal: {goal}  [{role}]"
 msgstr ""
@@ -3489,6 +3534,11 @@ msgstr ""
 msgid "Needs a Btrfs system disk; the way back is D.Ai Rescue."
 msgstr ""
 
+#. he: דורש סיסמת מנהל (המערכת תשאל).
+#: apps/dai-agent/dai_agent/gui.py:71
+msgid "Needs the administrator password (asked by the system)."
+msgstr ""
+
 #. he: רשת: האינטרנט דרך D.Ai, כלקוח NAT ‏(passt). שום דבר מהרשת המקומית לא נכנס.
 #: apps/dai-vm/dai_vm/gui.py:369
 msgid "Network: the internet through D.Ai, as a NAT client (passt). Nothing of the local network reaches in."
@@ -3823,7 +3873,7 @@ msgid "No requests without a result in the last 30 days."
 msgstr ""
 
 #. he: אין ריצות עדיין.
-#: apps/dai-agent/dai_agent/cli.py:66
+#: apps/dai-agent/dai_agent/cli.py:70
 msgid "No runs yet."
 msgstr ""
 
@@ -4008,7 +4058,7 @@ msgid "Note"
 msgstr ""
 
 #. he: שימו לב: המטרה ותוצאות הכלים נשלחות ל־{p} (במפתח שלך).
-#: apps/dai-agent/dai_agent/cli.py:115
+#: apps/dai-agent/dai_agent/cli.py:119
 #, python-brace-format
 msgid "Note: the goal and the tools' results go to {p} (your own key)."
 msgstr ""
@@ -4255,6 +4305,11 @@ msgstr ""
 msgid "On this computer: Diamond looked at the picture; nothing is saved."
 msgstr ""
 
+#. he: במחשב הזה: המטרה ותוצאות הכלים נשארות כאן.
+#: apps/dai-agent/dai_agent/gui.py:82
+msgid "On this computer: the goal and the tools' results stay here."
+msgstr ""
+
 #. he: על המחשב הזה: התמונה והטקסט לא נשמרים.
 #: apps/dai-explain/dai_explain/engine.py:217
 msgid "On this computer: the picture and the text are not saved."
@@ -4310,6 +4365,11 @@ msgstr ""
 #. he: רק מנהל המחשב יכול להקים תוכנות. אפשר לעיין.
 #: apps/dai-store/dai_store/gui.py:88
 msgid "Only an administrator can set software up; you can look."
+msgstr ""
+
+#. he: רק להראות שינויים
+#: apps/dai-agent/dai_agent/gui.py:63
+msgid "Only show changes"
 msgstr ""
 
 #. he: רק הנמענים יוכלו לקרוא, כולל הנושא, עם המפתחות שלהם. הכתובות נשארות גלויות.
@@ -4709,6 +4769,7 @@ msgid "Raz: your week"
 msgstr ""
 
 #. he: הקראה
+#: apps/dai-agent/dai_agent/gui.py:80
 #: apps/dai-command/dai_command/core.py:479
 #: apps/dai-explain/dai_explain/gui.py:56
 #: apps/dai-j/dai_j/text.py:139
@@ -4998,6 +5059,11 @@ msgstr ""
 #. he: מימין לשמאל
 #: apps/dai-j/dai_j/text.py:190
 msgid "Right to left"
+msgstr ""
+
+#. he: תפקיד
+#: apps/dai-agent/dai_agent/gui.py:62
+msgid "Role"
 msgstr ""
 
 #. he: סיבוב התצוגה
@@ -5570,6 +5636,11 @@ msgstr ""
 msgid "Size: {gb:.2f} GB"
 msgstr ""
 
+#. he: לדלג
+#: apps/dai-agent/dai_agent/gui.py:74
+msgid "Skip"
+msgstr ""
+
 #. he: קובץ קטן יותר
 #: apps/dai-pdf/dai_pdf/gui.py:753
 #: apps/dai-pdf/dai_pdf/gui.py:760
@@ -5692,7 +5763,8 @@ msgstr ""
 msgid "Stamp"
 msgstr ""
 
-#. he: הפעלה
+#. he: התחלה
+#: apps/dai-agent/dai_agent/gui.py:64
 #: apps/dai-mom/dai_mom/text.py:96
 #: apps/dai-vm/dai_vm/gui.py:353
 msgid "Start"
@@ -5750,6 +5822,7 @@ msgid "State"
 msgstr ""
 
 #. he: עצירה
+#: apps/dai-agent/dai_agent/gui.py:65
 #: apps/dai-mom/dai_mom/text.py:97
 msgid "Stop"
 msgstr ""
@@ -5786,6 +5859,11 @@ msgstr ""
 #. he: הפסקת השיתוף
 #: apps/dai-vm/dai_vm/gui.py:387
 msgid "Stop sharing"
+msgstr ""
+
+#. he: נעצר
+#: apps/dai-agent/dai_agent/gui.py:85
+msgid "Stopped"
 msgstr ""
 
 #. he: נעצר אחרי {n} צעדים.
@@ -6082,6 +6160,12 @@ msgstr ""
 msgid "The address"
 msgstr ""
 
+#. he: הסוכן לא הצליח לרוץ: {error}
+#: apps/dai-agent/dai_agent/gui.py:84
+#, python-brace-format
+msgid "The agent could not run: {error}"
+msgstr ""
+
 #. he: הסוללה שחוקה
 #: apps/dai-doctor/dai_doctor/diagnose.py:166
 msgid "The battery is worn"
@@ -6199,6 +6283,12 @@ msgstr ""
 #. he: התיקייה לקריאה בלבד עבור Windows.
 #: apps/dai-vm/dai_vm/gui.py:611
 msgid "The folder is read-only for Windows."
+msgstr ""
+
+#. he: המטרה ותוצאות הכלים נשלחות ל־{p} (במפתח שלך).
+#: apps/dai-agent/dai_agent/gui.py:83
+#, python-brace-format
+msgid "The goal and the tools' results go to {p} (your own key)."
 msgstr ""
 
 #. he: ה-ISO של ההתקנה
@@ -6647,6 +6737,11 @@ msgstr ""
 msgid "This week everything worked."
 msgstr ""
 
+#. he: זה ישנה:
+#: apps/dai-agent/dai_agent/gui.py:69
+msgid "This would change:"
+msgstr ""
+
 #. he: העמודים האלה לא קיימים בקובץ ({detail}).
 #: apps/dai-pdf/dai_pdf/cli.py:251
 #, python-brace-format
@@ -7080,6 +7175,11 @@ msgstr ""
 #. he: מה היא אמרה:
 #: apps/dai-heal/dai_heal/text.py:33
 msgid "What it said:"
+msgstr ""
+
+#. he: מה הסוכן צריך לעשות?
+#: apps/dai-agent/dai_agent/gui.py:61
+msgid "What should the agent do?"
 msgstr ""
 
 #. he: מה המחשב צריך לעשות?
@@ -8080,6 +8180,12 @@ msgstr ""
 msgid "refused"
 msgstr ""
 
+#. he: ריצה {id} · dai-agent history
+#: apps/dai-agent/dai_agent/gui.py:78
+#, python-brace-format
+msgid "run {id} · dai-agent history"
+msgstr ""
+
 #. he: פועל
 #: apps/dai-mom/dai_mom/text.py:100
 #: apps/dai-vm/dai_vm/gui.py:80
@@ -9041,6 +9147,11 @@ msgstr ""
 msgid "⚠ It still crashes when started. Try “change” with more details, or a larger model."
 msgstr ""
 
+#. he: ⚠ הצעד הזה מחליש אבטחה.
+#: apps/dai-agent/dai_agent/gui.py:70
+msgid "⚠ This step WEAKENS security."
+msgstr ""
+
 #. he: ✓ פעילה: {describe}. עצירה: dai-forge auto pause {name}  ·  יומן: dai-forge auto log {name}
 #: apps/dai-forge/dai_forge/cli.py:285
 #, python-brace-format
@@ -9209,6 +9320,11 @@ msgstr ""
 msgid "✓ Written: {path}. Check it: dai-way check {path}"
 msgstr ""
 
+#. he: ✓ אושר
+#: apps/dai-agent/dai_agent/gui.py:75
+msgid "✓ allowed"
+msgstr ""
+
 #. he: ✓ המפתח של {name} נשמר ({masked}), רק בהגדרות שלך (0600).
 #: apps/dai-ai/dai_ai/providers_cli.py:76
 #, python-brace-format
@@ -9264,7 +9380,7 @@ msgid "✗ '{id}' is a {source} recipe and cannot be replaced."
 msgstr ""
 
 #. he: ✗ --script: רשימת JSON של צעדים
-#: apps/dai-agent/dai_agent/cli.py:87
+#: apps/dai-agent/dai_agent/cli.py:91
 msgid "✗ --script: a JSON list of steps"
 msgstr ""
 
@@ -9315,8 +9431,14 @@ msgstr ""
 msgid "✗ no timer called {name}"
 msgstr ""
 
+#. he: ✗ דולג
+#: apps/dai-agent/dai_agent/gui.py:76
+msgid "✗ skipped"
+msgstr ""
+
 #. he: ✗ תפקיד לא מוכר; ראו: dai-agent roles
-#: apps/dai-agent/dai_agent/cli.py:77
+#: apps/dai-agent/dai_agent/cli.py:81
+#: apps/dai-agent/dai_agent/gui.py:508
 msgid "✗ unknown role; see: dai-agent roles"
 msgstr ""
 

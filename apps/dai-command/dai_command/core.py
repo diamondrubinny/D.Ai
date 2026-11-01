@@ -540,7 +540,7 @@ def tr(key: str, lang: str | None = None) -> str:
 class Action:
     """One result row; `kind` tells the UI how to activate it."""
 
-    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | ocr | chat | heal | evolve
+    kind: str  # app | calc | layout | terminal | run | ai | history | tune | forge | file | doctor | privacy | backup | move | clip | ocr | chat | heal | evolve | agent
     title: str
     subtitle: str = ""
     icon: str = ""
@@ -616,10 +616,10 @@ def build_actions(query: str, apps: Iterable[AppEntry], history: Iterable[str] =
         return undo_actions()
     if (m := AGENT_WORDS.search(text.strip())) is not None and shutil.which("dai-agent"):
         goal = m.group("goal").strip()
+        # The window (docs/AGENTS.md §6): the steps as a list, approval by a button that shows the Tune plan.
         if not goal:
-            return [Action("terminal", tr("agent_empty"), tr("agent_hint"), "system-run", "dai-agent roles")]
-        safe = goal.replace("'", "'\\''")
-        return [Action("terminal", f"dai-agent: {goal}", tr("agent_hint"), "system-run", f"dai-agent run '{safe}'")]
+            return [Action("agent", tr("agent_empty"), tr("agent_hint"), "system-run", "")]
+        return [Action("agent", f"dai-agent: {goal}", tr("agent_hint"), "system-run", goal)]
     if NOTES_LIST_WORDS.search(text.strip()):
         notes = Path.home() / "Documents/Notes/notes.md"
         if notes.is_file():

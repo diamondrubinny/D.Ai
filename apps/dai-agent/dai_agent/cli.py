@@ -7,6 +7,7 @@
   dai-agent tools                  the toolbox, with what each tool may do
   dai-agent roles                  secretary, organizer, guard, tutor, all
   dai-agent history                the last runs (~/.local/share/dai/agents)
+  dai-agent window ["goal"] [--role ROLE]   the same, in a window: steps as a list, approval by a button
   dai-agent --version
 
 Every tool that changes something asks you first (a D.Ai Tune plan you can undo). --yes approves only user-scope
@@ -60,6 +61,9 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
         for role in ROLES.values():
             print(f"{role.name:10} {pick(lang, *role.title)}  [{', '.join(role.tools)}]")
         return 0
+    if args[0] == "window":
+        from .gui import main as window_main
+        return window_main(["dai-agent", *args[1:]])
     if args[0] == "history":
         rows = history(home)
         if not rows:

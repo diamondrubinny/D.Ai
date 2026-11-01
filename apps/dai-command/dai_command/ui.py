@@ -371,6 +371,9 @@ class CommandWindow(QWidget):
         elif action.kind == "settings":
             self._spawn(["dai-settings"])
             remembered = self.query.text().strip()
+        elif action.kind == "agent":
+            self._spawn(["dai-agent", "window", *([str(action.payload)] if action.payload else [])])
+            remembered = self.query.text().strip()
         elif action.kind == "captions":
             self._spawn(["dai-captions"])
             remembered = self.query.text().strip()
