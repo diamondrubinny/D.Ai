@@ -196,6 +196,6 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 
 ✅ שלב 5 (Diamond גדול יותר כשיש זיכרון) ירוק ב־CI (ריצה 41305736230: ‏145/145 ב־user/dev/edu, ‏135/135 ב־tv; ‏workflow "AI models" אימת את הקטלוג): קטלוג, ‏`fits`/`mem_total_mb`, ‏Welcome; בדיקות dai-ai ו־Welcome עודכנו.
 
-🔨 שלב 6 (סוכן שרואה) נבנה: הכלי `look`; ממתין ל־CI.
+✅ שלב 6 (סוכן שרואה) ירוק ב־CI (ריצה 41336886735; בריצה 41315667072 ‏Diamond תיאר את שולחן העבודה וב־tv את Kodi, וב־edu מודל הראייה הקטן חזר על מילה אחת — הבדיקה סופרת את שורת הסיום מהקובץ).
 
-🔨 שלב 7 (ask, undo לריצה) נבנה; ממתין ל־CI.
+✅ שלב 7 (ask, undo לריצה) ירוק ב־CI (ריצה 41336886735: ‏146/146 ב־user/dev/edu, ‏`dai-agent undo` ביטל את הפתק ואת התזכורת של ריצת התסריט; צילום כרטיס האישור: docs/screenshots/agent-approve.png). באותה ריצה Enter על "לאשר" לא לחץ (QPushButton מחוץ לדיאלוג עונה רק לרווח) — תוקן ב־`EnterButton`.

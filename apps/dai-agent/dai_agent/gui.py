@@ -118,6 +118,17 @@ def execute_in_window(plan: Any, ctx: Any, dry_run: bool = False, assume_yes: bo
     return 0
 
 
+class EnterButton(QPushButton):
+    """A card button that Enter presses too (a plain QPushButton outside a dialog only answers Space): the
+    approval card is answered from the keyboard with the key people expect."""
+
+    def keyPressEvent(self, event) -> None:  # noqa: N802 - Qt
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter) and self.isEnabled():
+            self.click()
+            return
+        super().keyPressEvent(event)
+
+
 class Runner(QObject):
     """Runs the agent loop in a thread and talks to the window only through signals."""
 
@@ -409,10 +420,10 @@ class AgentWindow(QWidget):
             note.setWordWrap(True)
             layout.addWidget(note)
         buttons = QHBoxLayout()
-        allow = QPushButton(embed(self.t("allow"), self.lang), objectName="Primary")
+        allow = EnterButton(embed(self.t("allow"), self.lang), objectName="Primary")
         allow.setAccessibleName(self.t("allow"))
         allow.setEnabled(not info["error"])
-        skip = QPushButton(embed(self.t("skip"), self.lang))
+        skip = EnterButton(embed(self.t("skip"), self.lang))
         skip.setAccessibleName(self.t("skip"))
         verdict = QLabel("", objectName="Status")
         allow.clicked.connect(lambda: self.answer(True, allow, skip, verdict))
@@ -423,6 +434,7 @@ class AgentWindow(QWidget):
         layout.addLayout(buttons)
         self.pending = frame
         self._add(frame)
+        frame.show()                                   # shown now, so the focus below lands (not on the next tab stop)
         skip.setFocus() if info["weakens"] else allow.setFocus()
 
     @pyqtSlot(str)
@@ -438,9 +450,9 @@ class AgentWindow(QWidget):
         field.setAccessibleName(self.t("answer_field"))
         layout.addWidget(field)
         buttons = QHBoxLayout()
-        send = QPushButton(embed(self.t("send_answer"), self.lang), objectName="Primary")
+        send = EnterButton(embed(self.t("send_answer"), self.lang), objectName="Primary")
         send.setAccessibleName(self.t("send_answer"))
-        skip = QPushButton(embed(self.t("no_answer"), self.lang))
+        skip = EnterButton(embed(self.t("no_answer"), self.lang))
         skip.setAccessibleName(self.t("no_answer"))
         verdict = QLabel("", objectName="Status")
 
@@ -462,6 +474,7 @@ class AgentWindow(QWidget):
         layout.addLayout(buttons)
         self.pending = frame
         self._add(frame)
+        frame.show()
         field.setFocus()
 
     def undo_changes(self) -> None:

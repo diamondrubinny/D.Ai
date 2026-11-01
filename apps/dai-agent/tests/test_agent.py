@@ -610,6 +610,22 @@ class WindowTests(unittest.TestCase):
         self.assertTrue((self.home / ".local/share/dai/agents" / f"{window.run.id}.json").exists())
         self.assertTrue(window.copy.isEnabled())
 
+    def test_enter_presses_the_focused_card_button(self):
+        """Run 41336886735: Enter on the Allow button did nothing (a QPushButton outside a dialog answers Space only)."""
+        from PyQt6.QtCore import Qt
+        from PyQt6.QtTest import QTest
+        steps = [{"thought": "", "tool": "note", "args": {"text": "call Dana"}, "final": ""},
+                 {"thought": "", "tool": "done", "args": {}, "final": "Noted."}]
+        window = self.window(steps)
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        QTest.qWait(50)
+        allow, _skip = self.card_buttons(window)
+        self.assertIs(window.focusWidget(), allow)                     # not the microphone, the next tab stop after Start
+        QTest.keyClick(allow, Qt.Key.Key_Return)
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertEqual([e[0] for e in self.fake.executed], ["note: call Dana"])
+
     def test_a_weakening_plan_is_said_in_words_and_skip_gets_the_focus(self):
         window = self.window([{"tool": "do", "args": {"sentence": "allow usb storage"}, "thought": ""},
                               {"tool": "done", "args": {}, "final": "ok"}], lang="he")
