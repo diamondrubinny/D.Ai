@@ -83,6 +83,14 @@ STRINGS = {
     "answer": ("Diamond's answer", "התשובה של Diamond"),
     "run_id": ("run {id} · dai-agent history", "ריצה {id} · dai-agent history"),
     "copy": ("Copy", "העתקה"),
+    "question": ("Diamond asks: {q}", "Diamond שואל: {q}"),
+    "answer_field": ("Your answer", "התשובה שלכם"),
+    "send_answer": ("Answer", "לענות"),
+    "no_answer": ("No answer", "בלי תשובה"),
+    "answered": ("✓ answered", "✓ נענה"),
+    "undo": ("Undo all changes", "לבטל את כל השינויים"),
+    "undone": ("✓ Undone: every change of this run was taken back.", "✓ בוטל: כל השינויים של הריצה הזאת הוחזרו."),
+    "undo_failed": ("Could not undo: {lines}", "לא ניתן לבטל: {lines}"),
     "read": ("Read aloud", "הקראה"),
     "close": ("Close", "סגירה"),
     "local": ("On this computer: the goal and the tools' results stay here.", "במחשב הזה: המטרה ותוצאות הכלים נשארות כאן."),
@@ -115,6 +123,7 @@ class Runner(QObject):
 
     line = pyqtSignal(str)
     ask = pyqtSignal(object)
+    question = pyqtSignal(str)
     finished = pyqtSignal(object)
     failed = pyqtSignal(str)
 
@@ -123,7 +132,9 @@ class Runner(QObject):
         self.goal, self.services, self.role, self.chat, self.script, self.home = goal, services, role, chat, script, home
         self.event = threading.Event()
         self.answer = False
+        self.said: str | None = None
         self.closing = False
+        services.ask_person = self.ask_person
 
     def approve(self, record: StepRecord) -> bool:
         if self.closing:
@@ -136,6 +147,20 @@ class Runner(QObject):
 
     def reply(self, allowed: bool) -> None:
         self.answer = allowed
+        self.event.set()
+
+    def ask_person(self, question: str) -> str | None:
+        """The ask tool: a card with a field; the worker waits for the answer (or a skip, or the window closing)."""
+        if self.closing:
+            return None
+        self.event.clear()
+        self.said = None
+        self.question.emit(question)
+        self.event.wait()
+        return None if self.closing else self.said
+
+    def reply_text(self, said: str | None) -> None:
+        self.said = said
         self.event.set()
 
     def release(self) -> None:
@@ -254,6 +279,11 @@ class AgentWindow(QWidget):
         self.privacy = QLabel(self.t("local") if provider == "local" else self.t("remote", p=provider), objectName="Status")
         self.privacy.setWordWrap(True)
         bottom.addWidget(self.privacy, 1)
+        self.undo = QPushButton(self.t("undo"))
+        self.undo.setAccessibleName(self.t("undo"))
+        self.undo.setEnabled(False)
+        self.undo.clicked.connect(self.undo_changes)
+        bottom.addWidget(self.undo)
         self.copy = QPushButton(self.t("copy"))
         self.copy.setAccessibleName(self.t("copy"))
         self.copy.setEnabled(False)
@@ -299,6 +329,7 @@ class AgentWindow(QWidget):
         self.final_box.hide()
         self.copy.setEnabled(False)
         self.read.setEnabled(False)
+        self.undo.setEnabled(False)
         self.run = None
         self.services.dry_run = self.dry_run.isChecked()
         self.services.assume_yes = False
@@ -313,6 +344,7 @@ class AgentWindow(QWidget):
         self.runner.moveToThread(self.thread)
         self.runner.line.connect(self.add_line)
         self.runner.ask.connect(self.show_ask)
+        self.runner.question.connect(self.show_question)
         self.runner.finished.connect(self.show_run)
         self.runner.failed.connect(self.show_failed)
         self.thread.started.connect(self.runner.run)
@@ -393,6 +425,53 @@ class AgentWindow(QWidget):
         self._add(frame)
         skip.setFocus() if info["weakens"] else allow.setFocus()
 
+    @pyqtSlot(str)
+    def show_question(self, question: str) -> None:
+        frame = QFrame(objectName="Ask")
+        layout = QVBoxLayout(frame)
+        layout.setContentsMargins(12, 10, 12, 10)
+        title = QLabel(self.t("question", q=question))
+        title.setWordWrap(True)
+        layout.addWidget(title)
+        field = QLineEdit()
+        field.setPlaceholderText(self.t("answer_field"))
+        field.setAccessibleName(self.t("answer_field"))
+        layout.addWidget(field)
+        buttons = QHBoxLayout()
+        send = QPushButton(embed(self.t("send_answer"), self.lang), objectName="Primary")
+        send.setAccessibleName(self.t("send_answer"))
+        skip = QPushButton(embed(self.t("no_answer"), self.lang))
+        skip.setAccessibleName(self.t("no_answer"))
+        verdict = QLabel("", objectName="Status")
+
+        def done(said: str | None) -> None:
+            if self.runner is None or self.pending is None:
+                return
+            send.setEnabled(False)
+            skip.setEnabled(False)
+            field.setEnabled(False)
+            verdict.setText(self.t("answered") if said else self.t("skipped"))
+            self.pending = None
+            self.runner.reply_text(said)
+        send.clicked.connect(lambda: done(field.text().strip() or None))
+        field.returnPressed.connect(lambda: done(field.text().strip() or None))
+        skip.clicked.connect(lambda: done(None))
+        buttons.addWidget(send)
+        buttons.addWidget(skip)
+        buttons.addWidget(verdict, 1)
+        layout.addLayout(buttons)
+        self.pending = frame
+        self._add(frame)
+        field.setFocus()
+
+    def undo_changes(self) -> None:
+        from .agent import undo_run
+        if self.run is None or self.thread is not None:
+            return
+        ok, lines = undo_run(self.home, self.run.id, self.services.run, self.lang)
+        self.undo.setEnabled(False)
+        self.status.setText(self.t("undone") if ok else self.t("undo_failed", lines="; ".join(lines)))
+
     def answer(self, allowed: bool, allow: QPushButton, skip: QPushButton, verdict: QLabel) -> None:
         if self.runner is None or self.pending is None:
             return
@@ -411,6 +490,7 @@ class AgentWindow(QWidget):
         self.final_box.show()
         self.copy.setEnabled(True)
         self.read.setEnabled(bool(run.final))
+        self.undo.setEnabled(any(step.entry for step in run.steps))
         self.status.setText(pick(self.lang, *STRINGS["status"].get(run.status, STRINGS["status"]["done"])))
         self._ended()
         if run.final and (self.speak or self.spoken_goal):

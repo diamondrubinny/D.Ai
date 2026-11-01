@@ -453,6 +453,71 @@ class PolicyTests(unittest.TestCase):
             self.assertEqual(out.getvalue().count("not allowed here"), len(roles.ROLES) - 1)
 
 
+class AskAndUndoTests(unittest.TestCase):
+    """docs/AGENTS.md §6ו: the ask tool, the Tune entry a step makes, and undoing a whole run."""
+    def test_ask_tool_with_and_without_a_person(self):
+        services = tools.Services(lang="en")
+        self.assertIn("Nobody can answer", tools.run_tool("ask", {"question": "which folder?"}, services))   # a timer
+        services.ask_person = lambda q: "  the  Lease folder "
+        self.assertEqual(tools.run_tool("ask", {"question": "which folder?"}, services), "The person answered: the Lease folder")
+        services.ask_person = lambda q: None
+        self.assertEqual(tools.run_tool("ask", {"question": "which?"}, services), "The person did not answer.")
+        self.assertIsNone(cli.ask_person("x", "en", lambda prompt: (_ for _ in ()).throw(EOFError())))
+        self.assertEqual(cli.ask_person("x", "he", lambda prompt: "כן" if "Diamond שואל: x" in prompt else "?"), "כן")
+
+    def test_a_do_step_keeps_its_tune_entry_and_a_run_can_be_undone(self):
+        fake = FakeTune()
+        import sys
+        ids = iter(["e1", "e2"])
+        journal = SimpleNamespace(find=lambda which="last": {"id": getattr(journal, "last", "")})
+
+        def execute(plan, ctx, dry_run=False, assume_yes=False, label=""):
+            journal.last = next(ids)                                                  # Tune journaled one entry
+            return fake.execute(plan, ctx, dry_run, assume_yes, label)
+        journal.last = ""
+        executor = SimpleNamespace(Journal=SimpleNamespace(for_user=lambda ctx: journal))
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(sys.modules, {
+                "dai_tune": mock.MagicMock(), "dai_tune.planner": SimpleNamespace(plan_from_text=fake.plan), "dai_tune.executor": executor}):
+            home = Path(tmp)
+            services = tools.Services(ctx=object(), lang="en", home=home, execute=execute)
+            steps = [{"thought": "", "tool": "note", "args": {"text": "milk"}, "final": ""},
+                     {"thought": "", "tool": "reminders", "args": {}, "final": ""},
+                     {"thought": "", "tool": "remind", "args": {"text": "call Dana", "in_minutes": 5}, "final": ""},
+                     {"thought": "", "tool": "done", "args": {}, "final": "ok"}]
+            with mock.patch.object(agent, "run_tool", side_effect=lambda name, args, svc: "No reminders." if name == "reminders" else tools.run_tool(name, args, svc)):
+                run = agent.run_agent("organise", services, chat=scripted_chat(steps), approve=lambda step: True, say=lambda line: None, home=home)
+            self.assertEqual([s.entry for s in run.steps], ["e1", "", "e2"])
+            saved = json.loads(agent.journal_path(home, run.id).read_text())
+            self.assertEqual([s["entry"] for s in saved["steps"]], ["e1", "", "e2"])
+            self.assertFalse(saved["undone"])
+            calls = []
+
+            def run_command(argv, **kwargs):
+                calls.append(argv)
+                return subprocess.CompletedProcess(argv, 0, "✓ Undone: " + argv[-1], "")
+            ok, lines = agent.undo_run(home, run.id, run_command, "en")
+            self.assertTrue(ok, lines)
+            self.assertEqual(calls, [["dai-tune", "undo", "e2"], ["dai-tune", "undo", "e1"]])       # last change first
+            self.assertTrue(json.loads(agent.journal_path(home, run.id).read_text())["undone"])
+            self.assertEqual(agent.undo_run(home, run.id, run_command, "en")[1], [f"Run {run.id} was already undone."])
+            self.assertIn("No run called", agent.undo_run(home, "nope", run_command, "en")[1][0])
+            self.assertIn("No run called", agent.undo_run(home, "../x", run_command, "en")[1][0])
+            out, err = io.StringIO(), io.StringIO()
+            with redirect_stdout(out), redirect_stderr(err):
+                self.assertEqual(cli.main(["dai-agent", "history"], home=home), 0)
+                self.assertEqual(cli.main(["dai-agent", "undo", run.id], home=home, services=services), 1)   # already undone
+                self.assertEqual(cli.main(["dai-agent", "undo"], home=home), 2)
+            self.assertIn("done ↶", out.getvalue())
+            self.assertIn("already undone", err.getvalue())
+            failing = lambda argv, **k: subprocess.CompletedProcess(argv, 1, "", "✗ nothing to undo")  # noqa: E731
+            saved["undone"] = False
+            agent.journal_path(home, run.id).write_text(json.dumps(saved))
+            ok, lines = agent.undo_run(home, run.id, failing, "en")
+            self.assertFalse(ok)
+            self.assertTrue(lines[0].startswith("✗"))
+            self.assertFalse(json.loads(agent.journal_path(home, run.id).read_text())["undone"])
+
+
 class WindowTests(unittest.TestCase):
     """The agent window (docs/AGENTS.md §6): Raz audits it, approval is a button that shows the Tune plan,
     a skip applies nothing, a weakening plan is said in words, closing while a card waits frees the thread."""
@@ -662,6 +727,57 @@ class WindowTests(unittest.TestCase):
             with redirect_stderr(err):
                 self.assertEqual(self.gui.main(["dai-agent", "x"]), 2)
             self.assertIn("turned off", err.getvalue())
+
+    def test_a_question_card_takes_the_answer_and_undo_takes_the_changes_back(self):
+        """docs/AGENTS.md §6ו: the ask tool in the window, and the Undo button after a run that changed things."""
+        from PyQt6.QtWidgets import QLineEdit, QPushButton
+        from dai_raz.a11y import assert_accessible
+        steps = [{"thought": "", "tool": "ask", "args": {"question": "Which folder?"}, "final": ""},
+                 {"thought": "", "tool": "note", "args": {"text": "call Dana"}, "final": ""},
+                 {"thought": "", "tool": "done", "args": {}, "final": "All set."}]
+        undone = []
+        services = tools.Services(ctx=object(), lang="he", home=self.home, execute=self.fake.execute,
+                                  run=lambda argv, **k: undone.append(argv) or subprocess.CompletedProcess(argv, 0, "✓ בוטל", ""))
+        window = self.gui.AgentWindow("he", services, goal="organise", chat=scripted_chat(steps), home=self.home, mic=None)
+        self.addCleanup(window.close)
+        self.addCleanup(window.deleteLater)
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        self.assertIn("Diamond שואל: Which folder?", window.texts())
+        assert_accessible(self, window, touch=True)                                   # the question card is open
+        field = window.pending.findChildren(QLineEdit)[0]
+        self.assertIs(window.focusWidget(), field)
+        field.setText("Lease")
+        window.pending.findChildren(QPushButton)[0].click()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None and "Diamond רוצה" in window.texts()))
+        allow, _skip = self.card_buttons(window)
+        allow.click()
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertIn("האדם ענה: Lease", window.texts())
+        self.assertEqual(window.run.steps[0].result, "האדם ענה: Lease")
+        self.assertFalse(window.undo.isEnabled())                                     # FakeTune journals nothing
+        window.run.steps[1].entry = "e9"
+        window.undo.setEnabled(True)
+        from dai_agent import agent as agent_module
+        saved = agent_module.load_run(self.home, window.run.id)
+        saved["steps"][1]["entry"] = "e9"
+        agent_module.journal_path(self.home, window.run.id).write_text(json.dumps(saved))
+        window.undo.click()
+        self.assertEqual(undone, [["dai-tune", "undo", "e9"]])
+        self.assertIn("בוטל", window.status.text())
+        self.assertFalse(window.undo.isEnabled())
+        assert_accessible(self, window, touch=True)
+
+    def test_closing_while_a_question_waits_frees_the_thread(self):
+        steps = [{"thought": "", "tool": "ask", "args": {"question": "Sure?"}, "final": ""},
+                 {"thought": "", "tool": "done", "args": {}, "final": "ok"}]
+        services = tools.Services(ctx=object(), lang="en", home=self.home, execute=self.fake.execute)
+        window = self.gui.AgentWindow("en", services, goal="x", chat=scripted_chat(steps), home=self.home, mic=None)
+        self.addCleanup(window.deleteLater)
+        window.start()
+        self.assertTrue(self.wait(window, lambda: window.pending is not None))
+        window.close()
+        self.assertIsNone(window.thread)
 
 
 def sys_modules_find():

@@ -623,7 +623,11 @@ def main() -> int:
          "{\"tool\":\"remind\",\"args\":{\"text\":\"agent reminder\",\"in_minutes\":90}},{\"tool\":\"done\",\"args\":{},\"final\":\"scripted ok\"}]' > /tmp/agent.json; "
          "dai-agent run 'scripted' --script /tmp/agent.json --yes </dev/null; echo SCRIPT_RC=$?; "
          "grep -c 'agent wrote this' ~/Documents/Notes/notes.md | sed 's/^/NOTED=/'; dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED=/'; "
-         "dai-tune undo >/dev/null 2>&1; dai-tune undo >/dev/null 2>&1; ls ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/RUNS=/'; "
+         # Stage 7 (docs/AGENTS.md §6ו): one dai-agent undo takes back the note and the reminder of that run.
+         "RUN=$(dai-agent history | head -n 1 | cut -d' ' -f1); dai-agent undo \"$RUN\"; echo UNDO_RUN_RC=$?; "
+         "grep -c 'agent wrote this' ~/Documents/Notes/notes.md | sed 's/^/NOTED_AFTER=/'; dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED_AFTER=/'; "
+         "dai-agent history | head -n 1 | grep -c '↶' | sed 's/^/MARKED=/'; "
+         "ls ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/RUNS=/'; "
          "dai-agent history | head -n 2; "
          # Stage 3 (docs/AGENTS.md §6ב): memory through the remember tool, mail from J's store (no account: a clear line), a
          # scheduled agent is a Way timer carrying agent.run, and "agent tutor: …" through dai-tune runs the agent itself.
@@ -641,6 +645,7 @@ def main() -> int:
          lambda o: "Diamond Rubinny (d.Ai)" in o and "WINDOW=1" in o and "DESKTOP_ENTRY" in o and "ACT_TOOLS=5" in o and "ROLES=5" in o
          and "SCRIPT_RC=0" in o and "not a tool" in o
          and "NOTED=1" in o and "REMINDED=1" in o and re.search(r"RUNS=[1-9]", o) is not None and "scripted ok" in o
+         and "UNDO_RUN_RC=0" in o and "NOTED_AFTER=0" in o and "REMINDED_AFTER=0" in o and "MARKED=1" in o
          and "SCRIPT3_RC=0" in o and "no mail" in o and "MEMORY=1" in o and "MEMORY_MODE=600" in o
          and "TIMER_PLAN=1" in o and "TUNE_AGENT_RC=0" in o
          and "POLICY_RC=0" in o and "DAI_AGENT_ROLES=secretary" in o and "GUARD_RC=2" in o and "NOT_ALLOWED=4" in o and "POLICY_GONE" in o

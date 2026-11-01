@@ -42,6 +42,7 @@ class Services:
     execute: Callable[..., int] | None = None     # dai_tune.cli.execute_plan(plan, ctx, dry_run=, assume_yes=, label=)
     run: Callable[..., subprocess.CompletedProcess] = subprocess.run
     speak: Callable[[str, str], bool] | None = None
+    ask_person: Callable[[str], str | None] | None = None   # the ask tool: a question to the person; None = nobody there
     label: str = "D.Ai Agent"
     extra: dict[str, Any] = field(default_factory=dict)
 
@@ -234,6 +235,27 @@ def look(services: Services, question: str = "") -> str:
     return result
 
 
+def _last_entry(services: Services) -> str:
+    """The id of the newest applied D.Ai Tune journal entry, "" when there is none or no Tune."""
+    try:
+        from dai_tune.executor import Journal
+        entry = Journal.for_user(services.ctx).find("last")
+    except Exception:  # noqa: BLE001 - tests without a Tune journal
+        return ""
+    return str(entry.get("id", "")) if entry else ""
+
+
+def ask(services: Services, question: str) -> str:
+    """One question to the person (docs/AGENTS.md §6ו). Nobody there (a timer): a clear line, never a wait."""
+    if services.ask_person is None:
+        return pick(services.lang, "Nobody can answer now (no person at this run); decide with what you know.",
+                    "אין מי שיענה עכשיו (אין אדם בריצה הזאת); החליטו לפי מה שידוע.")
+    answer = services.ask_person(question)
+    if answer is None or not answer.strip():
+        return pick(services.lang, "The person did not answer.", "האדם לא ענה.")
+    return pick(services.lang, "The person answered: {a}", "האדם ענה: {a}").format(a=" ".join(answer.split())[:MAX_TEXT])
+
+
 # ---------------------------------------------------------------- act tools
 
 def record(services: Services, seconds: int) -> str:
@@ -277,7 +299,11 @@ def do(services: Services, sentence: str) -> str:
         execute = services.execute
     # --yes never covers a weakening or a system step: those always ask the person (docs/AGENTS.md §3).
     quiet = services.assume_yes and not made.weakens and not made.scoped("system")
+    before = _last_entry(services)
     code = execute(made, services.ctx, dry_run=services.dry_run, assume_yes=quiet, label=services.label)
+    after = _last_entry(services)
+    if after and after != before:
+        services.extra.setdefault("entries", []).append(after)       # the run's journal keeps it (docs/AGENTS.md §6ו)
     if code != 0:
         raise ToolError(pick(services.lang, "Not applied (dai-tune said no, or you cancelled).", "לא בוצע (Tune סירב, או שביטלתם)."))
     return pick(services.lang, "Applied: {sentence}", "בוצע: {sentence}").format(sentence=sentence) if not services.dry_run else \
@@ -335,6 +361,7 @@ TOOLS: dict[str, Tool] = {t.name: t for t in (
     Tool("note", "act", "Write one line into the person's notes. args: text", {"text": "str"}, note, ("text",)),
     Tool("record", "act", "Record the screen for a number of seconds (no sound); it stops by itself. args: seconds (5-600)", {"seconds": "int"}, record, ("seconds",)),
     Tool("remember", "act", "Keep one line for later runs (a fact about the person, a preference). The person approves first. args: text", {"text": "str"}, remember, ("text",)),
+    Tool("ask", "light", "Ask the person one short question when the goal is unclear (which file, which time, yes or no). args: question", {"question": "str"}, ask, ("question",)),
     Tool("say", "light", "Read a short text aloud. args: text", {"text": "str"}, say, ("text",)),
     Tool("notify", "light", "Show a short notification. args: text", {"text": "str"}, notify, ("text",)),
 )}

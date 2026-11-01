@@ -6,7 +6,8 @@
   dai-agent "goal"                 the same as run
   dai-agent tools                  the toolbox, with what each tool may do
   dai-agent roles                  secretary, organizer, guard, tutor, all (an organization's policy may allow fewer)
-  dai-agent history                the last runs (~/.local/share/dai/agents)
+  dai-agent history                the last runs (~/.local/share/dai/agents); ↶ = undone
+  dai-agent undo RUN               undo every change a run made (dai-tune undo, last change first)
   dai-agent memory                 what the agent remembers (only lines you approved with the remember tool)
   dai-agent memory forget N        drop line N;  dai-agent memory clear   forgets everything
   dai-agent window ["goal"] [--role ROLE] [--speak]   the same, in a window: steps as a list, approval by a
@@ -29,7 +30,7 @@ from dai_i18n import pick, ui_lang
 
 from . import __author__, __version__
 from . import memory, policy
-from .agent import AgentError, StepRecord, history, run_agent
+from .agent import AgentError, StepRecord, history, run_agent, undo_run
 from .plans import quiet_ok
 from .roles import ROLES
 from .tools import TOOLS, Services
@@ -48,6 +49,14 @@ def ask(step: StepRecord, lang: str, ask_input=input) -> bool:
         return ask_input(question).strip().casefold() in ("y", "yes", "כ", "כן")
     except (EOFError, KeyboardInterrupt):
         return False
+
+
+def ask_person(question: str, lang: str, ask_input=input) -> str | None:
+    """The ask tool in a terminal; no terminal (a timer, stdin closed) means None."""
+    try:
+        return ask_input(pick(lang, "  Diamond asks: {q}\n  > ", "  Diamond שואל: {q}\n  > ").format(q=question))
+    except (EOFError, KeyboardInterrupt, OSError):
+        return None
 
 
 def notify_final(run, lang: str, run_command=subprocess.run) -> None:
@@ -116,12 +125,20 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
             print(pick(lang, "No runs yet.", "אין ריצות עדיין."))
             return 0
         for row in rows:
-            print(f"{row['id']}  {row.get('started', '')}  {row.get('status', '')}  [{row.get('role', '')}]  {row['goal'][:60]}")
+            mark = " ↶" if row.get("undone") else ""
+            print(f"{row['id']}  {row.get('started', '')}  {row.get('status', '')}{mark}  [{row.get('role', '')}]  {row['goal'][:60]}")
             if row.get("final"):
                 print("    " + str(row["final"])[:200].replace("\n", " "))
         return 0
     if args[0] == "memory":
         return cmd_memory(args[1:], lang, home)
+    if args[0] == "undo":
+        if len(args) != 2:
+            print(__doc__.strip(), file=sys.stderr)
+            return 2
+        ok, lines = undo_run(home, args[1], (services.run if services is not None else None), lang)
+        print("\n".join(lines), file=sys.stdout if ok else sys.stderr)
+        return 0 if ok else 1
     if args[0] == "run":
         args = args[1:]
     role_name = _option(args, "--role") or "all"
@@ -165,6 +182,8 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
         services = Services(ctx=Context(lang=lang), lang=lang, home=home)
     services.assume_yes = "--yes" in args
     services.dry_run = "--dry-run" in args
+    if services.ask_person is None:
+        services.ask_person = lambda question: ask_person(question, lang, ask_input)
     services.label = f"D.Ai Agent: {goal[:60]}"
     try:
         from dai_ai.client import where

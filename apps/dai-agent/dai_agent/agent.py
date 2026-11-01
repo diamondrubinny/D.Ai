@@ -35,6 +35,7 @@ class StepRecord:
     approved: bool | None = None     # None: a read tool (no question asked)
     result: str = ""
     error: str = ""
+    entry: str = ""                  # the D.Ai Tune journal entry this step made (dai-agent undo)
 
 
 @dataclass
@@ -46,10 +47,11 @@ class Run:
     steps: list[StepRecord] = field(default_factory=list)
     final: str = ""
     status: str = "running"          # done | stopped | failed | no-plan
+    undone: bool = False
 
     def to_json(self) -> dict[str, Any]:
         return {"id": self.id, "goal": self.goal, "role": self.role, "started": self.started, "status": self.status,
-                "final": self.final, "steps": [s.__dict__ for s in self.steps]}
+                "final": self.final, "undone": self.undone, "steps": [s.__dict__ for s in self.steps]}
 
 
 def _args_schema(tool: Tool) -> dict[str, Any]:
@@ -143,6 +145,48 @@ def save(run: Run, home: Path | None) -> Path:
     return path
 
 
+def load_run(home: Path | None, run_id: str) -> dict[str, Any] | None:
+    if not run_id.isalnum():
+        return None
+    try:
+        data = json.loads(journal_path(home, run_id).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) and isinstance(data.get("steps"), list) else None
+
+
+def undo_run(home: Path | None, run_id: str, run_command: Callable | None = None, lang: str = "en") -> tuple[bool, list[str]]:
+    """Undo every D.Ai Tune change a run made, last first, through dai-tune undo ENTRY (docs/AGENTS.md §6ו).
+    Returns (ok, lines for the person)."""
+    import subprocess
+    run_command = run_command or subprocess.run
+    data = load_run(home, run_id)
+    if data is None:
+        return False, [pick(lang, "No run called {id}.", "אין ריצה בשם {id}.").format(id=run_id)]
+    if data.get("undone"):
+        return False, [pick(lang, "Run {id} was already undone.", "ריצה {id} כבר בוטלה.").format(id=run_id)]
+    entries = [str(step.get("entry", "")) for step in data["steps"] if step.get("entry")]
+    if not entries:
+        return False, [pick(lang, "Run {id} changed nothing that D.Ai Tune journaled.", "ריצה {id} לא שינתה דבר שרשום ביומן Tune.").format(id=run_id)]
+    lines, ok = [], True
+    for entry in reversed(entries):
+        try:
+            done = run_command(["dai-tune", "undo", entry], capture_output=True, text=True, timeout=300, check=False)
+            good, said = done.returncode == 0, (done.stdout or done.stderr or "").strip().splitlines()[-1:] or [""]
+        except (OSError, subprocess.SubprocessError) as exc:
+            good, said = False, [str(exc)]
+        ok = ok and good
+        lines.append(("✓ " if good else "✗ ") + said[0])
+    if ok:
+        data["undone"] = True
+        path = journal_path(home, run_id)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        tmp.chmod(0o600)
+        tmp.replace(path)
+    return ok, lines
+
+
 def history(home: Path | None, limit: int = 20) -> list[dict[str, Any]]:
     folder = (home or Path.home()) / JOURNAL_DIR
     rows = []
@@ -218,6 +262,8 @@ def run_agent(goal: str, services: Services, chat: Callable | None = None, role:
                 continue
         try:
             record.result = run_tool(name, args, services)
+            if services.extra.get("entries"):
+                record.entry = str(services.extra["entries"].pop())
         except ToolError as exc:
             record.error = str(exc)
         except Exception as exc:  # noqa: BLE001 - a tool must never take the agent down
