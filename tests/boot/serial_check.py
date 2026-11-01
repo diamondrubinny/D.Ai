@@ -657,9 +657,12 @@ def main() -> int:
         # D.Ai Explain (smolvlm-256m was installed by the explain check, so Diamond looks at the picture here).
         ("agent: the look tool sees the screen", WAYLAND_ENV +
          "printf '[{\"tool\":\"look\",\"args\":{\"question\":\"what is on the screen?\"}},{\"tool\":\"done\",\"args\":{},\"final\":\"looked\"}]' > /tmp/look.json; "
-         "timeout 600 dai-agent run 'look at the screen' --script /tmp/look.json --role tutor </dev/null >/tmp/look.out 2>&1; echo LOOK_RC=$?; head -c 1200 /tmp/look.out; echo; "
+         "timeout 600 dai-agent run 'look at the screen' --script /tmp/look.json --role tutor </dev/null >/tmp/look.out 2>&1; echo LOOK_RC=$?; head -c 600 /tmp/look.out; echo; "
+         # The small vision model may repeat one word for a thousand characters (run 41315667072, edu): the final line
+         # is counted in the file, not read from the printed head.
+         "grep -c '^looked$' /tmp/look.out | sed 's/^/FINAL=/'; grep -c '^  ✗' /tmp/look.out | sed 's/^/TOOL_ERRORS=/'; "
          "ls /tmp/*.png 2>/dev/null | grep -c 'agent\\|look' | sed 's/^/SAVED_PICTURES=/'", True,
-         lambda o: "LOOK_RC=0" in o and "→ look" in o and "\n  ✗" not in o and "looked" in o and "SAVED_PICTURES=0" in o, 900),
+         lambda o: "LOOK_RC=0" in o and "→ look" in o and "TOOL_ERRORS=0" in o and "FINAL=1" in o and "SAVED_PICTURES=0" in o, 900),
         ("record: three seconds of the screen", WAYLAND_ENV + "dai-record --version; which wf-recorder | sed 's/^/RECORDER=/'; "
          "grep -c 'key=\"W-S-r\"' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; dai-record status; "
          "dai-record start 3 --file /tmp/rec.mp4; echo START_RC=$?; sleep 1; dai-record status; "
