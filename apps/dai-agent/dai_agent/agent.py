@@ -14,7 +14,7 @@ from typing import Any, Callable
 from dai_i18n import english_name, pick
 
 from .roles import ROLES, Role
-from .tools import TOOLS, Services, ToolError, run_tool
+from .tools import MAX_TEXT, TOOLS, Services, Tool, ToolError, run_tool
 
 MAX_STEPS = 8
 MAX_ANSWER = 2000
@@ -52,19 +52,49 @@ class Run:
                 "final": self.final, "steps": [s.__dict__ for s in self.steps]}
 
 
+def _args_schema(tool: Tool) -> dict[str, Any]:
+    """The args object of one tool: only its names, its types, its bounds. Unknown names cannot be generated."""
+    properties: dict[str, Any] = {}
+    for key, kind in tool.args.items():
+        if kind == "int":
+            properties[key] = {"type": "integer", "minimum": 0, "maximum": 10 ** 6}
+        else:
+            properties[key] = {"type": "string", "maxLength": MAX_TEXT}
+    return {"type": "object", "properties": properties, "required": list(tool.required), "additionalProperties": False}
+
+
 def step_schema(tool_names: list[str]) -> dict[str, Any]:
-    """One step: a thought, a tool (or "done"), its args, and the final answer when done."""
-    return {
+    """One step: a thought, a tool (or "done"), its args, and the final answer when done.
+
+    One branch per tool (anyOf + const), each with that tool's own args schema: with the grammar enforced
+    (docs/AI.md §5) the model cannot name a tool outside the role nor invent an argument. The first VM run
+    with a real schema showed a 0.5B model adding an "answer" argument to facts, three times in a row.
+    """
+    branches = []
+    for name in tool_names:
+        branches.append({
+            "type": "object",
+            "properties": {
+                "thought": {"type": "string", "maxLength": 300},
+                "tool": {"const": name},
+                "args": _args_schema(TOOLS[name]),
+                "final": {"type": "string", "maxLength": 0},
+            },
+            "required": ["thought", "tool", "args", "final"],
+            "additionalProperties": False,
+        })
+    branches.append({
         "type": "object",
         "properties": {
             "thought": {"type": "string", "maxLength": 300},
-            "tool": {"type": "string", "enum": [*tool_names, "done"]},
-            "args": {"type": "object"},
+            "tool": {"const": "done"},
+            "args": {"type": "object", "properties": {}, "additionalProperties": False},
             "final": {"type": "string", "maxLength": MAX_ANSWER},
         },
         "required": ["thought", "tool", "args", "final"],
         "additionalProperties": False,
-    }
+    })
+    return {"anyOf": branches}
 
 
 def system_prompt(role: Role, lang: str) -> str:
@@ -79,7 +109,8 @@ def system_prompt(role: Role, lang: str) -> str:
     lines += [
         "- done: finish; put the answer for the person in \"final\" (in " + english_name(lang) + ").",
         "Rules: tool results come back as messages; never invent results; a tool marked act asks the person first, so",
-        "do not repeat it if it was refused; Tune sentences are in English; at most " + str(MAX_STEPS) + " steps.",
+        "do not repeat it if it was refused; when a tool returned nothing useful, do not call it again: finish with",
+        "what you know; Tune sentences are in English; at most " + str(MAX_STEPS) + " steps.",
         role.guidance,
     ]
     return "\n".join(lines)

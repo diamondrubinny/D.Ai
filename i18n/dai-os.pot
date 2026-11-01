@@ -79,7 +79,7 @@ msgid "  Worth knowing about this code:"
 msgstr ""
 
 #. he:   דולג (לא אושר)
-#: apps/dai-agent/dai_agent/agent.py:183
+#: apps/dai-agent/dai_agent/agent.py:214
 msgid "  skipped (not approved)"
 msgstr ""
 
@@ -1787,7 +1787,7 @@ msgid "Diamond answers with its smallest installed model"
 msgstr ""
 
 #. he: Diamond לא הצליח לתכנן את הצעד: {error}
-#: apps/dai-agent/dai_agent/agent.py:153
+#: apps/dai-agent/dai_agent/agent.py:184
 #, python-brace-format
 msgid "Diamond could not plan this step: {error}"
 msgstr ""
@@ -2077,7 +2077,7 @@ msgid "Done ✓"
 msgstr ""
 
 #. he: בוצע.
-#: apps/dai-agent/dai_agent/agent.py:159
+#: apps/dai-agent/dai_agent/agent.py:190
 msgid "Done."
 msgstr ""
 
@@ -5173,7 +5173,7 @@ msgid "Say --page N before each --box LEFT,TOP,WIDTH,HEIGHT (in points)."
 msgstr ""
 
 #. he: תגידו מה הסוכן צריך לעשות.
-#: apps/dai-agent/dai_agent/agent.py:134
+#: apps/dai-agent/dai_agent/agent.py:165
 msgid "Say what the agent should do."
 msgstr ""
 
@@ -5200,7 +5200,7 @@ msgid "Screen {name}: transform {transform}"
 msgstr ""
 
 #. he: התסריט הסתיים.
-#: apps/dai-agent/dai_agent/agent.py:145
+#: apps/dai-agent/dai_agent/agent.py:176
 msgid "Script finished."
 msgstr ""
 
@@ -5789,13 +5789,13 @@ msgid "Stop sharing"
 msgstr ""
 
 #. he: נעצר אחרי {n} צעדים.
-#: apps/dai-agent/dai_agent/agent.py:196
+#: apps/dai-agent/dai_agent/agent.py:227
 #, python-brace-format
 msgid "Stopped after {n} steps."
 msgstr ""
 
 #. he: נעצר: אותו צעד חזר על עצמו.
-#: apps/dai-agent/dai_agent/agent.py:173
+#: apps/dai-agent/dai_agent/agent.py:204
 msgid "Stopped: the same step was repeated."
 msgstr ""
 
@@ -7953,13 +7953,13 @@ msgid "normal"
 msgstr ""
 
 #. he: לא כלי של התפקיד הזה: {name}
-#: apps/dai-agent/dai_agent/agent.py:165
+#: apps/dai-agent/dai_agent/agent.py:196
 #, python-brace-format
 msgid "not a tool of this role: {name}"
 msgstr ""
 
 #. he: לא אושר
-#: apps/dai-agent/dai_agent/agent.py:180
+#: apps/dai-agent/dai_agent/agent.py:211
 msgid "not approved"
 msgstr ""
 

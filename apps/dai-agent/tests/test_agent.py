@@ -20,7 +20,7 @@ def scripted_chat(steps):
     queue = list(steps)
 
     def chat(messages, schema=None, max_tokens=0, task="general"):
-        assert schema["type"] == "object" and "done" in schema["properties"]["tool"]["enum"]
+        assert [b["properties"]["tool"]["const"] for b in schema["anyOf"]][-1] == "done"
         yield json.dumps(queue.pop(0))
     return chat
 
@@ -43,6 +43,20 @@ class FakeTune:
 
 
 class ToolTests(unittest.TestCase):
+    def test_step_schema_has_one_branch_per_tool_with_its_own_args(self):
+        schema = agent.step_schema(["remind", "posture"])
+        names = [b["properties"]["tool"]["const"] for b in schema["anyOf"]]
+        self.assertEqual(names, ["remind", "posture", "done"])
+        remind = schema["anyOf"][0]["properties"]["args"]
+        self.assertEqual(remind["properties"]["in_minutes"]["type"], "integer")
+        self.assertEqual(remind["properties"]["text"]["maxLength"], 500)
+        self.assertIn("text", remind["required"])
+        self.assertFalse(remind["additionalProperties"])                  # an invented "answer" cannot be generated
+        self.assertEqual(schema["anyOf"][1]["properties"]["args"]["properties"], {})
+        self.assertEqual(schema["anyOf"][-1]["properties"]["final"]["maxLength"], agent.MAX_ANSWER)
+        for branch in schema["anyOf"]:
+            self.assertFalse(branch["additionalProperties"])
+
     def test_args_are_checked_and_unknown_tools_refused(self):
         tool = tools.TOOLS["remind"]
         self.assertEqual(tools.check_args(tool, {"text": " call Dana ", "in_minutes": 20}), {"text": "call Dana", "in_minutes": 20})

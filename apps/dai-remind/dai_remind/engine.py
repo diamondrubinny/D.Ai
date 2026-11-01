@@ -132,12 +132,12 @@ def fire(reminder_id: str, lang: str, home: Path | None = None, run: Run = subpr
                 child.stdin.close()
         except OSError:
             pass
-    try:  # the trace first: whatever the cleanup does, the moment is on disk
+    remove(reminder_id, home, run)
+    try:  # the trace last: when it exists, the file and the units are already gone (the VM check relies on that)
         folder(home).mkdir(parents=True, exist_ok=True)
         (folder(home) / f"{reminder_id}.fired").write_text(datetime.now().strftime("%Y-%m-%dT%H:%M") + "\n", encoding="utf-8")
     except OSError:
         pass
-    remove(reminder_id, home, run)
     return reminder
 
 
