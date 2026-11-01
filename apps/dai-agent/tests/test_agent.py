@@ -401,6 +401,34 @@ class PlanTests(unittest.TestCase):
             self.assertFalse(plans.quiet_ok(agent.StepRecord("say", {"text": "x"}), services))
 
 
+class PolicyTests(unittest.TestCase):
+    """docs/AGENTS.md §6ג: /etc/dai/policy-agent.env decides which roles a person may use here."""
+    def test_roles_from_the_policy_file(self):
+        from dai_agent import policy
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertEqual(policy.allowed_roles(root), tuple(roles.ROLES))             # no file: everything
+            env = root / "etc/dai/policy-agent.env"
+            env.parent.mkdir(parents=True)
+            env.write_text("DAI_AGENT_ROLES=none\n")
+            self.assertEqual(policy.allowed_roles(root), ())
+            self.assertIn("turned off", policy.refusal("tutor", "en", root))
+            env.write_text("# school\nDAI_AGENT_ROLES=\"secretary, tutor\"\n")
+            self.assertEqual(policy.allowed_roles(root), ("secretary", "tutor"))
+            self.assertEqual(policy.refusal("tutor", "he", root), "")
+            self.assertIn("secretary, tutor", policy.refusal("guard", "he", root))
+            env.write_text("DAI_AGENT_ROLES=all\n")
+            self.assertEqual(policy.allowed_roles(root), tuple(roles.ROLES))
+            env.write_text("DAI_AGENT_ROLES=secretary\n")
+            out, err = io.StringIO(), io.StringIO()
+            with redirect_stdout(out), redirect_stderr(err):
+                self.assertEqual(cli.main(["dai-agent", "run", "x", "--role", "guard"], home=root, root=root), 2)
+                self.assertEqual(cli.main(["dai-agent", "roles"], root=root), 0)
+            self.assertIn("only these roles here: secretary", err.getvalue())
+            self.assertIn("guard", out.getvalue())
+            self.assertEqual(out.getvalue().count("not allowed here"), len(roles.ROLES) - 1)
+
+
 class WindowTests(unittest.TestCase):
     """The agent window (docs/AGENTS.md §6): Raz audits it, approval is a button that shows the Tune plan,
     a skip applies nothing, a weakening plan is said in words, closing while a card waits frees the thread."""
@@ -547,12 +575,75 @@ class WindowTests(unittest.TestCase):
         self.assertIn("dai-agent 0.", out.getvalue())
         self.assertIn("unknown role", err.getvalue())
 
+    def test_microphone_fills_the_goal_and_the_answer_is_read_aloud(self):
+        """docs/AGENTS.md §6ג: a goal from the microphone is answered aloud; --speak does it every time."""
+        from PyQt6.QtCore import pyqtSignal
+        from PyQt6.QtWidgets import QToolButton
+        from dai_raz.a11y import assert_accessible
+
+        class MicButton(QToolButton):
+            transcribed = pyqtSignal(str)
+
+            def __init__(self):
+                super().__init__()
+                self.setObjectName("Mic")
+                self.setAccessibleName("Microphone")
+                self.setText("🎙")
+        spoken = []
+        steps = [{"thought": "", "tool": "done", "args": {}, "final": "Two reminders today."}]
+        services = tools.Services(ctx=object(), lang="en", home=self.home, execute=self.fake.execute)
+        window = self.gui.AgentWindow("en", services, chat=scripted_chat(steps), home=self.home, mic=MicButton,
+                                      spawn=lambda argv, text=None: spoken.append((argv, text)))
+        self.addCleanup(window.close)
+        self.addCleanup(window.deleteLater)
+        assert_accessible(self, window, touch=True)                              # with the microphone button
+        window.mic.transcribed.emit("  what is   on today ")
+        self.assertEqual(window.goal.text(), "what is on today")
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertEqual(spoken[-1][0], ["dai-speak", "--stdin", "--lang", "en"])
+        self.assertEqual(spoken[-1][1], "Two reminders today.")
+        self.assertFalse(window.spoken_goal)
+        typed = self.gui.AgentWindow("en", services, goal="again", chat=scripted_chat(list(steps)), home=self.home, mic=MicButton,
+                                     spawn=lambda argv, text=None: spoken.append((argv, text)))
+        self.addCleanup(typed.close)
+        typed.start()
+        self.assertTrue(self.wait(typed, lambda: typed.run is not None))
+        self.assertEqual(len(spoken), 1)                                          # typed: not aloud unless asked
+        loud = self.gui.AgentWindow("en", services, goal="again", chat=scripted_chat(list(steps)), home=self.home, mic=MicButton,
+                                    speak=True, spawn=lambda argv, text=None: spoken.append((argv, text)))
+        self.addCleanup(loud.close)
+        loud.start()
+        self.assertTrue(self.wait(loud, lambda: loud.run is not None))
+        self.assertEqual(len(spoken), 2)
+
+    def test_policy_limits_the_roles_in_the_window(self):
+        from dai_raz.a11y import assert_accessible
+        env = self.home / "etc/dai/policy-agent.env"
+        env.parent.mkdir(parents=True)
+        env.write_text("DAI_AGENT_ROLES=secretary,tutor\n")
+        services = tools.Services(ctx=object(), lang="he", home=self.home, execute=self.fake.execute)
+        window = self.gui.AgentWindow("he", services, role="guard", home=self.home, root=self.home, mic=None)
+        self.addCleanup(window.close)
+        self.assertEqual([window.role.itemData(i) for i in range(window.role.count())], ["secretary", "tutor"])
+        self.assertEqual(window.role.currentData(), "secretary")                   # guard is not allowed: the first allowed one
+        assert_accessible(self, window, touch=True)
+        env.write_text("DAI_AGENT_ROLES=none\n")
+        off = self.gui.AgentWindow("he", services, goal="x", home=self.home, root=self.home, mic=None)
+        self.addCleanup(off.close)
+        off.start()
+        self.assertIsNone(off.thread)
+        self.assertIn("מדיניות הארגון", off.status.text())
+        with mock.patch.object(self.gui, "refusal", lambda role, lang, root=None: "Agents are turned off on this computer by the organization's policy."):
+            err = io.StringIO()
+            with redirect_stderr(err):
+                self.assertEqual(self.gui.main(["dai-agent", "x"]), 2)
+            self.assertIn("turned off", err.getvalue())
+
 
 def sys_modules_find():
     """A find tool that needs no index: dai_find stand-ins."""
     return {"dai_find": mock.MagicMock(), "dai_find.query": SimpleNamespace(parse=lambda q, lang="en": q),
             "dai_find.search": SimpleNamespace(search=lambda q, home=None, limit=10: [SimpleNamespace(path=Path("/home/me/lease.pdf"))])}
-
 
 if __name__ == "__main__":
     unittest.main()

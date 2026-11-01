@@ -2235,6 +2235,8 @@ def _agent_validate(params: Params, ctx: Context) -> Params:
     role = params.get("role", "all")
     if role not in AGENT_ROLES:
         raise ValidationError("role: one of " + ", ".join(AGENT_ROLES))
+    if not agent_policy_allows(role, ctx):
+        raise ValidationError(f"role: the organization's policy does not allow agents as {role} here")
     return {"goal": " ".join(goal.split()), "role": role}
 
 
@@ -2250,6 +2252,62 @@ def _agent_apply(params: Params, ctx: Context) -> None:
         raise ActionError(f"dai-agent: {exc}") from exc
     if result.returncode == 127 or (result.returncode != 0 and "not found" in (result.stderr or "")):
         raise ActionError("dai-agent is not installed")
+
+
+POLICY_AGENT_ENV = "/etc/dai/policy-agent.env"
+
+
+def _agent_policy_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"roles"})
+    roles = params.get("roles", "all")
+    if roles in ("all", "none"):
+        return {"roles": roles}
+    if not isinstance(roles, str):
+        raise ValidationError("roles: all, none, or a comma list of " + ", ".join(AGENT_ROLES))
+    chosen = [r.strip() for r in roles.split(",") if r.strip()]
+    if not chosen or any(r not in AGENT_ROLES for r in chosen) or "all" in chosen:
+        raise ValidationError("roles: all, none, or a comma list of " + ", ".join(AGENT_ROLES))
+    return {"roles": ",".join(dict.fromkeys(chosen))}
+
+
+def _agent_policy_apply(params: Params, ctx: Context) -> None:
+    path = ctx.path(POLICY_AGENT_ENV)
+    if params["roles"] == "all":
+        if path.exists():
+            path.unlink()
+        return
+    update_env_file(path, {"DAI_AGENT_ROLES": params["roles"]}, mode=0o644)
+
+
+def agent_policy_allows(role: str, ctx: Context) -> bool:
+    for line in read_text(ctx.path(POLICY_AGENT_ENV)).splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and key.strip() == "DAI_AGENT_ROLES":
+            value = value.strip().strip('"')
+            return value in ("", "all") or (value != "none" and role in {v.strip() for v in value.split(",")})
+    return True
+
+
+def _agent_policy_summary(params: Params, lang: str) -> str:
+    if params["roles"] == "none":
+        return _t(lang, "Every user: D.Ai Agents are off", "כל המשתמשים: סוכני D.Ai כבויים")
+    if params["roles"] == "all":
+        return _t(lang, "Every user: D.Ai Agents are allowed again, every role", "כל המשתמשים: סוכני D.Ai מותרים שוב, כל התפקידים")
+    return _t(lang, "Every user: D.Ai Agents only as {roles}", "כל המשתמשים: סוכני D.Ai רק בתפקידים {roles}", roles=params["roles"].replace(",", ", "))
+
+
+register(ActionSpec(
+    id="agent.policy",
+    scope="system",
+    validate=_agent_policy_validate,
+    apply=_agent_policy_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral" if p["roles"] == "all" else "hardens",
+    summary=_agent_policy_summary,
+    files=lambda p, c: [c.path(POLICY_AGENT_ENV)],
+    note=lambda p, lang: _t(lang, "dai-agent, its window and timers refuse other roles (docs/AGENTS.md §6ג).",
+                            "dai-agent, החלון והטיימרים מסרבים לתפקידים אחרים (docs/AGENTS.md §6ג)."),
+))
 
 
 register(ActionSpec(

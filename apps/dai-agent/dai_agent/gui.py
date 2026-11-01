@@ -24,6 +24,7 @@ from dai_style import app_font, color, rgba, with_touch
 from . import __author__, __version__
 from .agent import AgentError, Run, StepRecord, run_agent
 from .plans import describe_act
+from .policy import allowed_roles, refusal
 from .roles import ROLES
 from .tools import Services
 
@@ -52,6 +53,10 @@ QPushButton {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius:
 QPushButton:hover {{ border: 1px solid {ACCENT}; background: {rgba('accent', 0.18)}; }}
 QPushButton:focus {{ border: 2px solid {ACCENT_2}; }}
 QPushButton#Primary {{ background: {ACCENT_STRONG}; color: #FFFFFF; font-weight: 700; border: 1px solid {ACCENT_STRONG}; }}
+QToolButton#Mic {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 10px; padding: 8px; font-size: 14pt; }}
+QToolButton#Mic:hover {{ border: 1px solid {ACCENT_STRONG}; }}
+QToolButton#Mic:focus {{ border: 2px solid {ACCENT_STRONG}; }}
+QToolButton#Mic[recording="true"] {{ background: #B4233A; color: #FFFFFF; border: 2px solid {DANGER}; }}
 QPushButton:disabled {{ color: {DISABLED}; border: 1px solid {BORDER}; background: {BG_800}; }}
 QScrollArea {{ border: none; background: transparent; }}
 QScrollArea > QWidget > QWidget {{ background: transparent; }}
@@ -154,10 +159,14 @@ class Runner(QObject):
 class AgentWindow(QWidget):
     def __init__(self, lang: str, services: Services, goal: str = "", role: str = "all", chat: Callable | None = None,
                  script: list | None = None, home=None, spawn: Callable[..., None] | None = None,
-                 provider: str = "local") -> None:
+                 provider: str = "local", speak: bool = False, root=None, mic: type | None = None) -> None:
         super().__init__(objectName="Agent")
         self.lang, self.services, self.chat, self.script, self.home = lang, services, chat, script, home
         self.spawn = spawn or _spawn
+        self.speak = speak                 # --speak: every answer aloud (docs/AGENTS.md §6ג)
+        self.spoken_goal = False           # the goal came from the microphone: answer aloud this time
+        self.root = root
+        self.allowed = allowed_roles(root)
         self.thread: QThread | None = None
         self.runner: Runner | None = None
         self.run: Run | None = None
@@ -189,11 +198,22 @@ class AgentWindow(QWidget):
         self.goal.setAccessibleName(self.t("goal"))
         self.goal.returnPressed.connect(self.start)
         row.addWidget(self.goal, 1)
+        self.mic = None
+        if mic is None:
+            try:
+                from dai_voice.qt import VoiceButton as mic
+            except ImportError:            # no D.Ai Voice here: no microphone button
+                mic = None
+        if mic is not None:
+            self.mic = mic()
+            self.mic.transcribed.connect(self.from_voice)
+            row.addWidget(self.mic)
         self.role = QComboBox()
         self.role.setAccessibleName(self.t("role"))
         for name, spec in ROLES.items():
-            self.role.addItem(pick(lang, *spec.title), name)
-        self.role.setCurrentIndex(max(0, list(ROLES).index(role) if role in ROLES else 0))
+            if name in self.allowed:
+                self.role.addItem(pick(lang, *spec.title), name)
+        self.role.setCurrentIndex(max(0, self.role.findData(role)))
         row.addWidget(self.role)
         outer.addLayout(row)
         row2 = QHBoxLayout()
@@ -258,9 +278,22 @@ class AgentWindow(QWidget):
 
     # -- the run ----------------------------------------------------------------
 
+    @pyqtSlot(str)
+    def from_voice(self, text: str) -> None:
+        """The microphone filled the goal: start, and answer aloud when done."""
+        text = " ".join(text.split())
+        if not text or self.thread is not None:
+            return
+        self.goal.setText(text)
+        self.spoken_goal = True
+        self.start()
+
     def start(self) -> None:
         goal = self.goal.text().strip()
         if self.thread is not None or not goal:
+            return
+        if self.role.currentData() is None:
+            self.status.setText(refusal("all", self.lang, self.root))
             return
         self.clear_steps()
         self.final_box.hide()
@@ -380,6 +413,9 @@ class AgentWindow(QWidget):
         self.read.setEnabled(bool(run.final))
         self.status.setText(pick(self.lang, *STRINGS["status"].get(run.status, STRINGS["status"]["done"])))
         self._ended()
+        if run.final and (self.speak or self.spoken_goal):
+            self.read_aloud()
+        self.spoken_goal = False
 
     @pyqtSlot(str)
     def show_failed(self, error: str) -> None:
@@ -447,7 +483,7 @@ def _spawn(argv: list[str], stdin_text: str | None = None) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """dai-agent window ["goal"] [--role ROLE] [--lang LANG]"""
+    """dai-agent window ["goal"] [--role ROLE] [--lang LANG] [--speak]"""
     argv = list(sys.argv if argv is None else argv)
     args = argv[1:]
     if "--version" in args:
@@ -468,12 +504,17 @@ def main(argv: list[str] | None = None) -> int:
                 lang = args[i + 1]
             skip = True
             continue
+        if a == "--speak":
+            continue
         if a.startswith("--"):
             print(__doc__.strip(), file=sys.stderr)
             return 2
         words.append(a)
     if role not in ROLES:
         print(pick(lang, "✗ unknown role; see: dai-agent roles", "✗ תפקיד לא מוכר; ראו: dai-agent roles"), file=sys.stderr)
+        return 2
+    if (why := refusal(role, lang)):
+        print(f"✗ {why}", file=sys.stderr)
         return 2
     app = QApplication.instance() or QApplication(argv[:1])
     app.setApplicationName(APP_ID)
@@ -489,7 +530,7 @@ def main(argv: list[str] | None = None) -> int:
         provider = where("general")
     except Exception:  # noqa: BLE001 - no dai_ai: local
         pass
-    window = AgentWindow(lang, services, goal=" ".join(words).strip(), role=role, provider=provider)
+    window = AgentWindow(lang, services, goal=" ".join(words).strip(), role=role, provider=provider, speak="--speak" in args)
     window.show()
     if window.goal.text().strip():
         window.start()

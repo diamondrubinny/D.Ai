@@ -5,11 +5,12 @@
   dai-agent run "goal" [--role ROLE] [--yes] [--dry-run] [--notify] [--lang LANG] [--script FILE]
   dai-agent "goal"                 the same as run
   dai-agent tools                  the toolbox, with what each tool may do
-  dai-agent roles                  secretary, organizer, guard, tutor, all
+  dai-agent roles                  secretary, organizer, guard, tutor, all (an organization's policy may allow fewer)
   dai-agent history                the last runs (~/.local/share/dai/agents)
   dai-agent memory                 what the agent remembers (only lines you approved with the remember tool)
   dai-agent memory forget N        drop line N;  dai-agent memory clear   forgets everything
-  dai-agent window ["goal"] [--role ROLE]   the same, in a window: steps as a list, approval by a button
+  dai-agent window ["goal"] [--role ROLE] [--speak]   the same, in a window: steps as a list, approval by a
+                                   button, a microphone for the goal; --speak reads every answer aloud
   dai-agent --version
 
 Every tool that changes something asks you first (a D.Ai Tune plan you can undo). --yes approves only user-scope
@@ -27,7 +28,7 @@ from pathlib import Path
 from dai_i18n import pick, ui_lang
 
 from . import __author__, __version__
-from . import memory
+from . import memory, policy
 from .agent import AgentError, StepRecord, history, run_agent
 from .plans import quiet_ok
 from .roles import ROLES
@@ -87,7 +88,7 @@ def cmd_memory(rest: list[str], lang: str, home: Path | None) -> int:
 
 
 def main(argv: list[str] | None = None, chat=None, services: Services | None = None, home: Path | None = None,
-         ask_input=input) -> int:
+         ask_input=input, root: Path | None = None) -> int:
     args = list(sys.argv if argv is None else argv)[1:]
     lang = ui_lang()
     if not args or args[0] in ("-h", "--help"):
@@ -101,8 +102,10 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
             print(f"{tool.name:10} {tool.risk:5} {tool.describe}")
         return 0
     if args[0] == "roles":
+        allowed = policy.allowed_roles(root)
         for role in ROLES.values():
-            print(f"{role.name:10} {pick(lang, *role.title)}  [{', '.join(role.tools)}]")
+            mark = "" if role.name in allowed else pick(lang, "  (not allowed here: organization policy)", "  (לא מותר כאן: מדיניות ארגונית)")
+            print(f"{role.name:10} {pick(lang, *role.title)}  [{', '.join(role.tools)}]{mark}")
         return 0
     if args[0] == "window":
         from .gui import main as window_main
@@ -126,6 +129,9 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
         lang = chosen.lower()[:5]                                  # a timer runs without the person's LANG (docs/AGENTS.md §6ב)
     if role_name not in ROLES:
         print(pick(lang, "✗ unknown role; see: dai-agent roles", "✗ תפקיד לא מוכר; ראו: dai-agent roles"), file=sys.stderr)
+        return 2
+    if (why := policy.refusal(role_name, lang, root)):
+        print(f"✗ {why}", file=sys.stderr)
         return 2
     script = None
     if (script_path := _option(args, "--script")) is not None:

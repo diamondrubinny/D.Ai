@@ -608,6 +608,25 @@ AGENT_START = re.compile(r"^(?:agent|dai-agent|סוכן|הסוכן)(?:\s+(?P<rol
 AGENT_GOAL_MAX = 300
 
 
+AGENTS_OFF = re.compile(r"^(?:no\s+agents|agents\s+(?:off|forbidden)|turn\s+off\s+agents|disable\s+agents|בלי\s+סוכנים|(?:כבה|לכבות|חסום|אסור)\s+(?:את\s+ה)?סוכנים|סוכנים\s+כבויים)\s*\.?$", re.IGNORECASE)
+AGENTS_ON = re.compile(r"^(?:allow\s+agents|agents\s+(?:on|allowed)|enable\s+agents|(?:אפשר|לאפשר|התר|להתיר|הפעל)\s+(?:את\s+ה)?סוכנים|סוכנים\s+מותרים)\s*\.?$", re.IGNORECASE)
+AGENTS_ONLY = re.compile(r"^(?:agents|סוכנים)\s*:\s*(?:only\s+|רק\s+)?(?P<roles>[a-z, ]+?)(?:\s+only|\s+בלבד)?\s*\.?$", re.IGNORECASE)
+
+
+def agent_policy_request(text: str) -> Request | None:
+    """"no agents", "agents: secretary, tutor only", "allow agents" → agent.policy (docs/AGENTS.md §6ג)."""
+    t = text.strip()
+    if AGENTS_OFF.match(t):
+        return Request("agent.policy", {"roles": "none"}, t)
+    if AGENTS_ON.match(t):
+        return Request("agent.policy", {"roles": "all"}, t)
+    if (m := AGENTS_ONLY.match(t)) is not None:
+        roles = [r.strip().lower() for r in m.group("roles").replace(" and ", ",").split(",") if r.strip()]
+        if roles and all(r in ("all", "secretary", "organizer", "guard", "tutor") for r in roles):
+            return Request("agent.policy", {"roles": "all" if "all" in roles else ",".join(dict.fromkeys(roles))}, t)
+    return None
+
+
 def agent_request(text: str) -> Request | None:
     """"agent: summarize my mail" / "סוכן secretary: …" → one agent.run (docs/AGENTS.md §6ב). The goal is one
     text, never split into clauses."""
@@ -673,6 +692,9 @@ def parse(text: str) -> ParseResult:
         return result
     if (note := note_request(text)) is not None:
         result.requests.append(note)
+        return result
+    if (policy := agent_policy_request(text)) is not None:
+        result.requests.append(policy)
         return result
     if (agent := agent_request(text)) is not None:
         result.requests.append(agent)

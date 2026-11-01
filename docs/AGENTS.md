@@ -80,8 +80,25 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 
 ## 6א. שלבים הבאים
 
-אחרי שלב 3: סוכן שמדבר (Voice → מטרה, התשובה ב־Speak), סוכן בטלפון (D.Ai Mobile), מדיניות ארגונית לתפקידים
-המותרים (policy.d), מודל גדול יותר כברירת מחדל במחשבים עם זיכרון.
+אחרי שלב 4: מודל גדול יותר כברירת מחדל במחשבים עם זיכרון; סוכן ש"רואה" (Explain עם תמונה); סוכנים בין מחשבים
+(docs/MESSAGES.md, אחרי החלטת הפרוטוקול).
+
+## 6ג. שלב 4: סוכן שמדבר, סוכן בטלפון, מדיניות ארגונית (נבנה 2026-11-01)
+
+> שלושה דברים קטנים שסוגרים את המעגל: אומרים לסוכן מה לעשות והוא עונה בקול; אותו חלון עובד בטלפון במצב מגע;
+> וארגון יכול לקבוע אילו תפקידים מותרים (או לכבות סוכנים) בקובץ מדיניות אחד.
+
+| רכיב | מה |
+|---|---|
+| 🎙 בחלון | `VoiceButton` של D.Ai Voice ליד שורת המטרה: לחיצה מקליטה, לחיצה נוספת ממלאת את המטרה ומתחילה. מטרה שהגיעה בקול → התשובה נקראת בקול לבד (D.Ai Speak, `--stdin`). ‏`dai-agent window --speak` עושה זאת לכל ריצה (לנגישות, ל־TV) |
+| טלפון | ה־deb של dai-agent כבר בתמונת הטלפון; החלון במצב מגע (`with_touch`), בדיקת הטלפון ב־VM דורשת `dai-agent window --version` ואת ה־desktop. אין קוד נפרד לטלפון |
+| `agent.policy` (Tune) | היקף מערכת: "no agents" / "agents off" / "בלי סוכנים" → `DAI_AGENT_ROLES=none`; "agents: secretary, tutor only" / "סוכנים: רק secretary, tutor" → רשימה; "allow agents" / "אפשר סוכנים" → מוחק את הקובץ. נכתב ל־`/etc/dai/policy-agent.env` (0644). עובד גם מ־policy.d (מערכת) |
+| אכיפה | `dai_agent/policy.py`: `allowed_roles()` קורא את הקובץ; ה־CLI, החלון (`main` ו־ComboBox שמציג רק תפקידים מותרים) ו־`agent.run` ב־Tune (validate) מסרבים לתפקיד שאינו מותר, עם שורה ברורה ("מדיניות ארגונית"). ‏Command: "agent:" לא מוצע כש־`none` |
+
+בדיקות: יחידה (policy: קובץ חסר = הכול; none; רשימה; ה־CLI וה־validate מסרבים; החלון מראה רק תפקידים מותרים ו־Raz;
+🎙 ממלא ומתחיל; `--speak` → dai-speak אחרי הסיום), ‏Tune (parser + `agent.policy`), ‏VM: בבדיקת הסוכן `dai-tune --yes
+'agents: secretary only'` → `dai-agent run x --role guard` מסרב (קוד 2), `dai-tune undo` מחזיר; בבדיקת הטלפון
+`AGENT_WINDOW=1`.
 
 ## 6ב. שלב 3: כלים נוספים, סוכנים מתוזמנים, זיכרון (נבנה 2026-11-01)
 
@@ -146,3 +163,5 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 (‏Raz בעברית ובאנגלית עם כרטיס אישור פתוח, אישור → `apply_plan`, דילוג, החלשה במילים, הרצת ניסיון, סגירה בזמן המתנה).
 
 ✅ שלב 3 (כלים נוספים, סוכן מתוזמן, זיכרון) ירוק ב־CI (ריצה 41288787316, ‏145/145 ב־user/dev/edu: ‏`SCRIPT3_RC=0`, ‏`MEMORY=1` ב־0600, ‏`TIMER_PLAN=1`, ‏`TUNE_AGENT_RC=0`): ‏`memory.py`, ‏`plans.py`, חמישה כלים, ‏`agent.run` ב־Tune, ‏`--notify`, ‏`dai-agent memory`; 8 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
+
+🔨 שלב 4 (סוכן שמדבר, טלפון, מדיניות) נבנה: ‏`policy.py`, ‏`agent.policy` ב־Tune, 🎙 ו־`--speak` בחלון, בדיקת הטלפון; 3 בדיקות יחידה חדשות לסוכן ואחת ל־Tune; ממתין ל־CI.

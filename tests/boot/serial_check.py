@@ -632,12 +632,18 @@ def main() -> int:
          "dai-agent memory | grep -c 'likes short answers' | sed 's/^/MEMORY=/'; stat -c 'MEMORY_MODE=%a' ~/.local/share/dai/agents/memory.json; "
          "dai-tune --dry-run 'every day at 8 agent secretary: summarize my mail' </dev/null | grep -ci 'agent secretary: summarize my mail' | sed 's/^/TIMER_PLAN=/'; "
          "dai-tune --yes 'agent tutor: what is D.Ai Command?' </dev/null >/tmp/agent-tune.out 2>&1; echo TUNE_AGENT_RC=$?; tail -n 3 /tmp/agent-tune.out; "
+         # Stage 4 (docs/AGENTS.md §6ג): an organization policy allows only secretary; guard is refused (2) until undo.
+         "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'agents: secretary only' </dev/null >/dev/null 2>&1; echo POLICY_RC=$?; cat /etc/dai/policy-agent.env; "
+         "dai-agent run 'x' --role guard --script /tmp/agent3.json </dev/null >/dev/null 2>&1; echo GUARD_RC=$?; "
+         "dai-agent roles | grep -c 'not allowed here' | sed 's/^/NOT_ALLOWED=/'; DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; "
+         "test -f /etc/dai/policy-agent.env && echo POLICY_STILL_THERE || echo POLICY_GONE; "
          "timeout 600 dai-agent run 'what is the security score of this computer?' --role guard --dry-run --yes </dev/null; echo MODEL_RC=$?", True,
          lambda o: "Diamond Rubinny (d.Ai)" in o and "WINDOW=1" in o and "DESKTOP_ENTRY" in o and "ACT_TOOLS=5" in o and "ROLES=5" in o
          and "SCRIPT_RC=0" in o and "not a tool" in o
          and "NOTED=1" in o and "REMINDED=1" in o and re.search(r"RUNS=[1-9]", o) is not None and "scripted ok" in o
          and "SCRIPT3_RC=0" in o and "no mail" in o and "MEMORY=1" in o and "MEMORY_MODE=600" in o
          and "TIMER_PLAN=1" in o and "TUNE_AGENT_RC=0" in o
+         and "POLICY_RC=0" in o and "DAI_AGENT_ROLES=secretary" in o and "GUARD_RC=2" in o and "NOT_ALLOWED=4" in o and "POLICY_GONE" in o
          and re.search(r"MODEL_RC=[013]$", o, re.M) is not None                      # 1 = stopped: a small model may loop; the schema still held:
          and (re.search(r"^\s*(→|⚠) (posture|plan|do|facts|notify) \{", o, re.M) is not None or "MODEL_RC=3" in o), 1500),
         # D.Ai Notes (docs/NOTES.md): one sentence, one dated line; undo puts the file back.
@@ -1183,11 +1189,11 @@ def main() -> int:
          "uname -m; pgrep -a -x phoc | head -n 1 | cut -c1-60; pgrep -a -x phosh | head -n 1 | cut -c1-60; "
          "pgrep -x squeekboard >/dev/null && echo KEYBOARD_RUNNING; cat ~/.config/dai/touch | sed 's/^/TOUCH=/'; "
          "python3 -I -c 'import sys; sys.path.insert(0, \"/usr/lib/dai\"); import dai_style; print(\"MODE\", dai_style.touch_mode(), \"ON\" if dai_style.touch() else \"OFF\")'; "
-         "dai-tune --version | head -n 1; "
+         "dai-tune --version | head -n 1; dai-agent window --version | grep -c 'dai-agent' | sed 's/^/AGENT_WINDOW=/'; "
          # When the session is not there, say why: what sddm was told, what the session and phoc logged.
          "pgrep -x phosh >/dev/null || { grep -h Session= /etc/sddm.conf; ls /dev/dri; tail -n 15 ~/.local/share/sddm/wayland-session.log 2>/dev/null; "
          "sudo journalctl -b -o cat -t phoc -t phosh -t gnome-session -t gnome-session-binary -u sddm 2>/dev/null | grep -v '^$' | tail -n 30; }; fi",
-         True, lambda o: "PHONE_NOT_THIS_EDITION" in o or all(mark in o for mark in ("aarch64", "phoc", "phosh", "TOUCH=on", "MODE on ON", "dai-tune")), 180),
+         True, lambda o: "PHONE_NOT_THIS_EDITION" in o or all(mark in o for mark in ("aarch64", "phoc", "phosh", "TOUCH=on", "MODE on ON", "dai-tune", "AGENT_WINDOW=1")), 180),
         # D.Ai TV (docs/TV.md §5): the television session is the default and is what runs (Kodi on labwc, no
         # LXQt), Kodi's defaults keep every server off and speak Hebrew, CEC's tool is there, nothing listens.
         ("tv: the session, Kodi, the defaults, nothing listening",

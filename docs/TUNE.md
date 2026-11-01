@@ -84,6 +84,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `ai.providers_policy` | "no external AI providers", "בלי ספקי AI חיצוניים", "allow external AI providers" (docs/PROVIDERS.md §4c: בדרך כלל ממדיניות ארגונית) | מערכת | מחזק |
 | `note.add` | "note: buy milk", "write down that …" / "רשום: לקנות חלב", "תרשום ש…" (docs/NOTES.md: שורה מתוארכת ב־`~/Documents/Notes/notes.md`) | משתמש | ניטרלי |
 | `agent.run` | "agent: summarize my mail", "סוכן secretary: …" (docs/AGENTS.md §6ב: Diamond עם ארגז הכלים הסגור; בתוך "every day at 8 …" → סוכן מתוזמן דרך `way.when`, מאשר לבד רק צעדים ששומרים או מחזקים אבטחה, התשובה כהודעה) | משתמש | ניטרלי |
+| `agent.policy` | "no agents" / "בלי סוכנים", "agents: secretary, tutor only" / "סוכנים: רק secretary", "allow agents" (docs/AGENTS.md §6ג: `/etc/dai/policy-agent.env`; dai-agent, החלון והטיימרים מסרבים לתפקיד אחר; גם מ־policy.d) | מערכת | מחזק / ניטרלי |
 | `reminder.now` | "remind me to call Dana" (בלי זמן: הודעה וצליל עכשיו); בתוך "every day at 9 …" / "כל יום ב־9 …" → תזכורת חוזרת דרך `way.when` (docs/REMIND.md §6) | משתמש | ניטרלי |
 | `reminder.add` | "remind me in 20 minutes to call Dana", "remind me tomorrow at 8 to pay the bill" / "תזכיר לי בעוד 20 דקות לצלצל לדנה", "תזכיר לי ב־18:30 לקחת את הכדורים" (docs/REMIND.md: קובץ + טיימר משתמש; `dai-remind list`) | משתמש | ניטרלי |
 | `explain.options` | "explain with pictures off", "read explanations aloud" / "הסבר עם תמונה כבוי", "להקריא הסברים" (docs/EXPLAIN.md §9: `~/.config/dai/explain.json`) | משתמש | ניטרלי |

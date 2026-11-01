@@ -372,6 +372,40 @@ class ExecutorTests(TuneTestCase):
         with self.assertRaises(ActionError):
             spec.apply({"goal": "x", "role": "all"}, self.ctx)
 
+    def test_agent_policy_decides_the_roles_for_every_user(self):
+        """docs/AGENTS.md §6ג: "no agents" / "agents: secretary, tutor only" / "allow agents" → one system file."""
+        self.assertEqual(parser.parse("no agents").requests[0].params, {"roles": "none"})
+        self.assertEqual(parser.parse("בלי סוכנים").requests[0].action, "agent.policy")
+        self.assertEqual(parser.parse("agents: secretary, tutor only").requests[0].params, {"roles": "secretary,tutor"})
+        self.assertEqual(parser.parse("סוכנים: רק secretary").requests[0].params, {"roles": "secretary"})
+        self.assertEqual(parser.parse("allow agents").requests[0].params, {"roles": "all"})
+        self.assertEqual(parser.parse("agents: wizard only").requests, [])
+        self.assertEqual(parser.parse("agent: no agents here").requests[0].action, "agent.run")     # a goal, not a policy
+        spec = catalog.CATALOG["agent.policy"]
+        self.assertEqual(spec.scope, "system")
+        self.assertEqual(spec.validate({"roles": "tutor, secretary, tutor"}, self.ctx), {"roles": "tutor,secretary"})
+        for bad in ({"roles": "wizard"}, {"roles": "all,tutor"}, {"roles": 3}, {"roles": "none", "x": 1}):
+            with self.subTest(bad=bad), self.assertRaises(ValidationError):
+                spec.validate(bad, self.ctx)
+        spec.apply({"roles": "secretary,tutor"}, self.ctx)
+        env = self.root / "etc/dai/policy-agent.env"
+        self.assertIn("DAI_AGENT_ROLES=secretary,tutor", env.read_text())
+        self.assertEqual(env.stat().st_mode & 0o777, 0o644)
+        self.assertTrue(catalog.agent_policy_allows("tutor", self.ctx))
+        self.assertFalse(catalog.agent_policy_allows("guard", self.ctx))
+        run = catalog.CATALOG["agent.run"]
+        self.assertEqual(run.validate({"goal": "x", "role": "tutor"}, self.ctx)["role"], "tutor")
+        with self.assertRaises(ValidationError) as caught:
+            run.validate({"goal": "x", "role": "guard"}, self.ctx)
+        self.assertIn("policy", str(caught.exception))
+        self.assertIn("secretary, tutor", spec.summary({"roles": "secretary,tutor"}, "en"))
+        self.assertEqual(spec.effect({"roles": "none"}), "hardens")
+        spec.apply({"roles": "none"}, self.ctx)
+        self.assertFalse(catalog.agent_policy_allows("secretary", self.ctx))
+        spec.apply({"roles": "all"}, self.ctx)
+        self.assertFalse(env.exists())
+        self.assertTrue(catalog.agent_policy_allows("guard", self.ctx))
+
     def test_way_when_timer_user_scope_only(self):
         """docs/WAY.md §2: a when: line is one user timer; a system sentence or a bad schedule is refused."""
         spec = catalog.CATALOG["way.when"]
