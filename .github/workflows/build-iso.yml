@@ -709,7 +709,14 @@ jobs:
             echo
             echo "Every image passed the automated boot and system tests before publishing. Alpha software: back up first."
           } >notes.md
-          gh release create "$tag" dist/* --verify-tag --title "D.Ai OS $tag" --notes-file notes.md "${flags[@]}"
+          # A release page made by hand (or an earlier run of this tag) is filled, not refused: the files are
+          # replaced and the notes rewritten, so moving the tag to a newer green head republishes.
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+            gh release edit "$tag" --title "D.Ai OS $tag" --notes-file notes.md "${flags[@]}"
+          else
+            gh release create "$tag" dist/* --verify-tag --title "D.Ai OS $tag" --notes-file notes.md "${flags[@]}"
+          fi
 
   # Publish boot screenshots and check reports to the ci-screenshots branch
   # so they can be viewed on GitHub and referenced from docs.

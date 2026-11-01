@@ -43,7 +43,7 @@ GitHub Release (tag v*)
 ## 3. פרסום גרסה
 
 1. מגדילים את הגרסה, מתעדים ב־CHANGELOG ופותחים PR.
-2. אחרי merge ל־`main`: ‏`git tag -s v0.1.0-alpha && git push origin v0.1.0-alpha`.
+2. אחרי merge ל־`main`: ‏`git tag -s v0.1.0-alpha && git push origin v0.1.0-alpha`. אם דף Release עם התג כבר קיים (נוצר ידנית, או מריצה קודמת של אותו תג), ה־job ממלא אותו: מחליף את הקבצים (`gh release upload --clobber`) וכותב מחדש את ההערות; הזזת התג לראש ירוק חדש מפרסמת מחדש (ריצה 41299431417 נכשלה על "a release with the same tag name already exists" לפני התיקון).
 3. ה־workflow ‏`Build ISO` רץ על התג: בונה את החבילות ואת שתי המהדורות, ומריץ את בדיקות האתחול.
 4. אם כל הבדיקות עברו, ה־job ‏`release` יוצר Release עם כל הקבצים. גרסה עם `-alpha`, ‏`-beta` או `-rc` מסומנת כ־pre-release.
 

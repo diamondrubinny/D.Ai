@@ -164,4 +164,4 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 
 ✅ שלב 3 (כלים נוספים, סוכן מתוזמן, זיכרון) ירוק ב־CI (ריצה 41288787316, ‏145/145 ב־user/dev/edu: ‏`SCRIPT3_RC=0`, ‏`MEMORY=1` ב־0600, ‏`TIMER_PLAN=1`, ‏`TUNE_AGENT_RC=0`): ‏`memory.py`, ‏`plans.py`, חמישה כלים, ‏`agent.run` ב־Tune, ‏`--notify`, ‏`dai-agent memory`; 8 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
 
-🔨 שלב 4 (סוכן שמדבר, טלפון, מדיניות) נבנה: ‏`policy.py`, ‏`agent.policy` ב־Tune, 🎙 ו־`--speak` בחלון, בדיקת הטלפון; 3 בדיקות יחידה חדשות לסוכן ואחת ל־Tune; ממתין ל־CI.
+✅ שלב 4 (סוכן שמדבר, טלפון, מדיניות) ירוק ב־CI (ריצה 41296322344: ‏145/145 ב־user/dev/edu עם `POLICY_RC=0`, ‏`GUARD_RC=2`, ‏`NOT_ALLOWED=4`, ‏`POLICY_GONE`; הטלפון 120/120 עם `AGENT_WINDOW=1`): ‏`policy.py`, ‏`agent.policy` ב־Tune, 🎙 ו־`--speak` בחלון, בדיקת הטלפון; 3 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
