@@ -145,4 +145,4 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 ✅ שלב 2 (החלון) ירוק ב־CI (ריצה 41279781006, ‏145/145 ב־user/dev/edu, ‏`WINDOW=1` ו־`DESKTOP_ENTRY` בבדיקת ה־VM): ‏`gui.py`, ‏`dai-agent window`, ‏`dai-agent.desktop`, ‏Command פותח את החלון; 6 בדיקות יחידה חדשות
 (‏Raz בעברית ובאנגלית עם כרטיס אישור פתוח, אישור → `apply_plan`, דילוג, החלשה במילים, הרצת ניסיון, סגירה בזמן המתנה).
 
-🔨 שלב 3 (כלים נוספים, סוכן מתוזמן, זיכרון) נבנה: ‏`memory.py`, ‏`plans.py`, חמישה כלים, ‏`agent.run` ב־Tune, ‏`--notify`, ‏`dai-agent memory`; 8 בדיקות יחידה חדשות לסוכן ו־2 ל־Tune; ממתין ל־CI.
+✅ שלב 3 (כלים נוספים, סוכן מתוזמן, זיכרון) ירוק ב־CI (ריצה 41288787316, ‏145/145 ב־user/dev/edu: ‏`SCRIPT3_RC=0`, ‏`MEMORY=1` ב־0600, ‏`TIMER_PLAN=1`, ‏`TUNE_AGENT_RC=0`): ‏`memory.py`, ‏`plans.py`, חמישה כלים, ‏`agent.run` ב־Tune, ‏`--notify`, ‏`dai-agent memory`; 8 בדיקות יחידה חדשות לסוכן ואחת ל־Tune.
