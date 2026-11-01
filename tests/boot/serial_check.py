@@ -625,7 +625,8 @@ def main() -> int:
          "grep -c 'agent wrote this' ~/Documents/Notes/notes.md | sed 's/^/NOTED=/'; dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED=/'; "
          # Stage 7 (docs/AGENTS.md §6ו): one dai-agent undo takes back the note and the reminder of that run.
          "RUN=$(dai-agent history | head -n 1 | cut -d' ' -f1); dai-agent undo \"$RUN\"; echo UNDO_RUN_RC=$?; "
-         "grep -c 'agent wrote this' ~/Documents/Notes/notes.md | sed 's/^/NOTED_AFTER=/'; dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED_AFTER=/'; "
+         # The note was the file's first line, so undo removes the file itself (run 41326288091): a missing file counts as 0.
+         "echo NOTED_AFTER=$(grep -c 'agent wrote this' ~/Documents/Notes/notes.md 2>/dev/null || echo 0); dai-remind list | grep -c 'agent reminder' | sed 's/^/REMINDED_AFTER=/'; "
          "dai-agent history | head -n 1 | grep -c '↶' | sed 's/^/MARKED=/'; "
          "ls ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/RUNS=/'; "
          "dai-agent history | head -n 2; "
