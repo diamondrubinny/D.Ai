@@ -610,7 +610,9 @@ def main() -> int:
          "wc -w < /tmp/shapes.txt | sed 's/^/SEE_WORDS=/'; head -c 300 /tmp/shapes.txt; echo; cat /tmp/shapes.err; "
          "dai-explain --print --file /tmp/shapes.png --lang en --no-picture >/dev/null 2>&1; echo BLIND_RC=$?", True,
          lambda o: "installed and verified" in o and "verified: smolvlm-256m" in o and "LISTED=1" in o and "SEE_RC=0" in o
-         and re.search(r"SEE_WORDS=([5-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o, 900),
+         and re.search(r"SEE_WORDS=([3-9]|\d{2,})", o) is not None and "looked at the picture" in o and "BLIND_RC=1" in o
+         # "The circle is yellow." (4 words, run 41258389581) is sight; a shape or colour word is the proof, not length.
+         and re.search(r"\b(circle|ellipse|rectangle|square|yellow|orange|red|blue)\b", o, re.I) is not None, 900),
         # D.Ai Agents (docs/AGENTS.md): the toolbox and the roles print; a scripted run (no model) writes a note and a
         # reminder through Tune with --yes; an unknown tool is refused; the journal is there; a run with the local
         # Diamond ends with 0 (done) or 3 (could not plan): the mechanism is what is checked, not the small model's wit.
