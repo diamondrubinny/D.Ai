@@ -210,6 +210,30 @@ def explain(services: Services, text: str) -> str:
     return result
 
 
+def look(services: Services, question: str = "") -> str:
+    """What is on the screen now (docs/AGENTS.md §6ה): a picture in memory only, D.Ai Explain's answer. With a
+    vision model installed Diamond looks at the picture on this computer; otherwise only the text read from it
+    goes to Diamond (or to the provider chosen for general questions)."""
+    from dai_explain.engine import ExplainError, capture_screen, explain as explain_screen, read_text, vision_model
+    capture = services.extra.get("capture") or (lambda: capture_screen(services.run))
+    reader = services.extra.get("read_text") or (lambda image: read_text(image, services.lang, services.run))
+    sees = services.extra.get("sees") or vision_model
+    try:
+        image = capture()
+        text = reader(image) if sees() is None else ""
+        if question:
+            text = f"{question}\n\n{text}".strip()
+        out = explain_screen(text, services.lang, chat=services.extra.get("chat"), image=image, sees=sees)
+    except ExplainError as exc:
+        raise ToolError(str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001 - no OCR, no grim: one clear line, never the agent down
+        raise ToolError(pick(services.lang, "Could not look at the screen: {e}", "לא הצלחתי להסתכל על המסך: {e}").format(e=exc)) from exc
+    result = out.text
+    if out.suggestion:
+        result += "\n" + pick(services.lang, "Suggested D.Ai Tune sentence: {s}", "משפט D.Ai Tune מוצע: {s}").format(s=out.suggestion)
+    return result
+
+
 # ---------------------------------------------------------------- act tools
 
 def record(services: Services, seconds: int) -> str:
@@ -305,6 +329,7 @@ TOOLS: dict[str, Tool] = {t.name: t for t in (
     Tool("mail", "read", "The newest messages in the person's inbox (J): sender, subject, date; ● = unread. args: limit (1-10)", {"limit": "int"}, mail),
     Tool("mail_summary", "read", "A short summary of one inbox message by its number in the mail list (1 = newest). args: number", {"number": "int"}, mail_summary, ("number",)),
     Tool("explain", "read", "Explain a text the person saw (an error, a message, a setting) in plain words, with a D.Ai Tune sentence when one fixes it. args: text", {"text": "str"}, explain, ("text",)),
+    Tool("look", "read", "Look at the screen now and say what is on it (an error, a page, a dialog). args: question (optional, what to look for)", {"question": "str"}, look),
     Tool("do", "act", "Apply a D.Ai Tune sentence (settings, security, apps, reminders, notes), e.g. 'lock the screen after 5 minutes'. The person approves first. args: sentence", {"sentence": "str"}, do, ("sentence",)),
     Tool("remind", "act", "Set a reminder. args: text, and in_minutes (number) or at ('18:30')", {"text": "str", "in_minutes": "int", "at": "str"}, remind, ("text",)),
     Tool("note", "act", "Write one line into the person's notes. args: text", {"text": "str"}, note, ("text",)),

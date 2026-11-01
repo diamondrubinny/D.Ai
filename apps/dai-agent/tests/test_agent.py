@@ -326,9 +326,33 @@ class NewToolTests(unittest.TestCase):
             self.assertEqual(len(ran), 1)
             self.assertEqual(len(memory.load(home)), 1)
 
+    def test_look_sees_the_screen_in_memory_only(self):
+        """docs/AGENTS.md §6ה: a picture of the screen goes to D.Ai Explain; with a vision model the picture, else the text."""
+        seen = []
+
+        def chat(messages, max_tokens=0, task="general"):
+            seen.append((task, messages[-1]["content"]))
+            yield "A dialog says the disk is full."
+        services = tools.Services(lang="en", extra={"capture": lambda: b"\x89PNG fake", "read_text": lambda image: "Disk full: 0 bytes free",
+                                                   "sees": lambda: None, "chat": chat})
+        self.assertIn("disk is full", tools.run_tool("look", {"question": "what does the dialog say?"}, services))
+        self.assertEqual(seen[-1][0], "general")                                      # no vision model: the text only
+        self.assertIn("Disk full: 0 bytes free", str(seen[-1][1]))
+        self.assertIn("what does the dialog say?", str(seen[-1][1]))
+        services.extra["sees"] = lambda: "smolvlm-256m"
+        services.extra["read_text"] = lambda image: (_ for _ in ()).throw(AssertionError("OCR must not run when Diamond sees"))
+        with mock.patch("dai_explain.engine.shrink", lambda image, width=0: image):
+            tools.run_tool("look", {}, services)
+        self.assertEqual(seen[-1][0], "vision")                                       # the picture, on this computer
+        services.extra["capture"] = lambda: (_ for _ in ()).throw(OSError("no grim"))
+        with self.assertRaises(tools.ToolError) as caught:
+            tools.run_tool("look", {}, services)
+        self.assertIn("no grim", str(caught.exception))
+
     def test_roles_know_the_new_tools(self):
         self.assertTrue({"mail", "mail_summary", "remember"} <= set(roles.ROLES["secretary"].tools))
         self.assertIn("explain", roles.ROLES["tutor"].tools)
+        self.assertIn("look", roles.ROLES["tutor"].tools)
         self.assertNotIn("record", roles.ROLES["secretary"].tools)
         self.assertEqual(set(tools.TOOLS), set(roles.ROLES["all"].tools))
 
