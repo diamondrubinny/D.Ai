@@ -10,7 +10,7 @@
   dai-agent undo RUN               undo every change a run made (dai-tune undo, last change first)
   dai-agent memory                 what the agent remembers (only lines you approved with the remember tool)
   dai-agent memory forget N        drop line N;  dai-agent memory clear   forgets everything
-  dai-agent window ["goal"] [--role ROLE] [--speak]   the same, in a window: steps as a list, approval by a
+  dai-agent window ["goal"] [--role ROLE] [--speak] [--script FILE]   the same, in a window: steps as a list, approval by a
                                    button, a microphone for the goal; --speak reads every answer aloud
   dai-agent --version
 

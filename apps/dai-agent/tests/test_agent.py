@@ -728,6 +728,25 @@ class WindowTests(unittest.TestCase):
                 self.assertEqual(self.gui.main(["dai-agent", "x"]), 2)
             self.assertIn("turned off", err.getvalue())
 
+    def test_window_main_takes_a_script(self):
+        script = self.home / "steps.json"
+        script.write_text(json.dumps([{"tool": "done", "args": {}, "final": "scripted"}]))
+        import sys
+        err = io.StringIO()
+        started = []
+        with mock.patch.object(self.gui.AgentWindow, "show", lambda self: None), \
+                mock.patch.object(self.gui.AgentWindow, "start", lambda self: started.append(self.script)), \
+                mock.patch.object(self.gui.QApplication, "exec", lambda self: 0), \
+                mock.patch.dict(sys.modules, {"dai_tune.context": SimpleNamespace(Context=lambda lang: object()),
+                                              "dai_ai.client": SimpleNamespace(where=lambda task: "local")}), \
+                redirect_stderr(err):
+            self.assertEqual(self.gui.main(["dai-agent", "scripted", "--script", str(script)]), 0)
+            self.assertEqual(started, [[{"tool": "done", "args": {}, "final": "scripted"}]])          # the steps reach the window
+            self.assertEqual(self.gui.main(["dai-agent", "x", "--script", "/no/such.json"]), 2)
+            script.write_text('{"not": "a list"}')
+            self.assertEqual(self.gui.main(["dai-agent", "x", "--script", str(script)]), 2)
+        self.assertIn("--script", err.getvalue())
+
     def test_a_question_card_takes_the_answer_and_undo_takes_the_changes_back(self):
         """docs/AGENTS.md §6ו: the ask tool in the window, and the Undo button after a run that changed things."""
         from PyQt6.QtWidgets import QLineEdit, QPushButton

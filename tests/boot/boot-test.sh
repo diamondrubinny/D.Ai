@@ -423,6 +423,17 @@ sleep 90
 monitor "screendump $ARTIFACT_DIR/explain.png -f png" || log "warning: screenshot failed"
 type_keys alt-f4
 sleep 2
+log "interactive: D.Ai Agents (the serial check's script: the approval card with the Tune plan, then the answer)"
+command_bar shift-4 spc d a i minus a g e n t spc w i n d o w spc s c r i p t e d spc minus minus s c r i p t spc slash t m p slash a g e n t dot j s o n ret
+sleep 8
+monitor "screendump $ARTIFACT_DIR/agent-approve.png -f png" || log "warning: screenshot failed"
+type_keys ret
+sleep 4
+type_keys ret
+sleep 6
+monitor "screendump $ARTIFACT_DIR/agent-window.png -f png" || log "warning: screenshot failed"
+type_keys alt-f4
+sleep 2
 log "interactive: the on-screen keyboard (Super+Alt+K)"
 type_keys meta_l-alt-k
 sleep 4

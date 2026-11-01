@@ -9616,6 +9616,7 @@ msgstr ""
 
 #. he: ✗ --script: רשימת JSON של צעדים
 #: apps/dai-agent/dai_agent/cli.py:161
+#: apps/dai-agent/dai_agent/gui.py:593
 msgid "✗ --script: a JSON list of steps"
 msgstr ""
 
@@ -9679,7 +9680,7 @@ msgstr ""
 
 #. he: ✗ תפקיד לא מוכר; ראו: dai-agent roles
 #: apps/dai-agent/dai_agent/cli.py:148
-#: apps/dai-agent/dai_agent/gui.py:594
+#: apps/dai-agent/dai_agent/gui.py:604
 msgid "✗ unknown role; see: dai-agent roles"
 msgstr ""
 

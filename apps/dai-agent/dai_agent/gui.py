@@ -563,7 +563,7 @@ def _spawn(argv: list[str], stdin_text: str | None = None) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """dai-agent window ["goal"] [--role ROLE] [--lang LANG] [--speak]"""
+    """dai-agent window ["goal"] [--role ROLE] [--lang LANG] [--speak] [--script FILE]"""
     argv = list(sys.argv if argv is None else argv)
     args = argv[1:]
     if "--version" in args:
@@ -571,17 +571,27 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     lang = ui_lang()
     role = "all"
+    script = None
     words = []
     skip = False
     for i, a in enumerate(args):
         if skip:
             skip = False
             continue
-        if a in ("--role", "--lang") and i + 1 < len(args):
+        if a in ("--role", "--lang", "--script") and i + 1 < len(args):
             if a == "--role":
                 role = args[i + 1]
-            else:
+            elif a == "--lang":
                 lang = args[i + 1]
+            else:                                   # the steps without the model (demos, CI): the same JSON as the CLI
+                try:
+                    script = json.loads(open(args[i + 1], encoding="utf-8").read())
+                except (OSError, ValueError) as exc:
+                    print(f"✗ --script: {exc}", file=sys.stderr)
+                    return 2
+                if not isinstance(script, list) or not all(isinstance(step, dict) for step in script):
+                    print(pick(lang, "✗ --script: a JSON list of steps", "✗ --script: רשימת JSON של צעדים"), file=sys.stderr)
+                    return 2
             skip = True
             continue
         if a == "--speak":
@@ -610,7 +620,7 @@ def main(argv: list[str] | None = None) -> int:
         provider = where("general")
     except Exception:  # noqa: BLE001 - no dai_ai: local
         pass
-    window = AgentWindow(lang, services, goal=" ".join(words).strip(), role=role, provider=provider, speak="--speak" in args)
+    window = AgentWindow(lang, services, goal=" ".join(words).strip(), role=role, provider=provider, speak="--speak" in args, script=script)
     window.show()
     if window.goal.text().strip():
         window.start()
