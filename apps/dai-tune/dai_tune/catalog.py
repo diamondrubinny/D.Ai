@@ -2267,6 +2267,86 @@ register(ActionSpec(
 ))
 
 # --------------------------------------------------------------------------
+# Ruby, only these sites (docs/EDU.md §2.3 stage 3): Firefox's WebsiteFilter policy in Ruby's own policies.json,
+# everything blocked but the listed domains; undo restores the file. "Requires a check against Mozilla's policy
+# templates" for the exact match syntax; the form used here is the documented one (Block: <all_urls>, Exceptions).
+# --------------------------------------------------------------------------
+
+RUBY_POLICIES = "/etc/firefox/policies/policies.json"
+SITE_RE = re.compile(r"^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$")
+SITES_MAX = 50
+
+
+def _sites_validate(params: Params, ctx: Context) -> Params:
+    _only_keys(params, {"sites"})
+    sites = params.get("sites")
+    if sites == [] or sites is None:
+        return {"sites": []}
+    if not isinstance(sites, list) or len(sites) > SITES_MAX:
+        raise ValidationError(f"sites: a list of up to {SITES_MAX} domains, or empty to allow every site")
+    clean = []
+    for site in sites:
+        if not isinstance(site, str):
+            raise ValidationError("sites: domains only")
+        site = site.strip().lower().removeprefix("https://").removeprefix("http://").rstrip("/")
+        if not SITE_RE.match(site):
+            raise ValidationError(f"sites: {site!r} is not a domain (example.org, moodle.school.ac.il)")
+        if site not in clean:
+            clean.append(site)
+    return {"sites": clean}
+
+
+def _ruby_policies(ctx: Context) -> dict:
+    try:
+        data = json.loads(read_text(ctx.path(RUBY_POLICIES), "{}"))
+    except json.JSONDecodeError:
+        data = {}
+    if not isinstance(data, dict) or not isinstance(data.get("policies"), dict):
+        data = {"policies": {}}
+    return data
+
+
+def _sites_apply(params: Params, ctx: Context) -> None:
+    data = _ruby_policies(ctx)
+    if params["sites"]:
+        exceptions = []
+        for site in params["sites"]:
+            exceptions += [f"https://{site}/*", f"https://*.{site}/*", f"http://{site}/*", f"http://*.{site}/*"]
+        data["policies"]["WebsiteFilter"] = {"Block": ["<all_urls>"], "Exceptions": exceptions}
+    else:
+        data["policies"].pop("WebsiteFilter", None)
+    write_file(ctx.path(RUBY_POLICIES), json.dumps(data, indent=2) + "\n", mode=0o644)
+
+
+def ruby_sites(ctx: Context) -> list[str]:
+    """The domains Ruby is limited to now, [] when every site is allowed (dai-tune status)."""
+    block = _ruby_policies(ctx)["policies"].get("WebsiteFilter", {})
+    if not isinstance(block, dict) or "<all_urls>" not in (block.get("Block") or []):
+        return []
+    found = []
+    for pattern in block.get("Exceptions") or []:
+        m = re.match(r"^https://([a-z0-9.-]+)/\*$", str(pattern))
+        if m and m.group(1) not in found:
+            found.append(m.group(1))
+    return found
+
+
+register(ActionSpec(
+    id="ruby.sites_only",
+    scope="system",
+    validate=_sites_validate,
+    apply=_sites_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "hardens" if p["sites"] else "neutral",
+    summary=lambda p, lang: (_t(lang, "Ruby opens only: {sites}", "Ruby פותח רק: {sites}", sites=", ".join(p["sites"])) if p["sites"]
+                             else _t(lang, "Ruby opens every site again", "Ruby פותח שוב כל אתר")),
+    files=lambda p, c: [c.path(RUBY_POLICIES)],
+    note=lambda p, lang: _t(lang, "Firefox's own WebsiteFilter policy, in Ruby's policies.json; open windows see it after a restart of Ruby. Other browsers are not covered.",
+                            "מדיניות WebsiteFilter של Firefox עצמו, בקובץ policies.json של Ruby; חלונות פתוחים רואים אותה אחרי הפעלה מחדש של Ruby. דפדפנים אחרים לא מכוסים.") if p["sites"] else "",
+))
+
+
+# --------------------------------------------------------------------------
 # D.Ai Agents (docs/AGENTS.md §6ב): "agent: GOAL" runs Diamond's agent with the closed toolbox. User scope, so a
 # Diamond's Way timer may carry it ("every day at 8 agent secretary: summarize my mail"); the agent then approves
 # by itself only steps that keep or harden security (--yes), and tells the answer in a notification.

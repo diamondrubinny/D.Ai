@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
+import io
 import json
 import os
 import stat
 import subprocess
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -200,6 +202,47 @@ class PlannerTests(TuneTestCase):
                 self.assertIn(("diamond.pause", {"enabled": True}), actions)
                 self.assertEqual({s.scope for s in plan.steps}, {"system", "user"})
                 self.assertFalse(plan.weakens)
+
+    def test_ruby_only_these_sites_is_firefoxs_website_filter_and_undo_restores(self):
+        """docs/EDU.md §2.3 stage 3: one sentence, the list never split; WebsiteFilter in Ruby's policies.json."""
+        self.assertEqual(parser.parse("only these sites: moodle.org, Wikipedia.org https://school.ac.il/").requests[0].params,
+                         {"sites": ["moodle.org", "Wikipedia.org", "https://school.ac.il/"]})
+        self.assertEqual(parser.parse("רק האתרים: moodle.org wikipedia.org").requests[0].action, "ruby.sites_only")
+        self.assertEqual(parser.parse("all sites").requests[0].params, {"sites": []})
+        self.assertEqual(parser.parse("כל האתרים").requests[0].params, {"sites": []})
+        spec = catalog.CATALOG["ruby.sites_only"]
+        self.assertEqual(spec.validate({"sites": ["moodle.org", "Wikipedia.org", "https://school.ac.il/", "moodle.org"]}, self.ctx),
+                         {"sites": ["moodle.org", "wikipedia.org", "school.ac.il"]})
+        for bad in ({"sites": ["not a domain"]}, {"sites": ["evil.com/../x"]}, {"sites": "moodle.org"}, {"sites": ["x"] * 51}):
+            with self.subTest(bad=bad), self.assertRaises(ValidationError):
+                spec.validate(bad, self.ctx)
+        policies = self.root / "etc/firefox/policies/policies.json"
+        policies.parent.mkdir(parents=True)
+        policies.write_text(json.dumps({"policies": {"DisableTelemetry": True}}))
+        journal = executor.Journal.for_system(self.ctx)
+
+        def apply(text):
+            plan = self.plan(text)
+            self.assertEqual([s.scope for s in plan.steps], ["system"])
+            return executor.apply_steps(plan.steps, self.ctx, journal, actor="1000", scope="system")
+        apply("only these sites: moodle.org wikipedia.org")
+        data = json.loads(policies.read_text())
+        self.assertTrue(data["policies"]["DisableTelemetry"])                            # Ruby's own policies kept
+        self.assertEqual(data["policies"]["WebsiteFilter"]["Block"], ["<all_urls>"])
+        self.assertIn("https://*.moodle.org/*", data["policies"]["WebsiteFilter"]["Exceptions"])
+        self.assertEqual(catalog.ruby_sites(self.ctx), ["moodle.org", "wikipedia.org"])
+        apply("all sites")
+        self.assertNotIn("WebsiteFilter", json.loads(policies.read_text())["policies"])
+        executor.undo_entry(journal.find("last"), self.ctx, journal)                     # back to the filtered file
+        self.assertEqual(catalog.ruby_sites(self.ctx), ["moodle.org", "wikipedia.org"])
+        executor.undo_entry(journal.find("last"), self.ctx, journal)                     # back to Ruby's own file
+        self.assertEqual(json.loads(policies.read_text()), {"policies": {"DisableTelemetry": True}})
+        out = io.StringIO()
+        from dai_tune.cli import cmd_status
+        apply("only these sites: moodle.org")
+        with redirect_stdout(out):
+            cmd_status(self.ctx)
+        self.assertIn("Ruby opens only: moodle.org", out.getvalue())
 
     def test_pause_diamond_stops_the_session_units_and_undo_starts_them(self):
         """docs/EDU.md §2.3 stage 2: the flag the client reads plus the daid units of this session."""

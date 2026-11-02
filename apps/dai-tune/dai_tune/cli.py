@@ -283,6 +283,9 @@ def cmd_status(ctx: Context) -> int:
         print(f"  {mark} {title(check, lang)}{detail}")
         if not check.ok and check.fix:
             print(f'      → dai-tune "{check.fix}"')
+    from .catalog import ruby_sites
+    if sites := ruby_sites(ctx):          # docs/EDU.md §2.3 stage 3: an exam's site list is easy to forget
+        print(_l(lang, "Ruby opens only: {sites}  (\"all sites\" lifts it)", "Ruby פותח רק: {sites}  (\"כל האתרים\" מסיר)", sites=", ".join(sites)))
     return 0
 
 

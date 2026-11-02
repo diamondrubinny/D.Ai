@@ -346,7 +346,7 @@ msgid "A new message from {name}"
 msgstr ""
 
 #. he: הודעה וצליל, במחשב הזה. הרשימה: dai-remind list
-#: apps/dai-tune/dai_tune/catalog.py:2539
+#: apps/dai-tune/dai_tune/catalog.py:2619
 msgid "A notification and a sound, on this computer. The list: dai-remind list"
 msgstr ""
 
@@ -524,7 +524,7 @@ msgid "Advanced settings"
 msgstr ""
 
 #. he: סוכן ({role}): {goal}
-#: apps/dai-tune/dai_tune/catalog.py:2370
+#: apps/dai-tune/dai_tune/catalog.py:2450
 #, python-brace-format
 msgid "Agent ({role}): {goal}"
 msgstr ""
@@ -1685,7 +1685,7 @@ msgid "D.Ai Tune — change plan"
 msgstr ""
 
 #. he: D.Ai Tune — מתאימים את המערכת פשוט ע"י כתיבה.
-#: apps/dai-tune/dai_tune/cli.py:314
+#: apps/dai-tune/dai_tune/cli.py:317
 msgid "D.Ai Tune — configure the system by writing what you need."
 msgstr ""
 
@@ -1990,7 +1990,7 @@ msgid "Diamond paused: no answers until it is resumed"
 msgstr ""
 
 #. he: Diamond מתכנן עם ארגז הכלים הסגור; בלי נוכחותכם הוא מחיל רק צעדים ששומרים או מחזקים אבטחה, ומציג את התשובה כהודעה (dai-agent history).
-#: apps/dai-tune/dai_tune/catalog.py:2371
+#: apps/dai-tune/dai_tune/catalog.py:2451
 msgid "Diamond plans with the closed toolbox; without you present it applies only steps that keep or harden security, and shows the answer as a notification (dai-agent history)."
 msgstr ""
 
@@ -2000,23 +2000,23 @@ msgid "Diamond proposed no change."
 msgstr ""
 
 #. he: Diamond מקריא במהירות הרגילה
-#: apps/dai-tune/dai_tune/catalog.py:2601
+#: apps/dai-tune/dai_tune/catalog.py:2681
 msgid "Diamond reads aloud at the normal speed"
 msgstr ""
 
 #. he: Diamond מקריא ב־{rate} מילים לדקה
-#: apps/dai-tune/dai_tune/catalog.py:2602
+#: apps/dai-tune/dai_tune/catalog.py:2682
 #, python-brace-format
 msgid "Diamond reads aloud at {rate} words per minute"
 msgstr ""
 
 #. he: Diamond מקריא מהר יותר
-#: apps/dai-tune/dai_tune/catalog.py:2597
+#: apps/dai-tune/dai_tune/catalog.py:2677
 msgid "Diamond reads aloud faster"
 msgstr ""
 
 #. he: Diamond מקריא לאט יותר
-#: apps/dai-tune/dai_tune/catalog.py:2599
+#: apps/dai-tune/dai_tune/catalog.py:2679
 msgid "Diamond reads aloud slower"
 msgstr ""
 
@@ -2490,17 +2490,17 @@ msgid "Every system change can be undone: dai-tune undo"
 msgstr ""
 
 #. he: כל המשתמשים: סוכני D.Ai מותרים שוב, כל התפקידים
-#: apps/dai-tune/dai_tune/catalog.py:2345
+#: apps/dai-tune/dai_tune/catalog.py:2425
 msgid "Every user: D.Ai Agents are allowed again, every role"
 msgstr ""
 
 #. he: כל המשתמשים: סוכני D.Ai כבויים
-#: apps/dai-tune/dai_tune/catalog.py:2343
+#: apps/dai-tune/dai_tune/catalog.py:2423
 msgid "Every user: D.Ai Agents are off"
 msgstr ""
 
 #. he: כל המשתמשים: סוכני D.Ai רק בתפקידים {roles}
-#: apps/dai-tune/dai_tune/catalog.py:2346
+#: apps/dai-tune/dai_tune/catalog.py:2426
 #, python-brace-format
 msgid "Every user: D.Ai Agents only as {roles}"
 msgstr ""
@@ -2553,7 +2553,7 @@ msgstr ""
 
 #. he: דוגמאות:
 #: apps/dai-forge/dai_forge/cli.py:536
-#: apps/dai-tune/dai_tune/cli.py:316
+#: apps/dai-tune/dai_tune/cli.py:319
 msgid "Examples:"
 msgstr ""
 
@@ -2593,7 +2593,7 @@ msgid "File"
 msgstr ""
 
 #. he: קובץ {path} בבית שלך ({size} תווים)
-#: apps/dai-tune/dai_tune/catalog.py:2839
+#: apps/dai-tune/dai_tune/catalog.py:2919
 #, python-brace-format
 msgid "File {path} in your home ({size} characters)"
 msgstr ""
@@ -2653,6 +2653,11 @@ msgstr ""
 #. he: הסתיים.
 #: apps/dai-agent/dai_agent/cli.py:67
 msgid "Finished."
+msgstr ""
+
+#. he: מדיניות WebsiteFilter של Firefox עצמו, בקובץ policies.json של Ruby; חלונות פתוחים רואים אותה אחרי הפעלה מחדש של Ruby. דפדפנים אחרים לא מכוסים.
+#: apps/dai-tune/dai_tune/catalog.py:2344
+msgid "Firefox's own WebsiteFilter policy, in Ruby's policies.json; open windows see it after a restart of Ruby. Other browsers are not covered."
 msgstr ""
 
 #. he: ‏Firefox: סימניות → ניהול סימניות → ייבוא וגיבוי → ייבוא סימניות מ־HTML.
@@ -2780,7 +2785,7 @@ msgid "Focus: {n} minutes"
 msgstr ""
 
 #. he: תיקייה {path} בבית שלך
-#: apps/dai-tune/dai_tune/catalog.py:2838
+#: apps/dai-tune/dai_tune/catalog.py:2918
 #, python-brace-format
 msgid "Folder {path} in your home"
 msgstr ""
@@ -3163,7 +3168,7 @@ msgid "Insert pages from another PDF"
 msgstr ""
 
 #. he: בתוך "כל יום ב־9 …" זה הופך לתזכורת חוזרת (דרך היהלום, dai-way when).
-#: apps/dai-tune/dai_tune/catalog.py:2524
+#: apps/dai-tune/dai_tune/catalog.py:2604
 msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
 msgstr ""
 
@@ -4007,7 +4012,7 @@ msgid "No notification service."
 msgstr ""
 
 #. he: אין מדיניות ארגונית ({POLICY_DIR}).
-#: apps/dai-tune/dai_tune/cli.py:299
+#: apps/dai-tune/dai_tune/cli.py:302
 #, python-brace-format
 msgid "No organization policies ({POLICY_DIR})."
 msgstr ""
@@ -5191,13 +5196,13 @@ msgid "Remind me in 20 minutes to take a break"
 msgstr ""
 
 #. he: תזכורת ב־{at}: {text}
-#: apps/dai-tune/dai_tune/catalog.py:2498
+#: apps/dai-tune/dai_tune/catalog.py:2578
 #, python-brace-format
 msgid "Reminder at {at}: {text}"
 msgstr ""
 
 #. he: תזכורת עכשיו: {text}
-#: apps/dai-tune/dai_tune/catalog.py:2523
+#: apps/dai-tune/dai_tune/catalog.py:2603
 #, python-brace-format
 msgid "Reminder now: {text}"
 msgstr ""
@@ -5234,7 +5239,7 @@ msgid "Remove the metadata (author, program, dates) before sharing"
 msgstr ""
 
 #. he: הסרת הטיימר {name} (דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2901
+#: apps/dai-tune/dai_tune/catalog.py:2981
 #, python-brace-format
 msgid "Remove the timer {name} (Diamond's Way)"
 msgstr ""
@@ -5338,6 +5343,23 @@ msgstr ""
 msgid "Rotation lock: the screen stays as it is."
 msgstr ""
 
+#. he: Ruby פותח שוב כל אתר
+#: apps/dai-tune/dai_tune/catalog.py:2342
+msgid "Ruby opens every site again"
+msgstr ""
+
+#. he: Ruby פותח רק: {sites}
+#: apps/dai-tune/dai_tune/catalog.py:2341
+#, python-brace-format
+msgid "Ruby opens only: {sites}"
+msgstr ""
+
+#. he: Ruby פותח רק: {sites}  ("כל האתרים" מסיר)
+#: apps/dai-tune/dai_tune/cli.py:288
+#, python-brace-format
+msgid "Ruby opens only: {sites}  (\"all sites\" lifts it)"
+msgstr ""
+
 #. he: Ruby פותח את {url} בטלוויזיה (pid {pid}).
 #: apps/dai-tv/dai_tv/cli.py:246
 #, python-brace-format
@@ -5399,7 +5421,7 @@ msgid "Run ▶"
 msgstr ""
 
 #. he: רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo
-#: apps/dai-tune/dai_tune/catalog.py:2890
+#: apps/dai-tune/dai_tune/catalog.py:2970
 msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
 msgstr ""
 
@@ -6242,7 +6264,7 @@ msgid "Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak)
 msgstr ""
 
 #. he: Super+Shift+S מקריא את הטקסט המסומן; ההקראה הבאה במהירות החדשה.
-#: apps/dai-tune/dai_tune/catalog.py:2614
+#: apps/dai-tune/dai_tune/catalog.py:2694
 msgid "Super+Shift+S reads the selected text; the next reading uses the new speed."
 msgstr ""
 
@@ -8568,7 +8590,7 @@ msgid "saturday|sat\\b"
 msgstr ""
 
 #. he: ציון אבטחה והמלצות
-#: apps/dai-tune/dai_tune/cli.py:320
+#: apps/dai-tune/dai_tune/cli.py:323
 msgid "security score and fixes"
 msgstr ""
 
@@ -8719,7 +8741,7 @@ msgid "unchecked"
 msgstr ""
 
 #. he: ביטול השינוי האחרון
-#: apps/dai-tune/dai_tune/cli.py:322
+#: apps/dai-tune/dai_tune/cli.py:325
 msgid "undo the last change"
 msgstr ""
 
@@ -8796,7 +8818,7 @@ msgid "wednesday|wed\\b"
 msgstr ""
 
 #. he: מה שונה
-#: apps/dai-tune/dai_tune/cli.py:321
+#: apps/dai-tune/dai_tune/cli.py:324
 msgid "what was changed"
 msgstr ""
 
@@ -9474,7 +9496,7 @@ msgid "{value}% CPU"
 msgstr ""
 
 #. he: {when}: {sentence} (טיימר, דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2876
+#: apps/dai-tune/dai_tune/catalog.py:2956
 #, python-brace-format
 msgid "{when}: {sentence} (a timer, Diamond's Way)"
 msgstr ""
@@ -9498,7 +9520,7 @@ msgstr ""
 
 #. he: ⏰ תזכורת
 #: apps/dai-remind/dai_remind/engine.py:121
-#: apps/dai-tune/dai_tune/catalog.py:2511
+#: apps/dai-tune/dai_tune/catalog.py:2591
 msgid "⏰ Reminder"
 msgstr ""
 

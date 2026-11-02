@@ -464,6 +464,11 @@ def main() -> int:
          "systemctl --user is-active dai-daid.socket | sed 's/^/SOCKET=/'; dai-ai status 2>&1 | grep -ci paused | sed 's/^/SAYS_PAUSED=/'; "
          "dai-tune undo >/dev/null 2>&1; echo UNDO_RC=$?; sleep 2; systemctl --user is-active dai-daid.socket | sed 's/^/AFTER=/'; dai-ai status | grep -c 'model:' | sed 's/^/STATUS_OK=/'", True,
          lambda o: "PAUSE_RC=0" in o and "SOCKET=inactive" in o and "SAYS_PAUSED=1" in o and "UNDO_RC=0" in o and "AFTER=active" in o and "STATUS_OK=1" in o, 120),
+        # Ruby, only these sites (docs/EDU.md §2.3 stage 3): Firefox's WebsiteFilter in Ruby's policies.json; undo restores.
+        ("ruby: only these sites, and back", "DAI_TUNE_ELEVATE=sudo dai-tune --yes 'only these sites: moodle.org wikipedia.org' </dev/null >/dev/null; echo SITES_RC=$?; "
+         "python3 -c \"import json; p=json.load(open('/etc/firefox/policies/policies.json'))['policies']; print('FILTER=' + str('<all_urls>' in p['WebsiteFilter']['Block']), 'KEPT=' + str(p.get('DisableTelemetry')), 'EXC=' + str(len(p['WebsiteFilter']['Exceptions'])))\"; "
+         "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; echo UNDO_SITES_RC=$?; grep -c WebsiteFilter /etc/firefox/policies/policies.json | sed 's/^/AFTER_SITES=/'", True,
+         lambda o: "SITES_RC=0" in o and "FILTER=True" in o and "KEPT=True" in o and "EXC=8" in o and "UNDO_SITES_RC=0" in o and "AFTER_SITES=0" in o, 120),
         ("ai: install model (verified)", "dai-models install qwen2.5-0.5b 2>&1 | tail -n 2", True,
          lambda o: "installed and verified" in o, 600),
         ("ai: answer", "dai-ai 'What is 2+2? Reply with only the number.'", True, lambda o: "4" in o, 300),

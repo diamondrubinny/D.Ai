@@ -105,6 +105,7 @@ D.Ai Tune — תוכנית שינויים  #3f9a1c
 | `keyboard.layouts` | "מקלדת עברית אנגלית רוסית" | משתמש | ניטרלי |
 | `preset.public` | "מצב ציבורי" (Bluetooth כבוי, נעילה 3 דק', סגירת פורטים פתוחים לעולם) | שניהם | מחזק |
 | `preset.privacy` | "מצב פרטיות" (מצלמה ו־Bluetooth חסומים) | מערכת | מחזק |
+| `ruby.sites_only` | "only these sites: moodle.org wikipedia.org" / "רק האתרים: …", "all sites" / "כל האתרים" (docs/EDU.md §2.3 שלב 3: מדיניות WebsiteFilter של Firefox בקובץ policies.json של Ruby; undo מחזיר את הקובץ) | מערכת | מחזק / ניטרלי |
 | `diamond.pause` | "pause diamond" / "השהה את Diamond", "resume diamond" / "הפעל את Diamond" (docs/EDU.md §2.3: דגל ב־`~/.config/dai/ai.json` שהלקוח קורא, ויחידות daid של הסשן נעצרות; undo מחזיר) | משתמש | ניטרלי |
 | `preset.exam` | "exam mode" / "מצב בחינה" (דיסק און קי ו־Bluetooth חסומים, בלי ספקי AI חיצוניים, סוכנים כבויים, Diamond מושהה, נעילה אחרי 5 דק'; רשומת יומן אחת, `dai-tune undo` מסיים; docs/EDU.md §2.3) | שניהם | מחזק |
 | `system.clean` | "פנה מקום בדיסק" (‏`apt-get clean` ויומנים מעבר ל־200MB. אי אפשר לבטל, אבל נמחקים רק קבצי cache) | מערכת | ניטרלי |

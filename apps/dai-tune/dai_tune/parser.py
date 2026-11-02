@@ -636,6 +636,25 @@ def agent_policy_request(text: str) -> Request | None:
     return None
 
 
+SITES_ONLY = re.compile(r"^(?:(?:ruby|browser|the browser|הדפדפן|ruby)\s+)?(?:only\s+(?:these\s+)?sites?|only\s+(?:the\s+)?websites?|allowed\s+sites?|sites?\s+only|רק\s+(?:ה)?אתרים|אתרים\s+מותרים)\s*:?\s*(?P<sites>.+)$", re.IGNORECASE)
+SITES_ALL = re.compile(r"^(?:(?:ruby|browser|the browser|הדפדפן)\s+)?(?:all\s+sites|every\s+site|allow\s+(?:all|every)\s+sites?|כל\s+האתרים|לאפשר\s+(?:את\s+)?כל\s+האתרים|אפשר\s+(?:את\s+)?כל\s+האתרים)\s*\.?$", re.IGNORECASE)
+
+
+def sites_request(text: str) -> Request | None:
+    """"only these sites: moodle.org wikipedia.org" / "רק האתרים: …" → ruby.sites_only; "all sites" → every site
+    again (docs/EDU.md §2.3 stage 3). One sentence: the list is never split into clauses."""
+    t = text.strip()
+    if SITES_ALL.match(t):
+        return Request("ruby.sites_only", {"sites": []}, t)
+    m = SITES_ONLY.match(t)
+    if not m:
+        return None
+    sites = [w.strip(" ,;") for w in re.split(r"[\s,;]+", m.group("sites")) if w.strip(" ,;")]
+    if not sites or len(sites) > 50:
+        return None
+    return Request("ruby.sites_only", {"sites": sites}, t)
+
+
 def agent_request(text: str) -> Request | None:
     """"agent: summarize my mail" / "סוכן secretary: …" → one agent.run (docs/AGENTS.md §6ב). The goal is one
     text, never split into clauses."""
@@ -701,6 +720,9 @@ def parse(text: str) -> ParseResult:
         return result
     if (note := note_request(text)) is not None:
         result.requests.append(note)
+        return result
+    if (sites := sites_request(text)) is not None:
+        result.requests.append(sites)
         return result
     if (policy := agent_policy_request(text)) is not None:
         result.requests.append(policy)
