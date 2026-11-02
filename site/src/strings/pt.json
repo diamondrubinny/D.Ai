@@ -71,6 +71,15 @@
         "alt": "A janela \"D.Ai Help & Repair\": \"Diga o que não está funcionando, ou escolha um problema que eu encontrei\", com dois problemas encontrados, um serviço que falhou e um app que travou, e um campo para descrever um problema."
       },
       {
+        "img": "agents",
+        "w": 1280,
+        "h": 800,
+        "kicker": "Agentes",
+        "title": "«agent: find the lease and read it to me»",
+        "text": "D.Ai Agents: o Diamond planeia passo a passo com uma caixa de ferramentas fechada (ficheiros, factos, correio, um olhar para o ecrã, definições, lembretes, notas, foco). Cada passo que altera algo mostra o seu plano num cartão e espera por «Permitir»; um botão desfaz uma execução inteira. Papéis, um microfone, agentes agendados, uma memória só do que aprovaste e uma política da organização para os papéis permitidos.",
+        "alt": "A janela do agente D.Ai: uma execução terminada, cada alteração aprovada no seu próprio cartão, um passo fora do papel recusado, e o botão «Desfazer todas as alterações»."
+      },
+      {
         "img": "forge-app",
         "w": 1280,
         "h": 800,
@@ -176,6 +185,10 @@
           [
             "D.Ai Forge",
             "instala programas a partir de um plano que você aprova e cria apps simples em uma sandbox."
+          ],
+          [
+            "D.Ai Agents",
+            "fazem coisas por ti com uma caixa de ferramentas fechada; cada alteração é um plano que aprovas num cartão e podes desfazer."
           ],
           [
             "Automações",

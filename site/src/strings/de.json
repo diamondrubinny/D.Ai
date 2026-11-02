@@ -71,6 +71,15 @@
         "alt": "Das Fenster „D.Ai Help & Repair“: „Sagen Sie mir, was nicht funktioniert, oder wählen Sie ein Problem, das ich bemerkt habe“, mit zwei gefundenen Problemen, einem ausgefallenen Dienst und einer abgestürzten App, und einem Feld zum Beschreiben eines Problems."
       },
       {
+        "img": "agents",
+        "w": 1280,
+        "h": 800,
+        "kicker": "Agenten",
+        "title": "„agent: find the lease and read it to me“",
+        "text": "D.Ai Agents: Diamond plant Schritt für Schritt mit einem geschlossenen Werkzeugkasten (Dateien, Fakten, Mail, ein Blick auf den Bildschirm, Einstellungen, Erinnerungen, Notizen, Fokus). Jeder Schritt, der etwas ändert, zeigt seinen Plan auf einer Karte und wartet auf Erlauben; ein Knopf macht einen ganzen Lauf rückgängig. Rollen, ein Mikrofon, geplante Agenten, ein Gedächtnis nur aus dem, was du erlaubt hast, und eine Organisationsrichtlinie für erlaubte Rollen.",
+        "alt": "Das D.Ai-Agent-Fenster: ein fertiger Lauf, jede Änderung auf ihrer eigenen Karte freigegeben, ein Schritt außerhalb der Rolle abgelehnt, und der Knopf „Alle Änderungen rückgängig“."
+      },
+      {
         "img": "forge-app",
         "w": 1280,
         "h": 800,
@@ -176,6 +185,10 @@
           [
             "D.Ai Forge",
             "installiert Software nach einem Plan, dem Sie zustimmen, und baut kleine Apps in einer Sandbox."
+          ],
+          [
+            "D.Ai Agents",
+            "erledigen Dinge für dich mit einem geschlossenen Werkzeugkasten; jede Änderung ist ein Plan, den du auf einer Karte freigibst und rückgängig machen kannst."
           ],
           [
             "Automatisierungen",

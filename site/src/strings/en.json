@@ -71,6 +71,15 @@
         "alt": "The \"D.Ai Help & Repair\" window: \"Tell me what is not working, or pick a problem I noticed\", with two problems found, a failed service and an app that crashed, and a field to describe a problem."
       },
       {
+        "img": "agents",
+        "w": 1280,
+        "h": 800,
+        "kicker": "Agents",
+        "title": "\"agent: find the lease and read it to me\"",
+        "text": "D.Ai Agents: Diamond plans step by step with a closed toolbox (files, facts, mail, a look at the screen, settings, reminders, notes, focus). Every step that changes something shows its plan on a card and waits for Allow; one button undoes a whole run. Roles, a microphone, scheduled agents, a memory only of what you approved, and an organization policy for which roles are allowed.",
+        "alt": "The D.Ai Agent window: a finished run, every change approved on its own card, a step outside the role refused, and the Undo all changes button."
+      },
+      {
         "img": "forge-app",
         "w": 1280,
         "h": 800,
@@ -176,6 +185,10 @@
           [
             "D.Ai Forge",
             "installs software from a plan you approve, and builds small apps in a sandbox."
+          ],
+          [
+            "D.Ai Agents",
+            "do things for you with a closed toolbox; every change is a plan you approve on a card and can undo."
           ],
           [
             "Automations",
