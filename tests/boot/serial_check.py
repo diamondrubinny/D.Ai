@@ -669,14 +669,15 @@ def main() -> int:
          "grep -c '^looked$' /tmp/look.out | sed 's/^/FINAL=/'; grep -c '^  ✗' /tmp/look.out | sed 's/^/TOOL_ERRORS=/'; "
          "ls /tmp/*.png 2>/dev/null | grep -c 'agent\\|look' | sed 's/^/SAVED_PICTURES=/'", True,
          lambda o: "LOOK_RC=0" in o and "→ look" in o and "TOOL_ERRORS=0" in o and "FINAL=1" in o and "SAVED_PICTURES=0" in o, 900),
-        # D.Ai Agents stage 8 (docs/AGENTS.md §6ז): open goes through Command's app index (the calculator appears),
-        # focus starts a dai-focus session (approved by --yes: user scope), and stop puts it back.
+        # D.Ai Agents stage 8 (docs/AGENTS.md §6ז): open goes through Command's app index (D.Ai Settings is on every
+        # desktop edition; the calculator is only on user, run 41390015934), focus starts a dai-focus session (approved
+        # by --yes: user scope), and stop puts it back.
         ("agent: open an app and start a focus session", WAYLAND_ENV +
-         "printf '[{\"tool\":\"open\",\"args\":{\"app\":\"calculator\"}},{\"tool\":\"focus\",\"args\":{\"minutes\":5}},{\"tool\":\"done\",\"args\":{},\"final\":\"opened\"}]' > /tmp/agent8.json; "
-         "dai-agent run 'open and focus' --script /tmp/agent8.json --yes --role secretary </dev/null; echo OPEN_RC=$?; sleep 4; "
-         "pgrep -c galculator | sed 's/^/CALC=/'; dai-focus status | head -n 1; dai-focus status --json | grep -c minutes | sed 's/^/FOCUS_ON=/'; "
-         "dai-focus stop >/dev/null 2>&1; echo STOP_RC=$?; pkill -x galculator; echo CLOSED", True,
-         lambda o: "OPEN_RC=0" in o and "⚠ open" in o and "Opened" in o and re.search(r"CALC=[1-9]", o) is not None
+         "printf '[{\"tool\":\"open\",\"args\":{\"app\":\"D.Ai Settings\"}},{\"tool\":\"focus\",\"args\":{\"minutes\":5}},{\"tool\":\"done\",\"args\":{},\"final\":\"opened\"}]' > /tmp/agent8.json; "
+         "dai-agent run 'open and focus' --script /tmp/agent8.json --yes --role secretary </dev/null; echo OPEN_RC=$?; sleep 6; "
+         "pgrep -fc 'dai_settings|dai-settings' | sed 's/^/OPENED=/'; dai-focus status | head -n 1; dai-focus status --json | grep -c minutes | sed 's/^/FOCUS_ON=/'; "
+         "dai-focus stop >/dev/null 2>&1; echo STOP_RC=$?; pkill -f 'dai_settings|dai-settings'; echo CLOSED", True,
+         lambda o: "OPEN_RC=0" in o and "⚠ open" in o and "Opened D.Ai Settings" in o and re.search(r"OPENED=[1-9]", o) is not None
          and "FOCUS_ON=1" in o and "STOP_RC=0" in o and "\n  ✗" not in o, 300),
         ("record: three seconds of the screen", WAYLAND_ENV + "dai-record --version; which wf-recorder | sed 's/^/RECORDER=/'; "
          "grep -c 'key=\"W-S-r\"' ~/.config/labwc/rc.xml | sed 's/^/KEY=/'; dai-record status; "
