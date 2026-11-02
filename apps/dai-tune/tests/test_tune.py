@@ -185,6 +185,21 @@ class PlannerTests(TuneTestCase):
         self.assertNotIn(("firewall.close_port", {"port": 22, "proto": "tcp"}), actions)
         self.assertIn(("device.block", {"kind": "bluetooth"}), actions)
 
+    def test_exam_preset_is_one_plan_the_undo_ends(self):
+        """docs/EDU.md §2.3: "exam mode" = USB storage and Bluetooth blocked, no external AI, agents off, lock in 5."""
+        for text in ("exam mode", "מצב בחינה", "זמן בחינה"):
+            with self.subTest(text):
+                plan = self.plan(text)
+                self.assertTrue(plan.ok, plan.errors)
+                actions = [(s.action, s.params) for s in plan.steps]
+                self.assertIn(("device.block", {"kind": "usb_storage"}), actions)
+                self.assertIn(("device.block", {"kind": "bluetooth"}), actions)
+                self.assertIn(("ai.providers_policy", {"allowed": False}), actions)
+                self.assertIn(("agent.policy", {"roles": "none"}), actions)
+                self.assertIn(("session.lock", {"minutes": 5}), actions)
+                self.assertEqual({s.scope for s in plan.steps}, {"system", "user"})
+                self.assertFalse(plan.weakens)
+
     def test_risk_scope_and_hash(self):
         plan = self.plan("open port 443 from anywhere and lock the screen after 5 minutes")
         self.assertEqual(plan.risk, "high")

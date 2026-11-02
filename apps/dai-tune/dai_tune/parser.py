@@ -159,6 +159,7 @@ UI_LANGUAGES = [
 
 PUBLIC = r"(?:public mode|public network|cafe mode|מצב ציבורי|רשת ציבורית|מצב בית קפה|מצב נסיעה)"
 PRIVACY = r"(?:privacy mode|private mode|מצב פרטיות|מצב פרטי)"
+EXAM = r"(?:exam mode|test mode|exam time|מצב בחינה|מצב מבחן|זמן בחינה)"
 
 CLEAN = (r"(?:free (?:up )?(?:disk )?space|clean (?:up )?(?:the )?(?:system|disk|computer)|clear (?:the )?caches?|"
          r"פנה מקום|תפנה מקום|לפנות מקום|פינוי מקום|נקה את (?:המערכת|הדיסק|המחשב)|תנקה את (?:המערכת|הדיסק|המחשב)|ניקוי (?:המערכת|הדיסק))")
@@ -283,6 +284,8 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("preset.public", {}, clause)]
     if _has(PRIVACY, c):
         return [Request("preset.privacy", {}, clause)]
+    if _has(EXAM, c):
+        return [Request("preset.exam", {}, clause)]
 
     if m := re.search(RESTART_SERVICE, c, re.IGNORECASE):
         return [Request("service.restart", {"unit": m.group(1)}, clause)]

@@ -416,6 +416,11 @@ def main() -> int:
          lambda o: "rc=1" in o),
         ("tune: open port (confirmed)", "echo yes | DAI_TUNE_ELEVATE=sudo dai-tune 'open port 8080' && sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["2"]),
+        # Exam mode (docs/EDU.md §2.3): one preset, five steps, nothing weakened; dry run only (the real thing would
+        # block USB and the agents for the checks that follow).
+        ("tune: exam mode is one plan of five steps", "dai-tune --dry-run 'exam mode' </dev/null | tee /tmp/exam.txt | grep -c '^  [0-9]\\. ' | sed 's/^/EXAM_STEPS=/'; "
+         "grep -ci 'agents are off\\|external AI\\|usb\\|bluetooth' /tmp/exam.txt | sed 's/^/EXAM_WORDS=/'; dai-tune --dry-run 'מצב בחינה' </dev/null >/dev/null; echo HE_RC=$?", True,
+         lambda o: "EXAM_STEPS=5" in o and re.search(r"EXAM_WORDS=[4-9]", o) is not None and "HE_RC=0" in o, 120),
         ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["0"]),
         # "firefox does not go online" (docs/BEYOND.md §12): the launcher override, and a connection that fails inside

@@ -16,7 +16,7 @@ from typing import Any
 from .catalog import CATALOG
 from .parser import EXAMPLES, Request, parse
 
-PRESETS = ("preset.public", "preset.privacy")
+PRESETS = ("preset.public", "preset.privacy", "preset.exam")
 MAX_REQUESTS = 10
 
 
