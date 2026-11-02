@@ -236,4 +236,4 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 
 ✅ שלב 9 (מטרות מוכנות) ירוק ב־CI (ריצה 41415669531: ‏147/147 ב־user/dev/edu, ‏137/137 ב־tv, ‏`SUGGEST=4`).
 
-🔨 שלב 10 (הדרך הישירה) נבנה; ממתין ל־CI.
+✅ שלב 10 (הדרך הישירה) ירוק ב־CI (ריצה 41432070433: ‏147/147 ב־user/dev/edu, ‏137/137 ב־tv; `DIRECT_NOTED=1`, ‏`planner: tune` ביומן).
