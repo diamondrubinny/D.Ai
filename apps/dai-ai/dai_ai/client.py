@@ -17,7 +17,19 @@ class AIUnavailable(RuntimeError):
     pass
 
 
+def paused() -> bool:
+    """D.Ai Tune's "pause diamond" (docs/EDU.md §2.3) sets "paused" in the AI config; the client says so instead
+    of a dead socket."""
+    from .models import config_file
+    try:
+        return bool(json.loads(config_file().read_text(encoding="utf-8")).get("paused"))
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def _request(payload: dict[str, Any], timeout: float = 600) -> Iterator[dict[str, Any]]:
+    if paused():
+        raise AIUnavailable("Diamond is paused (exam mode); \"resume diamond\" in D.Ai Tune brings it back")
     path = daid_socket()
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.settimeout(timeout)

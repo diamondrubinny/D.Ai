@@ -2032,6 +2032,56 @@ register(ActionSpec(
 ))
 
 
+DAID_UNITS = ("dai-daid.socket", "dai-daid.service")
+
+
+def _pause_apply(params: Params, ctx: Context) -> None:
+    """Pause Diamond (docs/EDU.md §2.3): the flag the client reads, and the daid units of this session stopped
+    (or started again). Nothing is uninstalled; undo puts the flag and the units back."""
+    path = ctx.user_path(AI_CONFIG)
+    try:
+        data = json.loads(read_text(path, "{}"))
+    except json.JSONDecodeError:
+        data = {}
+    data = data if isinstance(data, dict) else {}
+    if params["enabled"]:
+        data["paused"] = True
+    else:
+        data.pop("paused", None)
+    write_file(path, json.dumps(data, indent=2) + "\n", mode=0o600)
+    if params["enabled"]:
+        ctx.run(["systemctl", "--user", "stop", *DAID_UNITS], check=False)
+    else:
+        ctx.run(["systemctl", "--user", "start", DAID_UNITS[0]], check=False)
+
+
+def _pause_restore(params: Params, ctx: Context, entry: dict) -> None:
+    try:
+        paused = bool(json.loads(read_text(ctx.user_path(AI_CONFIG), "{}")).get("paused"))
+    except (json.JSONDecodeError, AttributeError):
+        paused = False
+    if paused:
+        ctx.run(["systemctl", "--user", "stop", *DAID_UNITS], check=False)
+    else:
+        ctx.run(["systemctl", "--user", "start", DAID_UNITS[0]], check=False)
+
+
+register(ActionSpec(
+    id="diamond.pause",
+    scope="user",
+    validate=_saver_validate,
+    apply=_pause_apply,
+    risk=lambda p: "low",
+    effect=lambda p: "neutral",
+    summary=lambda p, lang: (_t(lang, "Diamond paused: no answers until it is resumed", "Diamond מושהה: בלי תשובות עד שיחזור")
+                             if p["enabled"] else _t(lang, "Diamond answers again", "Diamond עונה שוב")),
+    files=lambda p, c: [c.user_path(AI_CONFIG)],
+    restore=_pause_restore,
+    note=lambda p, lang: _t(lang, "The local AI service of your session stops; models and settings stay. \"resume diamond\" or dai-tune undo brings it back.",
+                            "שירות ה־AI המקומי של הסשן נעצר; המודלים וההגדרות נשארים. \"resume diamond\" או dai-tune undo מחזירים.") if p["enabled"] else "",
+))
+
+
 # --------------------------------------------------------------------------
 # Which AI answers: the local Diamond, or a provider the person set up and agreed
 # to (docs/PROVIDERS.md); the consent itself is only ever typed at dai-models.

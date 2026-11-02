@@ -80,13 +80,13 @@ def _expand(request: Request, ctx: Context) -> list[Request]:
     if request.action == "preset.privacy":
         return [Request("device.block", {"kind": "camera"}, src), Request("device.block", {"kind": "bluetooth"}, src)]
     if request.action == "preset.exam":
-        # docs/EDU.md §2.3: one journal entry, so "dai-tune undo" ends the exam. The local Diamond stays (its units
-        # are protected; a pause action is stage 2).
+        # docs/EDU.md §2.3: one journal entry, so "dai-tune undo" ends the exam.
         return [
             Request("device.block", {"kind": "usb_storage"}, src),
             Request("device.block", {"kind": "bluetooth"}, src),
             Request("ai.providers_policy", {"allowed": False}, src),
             Request("agent.policy", {"roles": "none"}, src),
+            Request("diamond.pause", {"enabled": True}, src),
             Request("session.lock", {"minutes": 5}, src),
         ]
     if request.action == "tv.remote_control":

@@ -160,6 +160,8 @@ UI_LANGUAGES = [
 PUBLIC = r"(?:public mode|public network|cafe mode|מצב ציבורי|רשת ציבורית|מצב בית קפה|מצב נסיעה)"
 PRIVACY = r"(?:privacy mode|private mode|מצב פרטיות|מצב פרטי)"
 EXAM = r"(?:exam mode|test mode|exam time|מצב בחינה|מצב מבחן|זמן בחינה)"
+DIAMOND_PAUSE = r"(?:\b(?:pause|stop|turn off|switch off|disable)\s+diamond\b|\bdiamond\s+(?:off|paused)\b|(?:השהה|להשהות|כבה|לכבות|עצור|לעצור)\s+את\s+diamond|diamond\s+(?:כבוי|מושהה))"
+DIAMOND_RESUME = r"(?:\b(?:resume|turn on|switch on|enable|start|unpause)\s+diamond\b|\bdiamond\s+(?:on|back)\b|(?:הפעל|להפעיל|החזר|להחזיר)\s+את\s+diamond|diamond\s+(?:פועל|חוזר))"
 
 CLEAN = (r"(?:free (?:up )?(?:disk )?space|clean (?:up )?(?:the )?(?:system|disk|computer)|clear (?:the )?caches?|"
          r"פנה מקום|תפנה מקום|לפנות מקום|פינוי מקום|נקה את (?:המערכת|הדיסק|המחשב)|תנקה את (?:המערכת|הדיסק|המחשב)|ניקוי (?:המערכת|הדיסק))")
@@ -286,6 +288,10 @@ def parse_clause(clause: str) -> list[Request]:
         return [Request("preset.privacy", {}, clause)]
     if _has(EXAM, c):
         return [Request("preset.exam", {}, clause)]
+    if _has(DIAMOND_PAUSE, c):
+        return [Request("diamond.pause", {"enabled": True}, clause)]
+    if _has(DIAMOND_RESUME, c):
+        return [Request("diamond.pause", {"enabled": False}, clause)]
 
     if m := re.search(RESTART_SERVICE, c, re.IGNORECASE):
         return [Request("service.restart", {"unit": m.group(1)}, clause)]

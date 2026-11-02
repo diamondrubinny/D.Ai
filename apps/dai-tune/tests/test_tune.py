@@ -197,8 +197,28 @@ class PlannerTests(TuneTestCase):
                 self.assertIn(("ai.providers_policy", {"allowed": False}), actions)
                 self.assertIn(("agent.policy", {"roles": "none"}), actions)
                 self.assertIn(("session.lock", {"minutes": 5}), actions)
+                self.assertIn(("diamond.pause", {"enabled": True}), actions)
                 self.assertEqual({s.scope for s in plan.steps}, {"system", "user"})
                 self.assertFalse(plan.weakens)
+
+    def test_pause_diamond_stops_the_session_units_and_undo_starts_them(self):
+        """docs/EDU.md §2.3 stage 2: the flag the client reads plus the daid units of this session."""
+        self.assertEqual(parser.parse("pause diamond").requests[0].params, {"enabled": True})
+        self.assertEqual(parser.parse("השהה את Diamond").requests[0].action, "diamond.pause")
+        self.assertEqual(parser.parse("resume diamond").requests[0].params, {"enabled": False})
+        self.assertEqual(parser.parse("diamond answers locally").requests[0].action, "diamond.provider")   # not a pause
+        from dai_tune.cli import apply_plan
+        applied = apply_plan(self.plan("pause diamond"), self.ctx, "test")
+        self.assertTrue(applied.ok, applied.error)
+        config = json.loads((self.home / ".config/dai/ai.json").read_text())
+        self.assertTrue(config["paused"])
+        self.assertIn(["systemctl", "--user", "stop", "dai-daid.socket", "dai-daid.service"], self.runner.calls)
+        self.assertEqual(executor.Journal.for_user(self.ctx).entries()[-1]["status"], "applied")
+        self.assertEqual(subprocess.run(["true"]).returncode, 0)
+        from dai_tune.cli import cmd_undo
+        self.assertEqual(cmd_undo("last", self.ctx), 0)
+        self.assertNotIn("paused", json.loads((self.home / ".config/dai/ai.json").read_text()) if (self.home / ".config/dai/ai.json").exists() else {})
+        self.assertEqual(self.runner.calls[-1], ["systemctl", "--user", "start", "dai-daid.socket"])
 
     def test_risk_scope_and_hash(self):
         plan = self.plan("open port 443 from anywhere and lock the screen after 5 minutes")

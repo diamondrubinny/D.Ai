@@ -172,7 +172,7 @@ msgid " and a new disk encryption password"
 msgstr ""
 
 #. he: # פתקים  נכתב על ידי D.Ai: "רשום: …" בשורת הפקודה. שורה לכל פתק, האחרון בסוף.  
-#: apps/dai-tune/dai_tune/catalog.py:2198
+#: apps/dai-tune/dai_tune/catalog.py:2248
 msgid "# Notes\n\nWritten by D.Ai: \"note: …\" in the command bar. One line each, newest last.\n\n"
 msgstr ""
 
@@ -346,7 +346,7 @@ msgid "A new message from {name}"
 msgstr ""
 
 #. he: הודעה וצליל, במחשב הזה. הרשימה: dai-remind list
-#: apps/dai-tune/dai_tune/catalog.py:2489
+#: apps/dai-tune/dai_tune/catalog.py:2539
 msgid "A notification and a sound, on this computer. The list: dai-remind list"
 msgstr ""
 
@@ -524,7 +524,7 @@ msgid "Advanced settings"
 msgstr ""
 
 #. he: סוכן ({role}): {goal}
-#: apps/dai-tune/dai_tune/catalog.py:2320
+#: apps/dai-tune/dai_tune/catalog.py:2370
 #, python-brace-format
 msgid "Agent ({role}): {goal}"
 msgstr ""
@@ -621,7 +621,7 @@ msgid "Appearance and language"
 msgstr ""
 
 #. he: מצטרף ל־~/Documents/Notes/notes.md; "הפתקים שלי" פותח אותו, D.Ai Find מוצא אותו.
-#: apps/dai-tune/dai_tune/catalog.py:2215
+#: apps/dai-tune/dai_tune/catalog.py:2265
 msgid "Appended to ~/Documents/Notes/notes.md; \"my notes\" opens it, D.Ai Find finds it."
 msgstr ""
 
@@ -1531,7 +1531,7 @@ msgid "D.Ai Explain"
 msgstr ""
 
 #. he: D.Ai מסביר לא מקריא הסברים
-#: apps/dai-tune/dai_tune/catalog.py:2161
+#: apps/dai-tune/dai_tune/catalog.py:2211
 msgid "D.Ai Explain does not read explanations aloud"
 msgstr ""
 
@@ -1542,17 +1542,17 @@ msgstr ""
 
 #. he: D.Ai מסביר מקריא כל הסבר
 #: apps/dai-settings/dai_settings/model.py:204
-#: apps/dai-tune/dai_tune/catalog.py:2160
+#: apps/dai-tune/dai_tune/catalog.py:2210
 msgid "D.Ai Explain reads every explanation aloud"
 msgstr ""
 
 #. he: D.Ai מסביר: Diamond מסתכל על תמונת המסך
-#: apps/dai-tune/dai_tune/catalog.py:2158
+#: apps/dai-tune/dai_tune/catalog.py:2208
 msgid "D.Ai Explain: Diamond looks at the picture of the screen"
 msgstr ""
 
 #. he: D.Ai מסביר: רק הטקסט מהמסך, בלי תמונה
-#: apps/dai-tune/dai_tune/catalog.py:2159
+#: apps/dai-tune/dai_tune/catalog.py:2209
 msgid "D.Ai Explain: only the text from the screen, no picture"
 msgstr ""
 
@@ -1857,8 +1857,13 @@ msgstr ""
 msgid "Diamond answered."
 msgstr ""
 
+#. he: Diamond עונה שוב
+#: apps/dai-tune/dai_tune/catalog.py:2077
+msgid "Diamond answers again"
+msgstr ""
+
 #. he: Diamond עונה במחשב הזה בלבד
-#: apps/dai-tune/dai_tune/catalog.py:2111
+#: apps/dai-tune/dai_tune/catalog.py:2161
 msgid "Diamond answers on this computer only"
 msgstr ""
 
@@ -1979,8 +1984,13 @@ msgstr ""
 msgid "Diamond is writing your app — on this computer, nothing leaves it."
 msgstr ""
 
+#. he: Diamond מושהה: בלי תשובות עד שיחזור
+#: apps/dai-tune/dai_tune/catalog.py:2076
+msgid "Diamond paused: no answers until it is resumed"
+msgstr ""
+
 #. he: Diamond מתכנן עם ארגז הכלים הסגור; בלי נוכחותכם הוא מחיל רק צעדים ששומרים או מחזקים אבטחה, ומציג את התשובה כהודעה (dai-agent history).
-#: apps/dai-tune/dai_tune/catalog.py:2321
+#: apps/dai-tune/dai_tune/catalog.py:2371
 msgid "Diamond plans with the closed toolbox; without you present it applies only steps that keep or harden security, and shows the answer as a notification (dai-agent history)."
 msgstr ""
 
@@ -1990,23 +2000,23 @@ msgid "Diamond proposed no change."
 msgstr ""
 
 #. he: Diamond מקריא במהירות הרגילה
-#: apps/dai-tune/dai_tune/catalog.py:2551
+#: apps/dai-tune/dai_tune/catalog.py:2601
 msgid "Diamond reads aloud at the normal speed"
 msgstr ""
 
 #. he: Diamond מקריא ב־{rate} מילים לדקה
-#: apps/dai-tune/dai_tune/catalog.py:2552
+#: apps/dai-tune/dai_tune/catalog.py:2602
 #, python-brace-format
 msgid "Diamond reads aloud at {rate} words per minute"
 msgstr ""
 
 #. he: Diamond מקריא מהר יותר
-#: apps/dai-tune/dai_tune/catalog.py:2547
+#: apps/dai-tune/dai_tune/catalog.py:2597
 msgid "Diamond reads aloud faster"
 msgstr ""
 
 #. he: Diamond מקריא לאט יותר
-#: apps/dai-tune/dai_tune/catalog.py:2549
+#: apps/dai-tune/dai_tune/catalog.py:2599
 msgid "Diamond reads aloud slower"
 msgstr ""
 
@@ -2081,7 +2091,7 @@ msgid "Diamond's explanation"
 msgstr ""
 
 #. he: השאלות והקוד של Diamond נשלחים ל־{name}, במפתח שלך
-#: apps/dai-tune/dai_tune/catalog.py:2112
+#: apps/dai-tune/dai_tune/catalog.py:2162
 #, python-brace-format
 msgid "Diamond's questions and code go to {name}, with your own key"
 msgstr ""
@@ -2480,28 +2490,28 @@ msgid "Every system change can be undone: dai-tune undo"
 msgstr ""
 
 #. he: כל המשתמשים: סוכני D.Ai מותרים שוב, כל התפקידים
-#: apps/dai-tune/dai_tune/catalog.py:2295
+#: apps/dai-tune/dai_tune/catalog.py:2345
 msgid "Every user: D.Ai Agents are allowed again, every role"
 msgstr ""
 
 #. he: כל המשתמשים: סוכני D.Ai כבויים
-#: apps/dai-tune/dai_tune/catalog.py:2293
+#: apps/dai-tune/dai_tune/catalog.py:2343
 msgid "Every user: D.Ai Agents are off"
 msgstr ""
 
 #. he: כל המשתמשים: סוכני D.Ai רק בתפקידים {roles}
-#: apps/dai-tune/dai_tune/catalog.py:2296
+#: apps/dai-tune/dai_tune/catalog.py:2346
 #, python-brace-format
 msgid "Every user: D.Ai Agents only as {roles}"
 msgstr ""
 
 #. he: כל המשתמשים: Diamond עונה במחשב הזה בלבד, בלי ספקי AI חיצוניים
-#: apps/dai-tune/dai_tune/catalog.py:2096
+#: apps/dai-tune/dai_tune/catalog.py:2146
 msgid "Every user: Diamond answers on this computer only, no external AI providers"
 msgstr ""
 
 #. he: כל המשתמשים: ספקי AI חיצוניים מותרים שוב
-#: apps/dai-tune/dai_tune/catalog.py:2095
+#: apps/dai-tune/dai_tune/catalog.py:2145
 msgid "Every user: external AI providers are allowed again"
 msgstr ""
 
@@ -2532,7 +2542,7 @@ msgid "Everything on this page can also be asked later: type a question in the c
 msgstr ""
 
 #. he: בכל מקרה הכול נשאר במחשב הזה; התמונה דורשת מודל ראייה מותקן.
-#: apps/dai-tune/dai_tune/catalog.py:2173
+#: apps/dai-tune/dai_tune/catalog.py:2223
 msgid "Everything stays on this computer either way; the picture needs an installed vision model."
 msgstr ""
 
@@ -2583,7 +2593,7 @@ msgid "File"
 msgstr ""
 
 #. he: קובץ {path} בבית שלך ({size} תווים)
-#: apps/dai-tune/dai_tune/catalog.py:2789
+#: apps/dai-tune/dai_tune/catalog.py:2839
 #, python-brace-format
 msgid "File {path} in your home ({size} characters)"
 msgstr ""
@@ -2770,7 +2780,7 @@ msgid "Focus: {n} minutes"
 msgstr ""
 
 #. he: תיקייה {path} בבית שלך
-#: apps/dai-tune/dai_tune/catalog.py:2788
+#: apps/dai-tune/dai_tune/catalog.py:2838
 #, python-brace-format
 msgid "Folder {path} in your home"
 msgstr ""
@@ -3153,7 +3163,7 @@ msgid "Insert pages from another PDF"
 msgstr ""
 
 #. he: בתוך "כל יום ב־9 …" זה הופך לתזכורת חוזרת (דרך היהלום, dai-way when).
-#: apps/dai-tune/dai_tune/catalog.py:2474
+#: apps/dai-tune/dai_tune/catalog.py:2524
 msgid "Inside \"every day at 9 …\" this becomes a recurring reminder (Diamond's Way, dai-way when)."
 msgstr ""
 
@@ -3321,7 +3331,7 @@ msgid "Keyboard layouts: "
 msgstr ""
 
 #. he: מפתחות שכבר נשמרו נשארים בהגדרות של כל משתמש אך לא בשימוש; dai-models provider use מסרב.
-#: apps/dai-tune/dai_tune/catalog.py:2099
+#: apps/dai-tune/dai_tune/catalog.py:2149
 msgid "Keys already saved stay in each user's config but are not used; dai-models provider use refuses."
 msgstr ""
 
@@ -4281,7 +4291,7 @@ msgid "Note: {name} does not look like Windows media (label: {label})."
 msgstr ""
 
 #. he: פתק: {text}
-#: apps/dai-tune/dai_tune/catalog.py:2213
+#: apps/dai-tune/dai_tune/catalog.py:2263
 #, python-brace-format
 msgid "Note: {text}"
 msgstr ""
@@ -5181,13 +5191,13 @@ msgid "Remind me in 20 minutes to take a break"
 msgstr ""
 
 #. he: תזכורת ב־{at}: {text}
-#: apps/dai-tune/dai_tune/catalog.py:2448
+#: apps/dai-tune/dai_tune/catalog.py:2498
 #, python-brace-format
 msgid "Reminder at {at}: {text}"
 msgstr ""
 
 #. he: תזכורת עכשיו: {text}
-#: apps/dai-tune/dai_tune/catalog.py:2473
+#: apps/dai-tune/dai_tune/catalog.py:2523
 #, python-brace-format
 msgid "Reminder now: {text}"
 msgstr ""
@@ -5224,7 +5234,7 @@ msgid "Remove the metadata (author, program, dates) before sharing"
 msgstr ""
 
 #. he: הסרת הטיימר {name} (דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2851
+#: apps/dai-tune/dai_tune/catalog.py:2901
 #, python-brace-format
 msgid "Remove the timer {name} (Diamond's Way)"
 msgstr ""
@@ -5389,7 +5399,7 @@ msgid "Run ▶"
 msgstr ""
 
 #. he: רץ בשמך, בלי שאלות; המשפט מפורש מחדש בכל הרצה. ביטול הרצה אחת: dai-tune undo
-#: apps/dai-tune/dai_tune/catalog.py:2840
+#: apps/dai-tune/dai_tune/catalog.py:2890
 msgid "Runs as you, without questions; the sentence is parsed again at every run. Undo one run: dai-tune undo"
 msgstr ""
 
@@ -6018,7 +6028,7 @@ msgid "Speak (local, Whisper)"
 msgstr ""
 
 #. he: דיבור נשאר במחשב. ההסכמה ניתנה ב־dai-models provider use.
-#: apps/dai-tune/dai_tune/catalog.py:2115
+#: apps/dai-tune/dai_tune/catalog.py:2165
 msgid "Speech stays on the computer. The consent was given at dai-models provider use."
 msgstr ""
 
@@ -6232,7 +6242,7 @@ msgid "Super+Shift+S reads the selected text aloud on this computer (D.Ai Speak)
 msgstr ""
 
 #. he: Super+Shift+S מקריא את הטקסט המסומן; ההקראה הבאה במהירות החדשה.
-#: apps/dai-tune/dai_tune/catalog.py:2564
+#: apps/dai-tune/dai_tune/catalog.py:2614
 msgid "Super+Shift+S reads the selected text; the next reading uses the new speed."
 msgstr ""
 
@@ -6609,6 +6619,11 @@ msgstr ""
 #: apps/dai-tune/dai_tune/rescue.py:218
 #, python-brace-format
 msgid "The last update was on {when} (snapshots {pre}..{post})."
+msgstr ""
+
+#. he: שירות ה־AI המקומי של הסשן נעצר; המודלים וההגדרות נשארים. "resume diamond" או dai-tune undo מחזירים.
+#: apps/dai-tune/dai_tune/catalog.py:2080
+msgid "The local AI service of your session stops; models and settings stay. \"resume diamond\" or dai-tune undo brings it back."
 msgstr ""
 
 #. he: למכונה יש: {ids}
@@ -9459,7 +9474,7 @@ msgid "{value}% CPU"
 msgstr ""
 
 #. he: {when}: {sentence} (טיימר, דרך היהלום)
-#: apps/dai-tune/dai_tune/catalog.py:2826
+#: apps/dai-tune/dai_tune/catalog.py:2876
 #, python-brace-format
 msgid "{when}: {sentence} (a timer, Diamond's Way)"
 msgstr ""
@@ -9483,7 +9498,7 @@ msgstr ""
 
 #. he: ⏰ תזכורת
 #: apps/dai-remind/dai_remind/engine.py:121
-#: apps/dai-tune/dai_tune/catalog.py:2461
+#: apps/dai-tune/dai_tune/catalog.py:2511
 msgid "⏰ Reminder"
 msgstr ""
 

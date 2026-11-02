@@ -418,9 +418,9 @@ def main() -> int:
          lambda o: o.strip().splitlines()[-1:] == ["2"]),
         # Exam mode (docs/EDU.md §2.3): one preset, five steps, nothing weakened; dry run only (the real thing would
         # block USB and the agents for the checks that follow).
-        ("tune: exam mode is one plan of five steps", "dai-tune --dry-run 'exam mode' </dev/null | tee /tmp/exam.txt | grep -c '^  [0-9]\\. ' | sed 's/^/EXAM_STEPS=/'; "
+        ("tune: exam mode is one plan of six steps", "dai-tune --dry-run 'exam mode' </dev/null | tee /tmp/exam.txt | grep -c '^  [0-9]\\. ' | sed 's/^/EXAM_STEPS=/'; "
          "grep -ci 'agents are off\\|external AI\\|usb\\|bluetooth' /tmp/exam.txt | sed 's/^/EXAM_WORDS=/'; dai-tune --dry-run 'מצב בחינה' </dev/null >/dev/null; echo HE_RC=$?", True,
-         lambda o: "EXAM_STEPS=5" in o and re.search(r"EXAM_WORDS=[4-9]", o) is not None and "HE_RC=0" in o, 120),
+         lambda o: "EXAM_STEPS=6" in o and re.search(r"EXAM_WORDS=[4-9]", o) is not None and "HE_RC=0" in o, 120),
         ("tune: undo port", "DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null; sudo nft list chain inet dai_filter input | grep -c 'dport 8080'", True,
          lambda o: o.strip().splitlines()[-1:] == ["0"]),
         # "firefox does not go online" (docs/BEYOND.md §12): the launcher override, and a connection that fails inside
@@ -459,6 +459,11 @@ def main() -> int:
          "stat -c 'MODE=%a' $XDG_RUNTIME_DIR/dai/status.json $XDG_RUNTIME_DIR/dai", True,
          lambda o: re.search(r"LOADED=[1-9]", o) is not None and "('ideas', 1)" in o and "MODE=600" in o and "MODE=700" in o),
         # Local AI end to end: download with SHA-256 check, then inference.
+        # Pause Diamond (docs/EDU.md §2.3 stage 2): the session's daid units stop, the client says "paused", undo brings it back.
+        ("ai: pause diamond and resume by undo", "export XDG_RUNTIME_DIR=/run/user/$(id -u); dai-tune --yes 'pause diamond' </dev/null >/dev/null; echo PAUSE_RC=$?; "
+         "systemctl --user is-active dai-daid.socket | sed 's/^/SOCKET=/'; dai-ai status 2>&1 | grep -ci paused | sed 's/^/SAYS_PAUSED=/'; "
+         "dai-tune undo >/dev/null 2>&1; echo UNDO_RC=$?; sleep 2; systemctl --user is-active dai-daid.socket | sed 's/^/AFTER=/'; dai-ai status | grep -c 'model:' | sed 's/^/STATUS_OK=/'", True,
+         lambda o: "PAUSE_RC=0" in o and "SOCKET=inactive" in o and "SAYS_PAUSED=1" in o and "UNDO_RC=0" in o and "AFTER=active" in o and "STATUS_OK=1" in o, 120),
         ("ai: install model (verified)", "dai-models install qwen2.5-0.5b 2>&1 | tail -n 2", True,
          lambda o: "installed and verified" in o, 600),
         ("ai: answer", "dai-ai 'What is 2+2? Reply with only the number.'", True, lambda o: "4" in o, 300),

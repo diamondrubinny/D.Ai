@@ -185,6 +185,21 @@ if __name__ == "__main__":
     unittest.main()
 
 
+class PauseTests(EnvTestCase):
+    def test_a_paused_diamond_says_so_before_touching_the_socket(self):
+        """docs/EDU.md §2.3 stage 2: D.Ai Tune's "pause diamond" writes the flag; the client explains, never connects."""
+        self.assertFalse(client.paused())
+        path = models.config_file()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"paused": True}))
+        self.assertTrue(client.paused())
+        with mock.patch("socket.socket", side_effect=AssertionError("must not connect")), self.assertRaises(client.AIUnavailable) as caught:
+            list(client._request({"op": "status"}))
+        self.assertIn("paused", str(caught.exception))
+        path.write_text("not json")
+        self.assertFalse(client.paused())
+
+
 class TaskTests(EnvTestCase):
     def test_code_task_prefers_coder_model(self):
         shipped = Path(__file__).resolve().parents[1] / "data" / "models.json"
