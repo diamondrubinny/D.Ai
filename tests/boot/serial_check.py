@@ -643,7 +643,7 @@ def main() -> int:
          "dai-agent roles | grep -c 'not allowed here' | sed 's/^/NOT_ALLOWED=/'; DAI_TUNE_ELEVATE=sudo dai-tune undo >/dev/null 2>&1; "
          "test -f /etc/dai/policy-agent.env && echo POLICY_STILL_THERE || echo POLICY_GONE; "
          "timeout 600 dai-agent run 'what is the security score of this computer?' --role guard --dry-run --yes </dev/null; echo MODEL_RC=$?", True,
-         lambda o: "Diamond Rubinny (d.Ai)" in o and "WINDOW=1" in o and "DESKTOP_ENTRY" in o and "ACT_TOOLS=5" in o and "ROLES=5" in o
+         lambda o: "Diamond Rubinny (d.Ai)" in o and "WINDOW=1" in o and "DESKTOP_ENTRY" in o and "ACT_TOOLS=6" in o and "ROLES=5" in o
          and "SCRIPT_RC=0" in o and "not a tool" in o
          and "NOTED=1" in o and "REMINDED=1" in o and re.search(r"RUNS=[1-9]", o) is not None and "scripted ok" in o
          and "UNDO_RUN_RC=0" in o and "NOTED_AFTER=0" in o and "REMINDED_AFTER=0" in o and "MARKED=1" in o

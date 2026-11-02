@@ -352,17 +352,19 @@ class NewToolTests(unittest.TestCase):
     def test_open_uses_commands_app_index_and_focus_goes_through_dai_focus(self):
         """docs/AGENTS.md §6ז: open = Command's best match, never a free command; focus = dai-focus start N."""
         from dai_command.core import AppEntry
-        apps = [AppEntry("org.gnome.Calculator.desktop", "Calculator", ("gnome-calculator",), search_terms=("calculator", "math")),
+        apps = [AppEntry("dai-command.desktop", "D.Ai Command", ("dai-command",), search_terms=("d.ai command", "calculator", "launcher", "command")),
+                AppEntry("galculator.desktop", "Galculator", ("galculator",), search_terms=("galculator", "calculator", "math")),
                 AppEntry("htop.desktop", "htop", ("htop",), search_terms=("htop", "processes"), terminal=True)]
         spawned, ran = [], []
         services = tools.Services(lang="he", extra={"apps": apps, "spawn": spawned.append},
                                   run=lambda argv, **k: ran.append(argv) or subprocess.CompletedProcess(argv, 0, "Pop-ups are hidden for 5 minutes.", ""))
-        self.assertEqual(tools.run_tool("open", {"app": "calc"}, services), "נפתח: Calculator.")
-        self.assertEqual(spawned[-1], ["gnome-calculator"])
+        self.assertEqual(tools.run_tool("open", {"app": "calculator"}, services), "נפתח: Galculator.")   # run 41368294749: not Command
+        self.assertEqual(spawned[-1], ["galculator"])
+        self.assertEqual(tools.run_tool("open", {"app": "command"}, services), "נפתח: D.Ai Command.")
         tools.run_tool("open", {"app": "processes"}, services)
         self.assertEqual(spawned[-1], ["x-terminal-emulator", "-e", "htop"])
         self.assertIn("אין כאן אפליקציה בשם rm -rf", tools.run_tool("open", {"app": "rm -rf"}, services))
-        self.assertEqual(len(spawned), 2)
+        self.assertEqual(len(spawned), 3)
         self.assertEqual(tools.run_tool("focus", {"minutes": 5}, services), "Pop-ups are hidden for 5 minutes.")
         self.assertEqual(ran[-1], ["dai-focus", "start", "5"])
         for bad in (4, 181):

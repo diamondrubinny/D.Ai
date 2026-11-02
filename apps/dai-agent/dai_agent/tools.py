@@ -262,10 +262,15 @@ def open_app(services: Services, app: str) -> str:
     (docs/AGENTS.md §6ז). The best match only; never a free command."""
     from dai_command.core import load_apps, search_apps
     apps = services.extra.get("apps")
-    found = search_apps(apps if apps is not None else load_apps(), app, limit=1)
+    found = search_apps(apps if apps is not None else load_apps(), app, limit=6)
     if not found:
         return pick(services.lang, "No application called {a} here.", "אין כאן אפליקציה בשם {a}.").format(a=app)
-    entry = found[0]
+    # Among Command's matches, the name closest to what was said (Galculator for "calculator") before a keyword
+    # match (D.Ai Command lists "calculator" as a keyword too); below 0.6 the ranking stands.
+    from difflib import SequenceMatcher
+    wanted = app.casefold()
+    closest = max(found, key=lambda e: SequenceMatcher(None, wanted, e.name.casefold()).ratio())
+    entry = closest if SequenceMatcher(None, wanted, closest.name.casefold()).ratio() >= 0.6 else found[0]
     argv = list(entry.exec_args)
     if entry.terminal:
         argv = ["x-terminal-emulator", "-e", *argv]
