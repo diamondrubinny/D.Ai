@@ -224,4 +224,4 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 
 ✅ שלב 8 (open, focus) ירוק ב־CI (ריצה 41401798953: ‏147/147 ב־user/dev/edu, ‏137/137 ב־tv). בדרך: "calculator" פתח את D.Ai Command כי לרשומת Galculator של Debian אין מילות מפתח — הכלי בוחר עכשיו את השם הקרוב ביותר על פני כל האינדקס (ריצה 41390015934: Galculator ב־user); ב־dev/edu אין מחשבון, ולכן בדיקת ה־VM פותחת את D.Ai Settings.
 
-🔨 שלב 9 (מטרות מוכנות) נבנה; ממתין ל־CI.
+✅ שלב 9 (מטרות מוכנות) ירוק ב־CI (ריצה 41415669531: ‏147/147 ב־user/dev/edu, ‏137/137 ב־tv, ‏`SUGGEST=4`).
