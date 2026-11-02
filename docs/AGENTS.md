@@ -37,6 +37,8 @@ read it to me", "agent: what is weak in my security and fix the easy parts". ‏
 | `notify(text)` | פעולה קלה | הודעה על המסך |
 | `done(answer)` | — | סיום עם תשובה |
 
+שלבים 3–8 הוסיפו: `mail`, `mail_summary`, `explain`, `look` (קריאה), `open`, `ask` (קל), `record`, `focus`, `remember` (פעולה) — §6ב–§6ז.
+
 ## 3. אבטחה ופרטיות
 
 - **ארגז כלים סגור:** שם כלי לא מוכר → הצעד נדחה; ארגומנטים נבדקים לפי סוג ואורך; טקסט הוא תמיד ארגומנט, לעולם לא shell.
@@ -211,4 +213,4 @@ agent secretary: summarize my mail"` מציג תוכנית, `dai-tune --yes "age
 
 ✅ שלב 7 (ask, undo לריצה) ירוק ב־CI (ריצה 41336886735: ‏146/146 ב־user/dev/edu, ‏`dai-agent undo` ביטל את הפתק ואת התזכורת של ריצת התסריט; צילום כרטיס האישור: docs/screenshots/agent-approve.png). באותה ריצה Enter על "לאשר" לא לחץ (QPushButton מחוץ לדיאלוג עונה רק לרווח) — תוקן ב־`EnterButton` ואומת בריצה 41357922420 (‏146/146; הצילום המלא: docs/screenshots/agent-window.png).
 
-🔨 שלב 8 (open, focus) נבנה; ממתין ל־CI.
+✅ שלב 8 (open, focus) ירוק ב־CI (ריצה 41401798953: ‏147/147 ב־user/dev/edu, ‏137/137 ב־tv). בדרך: "calculator" פתח את D.Ai Command כי לרשומת Galculator של Debian אין מילות מפתח — הכלי בוחר עכשיו את השם הקרוב ביותר על פני כל האינדקס (ריצה 41390015934: Galculator ב־user); ב־dev/edu אין מחשבון, ולכן בדיקת ה־VM פותחת את D.Ai Settings.
