@@ -631,7 +631,7 @@ msgid "Applied when you save. Everything runs in the sandbox on this computer."
 msgstr ""
 
 #. he: בוצע: {sentence}
-#: apps/dai-agent/dai_agent/tools.py:309
+#: apps/dai-agent/dai_agent/tools.py:348
 #, python-brace-format
 msgid "Applied: {sentence}"
 msgstr ""
@@ -1426,9 +1426,15 @@ msgid "Could not listen: {why}"
 msgstr ""
 
 #. he: לא הצלחתי להסתכל על המסך: {e}
-#: apps/dai-agent/dai_agent/tools.py:231
+#: apps/dai-agent/dai_agent/tools.py:232
 #, python-brace-format
 msgid "Could not look at the screen: {e}"
+msgstr ""
+
+#. he: לא הצלחתי לפתוח את {a}: {e}
+#: apps/dai-agent/dai_agent/tools.py:279
+#, python-brace-format
+msgid "Could not open {a}: {e}"
 msgstr ""
 
 #. he: אין גישה לצרור המפתחות או לתיקיית הצ'אט.
@@ -1555,6 +1561,12 @@ msgstr ""
 msgid "D.Ai Explain: what is on the screen"
 msgstr ""
 
+#. he: D.Ai Focus לא התחיל: {e}
+#: apps/dai-agent/dai_agent/tools.py:294
+#, python-brace-format
+msgid "D.Ai Focus did not start: {e}"
+msgstr ""
+
 #. he: D.Ai Focus · ביצועים מלאים ובלי התראות עד שתסיימו · Enter
 #: apps/dai-command/dai_command/core.py:496
 msgid "D.Ai Focus · full performance and no pop-ups until you end it · Enter"
@@ -1628,8 +1640,8 @@ msgid "D.Ai Privacy"
 msgstr ""
 
 #. he: D.Ai Record לא התחיל: {e}
-#: apps/dai-agent/dai_agent/tools.py:272
-#: apps/dai-agent/dai_agent/tools.py:270
+#: apps/dai-agent/dai_agent/tools.py:311
+#: apps/dai-agent/dai_agent/tools.py:309
 #, python-brace-format
 msgid "D.Ai Record did not start: {e}"
 msgstr ""
@@ -1641,7 +1653,7 @@ msgid "D.Ai Settings"
 msgstr ""
 
 #. he: D.Ai Speak לא זמין.
-#: apps/dai-agent/dai_agent/tools.py:336
+#: apps/dai-agent/dai_agent/tools.py:375
 msgid "D.Ai Speak is not available."
 msgstr ""
 
@@ -1906,7 +1918,7 @@ msgid "Diamond is not available, so this comes from the facts alone."
 msgstr ""
 
 #. he: Diamond לא זמין.
-#: apps/dai-agent/dai_agent/tools.py:197
+#: apps/dai-agent/dai_agent/tools.py:198
 msgid "Diamond is not available."
 msgstr ""
 
@@ -2301,19 +2313,25 @@ msgid "Drivers downloaded and verified."
 msgstr ""
 
 #. he: הרצת ניסיון: היה מקליט {n} שניות.
-#: apps/dai-agent/dai_agent/tools.py:266
+#: apps/dai-agent/dai_agent/tools.py:305
 #, python-brace-format
 msgid "Dry run: would record {n} seconds."
 msgstr ""
 
 #. he: הרצת ניסיון: היה זוכר: {t}
-#: apps/dai-agent/dai_agent/tools.py:281
+#: apps/dai-agent/dai_agent/tools.py:320
 #, python-brace-format
 msgid "Dry run: would remember: {t}"
 msgstr ""
 
+#. he: הרצת ניסיון: היה מתחיל סשן פוקוס של {n} דקות.
+#: apps/dai-agent/dai_agent/tools.py:290
+#, python-brace-format
+msgid "Dry run: would start a {n}-minute focus session."
+msgstr ""
+
 #. he: הרצת ניסיון: {sentence}
-#: apps/dai-agent/dai_agent/tools.py:310
+#: apps/dai-agent/dai_agent/tools.py:349
 #, python-brace-format
 msgid "Dry run: {sentence}"
 msgstr ""
@@ -2688,10 +2706,22 @@ msgstr ""
 msgid "Focus for {n} minutes"
 msgstr ""
 
+#. he: פוקוס ל־{n} דקות.
+#: apps/dai-agent/dai_agent/tools.py:297
+#, python-brace-format
+msgid "Focus for {n} minutes."
+msgstr ""
+
 #. he: פוקוס ל־{n} דקות. לסיים מוקדם: dai-focus stop
 #: apps/dai-focus/dai_focus/cli.py:170
 #, python-brace-format
 msgid "Focus for {n} minutes. To end early: dai-focus stop"
+msgstr ""
+
+#. he: פוקוס ל־{n} דקות: בלי הודעות קופצות, אור חם יותר; הטיימר מסיים.
+#: apps/dai-agent/dai_agent/plans.py:40
+#, python-brace-format
+msgid "Focus for {n} minutes: no pop-ups, warmer light; the timer ends it."
 msgstr ""
 
 #. he: הפוקוס נעצר אחרי {n} דקות
@@ -3214,7 +3244,7 @@ msgid "J connects only with encryption."
 msgstr ""
 
 #. he: אין דואר של J במחשב הזה (אין חשבון, או שעדיין לא הורד דבר).
-#: apps/dai-agent/dai_agent/tools.py:165
+#: apps/dai-agent/dai_agent/tools.py:166
 msgid "J has no mail on this computer (no account, or nothing fetched yet)."
 msgstr ""
 
@@ -3741,6 +3771,12 @@ msgstr ""
 msgid "No answer"
 msgstr ""
 
+#. he: אין כאן אפליקציה בשם {a}.
+#: apps/dai-agent/dai_agent/tools.py:267
+#, python-brace-format
+msgid "No application called {a} here."
+msgstr ""
+
 #. he: עדיין אין אפליקציות. בקשו אחת למעלה.
 #: apps/dai-forge/dai_forge/gui.py:129
 msgid "No apps yet — ask for one above."
@@ -3830,7 +3866,7 @@ msgid "No examples in {dir}."
 msgstr ""
 
 #. he: אין קבצים מתאימים.
-#: apps/dai-agent/dai_agent/tools.py:93
+#: apps/dai-agent/dai_agent/tools.py:94
 msgid "No files match."
 msgstr ""
 
@@ -3914,7 +3950,7 @@ msgid "No notes yet. Type: note: buy milk"
 msgstr ""
 
 #. he: אין שירות הודעות.
-#: apps/dai-agent/dai_agent/tools.py:344
+#: apps/dai-agent/dai_agent/tools.py:383
 msgid "No notification service."
 msgstr ""
 
@@ -3980,7 +4016,7 @@ msgid "No reminder {id}; nothing to remove."
 msgstr ""
 
 #. he: אין תזכורות.
-#: apps/dai-agent/dai_agent/tools.py:100
+#: apps/dai-agent/dai_agent/tools.py:101
 msgid "No reminders."
 msgstr ""
 
@@ -4064,7 +4100,7 @@ msgid "No uncommitted changes to review."
 msgstr ""
 
 #. he: אין מי שיענה עכשיו (אין אדם בריצה הזאת); החליטו לפי מה שידוע.
-#: apps/dai-agent/dai_agent/tools.py:251
+#: apps/dai-agent/dai_agent/tools.py:252
 msgid "Nobody can answer now (no person at this run); decide with what you know."
 msgstr ""
 
@@ -4074,7 +4110,7 @@ msgid "Not agreed. Nothing was changed."
 msgstr ""
 
 #. he: לא בוצע (Tune סירב, או שביטלתם).
-#: apps/dai-agent/dai_agent/tools.py:308
+#: apps/dai-agent/dai_agent/tools.py:347
 msgid "Not applied (dai-tune said no, or you cancelled)."
 msgstr ""
 
@@ -4168,7 +4204,7 @@ msgid "Not understood — Enter for examples"
 msgstr ""
 
 #. he: לא מובן: {parts}
-#: apps/dai-agent/dai_agent/tools.py:125
+#: apps/dai-agent/dai_agent/tools.py:126
 #, python-brace-format
 msgid "Not understood: {parts}"
 msgstr ""
@@ -4251,7 +4287,7 @@ msgid "Nothing here yet. What you copy will show up here (never passwords)."
 msgstr ""
 
 #. he: אין עובדה של D.Ai על זה.
-#: apps/dai-agent/dai_agent/tools.py:85
+#: apps/dai-agent/dai_agent/tools.py:86
 msgid "Nothing in D.Ai's own facts about that."
 msgstr ""
 
@@ -4341,7 +4377,7 @@ msgid "Nothing to remove for this recipe."
 msgstr ""
 
 #. he: אין מה לדווח.
-#: apps/dai-agent/dai_agent/tools.py:117
+#: apps/dai-agent/dai_agent/tools.py:118
 msgid "Nothing to report."
 msgstr ""
 
@@ -4598,6 +4634,12 @@ msgstr ""
 #. he: נפתח בארגז חול
 #: apps/dai-pdf/dai_pdf/gui.py:475
 msgid "Opened in a sandbox"
+msgstr ""
+
+#. he: נפתח: {a}.
+#: apps/dai-agent/dai_agent/tools.py:280
+#, python-brace-format
+msgid "Opened {a}."
 msgstr ""
 
 #. he: פותח את פורט 22 לרשת המקומית.
@@ -5038,7 +5080,7 @@ msgid "Recording to {file}"
 msgstr ""
 
 #. he: מקליט {n} שניות; הקובץ יישמר ב־~/Videos/Recordings.
-#: apps/dai-agent/dai_agent/tools.py:273
+#: apps/dai-agent/dai_agent/tools.py:312
 #, python-brace-format
 msgid "Recording {n} seconds; the file goes to ~/Videos/Recordings."
 msgstr ""
@@ -5069,7 +5111,7 @@ msgid "Refusing --yes: this plan weakens security and needs explicit confirmatio
 msgstr ""
 
 #. he: לזכור לריצות הבאות: {text}
-#: apps/dai-agent/dai_agent/plans.py:40
+#: apps/dai-agent/dai_agent/plans.py:44
 #, python-brace-format
 msgid "Remember for later runs: {text}"
 msgstr ""
@@ -5080,7 +5122,7 @@ msgid "Remember the password in the keyring"
 msgstr ""
 
 #. he: נזכר ({n} שורות; dai-agent memory).
-#: apps/dai-agent/dai_agent/tools.py:286
+#: apps/dai-agent/dai_agent/tools.py:325
 #, python-brace-format
 msgid "Remembered ({n} lines; dai-agent memory)."
 msgstr ""
@@ -5325,7 +5367,7 @@ msgid "Safety and network"
 msgstr ""
 
 #. he: נאמר בקול.
-#: apps/dai-agent/dai_agent/tools.py:336
+#: apps/dai-agent/dai_agent/tools.py:375
 msgid "Said aloud."
 msgstr ""
 
@@ -5546,7 +5588,7 @@ msgid "Security updates install by themselves"
 msgstr ""
 
 #. he: אבטחה {score}/100
-#: apps/dai-agent/dai_agent/tools.py:106
+#: apps/dai-agent/dai_agent/tools.py:107
 #: apps/dai-quick/dai_quick/gui.py:37
 #: apps/dai-settings/dai_settings/gui.py:84
 #, python-brace-format
@@ -5743,7 +5785,7 @@ msgid "Shown on the TV."
 msgstr ""
 
 #. he: הוצג.
-#: apps/dai-agent/dai_agent/tools.py:345
+#: apps/dai-agent/dai_agent/tools.py:384
 msgid "Shown."
 msgstr ""
 
@@ -6069,8 +6111,8 @@ msgid "Subtitles for whatever the computer plays · on this computer only · Ent
 msgstr ""
 
 #. he: משפט D.Ai Tune מוצע: {s}
-#: apps/dai-agent/dai_agent/tools.py:210
-#: apps/dai-agent/dai_agent/tools.py:234
+#: apps/dai-agent/dai_agent/tools.py:211
+#: apps/dai-agent/dai_agent/tools.py:235
 #, python-brace-format
 msgid "Suggested D.Ai Tune sentence: {s}"
 msgstr ""
@@ -6561,13 +6603,13 @@ msgid "The organization's policy allows only these roles here: {roles}."
 msgstr ""
 
 #. he: האדם ענה: {a}
-#: apps/dai-agent/dai_agent/tools.py:256
+#: apps/dai-agent/dai_agent/tools.py:257
 #, python-brace-format
 msgid "The person answered: {a}"
 msgstr ""
 
 #. he: האדם לא ענה.
-#: apps/dai-agent/dai_agent/tools.py:255
+#: apps/dai-agent/dai_agent/tools.py:256
 msgid "The person did not answer."
 msgstr ""
 
@@ -6754,7 +6796,7 @@ msgid "There is no file called {name}."
 msgstr ""
 
 #. he: אין הודעה מספר {n}.
-#: apps/dai-agent/dai_agent/tools.py:182
+#: apps/dai-agent/dai_agent/tools.py:183
 #, python-brace-format
 msgid "There is no message number {n}."
 msgstr ""
@@ -7076,7 +7118,7 @@ msgid "Tue"
 msgstr ""
 
 #. he: Tune לא הבין: {parts}
-#: apps/dai-agent/dai_agent/tools.py:294
+#: apps/dai-agent/dai_agent/tools.py:333
 #, python-brace-format
 msgid "Tune did not understand: {parts}"
 msgstr ""
@@ -8831,7 +8873,7 @@ msgid "{free} free where the machines live; Windows stops when its disk cannot g
 msgstr ""
 
 #. he: {head} — J עדיין לא הוריד את ההודעה הזאת; פתחו אותה ב־J קודם.
-#: apps/dai-agent/dai_agent/tools.py:191
+#: apps/dai-agent/dai_agent/tools.py:192
 #, python-brace-format
 msgid "{head} — J has not downloaded this message yet; open it in J first."
 msgstr ""

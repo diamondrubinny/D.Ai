@@ -15,6 +15,7 @@ from dai_i18n import pick
 MAX_TEXT = 500
 MAX_RESULT = 1500
 RECORD_MIN, RECORD_MAX = 5, 600
+FOCUS_MIN, FOCUS_MAX = 5, 180
 
 
 class ToolError(RuntimeError):
@@ -256,7 +257,45 @@ def ask(services: Services, question: str) -> str:
     return pick(services.lang, "The person answered: {a}", "האדם ענה: {a}").format(a=" ".join(answer.split())[:MAX_TEXT])
 
 
+def open_app(services: Services, app: str) -> str:
+    """Open an application from the menu by name, through D.Ai Command's own .desktop index and matching
+    (docs/AGENTS.md §6ז). The best match only; never a free command."""
+    from dai_command.core import load_apps, search_apps
+    apps = services.extra.get("apps")
+    found = search_apps(apps if apps is not None else load_apps(), app, limit=1)
+    if not found:
+        return pick(services.lang, "No application called {a} here.", "אין כאן אפליקציה בשם {a}.").format(a=app)
+    entry = found[0]
+    argv = list(entry.exec_args)
+    if entry.terminal:
+        argv = ["x-terminal-emulator", "-e", *argv]
+    spawn = services.extra.get("spawn")
+    try:
+        if spawn is not None:
+            spawn(argv)
+        else:
+            subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    except OSError as exc:
+        raise ToolError(pick(services.lang, "Could not open {a}: {e}", "לא הצלחתי לפתוח את {a}: {e}").format(a=entry.name, e=exc)) from exc
+    return pick(services.lang, "Opened {a}.", "נפתח: {a}.").format(a=entry.name)
+
+
 # ---------------------------------------------------------------- act tools
+
+def focus(services: Services, minutes: int = 25) -> str:
+    """A focus session (dai-focus start N): do not disturb and warm light until the timer ends."""
+    if not FOCUS_MIN <= minutes <= FOCUS_MAX:
+        raise ToolError(f"focus: minutes must be {FOCUS_MIN} to {FOCUS_MAX}")
+    if services.dry_run:
+        return pick(services.lang, "Dry run: would start a {n}-minute focus session.", "הרצת ניסיון: היה מתחיל סשן פוקוס של {n} דקות.").format(n=minutes)
+    try:
+        done = services.run(["dai-focus", "start", str(minutes)], capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ToolError(pick(services.lang, "D.Ai Focus did not start: {e}", "D.Ai Focus לא התחיל: {e}").format(e=exc)) from exc
+    if done.returncode != 0:
+        raise ToolError((done.stderr or done.stdout or "").strip()[-200:] or "dai-focus failed")
+    return (done.stdout or "").strip() or pick(services.lang, "Focus for {n} minutes.", "פוקוס ל־{n} דקות.").format(n=minutes)
+
 
 def record(services: Services, seconds: int) -> str:
     """A screen recording that stops by itself (dai-record start N). The person approved the seconds."""
@@ -356,9 +395,11 @@ TOOLS: dict[str, Tool] = {t.name: t for t in (
     Tool("mail_summary", "read", "A short summary of one inbox message by its number in the mail list (1 = newest). args: number", {"number": "int"}, mail_summary, ("number",)),
     Tool("explain", "read", "Explain a text the person saw (an error, a message, a setting) in plain words, with a D.Ai Tune sentence when one fixes it. args: text", {"text": "str"}, explain, ("text",)),
     Tool("look", "read", "Look at the screen now and say what is on it (an error, a page, a dialog). args: question (optional, what to look for)", {"question": "str"}, look),
+    Tool("open", "light", "Open an application from the menu by name (firefox, calculator, settings). args: app", {"app": "str"}, open_app, ("app",)),
     Tool("do", "act", "Apply a D.Ai Tune sentence (settings, security, apps, reminders, notes), e.g. 'lock the screen after 5 minutes'. The person approves first. args: sentence", {"sentence": "str"}, do, ("sentence",)),
     Tool("remind", "act", "Set a reminder. args: text, and in_minutes (number) or at ('18:30')", {"text": "str", "in_minutes": "int", "at": "str"}, remind, ("text",)),
     Tool("note", "act", "Write one line into the person's notes. args: text", {"text": "str"}, note, ("text",)),
+    Tool("focus", "act", "Start a focus session: no pop-ups and warm light for a number of minutes (5-180, default 25). args: minutes", {"minutes": "int"}, focus),
     Tool("record", "act", "Record the screen for a number of seconds (no sound); it stops by itself. args: seconds (5-600)", {"seconds": "int"}, record, ("seconds",)),
     Tool("remember", "act", "Keep one line for later runs (a fact about the person, a preference). The person approves first. args: text", {"text": "str"}, remember, ("text",)),
     Tool("ask", "light", "Ask the person one short question when the goal is unclear (which file, which time, yes or no). args: question", {"question": "str"}, ask, ("question",)),

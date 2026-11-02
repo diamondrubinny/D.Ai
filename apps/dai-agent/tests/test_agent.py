@@ -349,10 +349,39 @@ class NewToolTests(unittest.TestCase):
             tools.run_tool("look", {}, services)
         self.assertIn("no grim", str(caught.exception))
 
+    def test_open_uses_commands_app_index_and_focus_goes_through_dai_focus(self):
+        """docs/AGENTS.md §6ז: open = Command's best match, never a free command; focus = dai-focus start N."""
+        from dai_command.core import AppEntry
+        apps = [AppEntry("org.gnome.Calculator.desktop", "Calculator", ("gnome-calculator",), search_terms=("calculator", "math")),
+                AppEntry("htop.desktop", "htop", ("htop",), search_terms=("htop", "processes"), terminal=True)]
+        spawned, ran = [], []
+        services = tools.Services(lang="he", extra={"apps": apps, "spawn": spawned.append},
+                                  run=lambda argv, **k: ran.append(argv) or subprocess.CompletedProcess(argv, 0, "Pop-ups are hidden for 5 minutes.", ""))
+        self.assertEqual(tools.run_tool("open", {"app": "calc"}, services), "נפתח: Calculator.")
+        self.assertEqual(spawned[-1], ["gnome-calculator"])
+        tools.run_tool("open", {"app": "processes"}, services)
+        self.assertEqual(spawned[-1], ["x-terminal-emulator", "-e", "htop"])
+        self.assertIn("אין כאן אפליקציה בשם rm -rf", tools.run_tool("open", {"app": "rm -rf"}, services))
+        self.assertEqual(len(spawned), 2)
+        self.assertEqual(tools.run_tool("focus", {"minutes": 5}, services), "Pop-ups are hidden for 5 minutes.")
+        self.assertEqual(ran[-1], ["dai-focus", "start", "5"])
+        for bad in (4, 181):
+            with self.subTest(bad=bad), self.assertRaises(tools.ToolError):
+                tools.run_tool("focus", {"minutes": bad}, services)
+        services.dry_run = True
+        self.assertTrue(tools.run_tool("focus", {}, services).startswith("הרצת ניסיון"))
+        self.assertEqual(len(ran), 1)
+        from dai_agent import plans
+        card = plans.describe_act(agent.StepRecord("focus", {"minutes": 25}), services)
+        self.assertEqual(card["rows"], ["פוקוס ל־25 דקות: בלי הודעות קופצות, אור חם יותר; הטיימר מסיים."])
+        self.assertTrue(plans.quiet_ok(agent.StepRecord("focus", {"minutes": 25}), services))
+
     def test_roles_know_the_new_tools(self):
         self.assertTrue({"mail", "mail_summary", "remember"} <= set(roles.ROLES["secretary"].tools))
         self.assertIn("explain", roles.ROLES["tutor"].tools)
         self.assertIn("look", roles.ROLES["tutor"].tools)
+        self.assertIn("open", roles.ROLES["tutor"].tools)
+        self.assertNotIn("focus", roles.ROLES["tutor"].tools)
         self.assertNotIn("record", roles.ROLES["secretary"].tools)
         self.assertEqual(set(tools.TOOLS), set(roles.ROLES["all"].tools))
 

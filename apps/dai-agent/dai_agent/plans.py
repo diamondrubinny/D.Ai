@@ -36,6 +36,10 @@ def describe_act(record: StepRecord, services: Services) -> dict[str, Any]:
         info["rows"] = [pick(lang, "Record the screen for {n} seconds (no sound), to ~/Videos/Recordings.",
                              "הקלטת המסך למשך {n} שניות (בלי קול), אל ~/Videos/Recordings.").format(n=seconds)]
         return info
+    if record.tool == "focus":
+        info["rows"] = [pick(lang, "Focus for {n} minutes: no pop-ups, warmer light; the timer ends it.",
+                             "פוקוס ל־{n} דקות: בלי הודעות קופצות, אור חם יותר; הטיימר מסיים.").format(n=record.args.get("minutes", 25))]
+        return info
     if record.tool == "remember":
         info["rows"] = [pick(lang, "Remember for later runs: {text}", "לזכור לריצות הבאות: {text}").format(text=record.args.get("text", ""))]
         return info
@@ -64,7 +68,7 @@ def describe_act(record: StepRecord, services: Services) -> dict[str, Any]:
 def quiet_ok(record: StepRecord, services: Services) -> bool:
     """What --yes may approve without a person: a user-scope step that keeps or hardens security. A do step
     is checked against its Tune plan; record and remember are user-scope by nature; anything else is not."""
-    if record.tool in ("remember", "record", "note", "remind"):
+    if record.tool in ("remember", "record", "focus", "note", "remind"):
         return True
     if record.tool != "do":
         return False

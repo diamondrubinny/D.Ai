@@ -277,7 +277,7 @@ jobs:
 
       - name: Unit tests (dai-agent, Diamond with a closed toolbox, with the window)
         env:
-          PYTHONPATH: apps/dai-i18n:apps/dai-raz:apps/dai-j:apps/dai-explain:apps/dai-voice
+          PYTHONPATH: apps/dai-i18n:apps/dai-raz:apps/dai-j:apps/dai-explain:apps/dai-voice:apps/dai-command
           QT_QPA_PLATFORM: offscreen
         run: python3 -m unittest discover -s apps/dai-agent/tests -t apps/dai-agent -v
       - name: Unit tests (dai-record, a video of the screen)
