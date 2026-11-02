@@ -484,6 +484,62 @@ class PolicyTests(unittest.TestCase):
             self.assertEqual(out.getvalue().count("not allowed here"), len(roles.ROLES) - 1)
 
 
+class DirectWayTests(unittest.TestCase):
+    """docs/AGENTS.md §6ט: a goal that is a D.Ai Tune sentence runs as one do step without the model."""
+    def setUp(self):
+        import sys
+        self.fake = FakeTune()
+        patch = mock.patch.dict(sys.modules, {"dai_tune": mock.MagicMock(), "dai_tune.planner": SimpleNamespace(plan_from_text=self.fake.plan),
+                                              "dai_tune.cli": SimpleNamespace(describe=lambda plan, lang: [{"summary": plan.sentence}])})
+        patch.start()
+        self.addCleanup(patch.stop)
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.home = Path(self.tmp.name)
+        self.services = tools.Services(ctx=object(), lang="en", home=self.home, execute=self.fake.execute)
+
+    def test_an_understood_sentence_needs_no_model(self):
+        def no_chat(messages, schema=None, max_tokens=0, task="general"):
+            raise AssertionError("the model must not be asked")
+        run = agent.run_agent("lock the screen after 5 minutes", self.services, chat=no_chat, approve=lambda step: True, say=lambda line: None, home=self.home)
+        self.assertEqual((run.planner, run.status, run.final), ("tune", "done", "Done: lock the screen after 5 minutes"))
+        self.assertEqual([(s.tool, s.args) for s in run.steps], [("do", {"sentence": "lock the screen after 5 minutes"})])
+        self.assertEqual(self.fake.executed[-1][0], "lock the screen after 5 minutes")
+        self.assertEqual(json.loads(agent.journal_path(self.home, run.id).read_text())["planner"], "tune")
+        self.services.dry_run = True
+        run = agent.run_agent("note: buy milk", self.services, chat=no_chat, approve=lambda step: True, say=lambda line: None, home=self.home)
+        self.assertEqual(run.final, "Dry run: note: buy milk")
+
+    def test_a_refused_direct_step_changes_nothing_and_an_unknown_goal_goes_to_the_model(self):
+        run = agent.run_agent("allow usb storage", self.services, chat=None, approve=lambda step: False, say=lambda line: None, home=self.home)
+        self.assertEqual((run.planner, run.status, run.final), ("tune", "stopped", "Nothing was changed."))
+        self.assertEqual(self.fake.executed, [])
+        asked = []
+
+        def chat(messages, schema=None, max_tokens=0, task="general"):
+            asked.append(messages[-1]["content"])
+            yield json.dumps({"thought": "", "tool": "done", "args": {}, "final": "Diamond answered."})
+        run = agent.run_agent("organise my day", self.services, chat=chat, approve=lambda step: True, say=lambda line: None, home=self.home)
+        self.assertEqual((run.planner, run.final), ("diamond", "Diamond answered."))
+        self.assertEqual(asked, ["organise my day"])
+        run = agent.run_agent("lock the screen after 5 minutes", self.services, chat=chat, approve=lambda step: True, say=lambda line: None, home=self.home, direct=False)
+        self.assertEqual(run.planner, "diamond")                                      # --model: Diamond anyway
+        tutor = agent.run_agent("lock the screen after 5 minutes", self.services, chat=chat, role=roles.ROLES["tutor"], say=lambda line: None, home=self.home)
+        self.assertEqual(tutor.planner, "diamond")                                    # a role without do cannot take the direct way
+
+    def test_cli_model_flag_and_history_mark(self):
+        import sys
+        out = io.StringIO()
+        with mock.patch.dict(sys.modules, {"dai_ai.client": SimpleNamespace(where=lambda task: "local")}), redirect_stdout(out), redirect_stderr(io.StringIO()):
+            self.assertEqual(cli.main(["dai-agent", "run", "lock the screen after 5 minutes", "--yes"], services=self.services, home=self.home), 0)
+            self.assertIn("Done: lock the screen after 5 minutes", out.getvalue())
+            self.assertEqual(cli.main(["dai-agent", "history"], home=self.home), 0)
+            self.assertIn("(Tune)", out.getvalue())
+            chat = scripted_chat([{"thought": "", "tool": "done", "args": {}, "final": "by Diamond"}])
+            self.assertEqual(cli.main(["dai-agent", "run", "lock the screen after 5 minutes", "--yes", "--model"], chat=chat, services=self.services, home=self.home), 0)
+            self.assertIn("by Diamond", out.getvalue())
+
+
 class AskAndUndoTests(unittest.TestCase):
     """docs/AGENTS.md §6ו: the ask tool, the Tune entry a step makes, and undoing a whole run."""
     def test_ask_tool_with_and_without_a_person(self):

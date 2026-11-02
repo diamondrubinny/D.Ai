@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Diamond Rubinny (d.Ai)
 """dai-agent: Diamond with a closed toolbox (docs/AGENTS.md).
 
-  dai-agent run "goal" [--role ROLE] [--yes] [--dry-run] [--notify] [--lang LANG] [--script FILE]
+  dai-agent run "goal" [--role ROLE] [--yes] [--dry-run] [--notify] [--lang LANG] [--script FILE] [--model]
   dai-agent "goal"                 the same as run
   dai-agent tools                  the toolbox, with what each tool may do
   dai-agent roles                  secretary, organizer, guard, tutor, all (an organization's policy may allow fewer)
@@ -17,7 +17,8 @@
 
 Every tool that changes something asks you first (a D.Ai Tune plan you can undo). --yes approves only user-scope
 steps that keep or harden security; the rest still ask. --dry-run shows every change without making it.
---notify shows the answer as a notification too (a timer has no terminal: "every day at 8 agent: …" in
+A goal that is itself a D.Ai Tune sentence ("lock the screen after 5 minutes", "note: buy milk") runs as one
+approved step without the model; --model asks Diamond anyway. --notify shows the answer as a notification too (a timer has no terminal: "every day at 8 agent: …" in
 D.Ai Tune makes one through Diamond's Way). --script FILE runs the JSON steps in FILE without the model.
 """
 from __future__ import annotations
@@ -126,7 +127,7 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
             print(pick(lang, "No runs yet.", "אין ריצות עדיין."))
             return 0
         for row in rows:
-            mark = " ↶" if row.get("undone") else ""
+            mark = (" ↶" if row.get("undone") else "") + (" (Tune)" if row.get("planner") == "tune" else "")
             print(f"{row['id']}  {row.get('started', '')}  {row.get('status', '')}{mark}  [{row.get('role', '')}]  {row['goal'][:60]}")
             if row.get("final"):
                 print("    " + str(row["final"])[:200].replace("\n", " "))
@@ -169,7 +170,7 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
         if not isinstance(script, list) or not all(isinstance(s, dict) for s in script):
             print(pick(lang, "✗ --script: a JSON list of steps", "✗ --script: רשימת JSON של צעדים"), file=sys.stderr)
             return 2
-    flags = {"--yes", "--dry-run", "--notify"}
+    flags = {"--yes", "--dry-run", "--notify", "--model"}
     words = []
     skip = False
     for i, a in enumerate(args):
@@ -202,7 +203,7 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
         pass
     print(pick(lang, "Goal: {goal}  [{role}]", "מטרה: {goal}  [{role}]").format(goal=goal, role=role_name))
     try:
-        run = run_agent(goal, services, chat=chat, role=ROLES[role_name], script=script, home=home,
+        run = run_agent(goal, services, chat=chat, role=ROLES[role_name], script=script, home=home, direct="--model" not in args,
                         approve=lambda step: (services.assume_yes and quiet_ok(step, services)) or ask(step, lang, ask_input))
     except AgentError as exc:
         print(f"✗ {exc}", file=sys.stderr)

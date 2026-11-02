@@ -630,6 +630,9 @@ def main() -> int:
          "dai-agent history | head -n 1 | grep -c '↶' | sed 's/^/MARKED=/'; "
          "ls ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/RUNS=/'; "
          "dai-agent history | head -n 2; "
+         # Stage 10 (docs/AGENTS.md §6ט): a goal that is a Tune sentence runs without the model (planner: tune).
+         "dai-agent run 'note: the direct way' --yes </dev/null; echo DIRECT_RC=$?; grep -c 'the direct way' ~/Documents/Notes/notes.md | sed 's/^/DIRECT_NOTED=/'; "
+         "grep -l '\"planner\": \"tune\"' ~/.local/share/dai/agents/*.json | wc -l | sed 's/^/DIRECT_RUNS=/'; dai-tune undo >/dev/null 2>&1; "
          # Stage 3 (docs/AGENTS.md §6ב): memory through the remember tool, mail from J's store (no account: a clear line), a
          # scheduled agent is a Way timer carrying agent.run, and "agent tutor: …" through dai-tune runs the agent itself.
          "printf '[{\"tool\":\"remember\",\"args\":{\"text\":\"likes short answers\"}},{\"tool\":\"mail\",\"args\":{\"limit\":3}},{\"tool\":\"done\",\"args\":{},\"final\":\"stage three ok\"}]' > /tmp/agent3.json; "
@@ -647,6 +650,7 @@ def main() -> int:
          and "SCRIPT_RC=0" in o and "not a tool" in o
          and "NOTED=1" in o and "REMINDED=1" in o and re.search(r"RUNS=[1-9]", o) is not None and "scripted ok" in o
          and "UNDO_RUN_RC=0" in o and "NOTED_AFTER=0" in o and "REMINDED_AFTER=0" in o and "MARKED=1" in o
+         and "DIRECT_RC=0" in o and "DIRECT_NOTED=1" in o and "DIRECT_RUNS=1" in o
          and "SCRIPT3_RC=0" in o and "no mail" in o and "MEMORY=1" in o and "MEMORY_MODE=600" in o
          and "TIMER_PLAN=1" in o and "TUNE_AGENT_RC=0" in o
          and "POLICY_RC=0" in o and "DAI_AGENT_ROLES=secretary" in o and "GUARD_RC=2" in o and "NOT_ALLOWED=4" in o and "POLICY_GONE" in o

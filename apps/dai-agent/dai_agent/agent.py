@@ -48,10 +48,11 @@ class Run:
     final: str = ""
     status: str = "running"          # done | stopped | failed | no-plan
     undone: bool = False
+    planner: str = "diamond"         # diamond | tune (the direct way, docs/AGENTS.md §6ט) | script
 
     def to_json(self) -> dict[str, Any]:
         return {"id": self.id, "goal": self.goal, "role": self.role, "started": self.started, "status": self.status,
-                "final": self.final, "undone": self.undone, "steps": [s.__dict__ for s in self.steps]}
+                "final": self.final, "undone": self.undone, "planner": self.planner, "steps": [s.__dict__ for s in self.steps]}
 
 
 def _args_schema(tool: Tool) -> dict[str, Any]:
@@ -200,15 +201,42 @@ def history(home: Path | None, limit: int = 20) -> list[dict[str, Any]]:
     return rows
 
 
+def direct_steps(goal: str, services: Services, role: Role) -> list[dict[str, Any]] | None:
+    """The direct way (docs/AGENTS.md §6ט): a goal that is itself a D.Ai Tune sentence, understood in full,
+    becomes one do step and a final line, without the model. None when Tune does not understand it (or the
+    role may not change settings)."""
+    if "do" not in role.tools or services.ctx is None:
+        return None
+    try:
+        from dai_tune.planner import plan_from_text
+    except ImportError:
+        return None
+    try:
+        made = plan_from_text(goal, services.ctx)
+    except Exception:  # noqa: BLE001 - the model is the fallback, never a crash
+        return None
+    if not made.ok or not getattr(made, "steps", None):
+        return None
+    final = pick(services.lang, "Dry run: {goal}", "הרצת ניסיון: {goal}") if services.dry_run else pick(services.lang, "Done: {goal}", "בוצע: {goal}")
+    return [{"thought": pick(services.lang, "This is a D.Ai Tune sentence; no planning needed.", "זה משפט D.Ai Tune; לא צריך לתכנן."),
+             "tool": "do", "args": {"sentence": goal}, "final": ""},
+            {"thought": "", "tool": "done", "args": {}, "final": final.format(goal=goal)}]
+
+
 def run_agent(goal: str, services: Services, chat: Callable | None = None, role: Role | None = None,
               approve: Callable[[StepRecord], bool] | None = None, script: list[dict[str, Any]] | None = None,
-              say: Callable[[str], None] = print, home: Path | None = None) -> Run:
-    """Reach `goal`. With `script`, the steps are given (no model). approve(step) decides every act tool."""
+              say: Callable[[str], None] = print, home: Path | None = None, direct: bool = True) -> Run:
+    """Reach `goal`. With `script`, the steps are given (no model). approve(step) decides every act tool.
+    With `direct` (the default) a goal Tune understands in full runs as one do step without the model."""
     role = role or ROLES["all"]
     lang = services.lang
     run = Run(secrets.token_hex(4), goal.strip(), role.name, datetime.now().strftime("%Y-%m-%dT%H:%M"))
     if not run.goal:
         raise AgentError(pick(lang, "Say what the agent should do.", "תגידו מה הסוכן צריך לעשות."))
+    if script is not None:
+        run.planner = "script"
+    elif direct and (steps := direct_steps(run.goal, services, role)) is not None:
+        script, run.planner = steps, "tune"
     if chat is None and script is None:
         from dai_ai.client import chat as client_chat
         chat = client_chat
@@ -234,6 +262,10 @@ def run_agent(goal: str, services: Services, chat: Callable | None = None, role:
         args = data.get("args") if isinstance(data.get("args"), dict) else {}
         thought = str(data.get("thought", ""))[:300]
         if name == "done":
+            if run.planner == "tune" and run.steps and (run.steps[-1].error or run.steps[-1].approved is False):
+                run.final = pick(lang, "Nothing was changed.", "שום דבר לא השתנה.")
+                run.status = "stopped"
+                break
             run.final = str(data.get("final", ""))[:MAX_ANSWER].strip() or pick(lang, "Done.", "בוצע.")
             run.status = "done"
             break
