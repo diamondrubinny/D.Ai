@@ -26,6 +26,7 @@ from .agent import AgentError, Run, StepRecord, run_agent
 from .plans import describe_act
 from .policy import allowed_roles, refusal
 from .roles import ROLES
+from .suggest import suggestions
 from .tools import Services
 
 APP_ID = "dai-agent"
@@ -53,6 +54,10 @@ QPushButton {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius:
 QPushButton:hover {{ border: 1px solid {ACCENT}; background: {rgba('accent', 0.18)}; }}
 QPushButton:focus {{ border: 2px solid {ACCENT_2}; }}
 QPushButton#Primary {{ background: {ACCENT_STRONG}; color: #FFFFFF; font-weight: 700; border: 1px solid {ACCENT_STRONG}; }}
+QPushButton#Chip {{ background: {rgba('accent', 0.16)}; border: 1px solid {ACCENT_STRONG}; border-radius: 14px; padding: 6px 12px; }}
+QPushButton#Chip:hover {{ background: {rgba('accent', 0.3)}; }}
+QPushButton#Chip:focus {{ border: 2px solid {ACCENT_STRONG}; }}
+QLabel#Hint {{ color: {MUTED}; }}
 QToolButton#Mic {{ background: {SURFACE}; color: {TEXT}; border: 1px solid {BORDER}; border-radius: 10px; padding: 8px; font-size: 14pt; }}
 QToolButton#Mic:hover {{ border: 1px solid {ACCENT_STRONG}; }}
 QToolButton#Mic:focus {{ border: 2px solid {ACCENT_STRONG}; }}
@@ -83,6 +88,7 @@ STRINGS = {
     "answer": ("Diamond's answer", "התשובה של Diamond"),
     "run_id": ("run {id} · dai-agent history", "ריצה {id} · dai-agent history"),
     "copy": ("Copy", "העתקה"),
+    "try": ("Or try one of these:", "או נסו אחת מאלה:"),
     "question": ("Diamond asks: {q}", "Diamond שואל: {q}"),
     "answer_field": ("Your answer", "התשובה שלכם"),
     "send_answer": ("Answer", "לענות"),
@@ -263,6 +269,17 @@ class AgentWindow(QWidget):
         row2.addWidget(self.start_button)
         outer.addLayout(row2)
 
+        self.ideas = QFrame(objectName="Ideas")
+        ideas = QVBoxLayout(self.ideas)
+        ideas.setContentsMargins(0, 4, 0, 4)
+        ideas.addWidget(QLabel(self.t("try"), objectName="Hint"))
+        self.chips = QHBoxLayout()
+        self.chips.setSpacing(8)
+        ideas.addLayout(self.chips)
+        outer.addWidget(self.ideas)
+        self.role.currentIndexChanged.connect(self.fill_chips)
+        self.fill_chips()
+
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -329,6 +346,26 @@ class AgentWindow(QWidget):
         self.spoken_goal = True
         self.start()
 
+    def fill_chips(self) -> None:
+        """Ready-made goals for the chosen role (docs/AGENTS.md §6ח); hidden while a run is on the screen."""
+        while self.chips.count():
+            item = self.chips.takeAt(0)
+            if item.widget() is not None:
+                item.widget().deleteLater()
+        for goal in suggestions(str(self.role.currentData() or ""), self.lang):
+            chip = QPushButton(embed(goal, self.lang), objectName="Chip")
+            chip.setAccessibleName(goal)
+            chip.clicked.connect(lambda _checked=False, g=goal: self.try_goal(g))
+            self.chips.addWidget(chip)
+        self.chips.addStretch(1)
+        self.ideas.setVisible(self.chips.count() > 1 and self.run is None and self.thread is None)
+
+    def try_goal(self, goal: str) -> None:
+        if self.thread is not None:
+            return
+        self.goal.setText(goal)
+        self.start()
+
     def start(self) -> None:
         goal = self.goal.text().strip()
         if self.thread is not None or not goal:
@@ -342,6 +379,7 @@ class AgentWindow(QWidget):
         self.read.setEnabled(False)
         self.undo.setEnabled(False)
         self.run = None
+        self.ideas.hide()
         self.services.dry_run = self.dry_run.isChecked()
         self.services.assume_yes = False
         self.services.label = f"D.Ai Agent: {goal[:60]}"

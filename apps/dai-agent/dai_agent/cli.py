@@ -8,6 +8,7 @@
   dai-agent roles                  secretary, organizer, guard, tutor, all (an organization's policy may allow fewer)
   dai-agent history                the last runs (~/.local/share/dai/agents); ↶ = undone
   dai-agent undo RUN               undo every change a run made (dai-tune undo, last change first)
+  dai-agent suggest [ROLE]         ready-made goals for a role (what the window offers when it is empty)
   dai-agent memory                 what the agent remembers (only lines you approved with the remember tool)
   dai-agent memory forget N        drop line N;  dai-agent memory clear   forgets everything
   dai-agent window ["goal"] [--role ROLE] [--speak] [--script FILE]   the same, in a window: steps as a list, approval by a
@@ -129,6 +130,14 @@ def main(argv: list[str] | None = None, chat=None, services: Services | None = N
             print(f"{row['id']}  {row.get('started', '')}  {row.get('status', '')}{mark}  [{row.get('role', '')}]  {row['goal'][:60]}")
             if row.get("final"):
                 print("    " + str(row["final"])[:200].replace("\n", " "))
+        return 0
+    if args[0] == "suggest":
+        from .suggest import suggestions
+        role_name = args[1] if len(args) > 1 else "all"
+        if role_name not in ROLES:
+            print(pick(lang, "✗ unknown role; see: dai-agent roles", "✗ תפקיד לא מוכר; ראו: dai-agent roles"), file=sys.stderr)
+            return 2
+        print("\n".join(suggestions(role_name, lang)))
         return 0
     if args[0] == "memory":
         return cmd_memory(args[1:], lang, home)

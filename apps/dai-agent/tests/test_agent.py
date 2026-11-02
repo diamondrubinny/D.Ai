@@ -549,6 +549,25 @@ class AskAndUndoTests(unittest.TestCase):
             self.assertFalse(json.loads(agent.journal_path(home, run.id).read_text())["undone"])
 
 
+class SuggestTests(unittest.TestCase):
+    """docs/AGENTS.md §6ח: ready-made goals per role."""
+    def test_suggestions_per_role_and_cli(self):
+        from dai_agent.suggest import suggestions
+        self.assertIn("Focus for 25 minutes", suggestions("secretary", "en"))
+        self.assertIn("פוקוס ל־25 דקות", suggestions("secretary", "he"))
+        self.assertEqual(suggestions("wizard", "en"), [])
+        for role in roles.ROLES:
+            self.assertGreaterEqual(len(suggestions(role, "en")), 2, role)
+            self.assertEqual(len(set(suggestions(role, "en"))), len(suggestions(role, "en")))
+        out, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(out), redirect_stderr(err):
+            self.assertEqual(cli.main(["dai-agent", "suggest", "guard"]), 0)
+            self.assertEqual(cli.main(["dai-agent", "suggest"]), 0)
+            self.assertEqual(cli.main(["dai-agent", "suggest", "wizard"]), 2)
+        self.assertIn("harden the easy parts", out.getvalue())
+        self.assertIn("unknown role", err.getvalue())
+
+
 class WindowTests(unittest.TestCase):
     """The agent window (docs/AGENTS.md §6): Raz audits it, approval is a button that shows the Tune plan,
     a skip applies nothing, a weakening plan is said in words, closing while a card waits frees the thread."""
@@ -640,6 +659,27 @@ class WindowTests(unittest.TestCase):
         self.assertIn("✗ skipped", window.texts())
         self.assertTrue((self.home / ".local/share/dai/agents" / f"{window.run.id}.json").exists())
         self.assertTrue(window.copy.isEnabled())
+
+    def test_chips_offer_goals_per_role_and_start_a_run(self):
+        """docs/AGENTS.md §6ח: an empty window shows ready-made goals; a click fills the goal and starts."""
+        from PyQt6.QtWidgets import QPushButton
+        from dai_raz.a11y import assert_accessible
+        steps = [{"thought": "", "tool": "done", "args": {}, "final": "Focused."}]
+        window = self.window(steps, lang="he", goal="")
+        self.assertFalse(window.ideas.isHidden())
+        chips = [b for b in window.ideas.findChildren(QPushButton)]
+        self.assertGreaterEqual(len(chips), 4)                                       # "all": two per role
+        assert_accessible(self, window, touch=True)
+        window.role.setCurrentIndex(window.role.findData("guard"))
+        chips = [b for b in window.ideas.findChildren(QPushButton) if b.isVisible() or not window.isVisible()]
+        self.assertTrue(any("חזק" in c.accessibleName() for c in chips))
+        chip = next(c for c in chips if "חזק" in c.accessibleName())
+        chip.click()
+        self.assertEqual(window.goal.text(), chip.accessibleName())
+        self.assertTrue(window.ideas.isHidden())                                      # gone while the run is on the screen
+        self.assertTrue(self.wait(window, lambda: window.run is not None))
+        self.assertIn("Focused.", window.texts())
+        self.assertTrue(window.ideas.isHidden())
 
     def test_enter_presses_the_focused_card_button(self):
         """Run 41336886735: Enter on the Allow button did nothing (a QPushButton outside a dialog answers Space only)."""
