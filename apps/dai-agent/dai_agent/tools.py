@@ -260,17 +260,22 @@ def ask(services: Services, question: str) -> str:
 def open_app(services: Services, app: str) -> str:
     """Open an application from the menu by name, through D.Ai Command's own .desktop index and matching
     (docs/AGENTS.md §6ז). The best match only; never a free command."""
+    from difflib import SequenceMatcher
+
     from dai_command.core import load_apps, search_apps
     apps = services.extra.get("apps")
-    found = search_apps(apps if apps is not None else load_apps(), app, limit=6)
-    if not found:
-        return pick(services.lang, "No application called {a} here.", "אין כאן אפליקציה בשם {a}.").format(a=app)
-    # Among Command's matches, the name closest to what was said (Galculator for "calculator") before a keyword
-    # match (D.Ai Command lists "calculator" as a keyword too); below 0.6 the ranking stands.
-    from difflib import SequenceMatcher
+    apps = list(apps if apps is not None else load_apps())
     wanted = app.casefold()
-    closest = max(found, key=lambda e: SequenceMatcher(None, wanted, e.name.casefold()).ratio())
-    entry = closest if SequenceMatcher(None, wanted, closest.name.casefold()).ratio() >= 0.6 else found[0]
+    # A name that nearly is what was said wins (Galculator for "calculator": its entry has no keywords, and D.Ai
+    # Command lists "calculator" as one, run 41379078485); otherwise Command's own ranking by name and keywords.
+    closest = max(apps, key=lambda e: SequenceMatcher(None, wanted, e.name.casefold()).ratio(), default=None)
+    if closest is not None and SequenceMatcher(None, wanted, closest.name.casefold()).ratio() >= 0.8:
+        entry = closest
+    else:
+        found = search_apps(apps, app, limit=1)
+        if not found:
+            return pick(services.lang, "No application called {a} here.", "אין כאן אפליקציה בשם {a}.").format(a=app)
+        entry = found[0]
     argv = list(entry.exec_args)
     if entry.terminal:
         argv = ["x-terminal-emulator", "-e", *argv]

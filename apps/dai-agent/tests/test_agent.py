@@ -353,7 +353,7 @@ class NewToolTests(unittest.TestCase):
         """docs/AGENTS.md §6ז: open = Command's best match, never a free command; focus = dai-focus start N."""
         from dai_command.core import AppEntry
         apps = [AppEntry("dai-command.desktop", "D.Ai Command", ("dai-command",), search_terms=("d.ai command", "calculator", "launcher", "command")),
-                AppEntry("galculator.desktop", "Galculator", ("galculator",), search_terms=("galculator", "calculator", "math")),
+                AppEntry("galculator.desktop", "Galculator", ("galculator",), search_terms=("galculator",)),   # Debian's entry: no keywords
                 AppEntry("htop.desktop", "htop", ("htop",), search_terms=("htop", "processes"), terminal=True)]
         spawned, ran = [], []
         services = tools.Services(lang="he", extra={"apps": apps, "spawn": spawned.append},
